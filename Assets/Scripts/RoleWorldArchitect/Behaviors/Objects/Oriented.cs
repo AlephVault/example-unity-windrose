@@ -1,0 +1,103 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace RoleWorldArchitect
+{
+    namespace Behaviors
+    {
+        [RequireComponent(typeof(Represented))]
+        [RequireComponent(typeof(SpriteRenderer))]
+        public class Oriented : MonoBehaviour
+        {
+            /**
+             * This class holds a set of animations ready to be used by depending
+             *   behaviors (e.g. walking, running). By default it uses the IDLE_ANIMATION
+             *   animation key with a default animation set.
+             * 
+             * This class takes into account the current direction it is looking to, and
+             *   also the current animation being played (animations are provided by
+             *   different animation sets, which provide an animation for each possible
+             *   direction).
+             */
+
+            public const string IDLE_ANIMATION = "";
+
+            public class Exception : Types.Exception
+            {
+                public Exception() { }
+                public Exception(string message) : base(message) { }
+                public Exception(string message, System.Exception inner) : base(message, inner) { }
+            }
+
+            private Dictionary<string, Types.AnimationSet> animations = new Dictionary<string, Types.AnimationSet>();
+            private string previousAnimationKey = "";
+            private Types.Direction previousDirection = Types.Direction.DOWN;
+
+            private Represented represented;
+
+            [SerializeField]
+            private Types.AnimationSet idleAnimationSet;
+
+            public Types.Direction direction = Types.Direction.DOWN;
+            [HideInInspector]
+            public string animationKey = IDLE_ANIMATION;
+            // Perhaps we want to override the animation being used as idle,
+            //   with a new one. It is intended to serve as a "temporary" idle
+            //   animation for any reason.
+            [HideInInspector]
+            public string overriddenKeyForIdleAnimation = null;
+
+            private void SetCurrentAnimation()
+            {
+                try
+                {
+                    represented.CurrentAnimation = animations[animationKey].GetForDirection(direction);
+                }
+                catch(KeyNotFoundException)
+                {
+                    // Key IDLE_ANIMATION will always be available
+                    animationKey = IDLE_ANIMATION;
+                }
+            }
+
+            public void SetIdleAnimation()
+            {
+                animationKey = (overriddenKeyForIdleAnimation == null) ? IDLE_ANIMATION : overriddenKeyForIdleAnimation;
+            }
+
+            public void AddAnimationSet(string key, Types.AnimationSet animation)
+            {
+                if (animations.ContainsKey(key))
+                {
+                    throw new Exception("AnimationSet key already in use: " + key);
+                }
+                else
+                {
+                    animations.Add(key, animation.Clone());
+                }
+            }
+
+            // Use this for initialization
+            void Awake()
+            {
+                AddAnimationSet(IDLE_ANIMATION, idleAnimationSet);
+            }
+
+            void Start()
+            {
+                represented = GetComponent<Represented>();
+                SetCurrentAnimation();
+            }
+
+            // Update is called once per frame
+            void Update()
+            {
+                if (animationKey != previousAnimationKey || direction != previousDirection)
+                {
+                    SetCurrentAnimation();
+                }
+            }
+        }
+    }
+}

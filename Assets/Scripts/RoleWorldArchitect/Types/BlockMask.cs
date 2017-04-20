@@ -77,7 +77,7 @@ namespace RoleWorldArchitect
                 SetWhole(content, freeChar, blockedChar);
             }
 
-            private void SetBit(uint x, uint y, bool bit)
+            public void SetBit(uint x, uint y, bool bit)
             {
                 uint flat_index = y * width + x;
                 if (bit)
@@ -90,7 +90,7 @@ namespace RoleWorldArchitect
                 }
             }
 
-            private bool GetBit(uint x, uint y)
+            public bool GetBit(uint x, uint y)
             {
                 uint flat_index = y * width + x;
                 return (this.bits[flat_index / 32] & (uint)(1 << (int)(flat_index % 32))) != 0;

@@ -4,7 +4,7 @@ namespace RoleWorldArchitect
 {
     namespace Types
     {
-        namespace ObjectLayerHelpers
+        namespace Tilemaps
         {
             public class SolidMask
             {

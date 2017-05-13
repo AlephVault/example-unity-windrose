@@ -4,6 +4,8 @@ namespace RoleWorldArchitect
 {
     namespace Behaviors
     {
+        using Types.ObjectLayerHelpers;
+
         public class Positionable : MonoBehaviour
         {
             /**
@@ -12,8 +14,6 @@ namespace RoleWorldArchitect
              *   sprite position on the screen (there will be other behaviors
              *   to accomplish that), but with the tiling system.
              */
-
-            public enum SolidnessStatus { Ghost, SolidForOthers, Solid };
 
             private ObjectLayer objectLayer;
 

@@ -59,14 +59,12 @@ namespace RoleWorldArchitect
                 {
                     // Key IDLE_ANIMATION will always be available
                     animationKey = IDLE_ANIMATION;
-                    Debug.Log("After SetCurrentAnimation() [exception] -> animationKey=" + animationKey);
                 }
             }
 
             public void SetIdleAnimation()
             {
                 animationKey = (overriddenKeyForIdleAnimation == null) ? IDLE_ANIMATION : overriddenKeyForIdleAnimation;
-                Debug.Log("After SetIdleAnimation() -> animationKey=" + animationKey);
             }
 
             public void AddAnimationSet(string key, Types.AnimationSet animation)
@@ -109,7 +107,6 @@ namespace RoleWorldArchitect
                 // Given an animation change or an orientation change, we change the animation
                 if (animationKey != previousAnimationKey || orientation != previousOrientation)
                 {
-                    Debug.Log("Setting current animation to: " + animationKey + " with orientation: " + orientation);
                     SetCurrentAnimation();
                 }
 

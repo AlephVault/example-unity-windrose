@@ -235,9 +235,9 @@ namespace RoleWorldArchitect
                     uint rowIdx = 0;
                     uint colIdx = 0;
 
-                    for (uint x = 0; x < width; x++)
+                    for (uint y = 0; y < height; y++)
                     {
-                        for (uint y = 0; y < height; y++)
+                        for (uint x = 0; x < width; x++)
                         {
                             if (colIdx == 32)
                             {
@@ -246,6 +246,7 @@ namespace RoleWorldArchitect
                             }
 
                             char posChar = content[y][(int)x];
+
                             if (posChar == freeChar)
                             {
                                 this.bits[rowIdx] &= ~(uint)(1 << (int)(colIdx));
@@ -256,8 +257,10 @@ namespace RoleWorldArchitect
                             }
                             else
                             {
-                                throw new System.ArgumentException("Each position in the content must hold either character " + freeChar + " or character " + blockedChar);
+                                throw new ArgumentException("Each position in the content must hold either character " + freeChar + " or character " + blockedChar);
                             }
+
+                            colIdx++;
                         }
                     }
                 }

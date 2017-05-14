@@ -37,7 +37,6 @@ namespace RoleWorldArchitect
             public void SetMovingAnimation()
             {
                 string newKey = (overriddenKeyForMovingAnimation == null) ? MOVE_ANIMATION : overriddenKeyForMovingAnimation;
-                if (overriddenKeyForMovingAnimation == "") Debug.Log("Fuck!!!");
                 oriented.animationKey = newKey;
             }
 

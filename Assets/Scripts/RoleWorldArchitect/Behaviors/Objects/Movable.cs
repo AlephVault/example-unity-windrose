@@ -7,61 +7,29 @@ namespace RoleWorldArchitect
     namespace Behaviors
     {
         [RequireComponent(typeof(Oriented))]
-        [RequireComponent(typeof(Snapped))]
-        [RequireComponent(typeof(Rigidbody2D))]
         public class Movable : MonoBehaviour
         {
             public const string MOVE_ANIMATION = "move";
 
-            /**
-             * Based on formerly defined behaviors, this one moves an object.
-             *   It provides a walking animation set, which adds under the
-             *   MOVE key, which will be added to the dictionary in the
-             *   Oriented component.
-             * 
-             * Only a property will determine whether there is movement:
-             *   
-             *   bool active
-             * 
-             * While a property will determine its speed:
-             * 
-             *   uint speed
-             * 
-             * And an animation set will be provided for the movement:
-             * 
-             *   private AnimationSet movingAnimationSet
-             *   
-             * And will be forced to the Oriented component, when it is moving and
-             *   this variable is false:
-             *   
-             *   bool forceMovingAnimation
-             *   
-             * However a readonly property will determine whether it is actually
-             *   performing movement or not:
-             *   
-             *   bool IsMoving
-             * 
-             * It will rely on RigidBody2D to perform the movement with the given
-             *   speed, and it will rely on Snapped to control how it will move.
-             */
-
+            // Dependencies
             private Oriented oriented;
-            private Rigidbody2D rigidBody2d;
-            private Snapped snapped;
             private Positionable positionable;
 
-            private bool isMoving = false;
+            // Origin and target of movement. This has to do with the min/max values
+            //   of Snapped, but specified for the intended movement.
             private Vector2 origin = Vector2.zero, target = Vector2.zero;
-            private Types.Direction currentDirection;
 
+            // These fields are the configurable features of this behavior
             [SerializeField]
             private Types.AnimationSet movingAnimationSet;
+            public uint speed = 2; // The speed is expressed in terms of units per second
 
-            public bool active = false;
-            [HideInInspector]
-            public bool forceMovingAnimation = true;
-            public uint speed = 64;
-            public bool IsMoving { get { return isMoving; } }
+            // A runtime check to determine whether the object was moving in the previous frame
+            private bool wasMoving = false;
+
+            // A runtime check to determine whether the object is being moved
+            public bool IsMoving { get { return positionable.Movement != null; } }
+
             // Perhaps we want to override the animation being used as moving,
             //   with a new one. It is intended to serve as a "temporary" moving
             //   animation for any reason.
@@ -75,120 +43,60 @@ namespace RoleWorldArchitect
 
             private Vector2 OffsetForCurrentDirection()
             {
-                switch(currentDirection)
+                switch(positionable.Movement)
                 {
                     case Types.Direction.UP:
-                        return Vector2.up * positionable.ObjectLayer.TileHeight;
+                        return Vector2.up * Snapped.GAME_UNITS_PER_TILE_UNITS;
                     case Types.Direction.DOWN:
-                        return Vector2.down * positionable.ObjectLayer.TileHeight;
+                        return Vector2.down * Snapped.GAME_UNITS_PER_TILE_UNITS;
                     case Types.Direction.LEFT:
-                        return Vector2.left * positionable.ObjectLayer.TileWidth;
+                        return Vector2.left * Snapped.GAME_UNITS_PER_TILE_UNITS;
                     case Types.Direction.RIGHT:
-                        return Vector2.right * positionable.ObjectLayer.TileWidth;
+                        return Vector2.right * Snapped.GAME_UNITS_PER_TILE_UNITS;
                 }
                 // This one is never reached!
                 return Vector2.zero;
-            }
-
-            private Vector2 VelocityForCurrentDirection()
-            {
-                switch (currentDirection)
-                {
-                    case Types.Direction.UP:
-                        return Vector2.up * speed;
-                    case Types.Direction.DOWN:
-                        return Vector2.down * speed;
-                    case Types.Direction.LEFT:
-                        return Vector2.left * speed;
-                    case Types.Direction.RIGHT:
-                        return Vector2.right * speed;
-                }
-                // This one is never reached!
-                return Vector2.zero;
-            }
-
-            private bool IsBeyondTarget()
-            {
-                /**
-                 * This method only makes sense if isMoving==true 
-                 */
-                switch(currentDirection)
-                {
-                    case Types.Direction.UP:
-                        return transform.position.y >= target.y;
-                    case Types.Direction.DOWN:
-                        return transform.position.y <= target.y;
-                    case Types.Direction.LEFT:
-                        return transform.position.x <= target.x;
-                    case Types.Direction.RIGHT:
-                        return transform.position.x >= target.x;
-                }
-                return false;
             }
 
             // Use this for initialization
             void Start()
             {
                 oriented = GetComponent<Oriented>();
-                rigidBody2d = GetComponent<Rigidbody2D>();
-                snapped = GetComponent<Snapped>();
                 positionable = GetComponent<Positionable>();
-
                 oriented.AddAnimationSet(MOVE_ANIMATION, movingAnimationSet);
             }
 
             // Update is called once per frame
             void Update()
             {
-                if (!isMoving)
+                if (IsMoving)
                 {
-                    if (!active)
+                    // The object has to perform movement.
+                    // Initially, we must set the appropriate target.
+                    if (!wasMoving)
                     {
-                        snapped.SnapInX = true;
-                        snapped.SnapInY = true;
-                        snapped.ClampInX = false;
-                        snapped.ClampInY = false;
-                        oriented.SetIdleAnimation();
-                        rigidBody2d.velocity = Vector2.zero;
+                        origin = transform.localPosition;
+                        target = origin + OffsetForCurrentDirection();
+                    }
+                    // Now we move towards the target at a speed of (speed) units per second
+                    Vector2 movement = Vector2.MoveTowards(transform.localPosition, target, speed * Time.deltaTime);
+                    if ((Vector2) transform.localPosition == movement)
+                    {
+                        // If the movement and the localPosition (converted to 2D vector) are the same,
+                        //   we mark the movement as finished.
+                        positionable.FinishMovement();
                     }
                     else
                     {
-                        /**
-                         * 
-                         * TODO: Abort if, for the next position, the object cannot occupy it!!!
-                         *   Such a check considered false, the following 5 lines should not execute.
-                         * 
-                         * The check must involve querying the related ObjectLayer.
-                         *
-                         */
-                        isMoving = true;
-                        origin = new Vector2(transform.position.x, transform.position.y);
-                        Types.Direction direction = oriented.direction;
-                        currentDirection = direction;
-                        target = origin + OffsetForCurrentDirection();
+                        // Otherwise we adjust the localPosition to the intermediate step.
+                        transform.localPosition = new Vector3(movement.x, movement.y, transform.localPosition.z);
                     }
                 }
                 else
                 {
-                    if (IsBeyondTarget())
-                    {
-                        isMoving = active;
-                    }
-                    else
-                    {
-                        snapped.SnapInX = currentDirection == Types.Direction.UP || currentDirection == Types.Direction.DOWN;
-                        snapped.SnapInY = currentDirection == Types.Direction.LEFT || currentDirection == Types.Direction.RIGHT;
-                        snapped.ClampInX = snapped.SnapInY;
-                        snapped.MinX = Utils.Values.Min<float>(origin.x, target.x);
-                        snapped.MaxX = Utils.Values.Max<float>(origin.x, target.x);
-                        snapped.ClampInY = snapped.SnapInX;
-                        snapped.MinY = Utils.Values.Min<float>(origin.y, target.y);
-                        snapped.MaxY = Utils.Values.Max<float>(origin.y, target.y);
-                        oriented.direction = currentDirection;
-                        rigidBody2d.velocity = VelocityForCurrentDirection();
-                        SetMovingAnimation();
-                    }
+                    oriented.SetIdleAnimation();
                 }
+                wasMoving = IsMoving;
             }
         }
     }

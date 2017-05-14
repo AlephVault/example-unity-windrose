@@ -7,7 +7,6 @@ namespace RoleWorldArchitect
     namespace Behaviors
     {
         [RequireComponent(typeof(Represented))]
-        [RequireComponent(typeof(SpriteRenderer))]
         public class Oriented : MonoBehaviour
         {
             /**
@@ -32,14 +31,16 @@ namespace RoleWorldArchitect
 
             private Dictionary<string, Types.AnimationSet> animations = new Dictionary<string, Types.AnimationSet>();
             private string previousAnimationKey = "";
-            private Types.Direction previousDirection = Types.Direction.DOWN;
+            private Types.Direction previousOrientation = Types.Direction.DOWN;
 
             private Represented represented;
+            private Positionable positionable;
 
             [SerializeField]
             private Types.AnimationSet idleAnimationSet;
 
-            public Types.Direction direction = Types.Direction.DOWN;
+            public Types.Direction orientation = Types.Direction.DOWN;
+
             [HideInInspector]
             public string animationKey = IDLE_ANIMATION;
             // Perhaps we want to override the animation being used as idle,
@@ -52,7 +53,7 @@ namespace RoleWorldArchitect
             {
                 try
                 {
-                    represented.CurrentAnimation = animations[animationKey].GetForDirection(direction);
+                    represented.CurrentAnimation = animations[animationKey].GetForDirection(orientation);
                 }
                 catch(KeyNotFoundException)
                 {
@@ -86,6 +87,7 @@ namespace RoleWorldArchitect
 
             void Start()
             {
+                positionable = GetComponent<Positionable>();
                 represented = GetComponent<Represented>();
                 SetCurrentAnimation();
             }
@@ -93,7 +95,14 @@ namespace RoleWorldArchitect
             // Update is called once per frame
             void Update()
             {
-                if (animationKey != previousAnimationKey || direction != previousDirection)
+                // If the object is being moved, we assign the movement direction as the current orientation
+                if (positionable.Movement != null && positionable.Movement != orientation)
+                {
+                    orientation = positionable.Movement.Value;
+                }
+
+                // Given an animation change or an orientation change, we change the animation
+                if (animationKey != previousAnimationKey || orientation != previousOrientation)
                 {
                     SetCurrentAnimation();
                 }

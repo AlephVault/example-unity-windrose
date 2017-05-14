@@ -18,7 +18,7 @@ namespace RoleWorldArchitect
              *   design as consistent as possible among scene and sprites.
              */
 
-            private const uint GAME_UNITS_PER_TILE_UNITS = 1;
+            public const uint GAME_UNITS_PER_TILE_UNITS = 1;
 
             private Positionable positionable;
 

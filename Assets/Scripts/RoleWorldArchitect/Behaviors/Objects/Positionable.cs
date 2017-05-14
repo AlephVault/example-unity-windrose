@@ -77,6 +77,11 @@ namespace RoleWorldArchitect
                 tilemapObject.StartMovement(movementDirection);
             }
 
+            public void FinishMovement()
+            {
+                tilemapObject.FinishMovement();
+            }
+
             public void CancelMovement()
             {
                 tilemapObject.CancelMovement();

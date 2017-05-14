@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using UnityEngine;
 
 namespace RoleWorldArchitect
 {
@@ -27,7 +28,7 @@ namespace RoleWorldArchitect
 
                 public static string[] PadMask(string content, uint width, uint height, char free = '0', char blocked = '1', uint offsetX = 0, uint offsetY = 0)
                 {
-                    return PadMask(content == null ? null : content.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None), width, height, free, blocked);
+                    return PadMask(content == null ? null : content.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None), width, height, free, blocked, offsetX, offsetY);
                 }
 
                 public static string[] PadMask(string[] content, uint width, uint height, char free = '0', char blocked = '1', uint offsetX = 0, uint offsetY = 0)
@@ -38,7 +39,7 @@ namespace RoleWorldArchitect
                     offsetY = Utils.Values.Clamp<uint>(0, offsetY, height - 1);
 
                     string[] result = new string[height];
-                    uint endingRow = offsetY + height;
+                    uint endingRow = offsetY + (uint) content.Length;
                     uint rowIdx = 0;
                     uint contentIdx = 0;
                     for (; rowIdx < offsetY; rowIdx++)
@@ -49,7 +50,7 @@ namespace RoleWorldArchitect
                     {
                         result[rowIdx] = (Repeat((int)offsetX, free) + EnforceMask(content[contentIdx++], free, blocked)).PadRight((int)width, free).Substring(0, (int)width);
                     }
-                    for (; rowIdx < offsetY; rowIdx++)
+                    for (; rowIdx < height; rowIdx++)
                     {
                         result[rowIdx] = Repeat((int)width, free);
                     }

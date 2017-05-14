@@ -106,6 +106,9 @@ namespace RoleWorldArchitect
                 {
                     SetCurrentAnimation();
                 }
+
+                previousOrientation = orientation;
+                previousAnimationKey = animationKey;
             }
         }
     }

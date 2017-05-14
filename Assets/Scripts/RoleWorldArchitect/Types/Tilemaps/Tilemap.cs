@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using UnityEngine;
 
 namespace RoleWorldArchitect
 {
@@ -121,9 +122,9 @@ namespace RoleWorldArchitect
                         if (Occupies(Solidness)) Map.DecrementAdjacent(X, Y, Width, Height, Opposite(Movement));
                     }
 
-                    private void TriggerEvent(string targetEvent, params Object[] args)
+                    private void TriggerEvent(string targetEvent, params System.Object[] args)
                     {
-                        RelatedComponent.SendMessage(targetEvent, args);
+                        RelatedComponent.SendMessage(targetEvent, args, SendMessageOptions.DontRequireReceiver);
                     }
 
                     private bool CanMoveTo(Direction direction)
@@ -163,11 +164,11 @@ namespace RoleWorldArchitect
 
                     public void Attach(Tilemap map, uint? x = null, uint? y = null)
                     {
-                        if (map == null) { throw new NullReferenceException("The specified map to attach to cannot be null"); }
                         if (Map != null) { throw new AlreadyAttachedException("This TilemapObject is already attached to a map"); }
+                        if (map == null) { throw new NullReferenceException("The specified map to attach to cannot be null"); }
                         if (x != null) { X = x.Value; }
                         if (y != null) { Y = y.Value; }
-                        if (X > Map.Width - Width || Y > Map.Height - Height)
+                        if (X > map.Width - Width || Y > map.Height - Height)
                         {
                             throw new InvalidPositionException("Object coordinates and dimensions are not valid inside intended map's dimensions", X, Y);
                         }
@@ -178,11 +179,13 @@ namespace RoleWorldArchitect
 
                     public void Detach()
                     {
-                        if (Map == null) { throw new NotAttachedException("This TilemapObject is not attached to a map"); }
-                        CancelMovement();
-                        DecrementBody();
-                        Map = null;
-                        TriggerEvent("OnDetached");
+                        if (Map != null)
+                        {
+                            CancelMovement();
+                            DecrementBody();
+                            Map = null;
+                            TriggerEvent("OnDetached");
+                        }
                     }
 
                     public bool IsAttached()

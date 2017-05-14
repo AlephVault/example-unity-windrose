@@ -192,35 +192,45 @@ namespace RoleWorldArchitect
                         return Map != null;
                     }
 
-                    public void StartMovement(Direction direction)
+                    public bool StartMovement(Direction direction)
                     {
-                        if (Map == null) return;
+                        if (Map == null) return false;
                         if (Movement == null && CanMoveTo(direction))
                         {
                             Movement = direction;
                             IncrementAdjacent();
                             TriggerEvent("OnMovementStarted", Movement);
+                            return true;
+                        }
+                        else
+                        {
+                            return false;
                         }
                     }
 
-                    public void CancelMovement()
+                    public bool CancelMovement()
                     {
-                        if (Map == null) return;
+                        if (Map == null) return false;
                         if (Movement != null)
                         {
                             DecrementAdjacent();
                             Direction formerMovement = Movement.Value;
                             Movement = null;
                             TriggerEvent("OnMovementCancelled", formerMovement);
+                            return true;
+                        }
+                        else
+                        {
+                            return false;
                         }
                     }
 
-                    public void FinishMovement()
+                    public bool FinishMovement()
                     {
-                        if (Map == null) return;
+                        if (Map == null) return false;
                         if (Movement != null)
                         {
-                            switch(Movement)
+                            switch (Movement)
                             {
                                 case Direction.UP:
                                     Y--;
@@ -239,6 +249,11 @@ namespace RoleWorldArchitect
                             Direction formerMovement = Movement.Value;
                             Movement = null;
                             TriggerEvent("OnMovementFinished", formerMovement);
+                            return true;
+                        }
+                        else
+                        {
+                            return false;
                         }
                     }
 

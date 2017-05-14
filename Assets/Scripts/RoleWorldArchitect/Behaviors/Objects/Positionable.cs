@@ -72,19 +72,19 @@ namespace RoleWorldArchitect
                 tilemapObject.SetSolidness(newSolidness);
             }
 
-            public void StartMovement(Direction movementDirection)
+            public bool StartMovement(Direction movementDirection)
             {
-                tilemapObject.StartMovement(movementDirection);
+                return tilemapObject.StartMovement(movementDirection);
             }
 
-            public void FinishMovement()
+            public bool FinishMovement()
             {
-                tilemapObject.FinishMovement();
+                return tilemapObject.FinishMovement();
             }
 
-            public void CancelMovement()
+            public bool CancelMovement()
             {
-                tilemapObject.CancelMovement();
+                return tilemapObject.CancelMovement();
             }
         }
     }

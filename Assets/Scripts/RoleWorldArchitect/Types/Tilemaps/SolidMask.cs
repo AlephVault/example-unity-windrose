@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace RoleWorldArchitect
 {
@@ -51,7 +52,7 @@ namespace RoleWorldArchitect
 
                 public void CheckDimensions(uint x, uint y, uint width, uint height)
                 {
-                    if (x + width > this.width || x + height > this.height)
+                    if (x + width > this.width || y + height > this.height)
                     {
                         throw new InvalidSpatialSpecException("Dimensions " + width + "x" + height + " starting at (" + x + ", " + y + ") cannot be contained on a map of " + this.width + "x" + this.height);
                     }
@@ -103,7 +104,7 @@ namespace RoleWorldArchitect
                             }
                             else
                             {
-                                throw new CannotIncrementException("Cannot decrement position (" + x + ", " + y + ") beyond its maximum");
+                                throw new CannotIncrementException("Cannot decrement position (" + x + ", " + y + ") beyond its minimum");
                             }
                         }
                     }
@@ -126,6 +127,7 @@ namespace RoleWorldArchitect
                     for (uint j = y; j < yEnd; j++)
                     {
                         uint offset = j * this.width + x;
+
                         for (uint i = 0; i < width; i++)
                         {
                             if (this.positions[offset++] > 0)

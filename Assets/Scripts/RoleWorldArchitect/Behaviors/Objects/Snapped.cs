@@ -86,7 +86,7 @@ namespace RoleWorldArchitect
                 innerY = snapInY ? positionable.Y * GAME_UNITS_PER_TILE_UNITS : initialY;
 
                 finalX = clampInX ? Utils.Values.Clamp<float>(minX, innerX, maxX) : innerX;
-                finalY = clampInY ? Utils.Values.Clamp<float>(minY, innerY, minY) : innerY;
+                finalY = clampInY ? Utils.Values.Clamp<float>(minY, innerY, maxY) : innerY;
 
                 // We make the Y coordinate negative, as it was (or should be) in the beginning.
                 transform.localPosition = new Vector3(finalX, -finalY, transform.localPosition.z);

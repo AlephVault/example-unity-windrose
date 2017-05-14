@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace RoleWorldArchitect
 {
@@ -38,7 +36,9 @@ namespace RoleWorldArchitect
 
             public void SetMovingAnimation()
             {
-                oriented.animationKey = (overriddenKeyForMovingAnimation == null) ? MOVE_ANIMATION : overriddenKeyForMovingAnimation;
+                string newKey = (overriddenKeyForMovingAnimation == null) ? MOVE_ANIMATION : overriddenKeyForMovingAnimation;
+                if (overriddenKeyForMovingAnimation == "") Debug.Log("Fuck!!!");
+                oriented.animationKey = newKey;
             }
 
             private Vector2 OffsetForCurrentDirection()
@@ -56,6 +56,13 @@ namespace RoleWorldArchitect
                 }
                 // This one is never reached!
                 return Vector2.zero;
+            }
+
+            void Awake()
+            {
+                // I DON'T KNOW WHY HIDDEN PROPERTIES FROM INSPECTOR ALSO AVOID NULL VALUES.
+                // So I'm adding this code to ensure this particular field starts as null in Start().
+                overriddenKeyForMovingAnimation = null;
             }
 
             // Use this for initialization
@@ -77,6 +84,7 @@ namespace RoleWorldArchitect
                     {
                         origin = transform.localPosition;
                         target = origin + OffsetForCurrentDirection();
+                        SetMovingAnimation();
                     }
                     // Now we move towards the target at a speed of (speed) units per second
                     Vector2 movement = Vector2.MoveTowards(transform.localPosition, target, speed * Time.deltaTime);

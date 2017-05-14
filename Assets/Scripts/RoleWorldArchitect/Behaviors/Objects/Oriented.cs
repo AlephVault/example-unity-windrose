@@ -59,12 +59,14 @@ namespace RoleWorldArchitect
                 {
                     // Key IDLE_ANIMATION will always be available
                     animationKey = IDLE_ANIMATION;
+                    Debug.Log("After SetCurrentAnimation() [exception] -> animationKey=" + animationKey);
                 }
             }
 
             public void SetIdleAnimation()
             {
                 animationKey = (overriddenKeyForIdleAnimation == null) ? IDLE_ANIMATION : overriddenKeyForIdleAnimation;
+                Debug.Log("After SetIdleAnimation() -> animationKey=" + animationKey);
             }
 
             public void AddAnimationSet(string key, Types.AnimationSet animation)
@@ -82,6 +84,9 @@ namespace RoleWorldArchitect
             // Use this for initialization
             void Awake()
             {
+                // I DON'T KNOW WHY HIDDEN PROPERTIES FROM INSPECTOR ALSO AVOID NULL VALUES.
+                // So I'm adding this code to ensure this particular field starts as null in Awake().
+                overriddenKeyForIdleAnimation = null;
                 AddAnimationSet(IDLE_ANIMATION, idleAnimationSet);
             }
 
@@ -104,6 +109,7 @@ namespace RoleWorldArchitect
                 // Given an animation change or an orientation change, we change the animation
                 if (animationKey != previousAnimationKey || orientation != previousOrientation)
                 {
+                    Debug.Log("Setting current animation to: " + animationKey + " with orientation: " + orientation);
                     SetCurrentAnimation();
                 }
 

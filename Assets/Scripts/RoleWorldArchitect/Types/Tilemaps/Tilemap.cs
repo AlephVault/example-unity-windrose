@@ -79,14 +79,14 @@ namespace RoleWorldArchitect
                     {
                         switch (direction)
                         {
-                            case Types.Direction.LEFT:
-                                return Types.Direction.RIGHT;
-                            case Types.Direction.UP:
-                                return Types.Direction.DOWN;
-                            case Types.Direction.RIGHT:
-                                return Types.Direction.LEFT;
-                            case Types.Direction.DOWN:
-                                return Types.Direction.UP;
+                            case Direction.LEFT:
+                                return Direction.RIGHT;
+                            case Direction.UP:
+                                return Direction.DOWN;
+                            case Direction.RIGHT:
+                                return Direction.LEFT;
+                            case Direction.DOWN:
+                                return Direction.UP;
                             default:
                                 return null;
                         }
@@ -131,8 +131,7 @@ namespace RoleWorldArchitect
                     {
                         if (Map.IsHittingEdge(X, Y, Width, Height, direction)) return false;
                         if (Map.IsAdjacencyBlocked(X, Y, Width, Height, direction)) return false;
-                        if (!Traverses(Solidness) && Map.IsAdjacencyOccupied(X, Y, Width, Height, direction)) return false;
-                        return true;
+                        return Traverses(Solidness) || Map.IsAdjacencyFree(X, Y, Width, Height, direction);
                     }
 
                     public TilemapObject(Behaviors.Positionable relatedComponent, uint x, uint y, uint width, uint height, SolidnessStatus solidness)
@@ -165,7 +164,7 @@ namespace RoleWorldArchitect
                     public void Attach(Tilemap map, uint? x = null, uint? y = null)
                     {
                         if (Map != null) { throw new AlreadyAttachedException("This TilemapObject is already attached to a map"); }
-                        if (map == null) { throw new NullReferenceException("The specified map to attach to cannot be null"); }
+                        if (map == null) { throw new ArgumentNullException("The specified map to attach to cannot be null"); }
                         if (x != null) { X = x.Value; }
                         if (y != null) { Y = y.Value; }
                         if (X > map.Width - Width || Y > map.Height - Height)
@@ -221,6 +220,21 @@ namespace RoleWorldArchitect
                         if (Map == null) return;
                         if (Movement != null)
                         {
+                            switch(Movement)
+                            {
+                                case Direction.UP:
+                                    Y--;
+                                    break;
+                                case Direction.DOWN:
+                                    Y++;
+                                    break;
+                                case Direction.LEFT:
+                                    X--;
+                                    break;
+                                case Direction.RIGHT:
+                                    X++;
+                                    break;
+                            }
                             DecrementOppositeAdjacent();
                             Direction formerMovement = Movement.Value;
                             Movement = null;
@@ -334,7 +348,7 @@ namespace RoleWorldArchitect
                     }
                 }
 
-                private bool IsAdjacencyOccupied(uint x, uint y, uint width, uint height, Direction? direction)
+                private bool IsAdjacencyFree(uint x, uint y, uint width, uint height, Direction? direction)
                 {
                     /** Precondition: IsHittingEdge was already called to this point */
                     switch (direction)

@@ -52,7 +52,7 @@ namespace RoleWorldArchitect
                         return component;
                     }
                 }
-                catch (NullReferenceException exception)
+                catch (NullReferenceException)
                 {
                     throw new MissingParentException("Current object needs a parent object");
                 }
@@ -66,7 +66,7 @@ namespace RoleWorldArchitect
                 }
                 else
                 {
-                    gameObject.active = false;
+                    gameObject.SetActive(false);
                     T component = gameObject.AddComponent<T>();
                     Type componentType = component.GetType();
                     foreach (KeyValuePair<string, object> pair in data)
@@ -81,7 +81,7 @@ namespace RoleWorldArchitect
                             throw new UnserializableFieldException("The field " + pair.Key + " cannot be populated for type " + typeof(T).FullName);
                         }
                     }
-                    gameObject.active = true;
+                    gameObject.SetActive(true);
                     return component;
                 }
             }

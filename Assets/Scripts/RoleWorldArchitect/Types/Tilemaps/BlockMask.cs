@@ -123,9 +123,9 @@ namespace RoleWorldArchitect
                     uint yi_ = Utils.Values.Min<uint>(yi, yf);
                     uint yf_ = Utils.Values.Max<uint>(yi, yf);
 
-                    for (uint x = xi; x <= xf; x++)
+                    for (uint x = xi_; x <= xf_; x++)
                     {
-                        for (uint y = yi; y <= yf; y++)
+                        for (uint y = yi_; y <= yf_; y++)
                         {
                             SetBit(x, y, blocked);
                         }
@@ -144,17 +144,17 @@ namespace RoleWorldArchitect
                     uint yi_ = Utils.Values.Min<uint>(yi, yf);
                     uint yf_ = Utils.Values.Max<uint>(yi, yf);
 
-                    for (uint x = xi; x <= xf; x++)
+                    for (uint x = xi_; x <= xf_; x++)
                     {
-                        for (uint y = yi; y <= yf; y++)
+                        for (uint y = yi_; y <= yf_; y++)
                         {
                             switch (checkType)
                             {
                                 case CheckType.ANY_BLOCKED:
-                                    if (!GetBit(x, y)) { return true; }
+                                    if (GetBit(x, y)) { return true; }
                                     break;
                                 case CheckType.ANY_FREE:
-                                    if (GetBit(x, y)) { return true; }
+                                    if (!GetBit(x, y)) { return true; }
                                     break;
                                 case CheckType.ALL_BLOCKED:
                                     if (!GetBit(x, y)) { return false; }

@@ -4,7 +4,13 @@ namespace RoleWorldArchitect
 {
     namespace Behaviors
     {
-        [RequireComponent(typeof(Positionable))]
+        // Requiring Snapped, instead of Positionable, allows us to
+        //   have the features of position automatically updated.
+        //
+        // We make no use of Snapped at all, but the behavior will
+        //   automatically be called, and Positionable will be
+        //   present anyway.
+        [RequireComponent(typeof(Snapped))]
         [RequireComponent(typeof(SpriteRenderer))]
         public class Represented : MonoBehaviour
         {
@@ -43,7 +49,7 @@ namespace RoleWorldArchitect
             void Update()
             {
                 // We order the sprite
-                spriteRenderer.sortingOrder = (int)(positionable.Yf * positionable.ObjectLayer.MapWidth + positionable.Xf) * 3 + 1;
+                spriteRenderer.sortingOrder = (int)(positionable.Yf * positionable.ParentMap.Width + positionable.Xf) * 3 + 1;
                 // And also set the current animation.
                 //   We are sure this animation will be non-empty.
                 currentAnimation.Thick();

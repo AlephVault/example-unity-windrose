@@ -6,6 +6,8 @@ namespace RoleWorldArchitect
 {
     namespace Behaviors
     {
+        using Types.Tilemaps;
+
         public class Map : MonoBehaviour
         {
             /**
@@ -24,19 +26,34 @@ namespace RoleWorldArchitect
             [SerializeField]
             private uint height;
 
-            private const uint TILE_WIDTH = 32;
-            private const uint TILE_HEIGHT = TILE_WIDTH;
+            [SerializeField]
+            [TextArea(3, 10)]
+            private string blockMask;
 
+            [SerializeField]
+            private char freeMarkingChar = '0';
+
+            [SerializeField]
+            private char blockMarkingChar = '1';
+
+            [SerializeField]
+            private uint maskApplicationOffsetX = 0;
+
+            [SerializeField]
+            private uint maskApplicationOffsetY = 0;
+
+            private Tilemap internalTilemap;
+
+            public Tilemap InternalTilemap { get { return internalTilemap; } }
             public uint Height { get { return height; } }
             public uint Width { get { return width; } }
-            public uint TileWidth { get { return TILE_WIDTH; } }
-            public uint TileHeight { get { return TILE_HEIGHT; } }
 
             // Use this for initialization
             void Awake()
             {
                 width = Utils.Values.Clamp<uint>(1, width, 100);
                 height = Utils.Values.Clamp<uint>(1, height, 100);
+                internalTilemap = new Tilemap(Width, Height, blockMask, freeMarkingChar, blockMarkingChar, maskApplicationOffsetX, maskApplicationOffsetY);
             }
         }
     }

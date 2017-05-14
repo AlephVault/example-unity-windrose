@@ -49,11 +49,13 @@ namespace RoleWorldArchitect
                 public readonly uint Width;
                 public readonly uint Height;
 
-                public abstract class TilemapObject
+                public class TilemapObject
                 {
                     public Tilemap Map { get; private set; }
                     public uint X { get; private set; }
                     public uint Y { get; private set; }
+                    public uint Xf { get { return X + Width - 1; } }
+                    public uint Yf { get { return Y + Height - 1; } }
                     public readonly Behaviors.Positionable RelatedComponent;
                     public readonly uint Width;
                     public readonly uint Height;
@@ -139,7 +141,7 @@ namespace RoleWorldArchitect
                             throw new NullReferenceException("Related component for tile object must not be null");
                         }
 
-                        if (width > MAX_WIDTH || height > MAX_HEIGHT)
+                        if (width < 1 || width > MAX_WIDTH || height < 1 || height > MAX_HEIGHT)
                         {
                             throw new InvalidDimensionsException(width, height);
                         }
@@ -159,7 +161,7 @@ namespace RoleWorldArchitect
                         Map = null;
                     }
 
-                    public void Attach(Tilemap map, uint? x, uint? y)
+                    public void Attach(Tilemap map, uint? x = null, uint? y = null)
                     {
                         if (map == null) { throw new NullReferenceException("The specified map to attach to cannot be null"); }
                         if (Map != null) { throw new AlreadyAttachedException("This TilemapObject is already attached to a map"); }
@@ -269,7 +271,7 @@ namespace RoleWorldArchitect
                 public Tilemap(uint width, uint height, string blockMaskPattern, char freeMarkingChar = '0', char blockMarkingChar = '1',
                                uint maskApplicationOffsetX = 0, uint maskApplicationOffsetY = 0)
                 {
-                    if (width < 1 || width > 100 || height < 1 || height > 100)
+                    if (width < 1 || width > MAX_WIDTH || height < 1 || height > MAX_HEIGHT)
                     {
                         throw new InvalidDimensionsException(width, height);
                     }

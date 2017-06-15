@@ -11,10 +11,10 @@ namespace RoleWorldArchitect
         {
             public class TilemapLoader
             {
-                /* Width of the map. Guaranteed to be between 1 and 100 */
+                /* Width of the map, expressed in cells. Guaranteed to be between 1 and 100 */
                 public readonly uint Width;
 
-                /* Height of the map. Guaranteed to be between 1 and 100 */
+                /* Height of the map, expressed in cells. Guaranteed to be between 1 and 100 */
                 public readonly uint Height;
 
                 /* Width/Height of a tile, expressed in pixels (pixelsToUnit conversion rate) */
@@ -110,7 +110,7 @@ namespace RoleWorldArchitect
                     Action<uint, uint> inverter = (uint x, uint y) => { blockMask[x, y] = (blockMask[x, y] == FreeMarkingChar) ? UsedMarkingChar : FreeMarkingChar; };
                     foreach(TilemapLayer layer in layers)
                     {
-                        layer.Process(target, setter, clearer);
+                        layer.Process(target, setter, clearer, inverter);
                     }
                 }
 

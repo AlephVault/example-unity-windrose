@@ -216,7 +216,7 @@ namespace RoleWorldArchitect
                 {
                     if (content == null)
                     {
-                        throw new System.ArgumentNullException("Content must not be null");
+                        throw new System.ArgumentNullException("content");
                     }
 
                     if (content.Length != height)

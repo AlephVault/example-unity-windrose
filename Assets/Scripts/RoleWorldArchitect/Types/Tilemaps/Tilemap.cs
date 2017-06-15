@@ -164,7 +164,7 @@ namespace RoleWorldArchitect
                     public void Attach(Tilemap map, uint? x = null, uint? y = null)
                     {
                         if (Map != null) { throw new AlreadyAttachedException("This TilemapObject is already attached to a map"); }
-                        if (map == null) { throw new ArgumentNullException("The specified map to attach to cannot be null"); }
+                        if (map == null) { throw new ArgumentNullException("map", "The specified map to attach to cannot be null"); }
                         if (x != null) { X = x.Value; }
                         if (y != null) { Y = y.Value; }
                         if (X > map.Width - Width || Y > map.Height - Height)

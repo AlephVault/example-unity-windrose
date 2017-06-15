@@ -49,6 +49,14 @@ namespace RoleWorldArchitect
                     {
                         throw new ArgumentNullException("layers", "The layers list must not be null");
                     }
+                    foreach (TilemapLayer layer in layers)
+                    {
+                        if (layer.Width != Width || layer.Height != Height)
+                        {
+                            throw new ArgumentException("Loaded layers must match width/height with the map's width/height", "layers");
+                        }
+                    }
+
                     char[,] blockMask = InitBlockMask();
                     RenderTexture target = InitRenderTexture();
 

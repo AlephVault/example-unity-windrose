@@ -108,9 +108,13 @@ namespace RoleWorldArchitect
                     Action<uint, uint> setter = (uint x, uint y) => { blockMask[x, y] = UsedMarkingChar; };
                     Action<uint, uint> clearer = (uint x, uint y) => { blockMask[x, y] = FreeMarkingChar; };
                     Action<uint, uint> inverter = (uint x, uint y) => { blockMask[x, y] = (blockMask[x, y] == FreeMarkingChar) ? UsedMarkingChar : FreeMarkingChar; };
-                    foreach(TilemapLayer layer in layers)
+                    Action<uint, uint, Texture2D, Rect> painter = (uint x, uint y, Texture2D texture, Rect normalizedRect) => {
+                        Graphics.DrawTexture(new Rect(x * TileSize, y * TileSize, TileSize, TileSize), texture, normalizedRect, 0, 0, 0, 0);
+                    };
+
+                    foreach (TilemapLayer layer in layers)
                     {
-                        layer.Process(target, setter, clearer, inverter);
+                        layer.Process(painter, setter, clearer, inverter);
                     }
                 }
 

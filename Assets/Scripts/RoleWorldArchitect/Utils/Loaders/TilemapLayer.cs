@@ -18,6 +18,7 @@ namespace RoleWorldArchitect.Utils.Loaders
         }
 
         /* Children classes will have to override this method to paint on the texture and affect the block mask */
-        public abstract void Process(RenderTexture target, Action<uint, uint> blockMaskSetter, Action<uint, uint> blockMaskClearer, Action<uint, uint> blockMaskInverter);
+        public abstract void Process(Action<uint, uint, Texture2D, Rect> painter, Action<uint, uint> blockMaskSetter,
+                                     Action<uint, uint> blockMaskClearer, Action<uint, uint> blockMaskInverter);
     }
 }

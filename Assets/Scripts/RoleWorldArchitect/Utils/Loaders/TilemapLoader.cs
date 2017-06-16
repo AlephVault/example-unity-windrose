@@ -43,8 +43,17 @@ namespace RoleWorldArchitect
                 /**
                  * Entirely loads a map according to its layers, and created the needed GameObjects.
                  */
-                public GameObject Load(List<TilemapLayer> layers)
+                public void Load(GameObject holder, List<TilemapLayer> layers)
                 {
+                    if (holder == null)
+                    {
+                        throw new ArgumentNullException("holder");
+                    }
+                    if (holder.GetComponent<Behaviors.Map>() != null)
+                    {
+                        throw new ArgumentException("The specified holder already has a loaded map", "holder");
+                    }
+
                     if (layers == null)
                     {
                         throw new ArgumentNullException("layers", "The layers list must not be null");
@@ -76,12 +85,11 @@ namespace RoleWorldArchitect
                     GL.PopMatrix();
                     RenderTexture.active = oldTarget;
 
-                    // And then, we create the damn GameObjects to be returned
-                    GameObject tileMap = CreateTilemap(finalBlockMask);
+                    // And then, we create/init the needed GameObjects
+                    AddTilemap(holder, finalBlockMask);
                     GameObject background = CreateBackground(finalTexture);
-                    background.transform.parent = tileMap.transform;
+                    background.transform.parent = holder.transform;
                     background.transform.localPosition = Vector3.zero;
-                    return tileMap;
                 }
 
                 /**
@@ -161,12 +169,12 @@ namespace RoleWorldArchitect
                 }
 
                 /**
-                 * Creates an instance of a Tilemap. The behavior is initialized with these parameters.
+                 * Adds a Tilemap to an existing GameObject. The behavior is initialized with the
+                 *   loader's parameters and the block mask.
                  */
-                private GameObject CreateTilemap(string blockMask)
+                private void AddTilemap(GameObject holder, string blockMask)
                 {
-                    GameObject tilemap = new GameObject();
-                    Layout.AddComponent<Behaviors.Map>(tilemap, new Dictionary<string, object>() {
+                    Layout.AddComponent<Behaviors.Map>(holder, new Dictionary<string, object>() {
                         { "width", Width },
                         { "height", Height },
                         { "blockMask", blockMask },
@@ -175,7 +183,6 @@ namespace RoleWorldArchitect
                         { "maskApplicationOffsetX", 0 },
                         { "maskApplicationOffsetY", 0 },
                     });
-                    return tilemap;
                 }
 
                 /**

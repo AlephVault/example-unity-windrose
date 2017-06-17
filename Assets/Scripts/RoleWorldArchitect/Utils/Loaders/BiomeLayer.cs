@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
 
 namespace RoleWorldArchitect.Utils.Loaders
 {
+    using Types.Tilemaps.Loaders;
+
     class BiomeLayer : TilemapLayer
     {
         /* Source texture for the filling layer */
@@ -41,6 +40,9 @@ namespace RoleWorldArchitect.Utils.Loaders
         public readonly char PresenceMarkingChar;
         public readonly char AbsenceMarkingChar;
 
+        /* Alternates picker (used only for the center (15) tile), if available */
+        public readonly RandomAlternatePicker OtherTilesPicker;
+
         /* Mappings of source rects - Biomes should be (2^n)x(2^n) size, n >= 2 */
         private static float S = 0.25f;
         private static float P0 = 0f;
@@ -55,7 +57,7 @@ namespace RoleWorldArchitect.Utils.Loaders
         };
 
         public BiomeLayer(uint width, uint height, Texture2D source, string presenceData, bool extendedPresence, bool? presenceBlockingMode = null,
-                          char presenceMarkingChar = '1', char absenceMarkingChar = '0') : base(width, height)
+                          RandomAlternatePicker picker = null, char presenceMarkingChar = '1', char absenceMarkingChar = '0') : base(width, height)
         {
             Source = source;
             PresenceData = presenceData;
@@ -64,6 +66,7 @@ namespace RoleWorldArchitect.Utils.Loaders
             PresenceMarkingChar = presenceMarkingChar;
             AbsenceMarkingChar = absenceMarkingChar;
             ParsedPresenceData = ParsePresenceData(presenceData);
+            OtherTilesPicker = picker;
         }
 
         private bool[,] ParsePresenceData(string presenceData)
@@ -107,6 +110,10 @@ namespace RoleWorldArchitect.Utils.Loaders
             return new bool[0, 0];
         }
 
+        /**
+         * The biome-making process involves iterating over the whole map, computing the tile index based on its tile mask,
+         *   computing the block mask, and generating the texture (perhaps using random tiles for central tile).
+         */
         public override void Process(Action<uint, uint, Texture2D, Rect> painter, Action<uint, uint> blockMaskSetter,
                              Action<uint, uint> blockMaskClearer, Action<uint, uint> blockMaskInverter)
         {
@@ -134,8 +141,9 @@ namespace RoleWorldArchitect.Utils.Loaders
                     if (ParsedPresenceData[x+1, y]) { presenceIndex += 4; }
                     if (ParsedPresenceData[x, y+1]) { presenceIndex += 2; }
                     if (ParsedPresenceData[x+1, y+1]) { presenceIndex += 1; }
-                    Rect section = SourceRects[presenceIndex];
-                    painter(x, y, Source, section);
+                    Rect? picked = (presenceIndex == 15 && OtherTilesPicker != null) ? OtherTilesPicker.Pick() : null;
+                    Rect section = picked != null ? picked.Value : SourceRects[presenceIndex];
+                    painter(x, y, picked != null ? OtherTilesPicker.Source : Source, section);
                     if (ExtendedPresence ? (presenceIndex != 0) : (presenceIndex == 15))
                     {
                         blockMaskModifier(x, y);

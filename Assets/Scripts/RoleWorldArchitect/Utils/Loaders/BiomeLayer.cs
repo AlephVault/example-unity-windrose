@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace RoleWorldArchitect.Utils.Loaders
 {
+    using Types;
     using Types.Tilemaps.Loaders;
 
     class BiomeLayer : TilemapLayer
@@ -33,12 +34,9 @@ namespace RoleWorldArchitect.Utils.Loaders
          *     false means clear, and null does nothing (this latter case is ideal for
          *     stuff like grass or dirt).
          */
-        public readonly string PresenceData;
-        private readonly bool[,] ParsedPresenceData;
+        private readonly Bitmask ParsedPresenceData;
         public readonly bool ExtendedPresence;
         public readonly bool? PresenceBlockingMode;
-        public readonly char PresenceMarkingChar;
-        public readonly char AbsenceMarkingChar;
 
         /* Alternates picker (used only for the center (15) tile), if available */
         public readonly RandomAlternatePicker OtherTilesPicker;
@@ -56,80 +54,39 @@ namespace RoleWorldArchitect.Utils.Loaders
             new Rect(P1, P0, S, S), new Rect(P3, P1, S, S), new Rect(P3, P3, S, S), new Rect(P1, P1, S, S)
         };
 
-        public BiomeLayer(uint width, uint height, Texture2D source, string presenceData, bool extendedPresence, bool? presenceBlockingMode = null,
-                          RandomAlternatePicker picker = null, char presenceMarkingChar = '1', char absenceMarkingChar = '0') : base(width, height)
+        public BiomeLayer(uint width, uint height, Texture2D source, Texture2D presenceData, bool extendedPresence, bool? presenceBlockingMode = null,
+                          int presenceDataOffsetX = 0, int presenceDataOffsetY = 0, RandomAlternatePicker picker = null) : base(width, height)
         {
             Source = source;
-            PresenceData = presenceData;
             ExtendedPresence = extendedPresence;
             PresenceBlockingMode = presenceBlockingMode;
-            PresenceMarkingChar = presenceMarkingChar;
-            AbsenceMarkingChar = absenceMarkingChar;
-            ParsedPresenceData = ParsePresenceData(presenceData);
+            ParsedPresenceData = ParsePresenceData(presenceData, presenceDataOffsetX, presenceDataOffsetY);
             OtherTilesPicker = picker;
         }
 
-        private bool[,] ParsePresenceData(string presenceData)
+        private Bitmask ParsePresenceData(Texture2D presenceData, int presenceDataOffsetX, int presenceDataOffsetY)
         {
-            if (presenceData == null)
+            if (presenceData != null)
             {
-                throw new ArgumentNullException("presenceData");
-            }
-            string[] rows = presenceData.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
-            if ((uint) rows.Length != Height + 1)
-            {
-                throw new ArgumentException("The presence data string must have " + (Height + 1) + " rows (the actual height, + 1)", "presenceData");
-            }
-            bool[,] result = new bool[Width + 1, Height + 1];
-            uint x, y = 0;
-            foreach(string row in rows)
-            {
-                if ((uint) row.Length != Width + 1)
+                Bitmask parsedPresenceData = new Bitmask(presenceData);
+                if (Width != presenceData.width || Height != presenceData.width || presenceDataOffsetX != 0 || presenceDataOffsetY != 0)
                 {
-                    throw new ArgumentException("Each row in presence data string must have " + (Width + 1) + " characters (the actual width, + 1)", "presenceData");
+                    parsedPresenceData = parsedPresenceData.Translated(Width, Height, presenceDataOffsetX, presenceDataOffsetY);
                 }
-                x = 0;
-                foreach(char cell in row)
-                {
-                    if (cell == PresenceMarkingChar)
-                    {
-                        result[x, y] = true;
-                    }
-                    else if (cell == AbsenceMarkingChar)
-                    {
-                        result[x, y] = false;
-                    }
-                    else
-                    {
-                        throw new ArgumentException("Each character in the presence data string must be either " + PresenceMarkingChar + " or " + AbsenceMarkingChar);
-                    }
-                    x++;
-                }
-                y++;
+                return parsedPresenceData;
             }
-            return new bool[0, 0];
+            else
+            {
+                return new Bitmask(Width, Height);
+            }
         }
 
         /**
          * The biome-making process involves iterating over the whole map, computing the tile index based on its tile mask,
          *   computing the block mask, and generating the texture (perhaps using random tiles for central tile).
          */
-        public override void Process(Action<uint, uint, Texture2D, Rect> painter, Action<uint, uint> blockMaskSetter,
-                             Action<uint, uint> blockMaskClearer, Action<uint, uint> blockMaskInverter)
+        public override void Process(Action<uint, uint, Texture2D, Rect> painter, Bitmask currentBlockMask)
         {
-            Action<uint, uint> blockMaskModifier;
-            if (PresenceBlockingMode == true)
-            {
-                blockMaskModifier = blockMaskSetter;
-            }
-            else if (PresenceBlockingMode == false)
-            {
-                blockMaskModifier = blockMaskClearer;
-            }
-            else
-            {
-                blockMaskModifier = (uint x, uint y) => {};
-            }
             for (uint y = 0; y < Height; y++)
             {
                 for (uint x = 0; x < Width; x++)
@@ -144,9 +101,9 @@ namespace RoleWorldArchitect.Utils.Loaders
                     Rect? picked = (presenceIndex == 15 && OtherTilesPicker != null) ? OtherTilesPicker.Pick() : null;
                     Rect section = picked != null ? picked.Value : SourceRects[presenceIndex];
                     painter(x, y, picked != null ? OtherTilesPicker.Source : Source, section);
-                    if (ExtendedPresence ? (presenceIndex != 0) : (presenceIndex == 15))
+                    if ((PresenceBlockingMode != null) && (ExtendedPresence ? (presenceIndex != 0) : (presenceIndex == 15)))
                     {
-                        blockMaskModifier(x, y);
+                        currentBlockMask[x, y] = PresenceBlockingMode.Value;
                     }
                 }
             }

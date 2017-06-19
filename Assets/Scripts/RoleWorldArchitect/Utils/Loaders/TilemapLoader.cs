@@ -8,6 +8,7 @@ namespace RoleWorldArchitect
     {
         namespace Loaders
         {
+            using Types;
             public class TilemapLoader
             {
                 /* Width of the map, expressed in cells. Guaranteed to be between 1 and 100 */
@@ -19,13 +20,7 @@ namespace RoleWorldArchitect
                 /* Width/Height of a tile, expressed in pixels (pixelsToUnit conversion rate) */
                 public readonly uint TileSize;
 
-                /* Free-marking char (i.e. char for a "cleared" bit) */
-                public readonly char FreeMarkingChar;
-
-                /* Used-marking char (i.e. char for presence or blocking bit) */
-                public readonly char UsedMarkingChar;
-
-                public TilemapLoader(uint width, uint height, uint tileSize = 32, char freeMarkingChar = '0', char usedMarkingChar = '1')
+                public TilemapLoader(uint width, uint height, uint tileSize = 32)
                 {
                     if (width * height * tileSize == 0)
                     {
@@ -35,8 +30,6 @@ namespace RoleWorldArchitect
                     Width = width;
                     Height = height;
                     TileSize = tileSize;
-                    FreeMarkingChar = freeMarkingChar;
-                    UsedMarkingChar = usedMarkingChar;
                 }
 
                 /**
@@ -65,7 +58,7 @@ namespace RoleWorldArchitect
                         }
                     }
 
-                    char[,] blockMask = InitBlockMask();
+                    Bitmask blockMask = InitBlockMask();
                     RenderTexture target = InitRenderTexture();
 
                     // Before processing, we ensure enabling the RenderTexture and related stuff, and change the RT target
@@ -80,7 +73,7 @@ namespace RoleWorldArchitect
 
                     // After processing, we dump the contents to the final Texture and restore the RT target
                     Texture2D finalTexture = DumpTexture(target);
-                    string finalBlockMask = DumpBlockMask(blockMask);
+                    Texture2D finalBlockMask = DumpBlockMask(blockMask);
                     GL.PopMatrix();
                     RenderTexture.active = oldTarget;
 
@@ -94,17 +87,9 @@ namespace RoleWorldArchitect
                 /**
                  * Initializes the raw block mask filles with char '0', with dimensions Width x Height.
                  */
-                private char[,] InitBlockMask()
+                private Bitmask InitBlockMask()
                 {
-                    char[,] blockMask = new char[Width, Height];
-                    for (uint x = 0; x < Width; x++)
-                    {
-                        for (uint y = 0; y < Height; y++)
-                        {
-                            blockMask[x, y] = FreeMarkingChar;
-                        }
-                    }
-                    return blockMask;
+                    return new Bitmask(Width, Height);
                 }
 
                 /**
@@ -118,18 +103,15 @@ namespace RoleWorldArchitect
                 /**
                  * Processes the involved layers by executing their rendering in the target texture and raw block mask
                  */
-                private void ProcessLayers(List<TilemapLayer> layers, RenderTexture target, char[,] blockMask)
+                private void ProcessLayers(List<TilemapLayer> layers, RenderTexture target, Bitmask blockMask)
                 {
-                    Action<uint, uint> setter = (uint x, uint y) => { blockMask[x, y] = UsedMarkingChar; };
-                    Action<uint, uint> clearer = (uint x, uint y) => { blockMask[x, y] = FreeMarkingChar; };
-                    Action<uint, uint> inverter = (uint x, uint y) => { blockMask[x, y] = (blockMask[x, y] == FreeMarkingChar) ? UsedMarkingChar : FreeMarkingChar; };
                     Action<uint, uint, Texture2D, Rect> painter = (uint x, uint y, Texture2D texture, Rect normalizedRect) => {
                         Graphics.DrawTexture(new Rect(x * TileSize, y * TileSize, TileSize, TileSize), texture, normalizedRect, 0, 0, 0, 0);
                     };
 
                     foreach (TilemapLayer layer in layers)
                     {
-                        layer.Process(painter, setter, clearer, inverter);
+                        layer.Process(painter, blockMask);
                     }
                 }
 
@@ -147,38 +129,21 @@ namespace RoleWorldArchitect
                 /**
                  * Dumps the block mask as a string, ready to be used by a Map behavior
                  */
-                private string DumpBlockMask(char[,] blockMask)
+                private Texture2D DumpBlockMask(Bitmask blockMask)
                 {
-                    char[] builtString = new char[Width * (Height + 1) - 1];
-                    int idx = 0;
-                    for(uint y = 0; y < Height; y++)
-                    {
-                        // Dumping each row is straightforward.
-                        for(uint x = 0; x < Width; x++)
-                        {
-                            builtString[idx++] = blockMask[x, y];
-                        }
-                        // After each row, except for the last (H - 1), we add a newline character.
-                        if (y < Height - 1)
-                        {
-                            builtString[idx++] = '\n';
-                        }
-                    }
-                    return new string(builtString);
+                    return blockMask.Export();
                 }
 
                 /**
                  * Adds a Tilemap to an existing GameObject. The behavior is initialized with the
                  *   loader's parameters and the block mask.
                  */
-                private void AddTilemap(GameObject holder, string blockMask)
+                private void AddTilemap(GameObject holder, Texture2D blockMask)
                 {
                     Layout.AddComponent<Behaviors.Map>(holder, new Dictionary<string, object>() {
                         { "width", Width },
                         { "height", Height },
                         { "blockMask", blockMask },
-                        { "freeMarkingChar", FreeMarkingChar },
-                        { "blockMarkingChar", UsedMarkingChar },
                         { "maskApplicationOffsetX", 0 },
                         { "maskApplicationOffsetY", 0 },
                     });

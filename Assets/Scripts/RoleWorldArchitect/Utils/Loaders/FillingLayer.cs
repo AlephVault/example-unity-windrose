@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace RoleWorldArchitect.Utils.Loaders
 {
+    using Types;
     using Types.Tilemaps.Loaders;
 
     class FillingLayer : TilemapLayer
@@ -33,17 +34,15 @@ namespace RoleWorldArchitect.Utils.Loaders
          * The filling process involves iterating over the whole map, clearing or setting the block mask, and painting the specified texture
          *   (using the specified rect!), or an alternative if the odds were in favor.
          */
-        public override void Process(Action<uint, uint, Texture2D, Rect> painter, Action<uint, uint> blockMaskSetter,
-                                     Action<uint, uint> blockMaskClearer, Action<uint, uint> blockMaskInverter)
+        public override void Process(Action<uint, uint, Texture2D, Rect> painter, Bitmask currentBlockMask)
         {
-            Action<uint, uint> blockMaskModifier = Blocking ? blockMaskSetter : blockMaskClearer;
+            currentBlockMask.Fill(Blocking);
             for (uint y = 0; y < Height; y++)
             {
                 for(uint x = 0; x < Width; x++)
                 {
                     Rect? picked = (OtherTilesPicker != null) ? OtherTilesPicker.Pick() : null;
                     painter(x, y, picked != null ? OtherTilesPicker.Source : Source, picked != null ? picked.Value : SourceRect);
-                    blockMaskModifier(x, y);
                 }
             }
         }

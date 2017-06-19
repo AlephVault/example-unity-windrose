@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace RoleWorldArchitect.Utils.Loaders
 {
+    using Types;
     public abstract class TilemapLayer
     {
         /* Width of the current layer, expressed in cells. Must match the width of a map loader */
@@ -18,7 +19,6 @@ namespace RoleWorldArchitect.Utils.Loaders
         }
 
         /* Children classes will have to override this method to paint on the texture and affect the block mask */
-        public abstract void Process(Action<uint, uint, Texture2D, Rect> painter, Action<uint, uint> blockMaskSetter,
-                                     Action<uint, uint> blockMaskClearer, Action<uint, uint> blockMaskInverter);
+        public abstract void Process(Action<uint, uint, Texture2D, Rect> painter, Bitmask currentBlockMask);
     }
 }

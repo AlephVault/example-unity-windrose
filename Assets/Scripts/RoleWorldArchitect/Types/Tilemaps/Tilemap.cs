@@ -45,7 +45,7 @@ namespace RoleWorldArchitect
                     public NotAttachedException(string message, System.Exception inner) : base(message, inner) { }
                 }
 
-                private BlockMask blockMask;
+                private Bitmask blockMask;
                 private SolidMask solidMask;
                 public readonly uint Width;
                 public readonly uint Height;
@@ -300,8 +300,7 @@ namespace RoleWorldArchitect
                  * The block mask will be immutable, since it will never be modified. OTOH the solid mask (for the objects layer)
                  *   will be mutable. But those layers are initialized inside the tilemap.
                  */
-                public Tilemap(uint width, uint height, string blockMaskPattern, char freeMarkingChar = '0', char blockMarkingChar = '1',
-                               uint maskApplicationOffsetX = 0, uint maskApplicationOffsetY = 0)
+                public Tilemap(uint width, uint height, Texture2D source, int maskApplicationOffsetX = 0, int maskApplicationOffsetY = 0)
                 {
                     if (width < 1 || width > MAX_WIDTH || height < 1 || height > MAX_HEIGHT)
                     {
@@ -311,13 +310,22 @@ namespace RoleWorldArchitect
                     this.Width = width;
                     this.Height = height;
                     this.solidMask = new SolidMask(width, height);
-                    string[] paddedBlockMaskPattern = BlockMask.PadMask(
-                        blockMaskPattern, width, height, freeMarkingChar, blockMarkingChar, maskApplicationOffsetX, maskApplicationOffsetY
-                    );
-                    this.blockMask = new BlockMask(width, height, paddedBlockMaskPattern, freeMarkingChar, blockMarkingChar);
+                    if (source != null)
+                    {
+                        Bitmask bitMask = new Bitmask(source);
+                        if (width != bitMask.Width || height != bitMask.Height || maskApplicationOffsetX != 0 || maskApplicationOffsetY != 0)
+                        {
+                            bitMask = bitMask.Translated(width, height, maskApplicationOffsetX, maskApplicationOffsetY);
+                        }
+                        this.blockMask = bitMask;
+                    }
+                    else
+                    {
+                        this.blockMask = new Bitmask(width, height);
+                    }
                 }
 
-                // Metodos privados para incrementar contadores de solidez
+                // Private methods to modify solidness counters
 
                 private void IncrementBody(uint x, uint y, uint width, uint height)
                 {
@@ -351,13 +359,13 @@ namespace RoleWorldArchitect
                     switch (direction)
                     {
                         case Direction.LEFT:
-                            return blockMask.GetColumn(x - 1, y, y + height - 1, BlockMask.CheckType.ANY_BLOCKED);
+                            return blockMask.GetColumn(x - 1, y, y + height - 1, Bitmask.CheckType.ANY_BLOCKED);
                         case Direction.UP:
-                            return blockMask.GetRow(x, x + width - 1, y - 1, BlockMask.CheckType.ANY_BLOCKED);
+                            return blockMask.GetRow(x, x + width - 1, y - 1, Bitmask.CheckType.ANY_BLOCKED);
                         case Direction.RIGHT:
-                            return blockMask.GetColumn(x + width, y, y + height - 1, BlockMask.CheckType.ANY_BLOCKED);
+                            return blockMask.GetColumn(x + width, y, y + height - 1, Bitmask.CheckType.ANY_BLOCKED);
                         case Direction.DOWN:
-                            return blockMask.GetRow(x, x + width - 1, y + height, BlockMask.CheckType.ANY_BLOCKED);
+                            return blockMask.GetRow(x, x + width - 1, y + height, Bitmask.CheckType.ANY_BLOCKED);
                         default:
                             return true;
                     }

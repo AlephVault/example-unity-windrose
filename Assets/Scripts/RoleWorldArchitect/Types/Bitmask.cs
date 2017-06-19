@@ -7,6 +7,7 @@ namespace RoleWorldArchitect.Types
 {
     public class Bitmask
     {
+        public enum CheckType { ANY_BLOCKED, ANY_FREE, ALL_BLOCKED, ALL_FREE }
         private uint[] bits;
         public readonly uint Width;
         public readonly uint Height;
@@ -87,6 +88,30 @@ namespace RoleWorldArchitect.Types
         }
 
         /**
+         * Sets or gets a bit in the mask.
+         */
+        public bool this[uint x, uint y]
+        {
+            get
+            {
+                uint flat_index = y * Width + x;
+                return (this.bits[flat_index / 32] & (uint)(1 << (int)(flat_index % 32))) != 0;
+            }
+            set
+            {
+                uint flat_index = y * Width + x;
+                if (value)
+                {
+                    this.bits[flat_index / 32] |= (uint)(1 << (int)(flat_index % 32));
+                }
+                else
+                {
+                    this.bits[flat_index / 32] &= ~(uint)(1 << (int)(flat_index % 32));
+                }
+            }
+        }
+
+        /**
          * Fills the array with 1s or 0s, depending on the passed values (true=1, false=0).
          */
         public void Fill(bool value)
@@ -110,6 +135,7 @@ namespace RoleWorldArchitect.Types
         public Bitmask Translated(uint newWidth, uint newHeight, int offsetX, int offsetY, bool newFillingValue = false)
         {
             Bitmask result = new Bitmask(newWidth, newHeight, newFillingValue);
+            Debug.Log("Current width=" + Width + ", current height=" + Height + ", new width=" + newWidth + ", new height=" + newHeight);
             if (offsetX < newWidth && offsetY < newHeight && offsetX + newWidth > 0 && offsetY + newHeight > 0)
             {
                 // startx and endx, like their y-siblings, belong to the translated array.
@@ -123,20 +149,7 @@ namespace RoleWorldArchitect.Types
                 {
                     for(int y = startY; y < endY; y++)
                     {
-                        int oldPosition = (y - offsetY) * (int)Height + (x - offsetX);
-                        uint oldActiveBit = (uint)(1 << (oldPosition % 32));
-                        bool oldValue = (bits[oldPosition / 32] & oldActiveBit) != 0;
-
-                        int newPosition = y * (int)newHeight + x;
-                        uint newActiveBit = (uint)(1 << (newPosition % 32));
-                        if (oldValue)
-                        {
-                            result.bits[newPosition / 32] |= newActiveBit;
-                        }
-                        else
-                        {
-                            result.bits[newPosition / 32] &= ~newActiveBit;
-                        }
+                        result[(uint)x, (uint)y] = this[(uint)(x - offsetX), (uint)(y - offsetY)];
                     }
                 }
             }
@@ -248,6 +261,112 @@ namespace RoleWorldArchitect.Types
             Bitmask result = self.Clone();
             result.SymmetricSubtract(other);
             return result;
+        }
+
+        /**
+         * Mass-updating/fetching values in the array.
+         */
+        
+        /**
+         * Square-setting a value in the array.
+         */
+        public void SetSquare(uint xi, uint yi, uint xf, uint yf, bool blocked)
+        {
+            xi = Utils.Values.Clamp<uint>(0, xi, Width - 1);
+            yi = Utils.Values.Clamp<uint>(0, yi, Height - 1);
+            xf = Utils.Values.Clamp<uint>(0, xf, Width - 1);
+            yf = Utils.Values.Clamp<uint>(0, yf, Height - 1);
+
+            uint xi_ = Utils.Values.Min<uint>(xi, xf);
+            uint xf_ = Utils.Values.Max<uint>(xi, xf);
+            uint yi_ = Utils.Values.Min<uint>(yi, yf);
+            uint yf_ = Utils.Values.Max<uint>(yi, yf);
+
+            for (uint x = xi_; x <= xf_; x++)
+            {
+                for (uint y = yi_; y <= yf_; y++)
+                {
+                    this[x, y] = blocked;
+                }
+            }
+        }
+
+        /**
+         * Square-getting a value in the array.
+         */
+        public bool GetSquare(uint xi, uint yi, uint xf, uint yf, CheckType checkType)
+        {
+            xi = Utils.Values.Clamp<uint>(0, xi, Width - 1);
+            yi = Utils.Values.Clamp<uint>(0, yi, Height - 1);
+            xf = Utils.Values.Clamp<uint>(0, xf, Width - 1);
+            yf = Utils.Values.Clamp<uint>(0, yf, Height - 1);
+
+            uint xi_ = Utils.Values.Min<uint>(xi, xf);
+            uint xf_ = Utils.Values.Max<uint>(xi, xf);
+            uint yi_ = Utils.Values.Min<uint>(yi, yf);
+            uint yf_ = Utils.Values.Max<uint>(yi, yf);
+
+            for (uint x = xi_; x <= xf_; x++)
+            {
+                for (uint y = yi_; y <= yf_; y++)
+                {
+                    switch (checkType)
+                    {
+                        case CheckType.ANY_BLOCKED:
+                            if (this[x, y]) { return true; }
+                            break;
+                        case CheckType.ANY_FREE:
+                            if (!this[x, y]) { return true; }
+                            break;
+                        case CheckType.ALL_BLOCKED:
+                            if (!this[x, y]) { return false; }
+                            break;
+                        case CheckType.ALL_FREE:
+                            if (this[x, y]) { return false; }
+                            break;
+                        default:
+                            return false;
+                    }
+                }
+            }
+            switch (checkType)
+            {
+                case CheckType.ALL_BLOCKED:
+                case CheckType.ALL_FREE:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        public void SetRow(uint xi, uint xf, uint y, bool blocked)
+        {
+            SetSquare(xi, y, xf, y, blocked);
+        }
+
+        public bool GetRow(uint xi, uint xf, uint y, CheckType checkType)
+        {
+            return GetSquare(xi, y, xf, y, checkType);
+        }
+
+        public void SetColumn(uint x, uint yi, uint yf, bool blocked)
+        {
+            SetSquare(x, yi, x, yf, blocked);
+        }
+
+        public bool GetColumn(uint x, uint yi, uint yf, CheckType checkType)
+        {
+            return GetSquare(x, yi, x, yf, checkType);
+        }
+
+        public void SetCell(uint x, uint y, bool blocked)
+        {
+            this[Utils.Values.Clamp<uint>(0, x, Width - 1), Utils.Values.Clamp<uint>(0, y, Height - 1)] = blocked;
+        }
+
+        public bool GetCell(uint x, uint y)
+        {
+            return this[Utils.Values.Clamp<uint>(0, x, Width - 1), Utils.Values.Clamp<uint>(0, y, Height - 1)];
         }
 
         private void CheckSameDimensions(Bitmask other)

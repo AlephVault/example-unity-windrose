@@ -27,20 +27,13 @@ namespace RoleWorldArchitect
             private uint height;
 
             [SerializeField]
-            [TextArea(3, 10)]
-            private string blockMask;
+            private Texture2D blockMask;
 
             [SerializeField]
-            private char freeMarkingChar = '0';
+            private int maskApplicationOffsetX = 0;
 
             [SerializeField]
-            private char blockMarkingChar = '1';
-
-            [SerializeField]
-            private uint maskApplicationOffsetX = 0;
-
-            [SerializeField]
-            private uint maskApplicationOffsetY = 0;
+            private int maskApplicationOffsetY = 0;
 
             private Tilemap internalTilemap;
 
@@ -53,7 +46,7 @@ namespace RoleWorldArchitect
             {
                 width = Utils.Values.Clamp<uint>(1, width, 100);
                 height = Utils.Values.Clamp<uint>(1, height, 100);
-                internalTilemap = new Tilemap(Width, Height, blockMask, freeMarkingChar, blockMarkingChar, maskApplicationOffsetX, maskApplicationOffsetY);
+                internalTilemap = new Tilemap(Width, Height, blockMask, maskApplicationOffsetX, maskApplicationOffsetY);
             }
         }
     }

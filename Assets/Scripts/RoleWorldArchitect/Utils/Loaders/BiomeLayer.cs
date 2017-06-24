@@ -71,13 +71,13 @@ namespace RoleWorldArchitect.Utils.Loaders
                 Bitmask parsedPresenceData = new Bitmask(presenceData);
                 if (Width != presenceData.width || Height != presenceData.width || presenceDataOffsetX != 0 || presenceDataOffsetY != 0)
                 {
-                    parsedPresenceData = parsedPresenceData.Translated(Width, Height, presenceDataOffsetX, presenceDataOffsetY);
+                    parsedPresenceData = parsedPresenceData.Translated(Width + 1, Height + 1, presenceDataOffsetX, presenceDataOffsetY);
                 }
                 return parsedPresenceData;
             }
             else
             {
-                return new Bitmask(Width, Height);
+                return new Bitmask(Width + 1, Height + 1);
             }
         }
 

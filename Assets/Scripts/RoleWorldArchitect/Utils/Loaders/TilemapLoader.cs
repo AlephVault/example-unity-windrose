@@ -158,7 +158,7 @@ namespace RoleWorldArchitect
                 {
                     GameObject background = new GameObject();
                     SpriteRenderer spriteRenderer = background.AddComponent<SpriteRenderer>();
-                    spriteRenderer.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero, TileSize);
+                    spriteRenderer.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0, 1), TileSize);
                     return background;
                 }
             }

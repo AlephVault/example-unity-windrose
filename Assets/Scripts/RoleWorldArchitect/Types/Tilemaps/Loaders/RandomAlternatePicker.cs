@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Linq;
 using UnityEngine;
 
 namespace RoleWorldArchitect.Types.Tilemaps.Loaders
 {
     class RandomAlternatePicker
     {
-        public struct RandomOption
+        public class RandomOption
         {
             public readonly Rect Region;
             public readonly uint Odds;
@@ -34,7 +35,7 @@ namespace RoleWorldArchitect.Types.Tilemaps.Loaders
             {
                 throw new ArgumentException("Options cannot be empty", "options");
             }
-            uint oddsSum = Utils.Functional.Inject<uint>(0, Utils.Functional.Map<RandomOption, uint>(options, (RandomOption option) => option.Odds), (uint a, uint b) => a + b);
+            uint oddsSum = options.Select((RandomOption option) => option.Odds).Aggregate<uint, uint>(0, (uint a, uint b) => a + b);
             if (oddsSum > 50)
             {
                 throw new ArgumentException("Odds sum of all alternate options cannot add up to more than 50%");

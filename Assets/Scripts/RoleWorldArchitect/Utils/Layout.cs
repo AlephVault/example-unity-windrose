@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Reflection;
 using System.Collections;
 using System.Collections.Generic;
@@ -60,7 +61,7 @@ namespace RoleWorldArchitect
 
             public static T AddComponent<T>(GameObject gameObject, Dictionary<string, object> data = null) where T : Component
             {
-                if (data != null)
+                if (data == null)
                 {
                     return gameObject.AddComponent<T>();
                 }
@@ -69,12 +70,13 @@ namespace RoleWorldArchitect
                     gameObject.SetActive(false);
                     T component = gameObject.AddComponent<T>();
                     Type componentType = component.GetType();
+                    BindingFlags all = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static;
                     foreach (KeyValuePair<string, object> pair in data)
                     {
-                        FieldInfo field = componentType.GetField(pair.Key);
-                        if (!field.IsStatic && (field.IsPublic || field.IsDefined(typeof(SerializeField), true)))
+                        FieldInfo field = componentType.GetField(pair.Key, all);
+                        if (field != null && !field.IsStatic && (field.IsPublic || field.IsDefined(typeof(SerializeField), true)))
                         {
-                            componentType.GetField(pair.Key).SetValue(component, pair.Value);
+                            field.SetValue(component, pair.Value);
                         }
                         else
                         {

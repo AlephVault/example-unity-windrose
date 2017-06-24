@@ -79,7 +79,7 @@ namespace RoleWorldArchitect.Types
          */
         public Texture2D Export()
         {
-            Texture2D texture = new Texture2D((int) Width, (int) Height, TextureFormat.RGBA4444, false);
+            Texture2D texture = new Texture2D((int) Width, (int) Height, TextureFormat.ARGB32, false);
             texture.SetPixels(Enumerable.Range(0, (int)(Width * Height)).Select(
                 (int idx) => ((bits[idx / 32] & (1 << (int)(idx % 32))) != 0) ? Color.white : Color.black
             ).ToArray());

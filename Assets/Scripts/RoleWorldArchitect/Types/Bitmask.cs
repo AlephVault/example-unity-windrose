@@ -135,7 +135,6 @@ namespace RoleWorldArchitect.Types
         public Bitmask Translated(uint newWidth, uint newHeight, int offsetX, int offsetY, bool newFillingValue = false)
         {
             Bitmask result = new Bitmask(newWidth, newHeight, newFillingValue);
-            Debug.Log("Current width=" + Width + ", current height=" + Height + ", new width=" + newWidth + ", new height=" + newHeight);
             if (offsetX < newWidth && offsetY < newHeight && offsetX + newWidth > 0 && offsetY + newHeight > 0)
             {
                 // startx and endx, like their y-siblings, belong to the translated array.

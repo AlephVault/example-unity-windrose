@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace RoleWorldArchitect.Utils.Loaders
@@ -10,7 +7,7 @@ namespace RoleWorldArchitect.Utils.Loaders
     using Types.Tilemaps;
     class TilemapObjectLoader
     {
-        public GameObject CreateRepresented(Behaviors.Map map, AnimationSpec defaultAnimation, uint x, uint y, uint width, uint height, SolidnessStatus solidness)
+        public static GameObject CreateRepresented(Behaviors.Map map, AnimationSpec defaultAnimation, uint x, uint y, uint width, uint height, SolidnessStatus solidness)
         {
             GameObject obj = new GameObject();
             obj.transform.parent = map.gameObject.transform;
@@ -21,13 +18,15 @@ namespace RoleWorldArchitect.Utils.Loaders
                 { "initialY", y },
                 { "initialSolidness", solidness }
             });
+            Layout.AddComponent<Behaviors.Snapped>(obj);
+            Layout.AddComponent<SpriteRenderer>(obj);
             Layout.AddComponent<Behaviors.Represented>(obj, new Dictionary<string, object>() {
                 { "defaultAnimation", defaultAnimation }
             });
             return obj;
         }
 
-        public GameObject CreateOriented(Behaviors.Map map, AnimationSpec defaultAnimation, AnimationSet idleAnimationSet, uint x, uint y, uint width, uint height, SolidnessStatus solidness)
+        public static GameObject CreateOriented(Behaviors.Map map, AnimationSpec defaultAnimation, AnimationSet idleAnimationSet, uint x, uint y, uint width, uint height, SolidnessStatus solidness)
         {
             GameObject obj = CreateRepresented(map, defaultAnimation, x, y, width, height, solidness);
             Layout.AddComponent<Behaviors.Oriented>(obj, new Dictionary<string, object>() {
@@ -36,7 +35,7 @@ namespace RoleWorldArchitect.Utils.Loaders
             return obj;
         }
 
-        public GameObject CreateMovable(Behaviors.Map map, AnimationSpec defaultAnimation, AnimationSet idleAnimationSet, AnimationSet movingAnimationSet, uint speed, uint x, uint y, uint width, uint height, SolidnessStatus solidness)
+        public static GameObject CreateMovable(Behaviors.Map map, AnimationSpec defaultAnimation, AnimationSet idleAnimationSet, AnimationSet movingAnimationSet, uint speed, uint x, uint y, uint width, uint height, SolidnessStatus solidness)
         {
             GameObject obj = CreateOriented(map, defaultAnimation, idleAnimationSet, x, y, width, height, solidness);
             Layout.AddComponent<Behaviors.Movable>(obj, new Dictionary<string, object>() {

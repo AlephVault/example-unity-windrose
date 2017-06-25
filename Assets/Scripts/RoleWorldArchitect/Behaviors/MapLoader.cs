@@ -1,8 +1,6 @@
 ﻿using System.Linq;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEditor;
 
 namespace RoleWorldArchitect
 {
@@ -27,6 +25,9 @@ namespace RoleWorldArchitect
                     public Rect Region;
                     public uint Odds;
                 }
+
+                [SerializeField]
+                private bool EditorUnfolded = true;
 
                 public enum LayerSpecType { Filling, Biome }
                 public enum BiomeLayerSpecBlockingMode { Blocking, Unblocking, DoesNotAffect }
@@ -113,6 +114,11 @@ namespace RoleWorldArchitect
             void Start()
             {
                 new TilemapLoader(Width, Height, TileSize).Load(this.gameObject, CreateLayers());
+                Map map = this.gameObject.GetComponent<Map>();
+                foreach(MapObjectSpec spec in transform.GetComponentsInChildren<MapObjectSpec>())
+                {
+                    spec.BringToLife(map);
+                }
             }
         }
     }

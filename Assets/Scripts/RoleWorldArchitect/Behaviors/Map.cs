@@ -47,6 +47,10 @@ namespace RoleWorldArchitect
                 width = Utils.Values.Clamp<uint>(1, width, 100);
                 height = Utils.Values.Clamp<uint>(1, height, 100);
                 internalTilemap = new Tilemap(Width, Height, blockMask, maskApplicationOffsetX, maskApplicationOffsetY);
+                foreach(Positionable positionable in GetComponentsInChildren<Positionable>(true))
+                {
+                    positionable.gameObject.SetActive(true);
+                }
             }
         }
     }

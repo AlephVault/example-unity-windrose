@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
-using RoleWorldArchitect.Behaviors;
-using RoleWorldArchitect.Types;
+using WindRose.Behaviors;
+using WindRose.Types;
 
 [RequireComponent(typeof(Movable))]
 public class KeyboardHandled : MonoBehaviour {

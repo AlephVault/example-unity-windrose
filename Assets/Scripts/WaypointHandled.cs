@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections;
 using UnityEngine;
-using RoleWorldArchitect.Behaviors;
-using RoleWorldArchitect.Types;
+using WindRose.Behaviors;
+using WindRose.Types;
 
 [RequireComponent(typeof(Movable))]
 class WaypointHandled : MonoBehaviour

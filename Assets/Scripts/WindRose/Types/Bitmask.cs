@@ -50,7 +50,7 @@ namespace WindRose.Types
             Width = width;
             Height = height;
             Color32[] pixels = source.GetPixels32();
-            Flip(pixels, source.width, source.height);
+            Utils.Textures.Flip(pixels, source.width, source.height);
             IEnumerable<bool> pixelToBit = pixels.Select((Color32 color) => color != Color.black);
             uint rowIdx = 0, colIdx = 0;
             foreach (bool value in pixelToBit)
@@ -74,20 +74,6 @@ namespace WindRose.Types
             }
         }
 
-        private static void Flip(Color32[] pixels, int width, int height)
-        {
-            int iterations = height / 2;
-            Color32[] buffer = new Color32[width];
-            for(int row = 0; row < iterations; row++)
-            {
-                int index = row * width;
-                int reflectedIndex = (height - row - 1) * width;
-                Array.Copy(pixels, index, buffer, 0, width);
-                Array.Copy(pixels, reflectedIndex, pixels, index, width);
-                Array.Copy(buffer, 0, pixels, reflectedIndex, width);
-            }
-        }
-
         /**
          * Creates a texture from the current bitmask. The texture will use 16bits per pixel, which is a crap but
          *   we cannot do anything.
@@ -98,7 +84,7 @@ namespace WindRose.Types
             Color32[] pixels = Enumerable.Range(0, (int)(Width * Height)).Select<int, Color32>(
                 (int idx) => ((bits[idx / 32] & (1 << (int)(idx % 32))) != 0) ? Color.white : Color.black
             ).ToArray();
-            Flip(pixels, texture.width, texture.height);
+            Utils.Textures.Flip(pixels, texture.width, texture.height);
             texture.SetPixels32(pixels);
             texture.Apply();
             return texture;

@@ -37,6 +37,8 @@ namespace WindRose.Behaviors
                 PropertyFieldArgs BiomeBlockingMode = new PropertyFieldArgs(property.FindPropertyRelative("BiomeBlockingMode"), false);
                 PropertyFieldArgs BiomeOffsetX = new PropertyFieldArgs(property.FindPropertyRelative("BiomeOffsetX"), false);
                 PropertyFieldArgs BiomeOffsetY = new PropertyFieldArgs(property.FindPropertyRelative("BiomeOffsetY"), false);
+                PropertyFieldArgs CustomSource = new PropertyFieldArgs(property.FindPropertyRelative("CustomSource"), false);
+                PropertyFieldArgs CustomPalette = new PropertyFieldArgs(property.FindPropertyRelative("CustomPalette"), true);
                 PropertyFieldArgs RandomSource = new PropertyFieldArgs(property.FindPropertyRelative("RandomSource"), false);
                 PropertyFieldArgs RandomOptions = new PropertyFieldArgs(property.FindPropertyRelative("RandomOptions"), true);
 
@@ -67,6 +69,10 @@ namespace WindRose.Behaviors
                             propertiesList.Add(RandomOptions);
                         }
                         return propertiesList;
+                    case MapLoader.TilemapLayerSpec.LayerSpecType.Custom:
+                        propertiesList.Add(CustomSource);
+                        propertiesList.Add(CustomPalette);
+                        return propertiesList;
                     default:
                         return propertiesList;
                 }
@@ -90,7 +96,7 @@ namespace WindRose.Behaviors
 
             public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
             {
-                return 0;
+                return -EditorGUIUtility.standardVerticalSpacing;
             }
         }
 

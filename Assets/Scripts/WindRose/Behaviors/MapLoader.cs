@@ -26,11 +26,21 @@ namespace WindRose
                     public uint Odds;
                 }
 
+                public enum BlockingMode { Blocking, Unblocking, DoesNotAffect }
+
+                [System.Serializable]
+                public class PaletteSource
+                {
+                    public Color32 Color;
+                    public Texture2D Source;
+                    public Rect SourceRect = new Rect(0, 0, 1, 1);
+                    public BlockingMode Blocking;
+                }
+
                 [SerializeField]
                 private bool EditorUnfolded = true;
 
-                public enum LayerSpecType { Filling, Biome }
-                public enum BiomeLayerSpecBlockingMode { Blocking, Unblocking, DoesNotAffect }
+                public enum LayerSpecType { Filling, Biome, Custom }
                 public LayerSpecType LayerType = LayerSpecType.Filling;
 
                 // These ones are for Filling Layer
@@ -42,9 +52,13 @@ namespace WindRose
                 public Texture2D BiomeSource;
                 public Texture2D BiomePresenceData;
                 public bool BiomeExtendedPresence = false;
-                public BiomeLayerSpecBlockingMode BiomeBlockingMode = BiomeLayerSpecBlockingMode.DoesNotAffect;
+                public BlockingMode BiomeBlockingMode = BlockingMode.DoesNotAffect;
                 public int BiomeOffsetX = 0;
                 public int BiomeOffsetY = 0;
+
+                // These ones are for Custom Layer
+                public Texture2D CustomSource;
+                public PaletteSource[] CustomPalette;
 
                 // These ones are for both Filling Layer and Biome Layer.
                 public Texture2D RandomSource;
@@ -78,14 +92,14 @@ namespace WindRose
                 return picker;
             }
 
-            private bool? ConvertBlockingMode(TilemapLayerSpec spec)
+            private bool? ConvertBlockingMode(TilemapLayerSpec.BlockingMode mode)
             {
                 bool? blockingMode = null;
-                switch (spec.BiomeBlockingMode)
+                switch (mode)
                 {
-                    case TilemapLayerSpec.BiomeLayerSpecBlockingMode.Blocking:
+                    case TilemapLayerSpec.BlockingMode.Blocking:
                         blockingMode = true; break;
-                    case TilemapLayerSpec.BiomeLayerSpecBlockingMode.Unblocking:
+                    case TilemapLayerSpec.BlockingMode.Unblocking:
                         blockingMode = false; break;
                 }
                 return blockingMode;
@@ -100,10 +114,17 @@ namespace WindRose
                         case TilemapLayerSpec.LayerSpecType.Biome:
                             if (!spec.BiomeSource) return null;
                             return new BiomeLayer(Width, Height, spec.BiomeSource, spec.BiomePresenceData, spec.BiomeExtendedPresence,
-                                                  ConvertBlockingMode(spec), spec.BiomeOffsetX, spec.BiomeOffsetY, CreatePicker(spec));
+                                                  ConvertBlockingMode(spec.BiomeBlockingMode), spec.BiomeOffsetX, spec.BiomeOffsetY, CreatePicker(spec));
                         case TilemapLayerSpec.LayerSpecType.Filling:
                             if (!spec.FillingSource) return null;
                             return new FillingLayer(Width, Height, spec.FillingSource, spec.FillingBlocks, spec.FillingSourceRect, CreatePicker(spec));
+                        case TilemapLayerSpec.LayerSpecType.Custom:
+                            Dictionary<Color32, CustomLayer.PaletteSource> palette = new Dictionary<Color32, CustomLayer.PaletteSource>();
+                            foreach (TilemapLayerSpec.PaletteSource ps in spec.CustomPalette)
+                            {
+                                palette[ps.Color] = new CustomLayer.PaletteSource(ps.Source, ps.SourceRect, ConvertBlockingMode(ps.Blocking));
+                            }
+                            return new CustomLayer(Width, Height, spec.CustomSource, palette);
                         default:
                             return null;
                     }

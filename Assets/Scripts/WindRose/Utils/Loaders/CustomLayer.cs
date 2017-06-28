@@ -55,11 +55,9 @@ namespace WindRose.Utils.Loaders
             {
                 for(uint x = 0; x < Width; x++)
                 {
-                    Debug.Log("Color=" + pixels[index]);
                     PaletteSource entry;
                     if (Palette.TryGetValue(pixels[index], out entry))
                     {
-                        Debug.Log("Painting ...");
                         painter(x, y, entry.Source, entry.SourceRect);
                         if (entry.Blocking != null)
                         {

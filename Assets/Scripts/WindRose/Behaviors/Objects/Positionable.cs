@@ -37,6 +37,7 @@ namespace WindRose
 
             private Map parentMap = null;
             private Tilemap.TilemapObject tilemapObject = null;
+            private bool paused = false;
 
             /* *********************** Public properties *********************** */
 
@@ -64,27 +65,37 @@ namespace WindRose
 
             public void Teleport(uint? x, uint? y)
             {
-                tilemapObject.Teleport(x, y);
+                if (!paused) tilemapObject.Teleport(x, y);
             }
 
             public void SetSolidness(SolidnessStatus newSolidness)
             {
-                tilemapObject.SetSolidness(newSolidness);
+                if (!paused) tilemapObject.SetSolidness(newSolidness);
             }
 
             public bool StartMovement(Direction movementDirection)
             {
-                return tilemapObject.StartMovement(movementDirection);
+                return !paused && tilemapObject.StartMovement(movementDirection);
             }
 
             public bool FinishMovement()
             {
-                return tilemapObject.FinishMovement();
+                return !paused && tilemapObject.FinishMovement();
             }
 
             public bool CancelMovement()
             {
-                return tilemapObject.CancelMovement();
+                return !paused && tilemapObject.CancelMovement();
+            }
+
+            void Pause(bool fullFreeze)
+            {
+                paused = true;
+            }
+
+            void Resume()
+            {
+                paused = false;
             }
         }
     }

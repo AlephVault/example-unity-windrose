@@ -55,6 +55,16 @@ namespace WindRose
                 currentAnimation.Thick();
                 spriteRenderer.sprite = currentAnimation.CurrentSprite;
             }
+
+            void Pause(bool fullFreeze)
+            {
+                enabled = !fullFreeze;
+            }
+
+            void Resume()
+            {
+                enabled = true;
+            }
         }
     }
 }

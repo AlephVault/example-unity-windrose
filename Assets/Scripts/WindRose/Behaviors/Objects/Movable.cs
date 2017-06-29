@@ -105,6 +105,16 @@ namespace WindRose
                 }
                 wasMoving = IsMoving;
             }
+
+            void Pause(bool fullFreeze)
+            {
+                enabled = false;
+            }
+
+            void Resume()
+            {
+                enabled = true;
+            }
         }
     }
 }

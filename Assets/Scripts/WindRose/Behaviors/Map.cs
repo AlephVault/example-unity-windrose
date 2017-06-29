@@ -52,6 +52,22 @@ namespace WindRose
                     positionable.gameObject.SetActive(true);
                 }
             }
+
+            public void Pause(bool fullFreeze)
+            {
+                foreach(Positionable p in GetComponentsInChildren<Positionable>(true))
+                {
+                    p.SendMessage("Pause", fullFreeze, SendMessageOptions.DontRequireReceiver);
+                }
+            }
+
+            public void Resume()
+            {
+                foreach (Positionable p in GetComponentsInChildren<Positionable>(true))
+                {
+                    p.SendMessage("Resume", SendMessageOptions.DontRequireReceiver);
+                }
+            }
         }
     }
 }

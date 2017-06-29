@@ -113,6 +113,16 @@ namespace WindRose
                 previousOrientation = orientation;
                 previousAnimationKey = animationKey;
             }
+
+            void Pause(bool fullFreeze)
+            {
+                enabled = false;
+            }
+
+            void Resume()
+            {
+                enabled = true;
+            }
         }
     }
 }

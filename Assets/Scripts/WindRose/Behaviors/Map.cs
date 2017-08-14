@@ -47,9 +47,13 @@ namespace WindRose
                 width = Utils.Values.Clamp<uint>(1, width, 100);
                 height = Utils.Values.Clamp<uint>(1, height, 100);
                 internalTilemap = new Tilemap(Width, Height, blockMask, maskApplicationOffsetX, maskApplicationOffsetY);
-                foreach(Positionable positionable in GetComponentsInChildren<Positionable>(true))
+            }
+
+            private void Start()
+            {
+                foreach (Positionable positionable in GetComponentsInChildren<Positionable>())
                 {
-                    positionable.gameObject.SetActive(true);
+                    positionable.Initialize();
                 }
             }
 

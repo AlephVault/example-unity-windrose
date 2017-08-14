@@ -27,7 +27,10 @@ class WaypointHandled : MonoBehaviour
     {
         positionable = GetComponent<Positionable>();
         oriented = GetComponent<Oriented>();
+    }
 
+    void OnAttached()
+    {
         if (waySteps.Length != 0)
         {
             StartCoroutine(PerformMovement());

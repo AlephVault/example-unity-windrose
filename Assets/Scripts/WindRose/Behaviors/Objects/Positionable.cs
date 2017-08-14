@@ -53,9 +53,7 @@ namespace WindRose
             
             void Start()
             {
-                parentMap = Utils.Layout.RequireComponentInParent<Map>(this);
-                tilemapObject = new Tilemap.TilemapObject(this, initialX, initialY, width, height, initialSolidness);
-                tilemapObject.Attach(parentMap.InternalTilemap);
+                Initialize();
             }
 
             void OnDestroy()
@@ -63,29 +61,50 @@ namespace WindRose
                 tilemapObject.Detach();
             }
 
+            public void Initialize()
+            {
+                if (tilemapObject != null)
+                {
+                    return;
+                }
+
+                try
+                {
+                    // perhaps it will not be added now because the Map component is not yet initialized! (e.g. this method being called from Start())
+                    // however, when the Map becomes ready, this method will be called, again, by the map itself, which will exist.
+                    parentMap = Utils.Layout.RequireComponentInParent<Map>(this);
+                    tilemapObject = new Tilemap.TilemapObject(this, initialX, initialY, width, height, initialSolidness);
+                    tilemapObject.Attach(parentMap.InternalTilemap);
+                }
+                catch (Utils.Layout.MissingComponentInParentException)
+                {
+                    // nothing - diaper
+                }
+            }
+
             public void Teleport(uint? x, uint? y)
             {
-                if (!paused) tilemapObject.Teleport(x, y);
+                if (tilemapObject != null && !paused) tilemapObject.Teleport(x, y);
             }
 
             public void SetSolidness(SolidnessStatus newSolidness)
             {
-                if (!paused) tilemapObject.SetSolidness(newSolidness);
+                if (tilemapObject != null && !paused) tilemapObject.SetSolidness(newSolidness);
             }
 
             public bool StartMovement(Direction movementDirection)
             {
-                return !paused && tilemapObject.StartMovement(movementDirection);
+                return tilemapObject != null && !paused && tilemapObject.StartMovement(movementDirection);
             }
 
             public bool FinishMovement()
             {
-                return !paused && tilemapObject.FinishMovement();
+                return tilemapObject != null && !paused && tilemapObject.FinishMovement();
             }
 
             public bool CancelMovement()
             {
-                return !paused && tilemapObject.CancelMovement();
+                return tilemapObject != null  && !paused && tilemapObject.CancelMovement();
             }
 
             void Pause(bool fullFreeze)

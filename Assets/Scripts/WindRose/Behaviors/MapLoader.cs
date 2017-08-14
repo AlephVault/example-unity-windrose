@@ -135,11 +135,6 @@ namespace WindRose
             void Start()
             {
                 new TilemapLoader(Width, Height, TileSize).Load(this.gameObject, CreateLayers());
-                Map map = this.gameObject.GetComponent<Map>();
-                foreach(MapObjectSpec spec in transform.GetComponentsInChildren<MapObjectSpec>())
-                {
-                    spec.BringToLife(map);
-                }
             }
         }
     }

@@ -45,6 +45,8 @@ En este sentido, tenemos algunas funcionalidades creadas para este fin:
  VI. CancelMovement(): Cancela el movimiento iniciado por StartMovement, restaurando la colisión anterior.
  VII. FinishMovement(): Confirma dicho movimiento, quedandonos solamente con las nuevas casillas ocupadas para colisionar, y liberando las anteriores, que ocupara el objeto.
 
+En el apéndice 2 vamos a tener un detalle de eventos que se pueden escuchar para saber cuando comienzan y terminan los movimientos, desde otros comportamientos.
+
 3.2 Represented (depende de Snapped, aunque la verdad al pedo pero we)
 
 Nos permite darle una animación al objeto. Esta animación no es como el objeto AnimationClip de unity sino algo a mano que responde más a nuestras necesidades.
@@ -156,3 +158,15 @@ Al presionar W, se invocará Pause(false) sobre el mapa.
 Al presionar E, se invocará Resume() sobre el mapa.
 
 Es importante recordar que las 3 llamadas sobre un mapa, lo que hacen es invocar las 3 respectivas llamadas sobre cada uno de los objetos en el mapa, y por lo tanto sobre cada uno de los comportamientos (todos ellos responden a Pause(bool) y Resume()).
+
+Apendice II. Eventos del Posicionable
+
+El objeto Positionable emite eventos que pueden ser escuchados (y de hecho, algunos comportamientos existentes hacen uso de estos eventos) para darnos cuenta de que se comienza, termina, o cancela un movimiento. Los eventos que se pueden escuchar se implementan mediante métodos (como casi todo en Unity) dentro de cada comportamiento que desee escucharlos (en el mismo gameObject que tiene también el Positionable). Los eventos son los siguientes:
+
+void OnTeleported(X, Y): El Positionable acaba de ser teletransportado a las coordenadas de mapa (x, y)
+void OnAttached(Map): El Positionable acaba de ser correctamente adjuntado a su mapa
+void OnDetached(): El Positionable acaba de ser correctamente removido del mapa (esto solo ocurre cuando se está destruyendo el gameObject)
+void OnMovementStarted(Direction): El Positionable acaba de dar inicio a un movimiento en cierta dirección
+void OnMovementCancelled(Direction): El Positionable acaba de cancelar el movimiento actual, el cual era en esa dirección
+void OnMovementFinished(Direction): El Positionable acaba de concluir el movimiento actual, el cual era en esa dirección
+void OnSolidnessChanged(Solidness): El Positionable acaba de cambiar su solidez y actualizar su ocupación

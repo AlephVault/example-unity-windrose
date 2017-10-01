@@ -25,6 +25,13 @@ namespace WindRose
                 public MissingComponentInParentException(string message, Exception inner) : base(message, inner) { }
             }
 
+            public class MissingComponentInChildrenException : Types.Exception
+            {
+                public MissingComponentInChildrenException() { }
+                public MissingComponentInChildrenException(string message) : base(message) { }
+                public MissingComponentInChildrenException(string message, Exception inner) : base(message, inner) { }
+            }
+
             public class UnserializableFieldException : Types.Exception
             {
                 public UnserializableFieldException() { }
@@ -56,6 +63,34 @@ namespace WindRose
                 catch (NullReferenceException)
                 {
                     throw new MissingParentException("Current object needs a parent object");
+                }
+            }
+
+            public static T RequireComponentInChildren<T>(GameObject current) where T : Component
+            {
+                T component = current.GetComponentInChildren<T>();
+                if (component == null)
+                {
+                    throw new MissingComponentInChildrenException("Current object's children must, at least, have one component of type " + typeof(T).FullName);
+                }
+                else
+                {
+                    return component;
+                }
+            }
+
+            public static T[] RequireComponentsInChildren<T>(GameObject current, uint howMany) where T : Component
+            {
+                T[] components = current.GetComponentsInChildren<T>();
+                if (components == null || components.Length < howMany)
+                {
+                    throw new MissingComponentInChildrenException("Current object's children must, at least, have " + howMany + " component(s) of type " + typeof(T).FullName);
+                }
+                else
+                {
+                    T[] result = new T[howMany];
+                    Array.ConstrainedCopy(components, 0, result, 0, (int) howMany);
+                    return result;
                 }
             }
 

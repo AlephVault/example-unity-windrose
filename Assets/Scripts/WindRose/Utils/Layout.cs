@@ -79,9 +79,9 @@ namespace WindRose
                 }
             }
 
-            public static T[] RequireComponentsInChildren<T>(GameObject current, uint howMany) where T : Component
+            public static T[] RequireComponentsInChildren<T>(GameObject current, uint howMany, bool includeInactive = false) where T : Component
             {
-                T[] components = current.GetComponentsInChildren<T>();
+                T[] components = current.GetComponentsInChildren<T>(includeInactive);
                 if (components == null || components.Length < howMany)
                 {
                     throw new MissingComponentInChildrenException("Current object's children must, at least, have " + howMany + " component(s) of type " + typeof(T).FullName);

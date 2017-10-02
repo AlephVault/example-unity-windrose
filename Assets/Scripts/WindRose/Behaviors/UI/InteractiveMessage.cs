@@ -26,6 +26,11 @@ namespace WindRose
                     content.sizeDelta = new Vector2(myWidth, content.sizeDelta.y);
                 }
 
+                public Coroutine StartTextMessage(string text)
+                {
+                    return messageContent.StartCoroutine(text);
+                }
+
                 // Update is called once per frame
                 void Update()
                 {

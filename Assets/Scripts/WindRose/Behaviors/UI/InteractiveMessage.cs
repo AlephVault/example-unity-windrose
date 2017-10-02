@@ -28,7 +28,7 @@ namespace WindRose
 
                 public Coroutine StartTextMessage(string text)
                 {
-                    return messageContent.StartCoroutine(text);
+                    return messageContent.StartTextMessage(text);
                 }
 
                 // Update is called once per frame

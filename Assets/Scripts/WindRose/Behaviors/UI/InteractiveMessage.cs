@@ -14,16 +14,23 @@ namespace WindRose
             {
                 private UnityEngine.UI.Mask mask;
                 private InteractiveMessageContent messageContent;
-
-                void Start()
+                public bool QuickTextMovement
                 {
+                    get { return messageContent.QuickTextMovement; }
+                    set { messageContent.QuickTextMovement = value; }
+                }
+
+                protected override void Start()
+                {
+                    base.Start();
                     mask = GetComponent<UnityEngine.UI.Mask>();
                     messageContent = Utils.Layout.RequireComponentInChildren<InteractiveMessageContent>(this.gameObject);
                     RectTransform me = GetComponent<RectTransform>();
                     content = messageContent.GetComponent<RectTransform>();
                     float myWidth = me.sizeDelta.x;
-                    content.localPosition = Vector3.zero;
-                    content.sizeDelta = new Vector2(myWidth, content.sizeDelta.y);
+                    float itsWidth = content.sizeDelta.x;
+                    content.localPosition = new Vector2((myWidth - itsWidth) / 2, 0);
+                    content.sizeDelta = new Vector2(itsWidth, content.sizeDelta.y);
                 }
 
                 public Coroutine StartTextMessage(string text)
@@ -34,7 +41,6 @@ namespace WindRose
                 // Update is called once per frame
                 void Update()
                 {
-                    mask.showMaskGraphic = false;
                     horizontal = false;
                     vertical = true;
                     if (content)

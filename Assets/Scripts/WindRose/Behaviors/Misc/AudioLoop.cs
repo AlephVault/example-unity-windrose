@@ -13,12 +13,10 @@ namespace WindRose.Behaviors.Misc
         public float loopTo;
         public bool relativeToFrequency;
         private AudioSource audioSource;
-        private AudioClip audioClip;
 
         public void Start()
         {
             audioSource = GetComponent<AudioSource>();
-            audioClip = audioSource.clip;
         }
 
         public void Update()

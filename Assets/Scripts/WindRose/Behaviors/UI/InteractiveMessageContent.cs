@@ -21,8 +21,7 @@ namespace WindRose
 
                 private UnityEngine.UI.Text textComponent;
                 private Coroutine currentTextMessageCoroutine;
-
-                public bool quickTextMovement = false;
+                public bool QuickTextMovement = false;
 
                 void Start()
                 {
@@ -49,7 +48,7 @@ namespace WindRose
                     {
                         builder.Append(current);
                         textComponent.text = builder.ToString();
-                        yield return new WaitForSeconds(quickTextMovement ? quickInterval : slowInterval);
+                        yield return new WaitForSeconds(QuickTextMovement ? quickInterval : slowInterval);
                     }
                     currentTextMessageCoroutine = null;
                 }

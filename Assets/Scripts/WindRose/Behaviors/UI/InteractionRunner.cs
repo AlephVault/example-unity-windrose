@@ -53,20 +53,28 @@ namespace WindRose
 
                 /**
                  * Runs the lifecycle of an interaction. Running an interaction involves three steps:
-                 *   1. Pausing everything, according to our decision of also freezing animations, or not.
-                 *   2. Running the actual interaction.
-                 *   3. Resuming everything.
+                 *   1. Activates the object.
+                 *   2. Pausing everything, according to our decision of also freezing animations, or not.
+                 *   3. Running the actual interaction.
+                 *   4. Resuming everything.
+                 *   5. Deactivates the object.
                  */
                 public void RunInteraction(IEnumerator interaction)
                 {
+                    if (gameObject.active)
+                    {
+                        throw new Types.Exception("Cannot run the interaction: A previous interaction is already running");
+                    }
                     StartCoroutine(WrappedInteraction(interaction));
                 }
 
                 private IEnumerator WrappedInteraction(IEnumerator innerInteraction)
                 {
+                    gameObject.SetActive(true);
                     GetMap().Pause(freezeAlsoAnimations);
                     yield return innerInteraction;
                     GetMap().Resume();
+                    gameObject.SetActive(false);
                 }
             }
         }

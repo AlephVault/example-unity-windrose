@@ -8,6 +8,23 @@ namespace WindRose
     {
         namespace UI
         {
+            /**
+             * This component handles the message being displayed to the user. It requires two components
+             *   in the same object, and one component in a child. The components go like this:
+             *   1. Image (in object): Is the background of the message.
+             *      Recommended settings:
+             *        > Image Type: Slice
+             *          > Fill Center: True
+             *   2. Mask (in object): Is used to clip the content of the message, which will grow very long.
+             *      Recommended settings:
+             *        > Show Mask Graphic: True (otherwise the background image in the Image component
+             *          will not be seen)
+             *   3. This component has also recommended settings since it inherits from ScrollRect:
+             *      > Viewport: None
+             *      > Horizontal Scrollbar: None
+             *      > Vertical Scrollbar: None
+             *   4. InteractiveMessageContent (in child). It is already documented.
+             */
             [RequireComponent(typeof(UnityEngine.UI.Mask))]
             [RequireComponent(typeof(UnityEngine.UI.Image))]
             public class InteractiveMessage : UnityEngine.UI.ScrollRect

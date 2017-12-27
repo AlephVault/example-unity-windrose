@@ -72,7 +72,7 @@ namespace WindRose
                 {
                     gameObject.SetActive(true);
                     GetMap().Pause(freezeAlsoAnimations);
-                    yield return innerInteraction;
+                    yield return StartCoroutine(innerInteraction);
                     GetMap().Resume();
                     gameObject.SetActive(false);
                 }

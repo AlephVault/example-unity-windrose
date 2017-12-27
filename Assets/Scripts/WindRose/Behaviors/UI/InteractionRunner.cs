@@ -59,9 +59,9 @@ namespace WindRose
                  *   4. Resuming everything.
                  *   5. Deactivates the object.
                  */
-                public void RunInteraction(IEnumerator interaction)
+                public Coroutine RunInteraction(IEnumerator interaction)
                 {
-                    StartCoroutine(WrappedInteraction(interaction));
+                    return StartCoroutine(WrappedInteraction(interaction));
                 }
 
                 private IEnumerator WrappedInteraction(IEnumerator innerInteraction)

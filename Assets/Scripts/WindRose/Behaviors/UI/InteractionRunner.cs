@@ -61,15 +61,16 @@ namespace WindRose
                  */
                 public void RunInteraction(IEnumerator interaction)
                 {
-                    if (gameObject.active)
-                    {
-                        throw new Types.Exception("Cannot run the interaction: A previous interaction is already running");
-                    }
                     StartCoroutine(WrappedInteraction(interaction));
                 }
 
                 private IEnumerator WrappedInteraction(IEnumerator innerInteraction)
                 {
+                    if (gameObject.active)
+                    {
+                        throw new Types.Exception("Cannot run the interaction: A previous interaction is already running");
+                    }
+
                     gameObject.SetActive(true);
                     GetMap().Pause(freezeAlsoAnimations);
                     yield return StartCoroutine(innerInteraction);

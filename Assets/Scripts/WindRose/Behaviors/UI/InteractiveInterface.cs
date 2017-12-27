@@ -26,19 +26,24 @@ namespace WindRose
              *        > Map Holder: A GameObject having a MapLoader or Map component.
              *   3. An interactive message. This behavior (documented on its own) has
              *        the duty of displaying a message the user can read.
+             *   4. A manager of components used for single text, user input, and
+             *      more complex cases.
              */
             [RequireComponent(typeof(UnityEngine.UI.Image))]
             [RequireComponent(typeof(InteractionRunner))]
             [RequireComponent(typeof(InteractiveMessage))]
+            [RequireComponent(typeof(Interactors.InteractorsManager))]
             class InteractiveInterface : MonoBehaviour
             {
                 private InteractionRunner interactionRunner;
                 private InteractiveMessage interactiveMessage;
+                private Interactors.InteractorsManager interactorsManager;
 
                 private void Start()
                 {
                     interactionRunner = GetComponent<InteractionRunner>();
                     interactiveMessage = GetComponent<InteractiveMessage>();
+                    interactorsManager = GetComponent<Interactors.InteractorsManager>();
                 }
             }
         }

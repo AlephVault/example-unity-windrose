@@ -31,7 +31,7 @@ namespace WindRose
                  * This component becomes relevant when talking about the interactive parts
                  *   being displayed.
                  */
-                abstract class Interactor : MonoBehaviour
+                public abstract class Interactor : MonoBehaviour
                 {
                     public delegate void InteractorPreparer(Interactor component);
 

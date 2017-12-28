@@ -115,7 +115,7 @@ namespace WindRose
                         interactionRunning = true;
                         yield return interactiveMessage.PromptMessages(prompt);
                         interactionDisplaying = true;
-                        yield return StartCoroutine(Input());
+                        yield return StartCoroutine(Input(interactiveMessage));
                         interactionDisplaying = false;
                         interactionRunning = false;
                     }
@@ -125,7 +125,7 @@ namespace WindRose
                         hideable.Hidden = !interactionDisplaying;
                     }
 
-                    protected abstract IEnumerator Input();
+                    protected abstract IEnumerator Input(InteractiveMessage interactiveMessage);
                 }
             }
         }

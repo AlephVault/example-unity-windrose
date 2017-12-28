@@ -12,6 +12,7 @@ namespace WindRose
              *   shows the RectTransform (by changing scale to (0,0,0) or (1,1,1)
              *   respectively).
              */
+            [ExecuteInEditMode]
             [RequireComponent(typeof(RectTransform))]
             class Hideable : MonoBehaviour
             {

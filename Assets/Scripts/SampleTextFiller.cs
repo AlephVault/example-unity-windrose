@@ -5,8 +5,10 @@ using WindRose.Behaviors.UI.Interactors;
 
 public class SampleTextFiller : MonoBehaviour
 {
-    const string LOREM = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nec mattis tellus. Nulla pellentesque rutrum est eu porttitor. Phasellus dapibus blandit mauris at iaculis.";
-    const string IPSUM = "Aliquam consequat, tellus non consequat sollicitudin, ligula dui pellentesque ipsum, eget lobortis urna turpis ac augue. Nullam sed faucibus eros. Fusce vitae ex sapien. Sed in massa eget tellus ultricies aliquam. Maecenas a euismod ante, vitae molestie arcu.";
+    const string INTRO = "An unknown evil lurks in the outerspace and threatens our universe and God knows what other worlds.";
+    const string QUESTION = "Our last hope is a once-heard legend to become true. Would you join our quest?";
+    const string THANKYOU = "We are glad to hear! If our world survives, I will ensure your name will be remembered for centuries.";
+    const string FUCKOFF = "Then go home and eat a bag of d*cks, you f*cking lame. Our world is doomed.";
 
     private InteractiveInterface ui;
 
@@ -22,9 +24,22 @@ public class SampleTextFiller : MonoBehaviour
 
     IEnumerator StartSampleMessages(InteractorsManager manager, InteractiveMessage interactiveMessage)
     {
-        Debug.Log("SampleTextFiller::StartSimpleMessages");
-        yield return manager["null-input"].RunInteraction(interactiveMessage, new InteractiveMessage.Prompt[] {
-            new InteractiveMessage.Prompt(LOREM), new InteractiveMessage.Prompt(IPSUM)
+        ButtonsInteractor yesnoInteractor = (ButtonsInteractor) manager["yesno-input"];
+        NullInteractor nullInteractor = (NullInteractor) manager["null-input"];
+        yield return yesnoInteractor.RunInteraction(interactiveMessage, new InteractiveMessage.Prompt[] {
+            new InteractiveMessage.Prompt(INTRO), new InteractiveMessage.Prompt(QUESTION)
         });
+        if (yesnoInteractor.Result == "yes")
+        {
+            yield return nullInteractor.RunInteraction(interactiveMessage, new InteractiveMessage.Prompt[] {
+                new InteractiveMessage.Prompt(THANKYOU)
+            });
+        }
+        else
+        {
+            yield return nullInteractor.RunInteraction(interactiveMessage, new InteractiveMessage.Prompt[] {
+                new InteractiveMessage.Prompt(FUCKOFF)
+            });
+        }
     }
 }

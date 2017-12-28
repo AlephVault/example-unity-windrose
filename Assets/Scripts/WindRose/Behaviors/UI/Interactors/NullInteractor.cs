@@ -19,7 +19,7 @@ namespace WindRose
                      *   button or game input with those semantics), however, this one serves also for
                      *   a testing purpose.
                      */
-                    protected override IEnumerator Input()
+                    protected override IEnumerator Input(InteractiveMessage interactiveMessage)
                     {
                         yield break;
                     }

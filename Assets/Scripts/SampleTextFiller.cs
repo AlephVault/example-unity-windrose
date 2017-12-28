@@ -25,6 +25,6 @@ public class SampleTextFiller : MonoBehaviour
         Debug.Log("SampleTextFiller::StartSimpleMessages");
         yield return manager["null-input"].RunInteraction(interactiveMessage, new InteractiveMessage.Prompt[] {
             new InteractiveMessage.Prompt(LOREM), new InteractiveMessage.Prompt(IPSUM)
-        }, null);
+        });
     }
 }

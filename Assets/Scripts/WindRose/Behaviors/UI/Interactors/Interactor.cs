@@ -41,16 +41,16 @@ namespace WindRose
                  *   core and most important thing you'll ever need to know (aside from having read the
                  *   details about calling RunInteraction in the InteractiveInterface class).
                  */
-                [RequireComponent(typeof(Hidable))]
+                [RequireComponent(typeof(Hideable))]
                 public abstract class Interactor : MonoBehaviour
                 {
                     private bool interactionRunning = false;
                     private bool interactionDisplaying = false;
-                    private Hidable hidable;
+                    private Hideable hideable;
 
                     protected void Start()
                     {
-                        hidable = GetComponent<Hidable>();
+                        hideable = GetComponent<Hideable>();
                     }
 
                     /**
@@ -122,7 +122,7 @@ namespace WindRose
 
                     void Update()
                     {
-                        hidable.Hidden = !interactionDisplaying;
+                        hideable.Hidden = !interactionDisplaying;
                     }
 
                     protected abstract IEnumerator Input();

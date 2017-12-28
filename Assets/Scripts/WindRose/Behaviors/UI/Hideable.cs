@@ -13,11 +13,20 @@ namespace WindRose
              *   respectively).
              */
             [RequireComponent(typeof(RectTransform))]
-            class Hidable : MonoBehaviour
+            class Hideable : MonoBehaviour
             {
                 private RectTransform rectTransform;
                 public bool Hidden = false;
 
+                /**
+                 * TODO consider later if this option is better:
+                 *  
+                 * RectTransform rt = GetComponent<RectTransform>();
+                 * CanvasGroup cg = GetComponent<CanvasGroup>();
+                 * cg.interactable = !Hidden;
+                 * cg.alpha = Hidden ? 0 : 1;​
+                 * rt.BlockRaycasts = !Hidden;
+                 */
                 void Start()
                 {
                     rectTransform = GetComponent<RectTransform>();

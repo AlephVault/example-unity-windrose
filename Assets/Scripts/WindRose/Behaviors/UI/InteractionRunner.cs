@@ -25,7 +25,7 @@ namespace WindRose
              * If somehow no map is present in the mapHolder object at the time such
              *   method is called, the method will fail silently.
              */
-            [RequireComponent(typeof(Hidable))]
+            [RequireComponent(typeof(Hideable))]
             public class InteractionRunner : MonoBehaviour
             {
                 /**
@@ -33,7 +33,7 @@ namespace WindRose
                  *   variables used.
                  */
                 private bool interactionRunning = false;
-                private Hidable hidable;
+                private Hideable hideable;
 
                 /**
                  * We also need a Map object to relate.
@@ -58,11 +58,11 @@ namespace WindRose
                 private bool freezeAlsoAnimations;
 
                 /**
-                 * At startup we assign the hidable component, that will be used in Update.
+                 * At startup we assign the Hideable component, that will be used in Update.
                  */
                 void Start()
                 {
-                    hidable = GetComponent<Hidable>();
+                    hideable = GetComponent<Hideable>();
                 }
 
                 /**
@@ -113,7 +113,7 @@ namespace WindRose
                  */
                 void Update()
                 {
-                    hidable.Hidden = !interactionRunning;
+                    hideable.Hidden = !interactionRunning;
                 }
             }
         }

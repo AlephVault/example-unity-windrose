@@ -66,9 +66,14 @@ namespace WindRose
                 }
             }
 
+            public static T RequireComponentInChildren<T>(MonoBehaviour current) where T : Component
+            {
+                return RequireComponentInChildren<T>(current.gameObject);
+            }
+
             public static T RequireComponentInChildren<T>(GameObject current) where T : Component
             {
-                T component = current.GetComponentInChildren<T>();
+                T component = current.GetComponentsInChildren<T>(true).First();
                 if (component == null)
                 {
                     throw new MissingComponentInChildrenException("Current object's children must, at least, have one component of type " + typeof(T).FullName);
@@ -79,7 +84,12 @@ namespace WindRose
                 }
             }
 
-            public static T[] RequireComponentsInChildren<T>(GameObject current, uint howMany, bool includeInactive = false) where T : Component
+            public static T[] RequireComponentsInChildren<T>(MonoBehaviour current, uint howMany, bool includeInactive = true) where T : Component
+            {
+                return RequireComponentsInChildren<T>(current.gameObject, howMany, includeInactive);
+            }
+
+            public static T[] RequireComponentsInChildren<T>(GameObject current, uint howMany, bool includeInactive = true) where T : Component
             {
                 T[] components = current.GetComponentsInChildren<T>(includeInactive);
                 if (components == null || components.Length < howMany)

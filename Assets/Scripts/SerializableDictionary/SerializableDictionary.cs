@@ -10,19 +10,14 @@ public class SerializableDictionary<TKey, TValue> : Dictionary<TKey, TValue>, IS
 	[SerializeField]
 	TValue[] m_values;
 
-	public SerializableDictionary()
-	{
-	}
+    public SerializableDictionary() : base() {}
+	public SerializableDictionary(IDictionary<TKey, TValue> dict) : base(dict) {}
+    public SerializableDictionary(IDictionary<TKey, TValue> dict, IEqualityComparer<TKey> comparer) : base(dict, comparer) { }
+    public SerializableDictionary(IEqualityComparer<TKey> comparer) : base(comparer) { }
+    public SerializableDictionary(Int32 capacity) : base(capacity) { }
+    public SerializableDictionary(Int32 capacity, IEqualityComparer<TKey> comparer) : base(capacity, comparer) { }
 
-	public SerializableDictionary(IDictionary<TKey, TValue> dict) : base(dict.Count)
-	{
-		foreach (var kvp in dict)
-		{
-			this[kvp.Key] = kvp.Value;
-		}
-	}
-
-	public void CopyFrom(IDictionary<TKey, TValue> dict)
+    public void CopyFrom(IDictionary<TKey, TValue> dict)
 	{
 		this.Clear();
 		foreach (var kvp in dict)

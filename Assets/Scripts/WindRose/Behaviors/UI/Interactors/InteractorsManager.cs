@@ -15,10 +15,12 @@ namespace WindRose
                  * 
                  * In this component, the user will register them like (string key) => (Interactor component) in the UI.
                  * After that, one will be able to invoke something like this to yield an interaction inside a generator
-                 *   being turned into coroutine by an InteractionRunner:
+                 *   being turned into coroutine by an InteractionInterface:
                  * 
-                 *     yield return im["sample-component"].RunInteraction();
-                 *     yield return im["another-component"].RunInteraction(... a delegate to initialize it ...);
+                 *     yield return im["sample-component"].RunInteraction(... see details of this method in Interactor.cs file ...);
+                 *     yield return im["another-component"].RunInteraction(... see details of this method in Interactor.cs file ...);
+                 * 
+                 * See the Interactor class for more details.
                  */
                 public class InteractorsManager : MonoBehaviour
                 {
@@ -28,13 +30,10 @@ namespace WindRose
                      */
 
                     [Serializable]
-                    public class InteractorsDictionary : SerializableDictionary<string, Interactor>
-                    {
-                        public InteractorsDictionary(System.Collections.Generic.IDictionary<string, Interactor> dict) : base(dict) { }
-                    }
+                    public class InteractorsDictionary : SerializableDictionary<string, Interactor> {}
 
                     [SerializeField]
-                    private InteractorsDictionary interactors;
+                    private InteractorsDictionary interactors = new InteractorsDictionary();
 
                     public Interactor this[string key]
                     {

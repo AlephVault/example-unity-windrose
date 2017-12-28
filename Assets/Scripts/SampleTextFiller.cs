@@ -1,27 +1,30 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
-using System.Text;
 using UnityEngine;
-using UnityEngine.UI;
+using WindRose.Behaviors.UI;
+using WindRose.Behaviors.UI.Interactors;
 
-[RequireComponent(typeof(WindRose.Behaviors.UI.InteractiveMessage))]
 public class SampleTextFiller : MonoBehaviour
 {
     const string LOREM = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nec mattis tellus. Nulla pellentesque rutrum est eu porttitor. Phasellus dapibus blandit mauris at iaculis.";
     const string IPSUM = "Aliquam consequat, tellus non consequat sollicitudin, ligula dui pellentesque ipsum, eget lobortis urna turpis ac augue. Nullam sed faucibus eros. Fusce vitae ex sapien. Sed in massa eget tellus ultricies aliquam. Maecenas a euismod ante, vitae molestie arcu.";
 
-    private WindRose.Behaviors.UI.InteractiveMessage content;
+    private InteractiveInterface ui;
 
     // Use this for initialization
-    void Start ()
+    // THIS IS JUST AN EXAMPLE and not a real-life one. This Start method will be run as a coroutine
+    //   just to give time to the interactive interfact to initialize.
+    IEnumerator Start ()
     {
-        content = GetComponent<WindRose.Behaviors.UI.InteractiveMessage>();
-        StartCoroutine(StartMessageTwice());
+        ui = WindRose.Utils.Layout.RequireComponentInChildren<InteractiveInterface>(gameObject);
+        yield return new WaitForSeconds(0.5f);
+        ui.RunInteraction(StartSampleMessages);
 	}
 
-    IEnumerator StartMessageTwice() {
-        yield return new WaitForSeconds(3);
-        yield return content.StartTextMessage(LOREM);
-        yield return content.StartTextMessage(IPSUM);
+    IEnumerator StartSampleMessages(InteractorsManager manager, InteractiveMessage interactiveMessage)
+    {
+        Debug.Log("SampleTextFiller::StartSimpleMessages");
+        yield return manager["null-input"].RunInteraction(interactiveMessage, new InteractiveMessage.Prompt[] {
+            new InteractiveMessage.Prompt(LOREM), new InteractiveMessage.Prompt(IPSUM)
+        }, null);
     }
 }

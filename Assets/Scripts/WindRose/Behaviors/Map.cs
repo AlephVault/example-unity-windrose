@@ -59,7 +59,7 @@ namespace WindRose
 
             public void Pause(bool fullFreeze)
             {
-                foreach(Positionable p in GetComponentsInChildren<Positionable>(true))
+                foreach(Pausable p in GetComponentsInChildren<Pausable>(true))
                 {
                     p.SendMessage("Pause", fullFreeze, SendMessageOptions.DontRequireReceiver);
                 }
@@ -67,7 +67,7 @@ namespace WindRose
 
             public void Resume()
             {
-                foreach (Positionable p in GetComponentsInChildren<Positionable>(true))
+                foreach (Pausable p in GetComponentsInChildren<Pausable>(true))
                 {
                     p.SendMessage("Resume", SendMessageOptions.DontRequireReceiver);
                 }

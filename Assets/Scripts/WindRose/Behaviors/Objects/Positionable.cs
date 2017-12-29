@@ -7,6 +7,7 @@ namespace WindRose
         using Types;
         using Types.Tilemaps;
 
+        [RequireComponent(typeof(Pausable))]
         public class Positionable : MonoBehaviour
         {
             /**

@@ -7,7 +7,9 @@ public class SampleTextFiller : MonoBehaviour
 {
     const string INTRO = "An unknown evil lurks in the outerspace and threatens our universe and God knows what other worlds.";
     const string QUESTION = "Our last hope is a once-heard legend to become true. Would you join our quest?";
-    const string THANKYOU = "We are glad to hear! If our world survives, I will ensure your name will be remembered for centuries.";
+    const string YOURNAME = "I'm glad to hear that! What is your name?";
+    const string MISSING = "Well, let me call you \"{0}\".";
+    const string THANKYOU = "{0}, if our world survives I will ensure your name will be remembered for centuries.";
     const string FUCKOFF = "Then go home and eat a bag of d*cks, you f*cking lame. Our world is doomed.";
 
     private InteractiveInterface ui;
@@ -24,15 +26,32 @@ public class SampleTextFiller : MonoBehaviour
 
     IEnumerator StartSampleMessages(InteractorsManager manager, InteractiveMessage interactiveMessage)
     {
-        ButtonsInteractor yesnoInteractor = (ButtonsInteractor) manager["yesno-input"];
-        NullInteractor nullInteractor = (NullInteractor) manager["null-input"];
+        ButtonsInteractor yesnoInteractor = (ButtonsInteractor)manager["yesno-input"];
+        NullInteractor nullInteractor = (NullInteractor)manager["null-input"];
+        TextInteractor textInteractor = (TextInteractor)manager["string-input"];
         yield return yesnoInteractor.RunInteraction(interactiveMessage, new InteractiveMessage.Prompt[] {
             new InteractiveMessage.Prompt(INTRO), new InteractiveMessage.Prompt(QUESTION)
         });
         if (yesnoInteractor.Result == "yes")
         {
+            textInteractor.PlaceholderPrompt = "Enter your name ...";
+            yield return textInteractor.RunInteraction(interactiveMessage, new InteractiveMessage.Prompt[] {
+                new InteractiveMessage.Prompt(YOURNAME)
+            });
+            string name;
+            if (textInteractor.Result == true)
+            {
+                name = textInteractor.Content;
+            }
+            else
+            {
+                name = "Anonymous";
+                yield return nullInteractor.RunInteraction(interactiveMessage, new InteractiveMessage.Prompt[] {
+                    new InteractiveMessage.Prompt(string.Format(MISSING, name), false)
+                });
+            }
             yield return nullInteractor.RunInteraction(interactiveMessage, new InteractiveMessage.Prompt[] {
-                new InteractiveMessage.Prompt(THANKYOU)
+                new InteractiveMessage.Prompt(string.Format(THANKYOU, name), false)
             });
         }
         else

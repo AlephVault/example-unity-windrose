@@ -48,6 +48,9 @@ namespace WindRose
                     private bool interactionDisplaying = false;
                     private Hideable hideable;
 
+                    [SerializeField]
+                    private uint newlinesToAddWhenShowing = 0;
+
                     protected void Start()
                     {
                         hideable = GetComponent<Hideable>();
@@ -113,6 +116,17 @@ namespace WindRose
                         }
 
                         interactionRunning = true;
+                        // We may add extra spaces to the last message to be rendered.
+                        // This helps us allocating more visual space so the displayed
+                        //   interface does not hide the text in the message.
+                        int length = prompt.Length;
+                        if (length > 0)
+                        {
+                            // Replaces the last prompt with a new one with additional newlines
+                            string extraSpaces = new String('\n', (int)newlinesToAddWhenShowing);
+                            InteractiveMessage.Prompt lastPrompt = prompt[length - 1];
+                            prompt[length - 1] = new InteractiveMessage.Prompt(lastPrompt.message + extraSpaces, lastPrompt.clearBeforeStart, lastPrompt.clearBeforeStart);
+                        }
                         yield return interactiveMessage.PromptMessages(prompt);
                         interactionDisplaying = true;
                         yield return StartCoroutine(Input(interactiveMessage));

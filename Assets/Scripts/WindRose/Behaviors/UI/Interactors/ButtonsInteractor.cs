@@ -31,6 +31,7 @@ namespace WindRose
                  *   (i.e. after calling myButtonsInteractor.RunInteraction(...), you will be able to
                  *   retrieve (ButtonsInteractor)myButtonsInteractor.Result) to know what to do next.
                  */
+                [RequireComponent(typeof(Image))]
                 public class ButtonsInteractor : Interactor
                 {
                     /**
@@ -43,9 +44,6 @@ namespace WindRose
 
                     [SerializeField]
                     private ButtonKeyDictionary buttons = new ButtonKeyDictionary();
-
-                    [SerializeField]
-                    private bool addNewlineWhenPrompting = true;
 
                     public string Result { get; private set; }
 
@@ -61,16 +59,12 @@ namespace WindRose
 
                     /**
                      * The implementation of this input does three important stuff:
-                     * 1. Adds one newline to the messages, if told so in `addNewlineWhenPrompting`.
-                     * 2. Sets the result in null.
-                     * 3. Waits until the result is no longer null.
+                     * 1. Sets the result in null.
+                     * 2. Waits until the result is no longer null.
                      */
                     protected override IEnumerator Input(InteractiveMessage interactiveMessage)
                     {
                         Result = null;
-                        yield return interactiveMessage.PromptMessages(new InteractiveMessage.Prompt[]{
-                            new InteractiveMessage.Prompt("\n", false, false)
-                        });
                         yield return new WaitWhile(delegate() { return Result == null; });
                     }
                 }

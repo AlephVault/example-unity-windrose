@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections;
-using System.Linq;
-using System.Text;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace WindRose
 {
@@ -19,14 +18,8 @@ namespace WindRose
              *      Recommended settings:
              *        > Image Type: Slice
              *          > Fill Center: True
-             *   2. An interaction runner. It has the behavior to wrap any interaction
-             *        given as a generator. This behavior is needed to pause a related
-             *        game map, and display or hide the UI component in this object.
-             *      Recommended settings:
-             *        > Map Holder: A GameObject having a MapLoader or Map component.
-             *          It is an error to not assign this member.
-             *          The interactions will never run if the object assigned to this
-             *            member does never have a Map component.
+             *   2. A hideable component that will be used to determine whether this component
+             *        should be hidden or not.
              *   3. An interactive message (in children). This behavior (documented on its own) has
              *        the duty of displaying a message the user can read.
              *   4. A manager of components used for single text, user input, and
@@ -38,19 +31,35 @@ namespace WindRose
              *   documentation in this class.
              */
             [RequireComponent(typeof(UnityEngine.UI.Image))]
-            [RequireComponent(typeof(InteractionRunner))]
+            [RequireComponent(typeof(Hideable))]
             [RequireComponent(typeof(Interactors.InteractorsManager))]
             class InteractiveInterface : MonoBehaviour
             {
-                private InteractionRunner interactionRunner;
                 private InteractiveMessage interactiveMessage;
                 private Interactors.InteractorsManager interactorsManager;
+                /**
+                 * See Update() and WrappedInteraction(IEnumerator generator) on how are these
+                 *   variables used.
+                 */
+                private bool interactionRunning = false;
+                private Hideable hideable;
+
+                public readonly UnityEvent beforeRunningInteraction = new UnityEvent();
+                public readonly UnityEvent afterRunningInteraction = new UnityEvent();
 
                 void Start()
                 {
-                    interactionRunner = GetComponent<InteractionRunner>();
                     interactiveMessage = Utils.Layout.RequireComponentInChildren<InteractiveMessage>(gameObject);
                     interactorsManager = GetComponent<Interactors.InteractorsManager>();
+                    hideable = GetComponent<Hideable>();
+                }
+
+                /**
+                 * The component will remain hidden as long as an interaction is running.
+                 */
+                void Update()
+                {
+                    hideable.Hidden = !interactionRunning;
                 }
 
                 /**
@@ -70,11 +79,22 @@ namespace WindRose
                  *      The first one is the inputs component finder, while the second one is the component that shows messages.
                  *      The components found in the first parameter will make use of the message shower in the second parameter.
                  */
-                public delegate IEnumerator Interaction(Interactors.InteractorsManager manager, InteractiveMessage interactiveMessage);
-
-                public Coroutine RunInteraction(Interaction runnable)
+                public Coroutine RunInteraction(Func<Interactors.InteractorsManager, InteractiveMessage, IEnumerator> runnable)
                 {
-                    return interactionRunner.RunInteraction(runnable(interactorsManager, interactiveMessage));
+                    return StartCoroutine(WrappedInteraction(runnable(interactorsManager, interactiveMessage)));
+                }
+
+                private IEnumerator WrappedInteraction(IEnumerator innerInteraction)
+                {
+                    if (interactionRunning)
+                    {
+                        throw new Types.Exception("Cannot run the interaction: A previous interaction is already running");
+                    }
+                    interactionRunning = true;
+                    beforeRunningInteraction.Invoke(); // GetMap().Pause(freezeAlsoAnimations);
+                    yield return StartCoroutine(innerInteraction);
+                    afterRunningInteraction.Invoke(); // GetMap().Resume();
+                    interactionRunning = false;
                 }
             }
         }

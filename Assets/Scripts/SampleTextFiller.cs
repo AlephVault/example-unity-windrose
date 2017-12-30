@@ -2,6 +2,7 @@
 using UnityEngine;
 using WindRose.Behaviors.UI;
 using WindRose.Behaviors.UI.Interactors;
+using Support.Utils;
 
 public class SampleTextFiller : MonoBehaviour
 {
@@ -19,7 +20,7 @@ public class SampleTextFiller : MonoBehaviour
     //   just to give time to the interactive interfact to initialize.
     IEnumerator Start ()
     {
-        ui = WindRose.Utils.Layout.RequireComponentInChildren<InteractiveInterface>(gameObject);
+        ui = Layout.RequireComponentInChildren<InteractiveInterface>(gameObject);
         yield return new WaitForSeconds(0.5f);
         ui.RunInteraction(StartSampleMessages);
 	}

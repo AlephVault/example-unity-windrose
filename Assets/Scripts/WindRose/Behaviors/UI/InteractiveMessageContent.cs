@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using Support.Utils;
 
 namespace WindRose
 {
@@ -83,8 +83,8 @@ namespace WindRose
 
                     textBeingSent = true;
                     text = text ?? "";
-                    float slowInterval = Utils.Values.Max(0.0001f, slowTimeBetweenLetters);
-                    float quickInterval = Utils.Values.Max(0.00001f, quickTimeBetweenLetters);
+                    float slowInterval = Values.Max(0.0001f, slowTimeBetweenLetters);
+                    float quickInterval = Values.Max(0.00001f, quickTimeBetweenLetters);
                     StringBuilder builder = new StringBuilder(clearFormerTextBeforeStart ? "" : textComponent.text);
 
                     foreach (char current in text)

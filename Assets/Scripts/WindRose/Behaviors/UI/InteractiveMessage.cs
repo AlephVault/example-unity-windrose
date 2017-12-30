@@ -1,6 +1,6 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using Support.Utils;
 
 namespace WindRose
 {
@@ -89,7 +89,7 @@ namespace WindRose
                 {
                     base.Start();
                     mask = GetComponent<UnityEngine.UI.Mask>();
-                    messageContent = Utils.Layout.RequireComponentInChildren<InteractiveMessageContent>(this.gameObject);
+                    messageContent = Layout.RequireComponentInChildren<InteractiveMessageContent>(this.gameObject);
                     RectTransform me = GetComponent<RectTransform>();
                     content = messageContent.GetComponent<RectTransform>();
                     float myWidth = me.sizeDelta.x;

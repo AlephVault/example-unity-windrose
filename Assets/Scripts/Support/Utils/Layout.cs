@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace WindRose
+namespace Support
 {
     namespace Utils
     {

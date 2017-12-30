@@ -1,6 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using Support.Utils;
 
 namespace WindRose
 {
@@ -44,8 +43,8 @@ namespace WindRose
             // Use this for initialization
             void Awake()
             {
-                width = Utils.Values.Clamp<uint>(1, width, 100);
-                height = Utils.Values.Clamp<uint>(1, height, 100);
+                width = Values.Clamp<uint>(1, width, 100);
+                height = Values.Clamp<uint>(1, height, 100);
                 internalTilemap = new Tilemap(Width, Height, blockMask, maskApplicationOffsetX, maskApplicationOffsetY);
             }
 

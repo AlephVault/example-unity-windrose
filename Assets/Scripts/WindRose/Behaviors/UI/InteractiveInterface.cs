@@ -2,6 +2,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
+using Support.Utils;
 
 namespace WindRose
 {
@@ -49,7 +50,7 @@ namespace WindRose
 
                 void Start()
                 {
-                    interactiveMessage = Utils.Layout.RequireComponentInChildren<InteractiveMessage>(gameObject);
+                    interactiveMessage = Layout.RequireComponentInChildren<InteractiveMessage>(gameObject);
                     interactorsManager = GetComponent<Interactors.InteractorsManager>();
                     hideable = GetComponent<Hideable>();
                 }

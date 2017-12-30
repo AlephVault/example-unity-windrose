@@ -1,12 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-namespace WindRose
+﻿namespace WindRose
 {
     namespace Types
     {
-        public class Exception : System.Exception
+        public class Exception : Support.Types.Exception
         {
             public Exception() {}
             public Exception(string message) : base(message) {}

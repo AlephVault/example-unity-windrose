@@ -1,5 +1,5 @@
 ﻿using System;
-using UnityEngine;
+using Support.Utils;
 
 namespace WindRose
 {
@@ -35,8 +35,8 @@ namespace WindRose
 
                 public SolidMask(uint width, uint height)
                 {
-                    this.width = Utils.Values.Clamp<uint>(1, width, 100);
-                    this.height = Utils.Values.Clamp<uint>(1, height, 100);
+                    this.width = Values.Clamp<uint>(1, width, 100);
+                    this.height = Values.Clamp<uint>(1, height, 100);
                     this.positions = new ushort[this.width * this.height];
                     Array.Clear(this.positions, 0, (int)(this.width * this.height));
                 }

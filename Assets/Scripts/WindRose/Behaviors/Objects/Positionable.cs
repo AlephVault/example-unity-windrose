@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using Support.Utils;
 
 namespace WindRose
 {
@@ -73,11 +74,11 @@ namespace WindRose
                 {
                     // perhaps it will not be added now because the Map component is not yet initialized! (e.g. this method being called from Start())
                     // however, when the Map becomes ready, this method will be called, again, by the map itself, which will exist.
-                    parentMap = Utils.Layout.RequireComponentInParent<Map>(this);
+                    parentMap = Layout.RequireComponentInParent<Map>(this);
                     tilemapObject = new Tilemap.TilemapObject(this, initialX, initialY, width, height, initialSolidness);
                     tilemapObject.Attach(parentMap.InternalTilemap);
                 }
-                catch (Utils.Layout.MissingComponentInParentException)
+                catch (Layout.MissingComponentInParentException)
                 {
                     // nothing - diaper
                 }

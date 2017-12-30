@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Support.Utils;
 
 namespace WindRose.Types
 {
@@ -50,7 +51,7 @@ namespace WindRose.Types
             Width = width;
             Height = height;
             Color32[] pixels = source.GetPixels32();
-            Utils.Textures.Flip(pixels, source.width, source.height);
+            Textures.Flip(pixels, source.width, source.height);
             IEnumerable<bool> pixelToBit = pixels.Select((Color32 color) => color != Color.black);
             uint rowIdx = 0, colIdx = 0;
             foreach (bool value in pixelToBit)
@@ -84,7 +85,7 @@ namespace WindRose.Types
             Color32[] pixels = Enumerable.Range(0, (int)(Width * Height)).Select<int, Color32>(
                 (int idx) => ((bits[idx / 32] & (1 << (int)(idx % 32))) != 0) ? Color.white : Color.black
             ).ToArray();
-            Utils.Textures.Flip(pixels, texture.width, texture.height);
+            Textures.Flip(pixels, texture.width, texture.height);
             texture.SetPixels32(pixels);
             texture.Apply();
             return texture;
@@ -141,10 +142,10 @@ namespace WindRose.Types
             if (offsetX < newWidth && offsetY < newHeight && offsetX + newWidth > 0 && offsetY + newHeight > 0)
             {
                 // startx and endx, like their y-siblings, belong to the translated array.
-                int startX = Utils.Values.Max<int>(offsetX, 0);
-                int endX = Utils.Values.Min<int>(offsetX + (int)Width, (int)newWidth);
-                int startY = Utils.Values.Max<int>(offsetY, 0);
-                int endY = Utils.Values.Min<int>(offsetY + (int)Height, (int)newHeight);
+                int startX = Values.Max<int>(offsetX, 0);
+                int endX = Values.Min<int>(offsetX + (int)Width, (int)newWidth);
+                int startY = Values.Max<int>(offsetY, 0);
+                int endY = Values.Min<int>(offsetY + (int)Height, (int)newHeight);
 
                 // origin array use coordinates subtracting offsetX and offsetY.
                 for(int x = startX; x < endX; x++)
@@ -274,15 +275,15 @@ namespace WindRose.Types
          */
         public void SetSquare(uint xi, uint yi, uint xf, uint yf, bool blocked)
         {
-            xi = Utils.Values.Clamp<uint>(0, xi, Width - 1);
-            yi = Utils.Values.Clamp<uint>(0, yi, Height - 1);
-            xf = Utils.Values.Clamp<uint>(0, xf, Width - 1);
-            yf = Utils.Values.Clamp<uint>(0, yf, Height - 1);
+            xi = Values.Clamp<uint>(0, xi, Width - 1);
+            yi = Values.Clamp<uint>(0, yi, Height - 1);
+            xf = Values.Clamp<uint>(0, xf, Width - 1);
+            yf = Values.Clamp<uint>(0, yf, Height - 1);
 
-            uint xi_ = Utils.Values.Min<uint>(xi, xf);
-            uint xf_ = Utils.Values.Max<uint>(xi, xf);
-            uint yi_ = Utils.Values.Min<uint>(yi, yf);
-            uint yf_ = Utils.Values.Max<uint>(yi, yf);
+            uint xi_ = Values.Min<uint>(xi, xf);
+            uint xf_ = Values.Max<uint>(xi, xf);
+            uint yi_ = Values.Min<uint>(yi, yf);
+            uint yf_ = Values.Max<uint>(yi, yf);
 
             for (uint x = xi_; x <= xf_; x++)
             {
@@ -298,15 +299,15 @@ namespace WindRose.Types
          */
         public bool GetSquare(uint xi, uint yi, uint xf, uint yf, CheckType checkType)
         {
-            xi = Utils.Values.Clamp<uint>(0, xi, Width - 1);
-            yi = Utils.Values.Clamp<uint>(0, yi, Height - 1);
-            xf = Utils.Values.Clamp<uint>(0, xf, Width - 1);
-            yf = Utils.Values.Clamp<uint>(0, yf, Height - 1);
+            xi = Values.Clamp<uint>(0, xi, Width - 1);
+            yi = Values.Clamp<uint>(0, yi, Height - 1);
+            xf = Values.Clamp<uint>(0, xf, Width - 1);
+            yf = Values.Clamp<uint>(0, yf, Height - 1);
 
-            uint xi_ = Utils.Values.Min<uint>(xi, xf);
-            uint xf_ = Utils.Values.Max<uint>(xi, xf);
-            uint yi_ = Utils.Values.Min<uint>(yi, yf);
-            uint yf_ = Utils.Values.Max<uint>(yi, yf);
+            uint xi_ = Values.Min<uint>(xi, xf);
+            uint xf_ = Values.Max<uint>(xi, xf);
+            uint yi_ = Values.Min<uint>(yi, yf);
+            uint yf_ = Values.Max<uint>(yi, yf);
 
             for (uint x = xi_; x <= xf_; x++)
             {
@@ -363,12 +364,12 @@ namespace WindRose.Types
 
         public void SetCell(uint x, uint y, bool blocked)
         {
-            this[Utils.Values.Clamp<uint>(0, x, Width - 1), Utils.Values.Clamp<uint>(0, y, Height - 1)] = blocked;
+            this[Values.Clamp<uint>(0, x, Width - 1), Values.Clamp<uint>(0, y, Height - 1)] = blocked;
         }
 
         public bool GetCell(uint x, uint y)
         {
-            return this[Utils.Values.Clamp<uint>(0, x, Width - 1), Utils.Values.Clamp<uint>(0, y, Height - 1)];
+            return this[Values.Clamp<uint>(0, x, Width - 1), Values.Clamp<uint>(0, y, Height - 1)];
         }
 
         private void CheckSameDimensions(Bitmask other)

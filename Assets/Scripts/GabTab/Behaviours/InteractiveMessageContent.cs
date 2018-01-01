@@ -89,11 +89,11 @@ namespace GabTab
                 {
                     builder.Append(current);
                     textComponent.text = builder.ToString();
-                    yield return new WaitForSeconds(QuickTextMovement ? quickInterval : slowInterval);
+                    yield return new Types.WaitForQuickOrSlowSeconds(quickInterval, slowInterval, delegate() { return QuickTextMovement; });
                 }
                 if (delayAfterFinish)
                 {
-                    yield return new WaitForSeconds(QuickTextMovement ? quickDelayAfterMessage : slowDelayAfterMessage);
+                    yield return new Types.WaitForQuickOrSlowSeconds(quickDelayAfterMessage, slowDelayAfterMessage, delegate () { return QuickTextMovement; });
                 }
                 textBeingSent = false;
             }

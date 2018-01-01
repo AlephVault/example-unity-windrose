@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
-using WindRose.Behaviors.UI;
-using WindRose.Behaviors.UI.Interactors;
+using GabTab.Behaviours;
+using GabTab.Behaviours.Interactors;
 using Support.Utils;
 
 public class SampleTextFiller : MonoBehaviour

@@ -42,7 +42,7 @@ namespace WindRose
                     {
                         throw new ArgumentNullException("holder");
                     }
-                    if (holder.GetComponent<Behaviors.Map>() != null)
+                    if (holder.GetComponent<Behaviours.Map>() != null)
                     {
                         throw new ArgumentException("The specified holder already has a loaded map", "holder");
                     }
@@ -141,7 +141,7 @@ namespace WindRose
                  */
                 private void AddTilemap(GameObject holder, Texture2D blockMask)
                 {
-                    Layout.AddComponent<Behaviors.Map>(holder, new Dictionary<string, object>() {
+                    Layout.AddComponent<Behaviours.Map>(holder, new Dictionary<string, object>() {
                         { "width", Width },
                         { "height", Height },
                         { "blockMask", blockMask },

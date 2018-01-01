@@ -9,7 +9,7 @@ Esto no quiere decir que no podamos usar otras funcionalidades de unity! Por eje
 
 Pero entonces, si tenemos que para muchas cosas podemos usar funcionalidad normal de Unity ¿Qué capacidades nos ofrecen estos objetos?
 
-Bueno, tenemos algunas (WindRose.Behaviors):
+Bueno, tenemos algunas (WindRose.Behaviours):
 
 3.1 Positionable
 

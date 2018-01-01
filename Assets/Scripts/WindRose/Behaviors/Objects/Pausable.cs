@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace WindRose
 {
-    namespace Behaviors
+    namespace Behaviours
     {
         /**
          * This behaviour implements a broadcast for pause/resume methods.

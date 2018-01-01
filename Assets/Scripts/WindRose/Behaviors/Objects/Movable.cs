@@ -2,7 +2,7 @@
 
 namespace WindRose
 {
-    namespace Behaviors
+    namespace Behaviours
     {
         [RequireComponent(typeof(Oriented))]
         public class Movable : MonoBehaviour

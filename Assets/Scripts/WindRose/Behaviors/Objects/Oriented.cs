@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace WindRose
 {
-    namespace Behaviors
+    namespace Behaviours
     {
         [RequireComponent(typeof(Represented))]
         public class Oriented : MonoBehaviour

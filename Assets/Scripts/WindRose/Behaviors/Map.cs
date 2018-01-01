@@ -3,7 +3,7 @@ using Support.Utils;
 
 namespace WindRose
 {
-    namespace Behaviors
+    namespace Behaviours
     {
         using Types.Tilemaps;
 

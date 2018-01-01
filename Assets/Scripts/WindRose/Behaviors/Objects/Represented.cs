@@ -2,7 +2,7 @@
 
 namespace WindRose
 {
-    namespace Behaviors
+    namespace Behaviours
     {
         // Requiring Snapped, instead of Positionable, allows us to
         //   have the features of position automatically updated.

@@ -80,24 +80,24 @@ namespace GabTab
                  *        reference to a local method declared in the same custom, external, behaviour you are
                  *        declaring for this purpose) with this signature:
                  *        
-                 *        IEnumerator SomeMethod(WindRose.Behaviors.UI.Interactors.InteractorsManager manager,
-                 *                               WindRose.Behaviors.UI.InteractiveMessage interactiveMessage)
+                 *        IEnumerator SomeMethod(GabTab.Behaviours.Interactors.InteractorsManager manager,
+                 *                               GabTab.Behaviours.InteractiveMessage interactiveMessage)
                  *   4. You will execute a series (perhaps branched, iterated, and anything that you could achieve
                  *        through structured programming) of interactions with the user.
                  *      An interaction will consist on:
                  *        > Finding wich registered interactor will perform the interaction:
-                 *          WindRose.Behaviors.UI.Interactors.Interactor continueButton = manager["continue"];
+                 *          GabTab.Behaviours.Interactors.Interactor continueButton = manager["continue"];
                  *        > Choosing the messages to send:
-                 *          WindRose.Behaviors.UI.InteractiveMessage.Prompt[] messages = new WindRose.Behaviors.UI.InteractiveMessage.Prompt[] {
-                 *            new WindRose.Behaviors.UI.InteractiveMessage.Prompt("Welcome, stranger, I am Professor Oak, from Palette Town", true),
-                 *            new WindRose.Behaviors.UI.InteractiveMessage.Prompt("You are about to start the best journey of your life", false)
+                 *          GabTab.Behaviours.InteractiveMessage.Prompt[] messages = new GabTab.Behaviours.InteractiveMessage.Prompt[] {
+                 *            new GabTab.Behaviours.InteractiveMessage.Prompt("Welcome, stranger, I am Professor Oak, from Palette Town", true),
+                 *            new GabTab.Behaviours.InteractiveMessage.Prompt("You are about to start the best journey of your life", false)
                  *          };
                  *          // This setting of messages will show, when executed, two messages -the 2nd after the 1st, without clearing the display-
                  *          //   before the input component appears to the user.
                  *        > Run the magic:
                  *          continueButton.Buttons[0].Text = "End";
                  *          continueButton.RunInteraction(interactiveMessage, messages);
-                 *   5. Remember adding the line `using WindRose.Behaviors.UI;` to avoid doing the mess I did in the example I wrote.
+                 *   5. Remember adding the line `using GabTab.Behaviours;` to avoid doing the mess I did in the example I wrote.
                  */
                 public Coroutine RunInteraction(InteractiveMessage interactiveMessage, InteractiveMessage.Prompt[] prompt)
                 {

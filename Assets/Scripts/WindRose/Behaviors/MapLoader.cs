@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace WindRose
 {
-    namespace Behaviors
+    namespace Behaviours
     {
         using Utils.Loaders;
         using Types.Tilemaps.Loaders;

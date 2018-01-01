@@ -6,7 +6,7 @@ using System.Text;
 using UnityEngine;
 using UnityEditor;
 
-namespace WindRose.Behaviors
+namespace WindRose.Behaviours
 {
     [CustomEditor(typeof(MapLoader))]
     public class MapLoaderEditor : Editor

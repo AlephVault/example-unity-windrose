@@ -3,7 +3,7 @@ using GabTab.Behaviours;
 
 namespace WindRose
 {
-    namespace Behaviors
+    namespace Behaviours
     {
         namespace UI
         {

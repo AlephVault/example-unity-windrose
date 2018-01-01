@@ -14,7 +14,7 @@ Todo esto se trata de que hay un "mapa" y varios objetos en él. Realmente no lo 
 
 2.1. Mapas
 
-El script de "mapa" se encuentra en la carpeta Assets/Scripts/WindRose/Behaviors/Map.cs. El GameObject al que se adjunta no necesitará ningún comportamiento preexistente, aunque será su par de coordenadas (x, y) lo que nos interese. En este caso, no es porque esas coordenadas influyan de alguna manera en cómo funciona el motor, sino porque la forma en que se calcula todo lo que es la generación del mapa nos importa.
+El script de "mapa" se encuentra en la carpeta Assets/Scripts/WindRose/Behaviours/Map.cs. El GameObject al que se adjunta no necesitará ningún comportamiento preexistente, aunque será su par de coordenadas (x, y) lo que nos interese. En este caso, no es porque esas coordenadas influyan de alguna manera en cómo funciona el motor, sino porque la forma en que se calcula todo lo que es la generación del mapa nos importa.
 
 A ver: El mapa "crece" hacia arriba y hacia a la derecha (en la pantalla), por eso en un ejemplo yo le puse las coordenadas (-8, -6), es decir, en coordenadas "abajo y a la izquierda", para que se centre en la pantalla (siendo las dimensiones lógicas de 16x12).
 
@@ -53,9 +53,9 @@ III. Podríamos pensar cada mapa/nivel de manera "modular" si tuviéramos una lógi
 
 Con los cargadores de mapas vamos a poder solucionar este problema!
 
-El script de "cargador de mapa" se encuentra en la carpeta Assets/Scripts/WindRose/Behaviors/MapLoader.cs
+El script de "cargador de mapa" se encuentra en la carpeta Assets/Scripts/WindRose/Behaviours/MapLoader.cs
 
-Para agregar uno, necesitamos solamente un GameObject. EL MISMO NO DEBE TENER UN COMPORTAMIENTO WindRose.Behaviors.Map DE ANTEMANO. Eso es un error.
+Para agregar uno, necesitamos solamente un GameObject. EL MISMO NO DEBE TENER UN COMPORTAMIENTO WindRose.Behaviours.Map DE ANTEMANO. Eso es un error.
 La onda con esto, es que el propio GameObject que ahora tiene el MapLoader, va a tener (apenas el nivel arranque) un objeto Map (el que ya explicamos) en sí mismo.
 
 En Tiempo de Ejecución, el MapLoader no tiene más utilidad. TODA SU EJECUCIÓN OCURRE EN Start().

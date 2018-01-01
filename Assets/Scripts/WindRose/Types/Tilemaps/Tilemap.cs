@@ -57,7 +57,7 @@ namespace WindRose
                     public uint Y { get; private set; }
                     public uint Xf { get { return X + Width - 1; } }
                     public uint Yf { get { return Y + Height - 1; } }
-                    public readonly Behaviors.Positionable RelatedComponent;
+                    public readonly Behaviours.Positionable RelatedComponent;
                     public readonly uint Width;
                     public readonly uint Height;
                     public Direction? Movement { get; private set; }
@@ -134,7 +134,7 @@ namespace WindRose
                         return Traverses(Solidness) || Map.IsAdjacencyFree(X, Y, Width, Height, direction);
                     }
 
-                    public TilemapObject(Behaviors.Positionable relatedComponent, uint x, uint y, uint width, uint height, SolidnessStatus solidness)
+                    public TilemapObject(Behaviours.Positionable relatedComponent, uint x, uint y, uint width, uint height, SolidnessStatus solidness)
                     {
                         if (relatedComponent == null)
                         {

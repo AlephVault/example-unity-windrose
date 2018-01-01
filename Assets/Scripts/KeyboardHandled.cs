@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using WindRose.Behaviors;
+using WindRose.Behaviours;
 using WindRose.Types;
 
 [RequireComponent(typeof(Movable))]

@@ -13,7 +13,7 @@ namespace GabTab
          */
         [ExecuteInEditMode]
         [RequireComponent(typeof(RectTransform))]
-        class Hideable : MonoBehaviour
+        public class Hideable : MonoBehaviour
         {
             private RectTransform rectTransform;
             public bool Hidden = false;

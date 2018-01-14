@@ -32,7 +32,7 @@ namespace GabTab
         [RequireComponent(typeof(UnityEngine.UI.Image))]
         [RequireComponent(typeof(Hideable))]
         [RequireComponent(typeof(Interactors.InteractorsManager))]
-        class InteractiveInterface : MonoBehaviour
+        public class InteractiveInterface : MonoBehaviour
         {
             private InteractiveMessage interactiveMessage;
             private Interactors.InteractorsManager interactorsManager;

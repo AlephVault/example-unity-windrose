@@ -10,14 +10,26 @@ namespace GabTab
     {
         namespace Interactors
         {
+            public enum PagingType
+            {
+                SNAPPED = 0,
+                CLAMPED = 1,
+                LOOPONG = 2
+            }
+
+            public enum SelectionStatus
+            {
+                NO, YES, YES_ACTIVE
+            }
+
             /**
              * This interactor allows us to interact with a list of elements. There is no specific
              *   type for the list, since this interactor is a Generic class that should be
              *   overriden each time.
              * 
              * One must always do:
-             *   1. Define which class will work as item source. Any serialziable class will do, but
-             *        one should use a custom class or struct that holds complex data.
+             *   1. Define which class will work as item source. Any class will do, but one should
+             *        use a custom class or struct that holds complex data.
              *   2. Set the `itemDisplays` field in the editor to descendant objects that will serve
              *        as displays of the current data elements. It is recommended that those objects
              *        be an instance of the same prefab. Position will not matter, but perhaps their
@@ -73,12 +85,6 @@ namespace GabTab
                  *   division, in the "paginated" case, while in the "clamped" case, no empty elements will
                  *   be shown, but the offset will be clamped to the last P elements of the list.
                  */
-                public enum PagingType
-                {
-                    SNAPPED = 0,
-                    CLAMPED = 1,
-                    LOOPONG = 2
-                }
                 [SerializeField]
                 private PagingType pagingType = PagingType.SNAPPED;
 
@@ -192,9 +198,7 @@ namespace GabTab
                  *****************************************************************************************
                  *****************************************************************************************
                  * Code interaction data elements. One thing we are allowed to change via code is the
-                 *   list of elements to assing, and the selection choices to assign and retrieve. Also
-                 *   a validator function that would allow or disallow elements in such list to be
-                 *   selected.
+                 *   list of elements to assing, and the selection choices to assign and retrieve.
                  *****************************************************************************************
                  *****************************************************************************************
                  *****************************************************************************************
@@ -226,7 +230,7 @@ namespace GabTab
                  * The currently selected item(s). The last selected item will be considered by us as the "active" item.
                  * However, it will be up to users to actually take care of such quality.
                  */
-                private Support.Types.OrderedSet<ListItem> selectedItems;
+                private Support.Types.OrderedSet<ListItem> selectedItems = new Support.Types.OrderedSet<ListItem>();
 
                 /**
                  * Get/Set the selected items from an array. The last one will be considered active.
@@ -403,6 +407,7 @@ namespace GabTab
                 {
                     if (items == null) return;
 
+                    if (!multiSelect) selectedItems.Clear();
                     if (relative) index = (index + position) % items.Count();
                     ListItem item = items[index];
                     if (selectedItems.Contains(item))
@@ -545,36 +550,13 @@ namespace GabTab
                         HasResult = false;
                         yield return new WaitUntil(() => HasResult);
                         // 3. Validate the selection.
-                        foreach(ListItem item in SelectedItems)
-                        {
-                            // We will not only iterate and report the validation errors.
-                            // We will also report the initial message for validation errors.
-                            InteractiveMessage.Prompt[] prompt = null;
-                            AfterSelectionValidationErrors((InteractiveMessage.Prompt[] reported) => { prompt = reported; });
-                            if (prompt != null)
-                            {
-                                // First comes the initial message (for the first message only)
-                                if (allSelectedItemsAreValid)
-                                {
-                                    // The condition being true implies this is our first validation error
-                                    InteractiveMessage.Prompt[] initialPrompt = null;
-                                    AfterSelectionValidationErrors((InteractiveMessage.Prompt[] reported) => { initialPrompt = reported; });
-                                    if (initialPrompt != null) yield return message.PromptMessages(initialPrompt);
-                                }
-
-                                // Then comes the validation error, and clearing the flag
-                                yield return message.PromptMessages(prompt);
-                                allSelectedItemsAreValid = false;
-                            }
+                        System.Collections.Generic.List<InteractiveMessage.Prompt> prompt = new System.Collections.Generic.List<InteractiveMessage.Prompt>();
+                        ValidateSelection(SelectedItems, (InteractiveMessage.Prompt[] reported) => prompt.AddRange(reported));
+                        if (prompt.Count > 0) {
+                            allSelectedItemsAreValid = false;
+                            yield return message.PromptMessages(prompt.ToArray());
                         }
-                        // 4. Report a final message when validation failed.
-                        if (!allSelectedItemsAreValid)
-                        {
-                            InteractiveMessage.Prompt[] finalPrompt = null;
-                            AfterSelectionValidationErrors((InteractiveMessage.Prompt[] reported) => { finalPrompt = reported; });
-                            if (finalPrompt != null) yield return message.PromptMessages(finalPrompt);
-                        }
-                        // 5. Repeat until the validation does not fail.
+                        // 4. Repeat until the validation does not fail.
                     }
                     while (!allSelectedItemsAreValid);
                     // At this point, each item in SelectedItems is valid
@@ -593,13 +575,28 @@ namespace GabTab
                 }
 
                 /**
+                 * Validates items being selected. By default, this implies validating every item separately. The user can freely
+                 *   overwrite this method, and create a bypass to report the messages in a different way (e.g. by adding more
+                 *   messages to be prompted).
+                 * 
+                 * As for the separate validation mechanism, THIS METHOD SHOULD NOT HAVE/PRODUCE ANY SIDE EFFECT.
+                 */
+                protected virtual void ValidateSelection(ListItem[] selectedItems, Action<InteractiveMessage.Prompt[]> reportInvalidMessage)
+                {
+                    foreach (ListItem item in selectedItems)
+                    {
+                        ValidateSelectedItem(item, reportInvalidMessage);
+                    }
+                }
+
+                /**
                  * Validates an item being selected. It is up to the user to implement this method, or just
                  *   leave it as it is right now: no validation is performed by default.
                  * 
                  * When the user wants to fail a validation, all they must do is to invoke the function being
                  *   passed as second argument.
                  * 
-                 * THIS FUNCTION SHOULD NOT HAVE/PRODUCE ANY SIDE EFFECT. The reason: this function will be
+                 * THIS METHOD SHOULD NOT HAVE/PRODUCE ANY SIDE EFFECT. The reason: this function will be
                  *   invoked in three different contexts:
                  *   
                  *   1. Initial check on the overall list of elements to see whether at least one is selectable.
@@ -607,25 +604,7 @@ namespace GabTab
                  *        element differently.
                  *   3. Actually validating a selection (submitting a result).
                  */
-                protected void ValidateSelectedItem(ListItem item, Action<InteractiveMessage.Prompt[]> reportInvalidMessage)
-                {
-                }
-
-                /**
-                 * Allows us to report an initial message before the first validation error.
-                 * It is actually safe to not implement this one.
-                 * 
-                 * PLEASE NOTE: The amount or nature of error messages is not known at this point.
-                 */
-                protected void BeforeSelectionValidationErrors(Action<InteractiveMessage.Prompt[]> reportMessage)
-                {
-                }
-
-                /**
-                 * Allows us to report an initial message after the last validation error.
-                 * It is actually safe to not implement this one.
-                 */
-                protected void AfterSelectionValidationErrors(Action<InteractiveMessage.Prompt[]> reportMessage)
+                protected virtual void ValidateSelectedItem(ListItem item, Action<InteractiveMessage.Prompt[]> reportInvalidMessage)
                 {
                 }
 
@@ -645,24 +624,19 @@ namespace GabTab
                  *****************************************************************************************/
 
                 /**
-                 * When starting, it will check whether the type is serializable, and yell if not.
-                 * Then it will also check and install buttons:
+                 * When starting, will also check and install buttons:
                  * 1. It is an error to not specify a continue button for a multiSelect list.
                  * 2. If no specifying continue button to a single select list, then clicking an
                  *      element will both select the item AND act as the default behaviour for
                  *      a present continue button.
-                 * 3. A default behaviour for both continue and cancel button. It will be the same for both!
+                 * 3. A default behaviour for both continue and cancel button. Both will end the interaction!
                  *    The true difference between both buttons is that the continue button will be disabled
-                 *      when no selection is made.
+                 *      when no selection is made, and the cancel button also releases any selection. leaving
+                 *      it empty.
                  * 4. A standard behaviour for standard navigation buttons.
                  */
                 protected void Start()
                 {
-                    if (!typeof(ListItem).IsSerializable)
-                    {
-                        throw new Types.Exception("The type argument must be serializable for this class to work");
-                    }
-
                     if (itemDisplays.Length < 1)
                     {
                         throw new Types.Exception("The list of item displays must not be empty. Open the Editor and add at least one GameObject");
@@ -672,6 +646,7 @@ namespace GabTab
                     {
                         throw new Types.Exception("No continue button is specified, and the list has multiSelect=false - There is no way to end the interaction positively");
                     }
+                    base.Start();
 
                     // Setting click handlers for GameObjects that have buttons
                     // There are two possibilities:
@@ -686,7 +661,8 @@ namespace GabTab
                             Button button = itemDisplays[i].GetComponent<Button>();
                             if (button)
                             {
-                                button.onClick.AddListener(() => ToggleOne(i, true));
+                                int currentIndex = i;
+                                button.onClick.AddListener(() => ToggleOne(currentIndex, true));
                             }
                         }
                     }
@@ -738,7 +714,11 @@ namespace GabTab
 
                     if (cancelButton)
                     {
-                        cancelButton.onClick.AddListener(() => HasResult = true);
+                        cancelButton.onClick.AddListener(() => {
+                            SelectedItems = new ListItem[0];
+                            RenderItems();
+                            HasResult = true;
+                        });
                     }
 
                     //Finally, an initial reset.
@@ -758,11 +738,6 @@ namespace GabTab
                  *****************************************************************************************
                  *****************************************************************************************/
 
-                public enum SelectionStatus
-                {
-                    NO, YES, YES_ACTIVE
-                }
-
                 /**
                  * This method re-renders the items accordingly. Is called by Reset, Rewind and Move* methods.
                  * There will be display items not being rendered (And instead being hidden) when no data is
@@ -775,11 +750,12 @@ namespace GabTab
                 {
                     for(int i = 0; i < itemDisplays.Length; i++)
                     {
-                        if (position + i < items.Count)
+                        int endIndex = pagingType == PagingType.LOOPONG ? (position + i) % items.Count : position + i;
+                        if (endIndex < items.Count)
                         {
-                            ListItem item = items[position + i];
+                            ListItem item = items[endIndex];
                             GameObject display = itemDisplays[i];
-                            SelectionStatus status = (selectedItems.Last.Equals(item) ? SelectionStatus.YES_ACTIVE : (selectedItems.Contains(item) ? SelectionStatus.YES : SelectionStatus.NO));
+                            SelectionStatus status = (selectedItems.Count > 0 && selectedItems.Last.Equals(item) ? SelectionStatus.YES_ACTIVE : (selectedItems.Contains(item) ? SelectionStatus.YES : SelectionStatus.NO));
                             bool selectable = ItemIsSelectable(item);
                             RenderItem(item, display, selectable, status);
                             itemDisplays[i].SetActive(true);
@@ -853,7 +829,7 @@ namespace GabTab
                  * If the user needs to update, enable, or disable components (e.g. custom navigation buttons), they should do
                  *   that in THIS method.
                  */
-                protected void RenderExtraDetails()
+                protected virtual void RenderExtraDetails()
                 {
                     // No implementation. This empty implementation is safe.
                 }

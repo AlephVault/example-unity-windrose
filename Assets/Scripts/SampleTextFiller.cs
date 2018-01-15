@@ -10,6 +10,8 @@ public class SampleTextFiller : MonoBehaviour
     const string QUESTION = "Our last hope is a once-heard legend to become true. Would you join our quest?";
     const string YOURNAME = "I'm glad to hear that! What is your name?";
     const string MISSING = "Well, let me call you \"{0}\".";
+    const string ZODIAC_QUESTION = "What is your zodiacal sign?";
+    const string ZODIAC_ANSWER = "Ok. Your sign is {0}.";
     const string THANKYOU = "{0}, if our world survives I will ensure your name will be remembered for centuries.";
     const string FUCKOFF = "Then go home and eat a bag of d*cks, you f*cking lame. Our world is doomed.";
 
@@ -30,6 +32,7 @@ public class SampleTextFiller : MonoBehaviour
         ButtonsInteractor yesnoInteractor = (ButtonsInteractor)manager["yesno-input"];
         NullInteractor nullInteractor = (NullInteractor)manager["null-input"];
         TextInteractor textInteractor = (TextInteractor)manager["string-input"];
+        ZodiacListInteractor zodiacInteractor = (ZodiacListInteractor)manager["zodiac-input"];
         yield return yesnoInteractor.RunInteraction(interactiveMessage, new InteractiveMessage.Prompt[] {
             new InteractiveMessage.Prompt(INTRO), new InteractiveMessage.Prompt(QUESTION)
         });
@@ -47,17 +50,23 @@ public class SampleTextFiller : MonoBehaviour
             else
             {
                 name = "Anonymous";
-                yield return nullInteractor.RunInteraction(interactiveMessage, new InteractiveMessage.Prompt[] {
+                yield return nullInteractor.RunInteraction(interactiveMessage, new[] {
                     new InteractiveMessage.Prompt(string.Format(MISSING, name), false)
                 });
             }
-            yield return nullInteractor.RunInteraction(interactiveMessage, new InteractiveMessage.Prompt[] {
-                new InteractiveMessage.Prompt(string.Format(THANKYOU, name), false)
+            yield return zodiacInteractor.RunInteraction(interactiveMessage, new[] {
+                new InteractiveMessage.Prompt(ZODIAC_QUESTION)
+            });
+            yield return nullInteractor.RunInteraction(interactiveMessage, new[] {
+                new InteractiveMessage.Prompt(string.Format(ZODIAC_ANSWER, zodiacInteractor.SelectedItems[0].Text), true)
+            });
+            yield return nullInteractor.RunInteraction(interactiveMessage, new[] {
+                new InteractiveMessage.Prompt(string.Format(THANKYOU, name), true)
             });
         }
         else
         {
-            yield return nullInteractor.RunInteraction(interactiveMessage, new InteractiveMessage.Prompt[] {
+            yield return nullInteractor.RunInteraction(interactiveMessage, new[] {
                 new InteractiveMessage.Prompt(FUCKOFF)
             });
         }

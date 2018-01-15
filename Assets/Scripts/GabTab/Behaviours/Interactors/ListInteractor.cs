@@ -673,8 +673,9 @@ namespace GabTab
                             Button button = itemDisplays[i].GetComponent<Button>();
                             if (button)
                             {
+                                int currentIndex = i;
                                 button.onClick.AddListener(() => {
-                                    SelectOne(i, true);
+                                    SelectOne(currentIndex, true);
                                     HasResult = true;
                                 });
                             }

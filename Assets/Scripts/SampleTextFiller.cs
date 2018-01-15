@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System.Linq;
+using System.Collections;
 using UnityEngine;
 using GabTab.Behaviours;
 using GabTab.Behaviours.Interactors;
@@ -12,6 +13,8 @@ public class SampleTextFiller : MonoBehaviour
     const string MISSING = "Well, let me call you \"{0}\".";
     const string ZODIAC_QUESTION = "What is your zodiacal sign?";
     const string ZODIAC_ANSWER = "Ok. Your sign is {0}.";
+    const string ELEMENTS_QUESTION = "Which elements' powers do you want to pick?";
+    const string ELEMENTS_ANSWER = "You are picking elements {0}.";
     const string THANKYOU = "{0}, if our world survives I will ensure your name will be remembered for centuries.";
     const string FUCKOFF = "Then go home and eat a bag of d*cks, you f*cking lame. Our world is doomed.";
 
@@ -33,6 +36,7 @@ public class SampleTextFiller : MonoBehaviour
         NullInteractor nullInteractor = (NullInteractor)manager["null-input"];
         TextInteractor textInteractor = (TextInteractor)manager["string-input"];
         ZodiacListInteractor zodiacInteractor = (ZodiacListInteractor)manager["zodiac-input"];
+        ElementListInteractor elementsInteractor = (ElementListInteractor)manager["elements-input"];
         yield return yesnoInteractor.RunInteraction(interactiveMessage, new InteractiveMessage.Prompt[] {
             new InteractiveMessage.Prompt(INTRO), new InteractiveMessage.Prompt(QUESTION)
         });
@@ -59,6 +63,12 @@ public class SampleTextFiller : MonoBehaviour
             });
             yield return nullInteractor.RunInteraction(interactiveMessage, new[] {
                 new InteractiveMessage.Prompt(string.Format(ZODIAC_ANSWER, zodiacInteractor.SelectedItems[0].Text), true)
+            });
+            yield return elementsInteractor.RunInteraction(interactiveMessage, new[] {
+                new InteractiveMessage.Prompt(ELEMENTS_QUESTION)
+            });
+            yield return nullInteractor.RunInteraction(interactiveMessage, new[] {
+                new InteractiveMessage.Prompt(string.Format(ELEMENTS_ANSWER, string.Join(", ", elementsInteractor.SelectedItems.Select((e) => e.Text).ToArray()), true))
             });
             yield return nullInteractor.RunInteraction(interactiveMessage, new[] {
                 new InteractiveMessage.Prompt(string.Format(THANKYOU, name), true)

@@ -642,7 +642,7 @@ namespace GabTab
                         throw new Types.Exception("The list of item displays must not be empty. Open the Editor and add at least one GameObject");
                     }
 
-                    if (multiSelect && continueButton != null)
+                    if (multiSelect && continueButton == null)
                     {
                         throw new Types.Exception("No continue button is specified, and the list has multiSelect=false - There is no way to end the interaction positively");
                     }

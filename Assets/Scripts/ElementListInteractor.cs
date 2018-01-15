@@ -10,9 +10,9 @@ class ElementListInteractor : TextOptionListInteractor
     {
         base.Start();
         Items = new List<TextOption>(new[] {
-            new TextOption("agua", "Agua"), new TextOption("fuego", "Fuego"), new TextOption("tierra", "Tierra"),
-            new TextOption("viento", "Viento"), new TextOption("madera", "Madera"), new TextOption("metal", "Metal"),
-            new TextOption("espiritu", "Espiritu"), new TextOption("vacio", "Vacio"), new TextOption("mente", "Mente"),
+            new TextOption("agua", "Water"), new TextOption("fuego", "Fire"), new TextOption("tierra", "Earth"),
+            new TextOption("viento", "Wind"), new TextOption("madera", "Wood"), new TextOption("metal", "Metal"),
+            new TextOption("espiritu", "Spirit"), new TextOption("vacio", "Void"), new TextOption("mente", "Mind"),
             new TextOption("pleroma", "Pleroma", false)
         });
     }
@@ -27,19 +27,19 @@ class ElementListInteractor : TextOptionListInteractor
         bool metal = selectedItems.Where((TextOption item) => item.Key == "metal").Any();
         if (selectedItems.Length != 3)
         {
-            reportInvalidMessage(new[] { new InteractiveMessage.Prompt("Debes elegir exactamente 3 elementos", false, true) });
+            reportInvalidMessage(new[] { new InteractiveMessage.Prompt("You must pick exactly 3 elements", true, true) });
         }
         if (fuego && agua)
         {
-            reportInvalidMessage(new[] { new InteractiveMessage.Prompt("No se puede seleccionar fuego y agua", false, true) });
+            reportInvalidMessage(new[] { new InteractiveMessage.Prompt("You cannot pick both fire and water", true, true) });
         }
         if (tierra && viento)
         {
-            reportInvalidMessage(new[] { new InteractiveMessage.Prompt("No se puede seleccionar tierra y viento", false, true) });
+            reportInvalidMessage(new[] { new InteractiveMessage.Prompt("You cannot pick both earth and wind", true, true) });
         }
         if (madera && metal)
         {
-            reportInvalidMessage(new[] { new InteractiveMessage.Prompt("No se puede seleccionar madera y metal", false, true) });
+            reportInvalidMessage(new[] { new InteractiveMessage.Prompt("You cannot pick both wood and metal", true, true) });
         }
         base.ValidateSelection(selectedItems, reportInvalidMessage);
     }

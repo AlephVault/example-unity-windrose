@@ -27,19 +27,19 @@ class ElementListInteractor : TextOptionListInteractor
         bool metal = selectedItems.Where((TextOption item) => item.Key == "metal").Any();
         if (selectedItems.Length != 3)
         {
-            reportInvalidMessage(new[] { new InteractiveMessage.Prompt("You must pick exactly 3 elements", true, true) });
+            reportInvalidMessage(new[] { new InteractiveMessage.Prompt("You must pick exactly 3 elements. ", true, true) });
         }
         if (fuego && agua)
         {
-            reportInvalidMessage(new[] { new InteractiveMessage.Prompt("You cannot pick both fire and water", true, true) });
+            reportInvalidMessage(new[] { new InteractiveMessage.Prompt("You cannot pick both fire and water. ", true, true) });
         }
         if (tierra && viento)
         {
-            reportInvalidMessage(new[] { new InteractiveMessage.Prompt("You cannot pick both earth and wind", true, true) });
+            reportInvalidMessage(new[] { new InteractiveMessage.Prompt("You cannot pick both earth and wind. ", true, true) });
         }
         if (madera && metal)
         {
-            reportInvalidMessage(new[] { new InteractiveMessage.Prompt("You cannot pick both wood and metal", true, true) });
+            reportInvalidMessage(new[] { new InteractiveMessage.Prompt("You cannot pick both wood and metal. ", true, true) });
         }
         base.ValidateSelection(selectedItems, reportInvalidMessage);
     }

@@ -333,10 +333,19 @@ namespace GabTab
                     switch(pagingType)
                     {
                         case PagingType.LOOPONG:
-                            position = (position + numItems) % items.Count;
+                            numItems %= items.Count;
+                            position = (items.Count + position + numItems) % items.Count;
                             break;
                         default:
-                            position = Support.Utils.Values.Clamp<int>(0, position + numItems, items.Count - 1);
+                            position += numItems;
+                            if (numItems < 0)
+                            {
+                                position = (position < 0) ? 0 : position;
+                            }
+                            else
+                            {
+                                position = (position > items.Count - itemDisplays.Length) ? items.Count - itemDisplays.Length : position;
+                            }
                             break;
                     }
                     RenderItems();
@@ -365,10 +374,11 @@ namespace GabTab
                             position += Support.Utils.Values.Clamp<int>(min, numItems, max) * itemDisplays.Length;
                             break;
                         case PagingType.CLAMPED:
-                            position = Support.Utils.Values.Clamp<int>(0, position + numItems * itemDisplays.Length, items.Count - 1);
+                            position = Support.Utils.Values.Clamp<int>(0, position + numItems * itemDisplays.Length, items.Count - itemDisplays.Length);
                             break;
                         case PagingType.LOOPONG:
-                            position = (position + numItems * itemDisplays.Length) % items.Count;
+                            numItems = (numItems * itemDisplays.Length) % items.Count;
+                            position = (items.Count + position + numItems) % items.Count;
                             break;
                     }
 
@@ -469,7 +479,7 @@ namespace GabTab
                             return true;
                         default:
                             int newPosition = position + numItems;
-                            return 0 <= newPosition && newPosition <= items.Count - 1;
+                            return (numItems < 0) && (0 <= newPosition) || (numItems > 0) && (newPosition <= items.Count - itemDisplays.Length);
                     }
                 }
 
@@ -488,8 +498,7 @@ namespace GabTab
                             int max = (items.Count - 1 - position) / itemDisplays.Length;
                             return min <= numPages && numPages <= max;
                         case PagingType.CLAMPED:
-                            int newPosition = position + numPages * itemDisplays.Length;
-                            return 0 <= newPosition && newPosition <= items.Count - 1;
+                            return (numPages < 0) && (position > 0) || (numPages > 0) && (position < items.Count - itemDisplays.Length);
                         case PagingType.LOOPONG:
                             return true;
                         default:
@@ -800,7 +809,7 @@ namespace GabTab
 
                     if (nextPageButton != null)
                     {
-                        nextButton.interactable = CanMovePages(1);
+                        nextPageButton.interactable = CanMovePages(1);
                     }
 
                     if (prevButton != null)

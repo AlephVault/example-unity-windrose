@@ -96,9 +96,6 @@ Vamos a tener la capacidad de instalar y manejar VARIOS de estos conjuntos de an
         La onda con esto es que lo usemos no arbitrariamente, sino como parte de otro comportamiento (por ejemplo, el comportamiento Movable
         va a hacer precisamente esto: agregar un key nuevo, con un conjunto nuevo de animaciones).
 
-  LA CAGUÉ, y tengo que meterle la funcionalidad esta: Permitir reemplazar el contenido de las animaciones.
-    No sé en qué momento se me saltó eso pero necesitaríamos uno onda ReplaceAnimationSet o algo así.
-
   V. orientable.Pause(_): Congela este comportamiento, de tal manera que no se verá cambiar ni el conjunto de animación actual ni la orientación.
   VI. orientable.Resume(): Descongela este comportamiento, para que funcione normalmente.
 

@@ -67,15 +67,39 @@ namespace WindRose
                 animationKey = (overriddenKeyForIdleAnimation == null) ? IDLE_ANIMATION : overriddenKeyForIdleAnimation;
             }
 
+            /**
+             * Usually, adding an animation set is done when creating custom behaviours.
+             *   Adding one will check whether the key does not exist, and fail otherwise.
+             */
             public void AddAnimationSet(string key, Types.AnimationSet animation)
             {
                 if (animations.ContainsKey(key))
                 {
-                    throw new Exception("AnimationSet key already in use: " + key);
+                    throw new Types.Exception("AnimationSet key already in use: " + key);
                 }
                 else
                 {
                     animations.Add(key, animation.Clone());
+                }
+            }
+
+            /**
+             * In contrast to AddAnimationSet, this method replaces an existing animation set
+             *   in the middle of an execution of all the present behaviours. This method will check
+             *   whether the animation exists beforehand, and fail otherwise.
+             *   
+             * This is intentional to prevent any accident creating new animations when it was not intended.
+             */
+            public void ReplaceAnimationSet(string key, Types.AnimationSet animation)
+            {
+                if (animations.ContainsKey(key))
+                {
+                    throw new Types.Exception("AnimationSet key does not exist: " + key);
+                }
+                else
+                {
+                    animations[key] = animation.Clone();
+                    if (key == animationKey) SetCurrentAnimation();
                 }
             }
 

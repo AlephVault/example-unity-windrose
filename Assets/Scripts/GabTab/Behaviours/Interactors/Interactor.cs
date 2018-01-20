@@ -116,12 +116,12 @@ namespace GabTab
                     // This helps us allocating more visual space so the displayed
                     //   interface does not hide the text in the message.
                     int length = prompt.Length;
-                    if (length > 0)
+                    if (length > 0 && (prompt[length - 1] is InteractiveMessage.MessagePrompt))
                     {
-                        // Replaces the last prompt with a new one with additional newlines
+                        // Adds newlines to the last prompt.
                         string extraSpaces = new String('\n', (int)newlinesToAddWhenShowing);
-                        InteractiveMessage.Prompt lastPrompt = prompt[length - 1];
-                        prompt[length - 1] = new InteractiveMessage.Prompt(lastPrompt.message + extraSpaces, lastPrompt.clearBeforeStart, lastPrompt.clearBeforeStart);
+                        InteractiveMessage.MessagePrompt lastPrompt = prompt[length - 1] as InteractiveMessage.MessagePrompt;
+                        prompt[length - 1] = new InteractiveMessage.MessagePrompt(lastPrompt.Message + extraSpaces);
                     }
                     yield return interactiveMessage.PromptMessages(prompt);
                     interactionDisplaying = true;

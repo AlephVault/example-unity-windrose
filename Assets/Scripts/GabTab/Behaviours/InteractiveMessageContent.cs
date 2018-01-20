@@ -27,16 +27,6 @@ namespace GabTab
          * The text message will be filled at different speeds (you can configure a slow and a quick speed).
          * You can also change (at runtime) whether the text should be filled using the quick or slow
          *   speed (this is useful if, e.g., having a button that accelerates the text filling).
-         * 
-         * The behaviour is implemented by StartTextMessage(string, bool, bool). The second parameter is
-         *   optional and defaults to true. When true, it will clear the former text in the display before
-         *   starting a new message. The third parameter is also optional and tells whether to wait a delay
-         *   or not (according to `slowDelayAfterMessage` and `quickDelayAfterMessage`) after the message
-         *   is fully displayed.
-         * 
-         * The stated behaviour should not be invoked on its own, but only by InteractiveMessage lifecycle
-         *   (which in turn, should only be called inside implementation of methods in Interactor class
-         *   and subclasses).
          */
         [RequireComponent(typeof(UnityEngine.UI.Text))]
         [RequireComponent(typeof(UnityEngine.UI.ContentSizeFitter))]
@@ -63,39 +53,33 @@ namespace GabTab
                 textComponent = GetComponent<UnityEngine.UI.Text>();
             }
 
-            /**
-             * Starts a text message in the display. It can be stated whether to clear the former text in the display, and whether
-             *   to wait a time so the user ends reading it, or not.
-             */
-            public Coroutine StartTextMessage(string text, bool clearFormerTextBeforeStart = true, bool delayAfterFinish = true)
+            public Types.WaitForQuickOrSlowSeconds CharacterWaiterCoroutine()
             {
-                return StartCoroutine(TextMessageCoroutine(text, clearFormerTextBeforeStart, delayAfterFinish));
+                return new Types.WaitForQuickOrSlowSeconds(
+                    Values.Max(0.00001f, quickTimeBetweenLetters),
+                    Values.Max(0.0001f, slowTimeBetweenLetters),
+                    delegate () { return QuickTextMovement; }
+                );
             }
 
-            private IEnumerator TextMessageCoroutine(string text, bool clearFormerTextBeforeStart = true, bool delayAfterFinish = true)
+            public Types.WaitForQuickOrSlowSeconds ExplicitWaiterCoroutine(float? seconds = null)
             {
-                if (textBeingSent)
+                if (seconds == null)
                 {
-                    throw new Types.Exception("Cannot start a text message: A previous text message is already being sent");
+                    return new Types.WaitForQuickOrSlowSeconds(
+                        Values.Max(0.00001f, quickDelayAfterMessage),
+                        Values.Max(0.0001f, slowDelayAfterMessage),
+                        delegate () { return QuickTextMovement; }
+                    );
                 }
-
-                textBeingSent = true;
-                text = text ?? "";
-                float slowInterval = Values.Max(0.0001f, slowTimeBetweenLetters);
-                float quickInterval = Values.Max(0.00001f, quickTimeBetweenLetters);
-                StringBuilder builder = new StringBuilder(clearFormerTextBeforeStart ? "" : textComponent.text);
-
-                foreach (char current in text)
+                else
                 {
-                    builder.Append(current);
-                    textComponent.text = builder.ToString();
-                    yield return new Types.WaitForQuickOrSlowSeconds(quickInterval, slowInterval, delegate() { return QuickTextMovement; });
+                    return new Types.WaitForQuickOrSlowSeconds(
+                        Values.Max(0.00001f, seconds.Value / 10),
+                        Values.Max(0.0001f, seconds.Value),
+                        delegate () { return QuickTextMovement; }
+                    );
                 }
-                if (delayAfterFinish)
-                {
-                    yield return new Types.WaitForQuickOrSlowSeconds(quickDelayAfterMessage, slowDelayAfterMessage, delegate () { return QuickTextMovement; });
-                }
-                textBeingSent = false;
             }
         }
     }

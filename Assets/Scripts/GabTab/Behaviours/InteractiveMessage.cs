@@ -1,5 +1,7 @@
 ﻿using System.Collections;
+using System.Text;
 using UnityEngine;
+using UnityEngine.UI;
 using Support.Utils;
 
 namespace GabTab
@@ -35,32 +37,134 @@ namespace GabTab
          *   safely set or clear this flag, but the ideal behaviour is that you set or clear this flag
          *   depending on whether a button is pressed or not (however it is a matter of taste).
          */
-        [RequireComponent(typeof(UnityEngine.UI.Mask))]
-        [RequireComponent(typeof(UnityEngine.UI.Image))]
-        public class InteractiveMessage : UnityEngine.UI.ScrollRect
+        [RequireComponent(typeof(Mask))]
+        [RequireComponent(typeof(Image))]
+        public class InteractiveMessage : ScrollRect
         {
             /**
-             * A message setting to send to the display. It has 3 members:
-             * 
-             * message: text to display.
-             * clearBeforeStart: whether the display should be erased before showing this text.
-             * delayAfterEnd: whether we add an additional timeout so the user can end reading
-             *   the message before it gets erased or another message continues.
+             * A message-displaying instruction to run in the display.
              */
-            public class Prompt
+            public abstract class Prompt
             {
-                public readonly string message;
-                public readonly bool clearBeforeStart;
-                public readonly bool delayAfterEnd;
-                public Prompt(string msg, bool clear = true, bool delay = true)
+                public abstract IEnumerator ToDisplay(InteractiveMessageContent content, StringBuilder builder, char? lastChar = null);
+            }
+
+            /**
+             * This instruction sends a newline to the display.
+             */
+            public class NewlinePrompt : Prompt
+            {
+                public readonly bool OnlyIfSignificant;
+                public NewlinePrompt(bool onlyIfSignificant)
                 {
-                    message = msg;
-                    clearBeforeStart = clear;
-                    delayAfterEnd = delay;
+                    OnlyIfSignificant = onlyIfSignificant;
+                }
+
+                public override IEnumerator ToDisplay(InteractiveMessageContent content, StringBuilder builder, char? lastChar = null)
+                {
+                    if (lastChar != null && lastChar != '\n' || !OnlyIfSignificant)
+                    {
+                        builder.Append('\n');
+                        content.GetComponent<Text>().text = builder.ToString();
+                        yield return content.CharacterWaiterCoroutine();
+                    }
                 }
             }
 
-            private UnityEngine.UI.Mask mask;
+            /**
+             * This instruction clears the display.
+             */
+            public class ClearPrompt : Prompt
+            {
+                public override IEnumerator ToDisplay(InteractiveMessageContent content, StringBuilder builder, char? lastChar = null)
+                {
+                    builder.Remove(0, builder.Length);
+                    content.GetComponent<Text>().text = "";
+                    yield return content.CharacterWaiterCoroutine();
+                }
+            }
+
+            /**
+             * This instruction sends text to the display.
+             */
+            public class MessagePrompt : Prompt
+            {
+                public readonly string Message;
+                public MessagePrompt(string message)
+                {
+                    Message = message;
+                }
+
+                public override IEnumerator ToDisplay(InteractiveMessageContent content, StringBuilder builder, char? lastChar = null)
+                {
+                    Text textComponent = content.GetComponent<Text>();
+                    foreach (char c in Message)
+                    {
+                        builder.Append(c);
+                        textComponent.text = builder.ToString();
+                        yield return content.CharacterWaiterCoroutine();
+                    }
+                }
+            }
+
+            /**
+             * This instruction waits a specific time in the display before doing more stuff there.
+             * The slow time will be specified, and the quick time calculated by dividing it on 10,
+             *   or will be taken, as default, from the content settings.
+             */
+            public class WaiterPrompt : Prompt
+            {
+                public readonly float? SecondsToWait;
+                public WaiterPrompt(float? secondsToWait)
+                {
+                    SecondsToWait = secondsToWait;
+                }
+
+                public override IEnumerator ToDisplay(InteractiveMessageContent content, StringBuilder builder, char? lastChar = null)
+                {
+                    yield return content.ExplicitWaiterCoroutine(SecondsToWait);
+                }
+            }
+
+            /**
+             * You can chain many calls like this:
+             *   Prompt[] all = PromptBuilder.Clear().Write("Hello world.").Write("How are you?").Newline().Write("Have a nice day").End();
+             */
+            public class PromptBuilder
+            {
+                private System.Collections.Generic.List<Prompt> list = new System.Collections.Generic.List<Prompt>();
+
+                public PromptBuilder Wait(float? seconds = null)
+                {
+                    list.Add(new WaiterPrompt(seconds));
+                    return this;
+                }
+
+                public PromptBuilder Write(string message)
+                {
+                    list.Add(new MessagePrompt(message));
+                    return this;
+                }
+
+                public PromptBuilder NewlinePrompt(bool onlyIfSignificant)
+                {
+                    list.Add(new NewlinePrompt(onlyIfSignificant));
+                    return this;
+                }
+
+                public PromptBuilder Clear()
+                {
+                    list.Add(new ClearPrompt());
+                    return this;
+                }
+
+                public Prompt[] End()
+                {
+                    return list.ToArray();
+                }
+            }
+
+            private Mask mask;
 
             /**
              * A big part of the magic is delegated to this component, which actually performs the
@@ -86,7 +190,7 @@ namespace GabTab
             protected override void Start()
             {
                 base.Start();
-                mask = GetComponent<UnityEngine.UI.Mask>();
+                mask = GetComponent<Mask>();
                 messageContent = Layout.RequireComponentInChildren<InteractiveMessageContent>(this.gameObject);
                 RectTransform me = GetComponent<RectTransform>();
                 content = messageContent.GetComponent<RectTransform>();
@@ -108,9 +212,13 @@ namespace GabTab
 
             private IEnumerator MessagesPrompter(Prompt[] prompt)
             {
+                Text textComponent = messageContent.GetComponent<Text>();
+                StringBuilder builder = new StringBuilder(textComponent.text);
+
                 foreach (Prompt prompted in prompt)
                 {
-                    yield return messageContent.StartTextMessage(prompted.message, prompted.clearBeforeStart, prompted.delayAfterEnd);
+                    string currentText = textComponent.text;
+                    yield return StartCoroutine(prompted.ToDisplay(messageContent, builder, currentText != "" ? (char?)currentText[currentText.Length - 1] : null));
                 }
             }
 

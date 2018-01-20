@@ -41,7 +41,7 @@ public class TextOptionListInteractor : ListInteractor<TextOption>
     {
         if (!item.Available)
         {
-            reportInvalidMessage(new[] { new InteractiveMessage.Prompt(string.Format("{0} is not available.\n", item.Text), false, true) });
+            reportInvalidMessage(new InteractiveMessage.PromptBuilder().Write(string.Format("{0} is not available.\n", item.Text)).Wait().End());
         }
     }
 }

@@ -558,7 +558,6 @@ namespace GabTab
                         // 2. Wait for a result (i.e. a selection).
                         HasResult = false;
                         yield return new WaitUntil(() => HasResult);
-                        // 3. Validate the selection.
                         System.Collections.Generic.List<InteractiveMessage.Prompt> prompt = new System.Collections.Generic.List<InteractiveMessage.Prompt>();
                         ValidateSelection(SelectedItems, (InteractiveMessage.Prompt[] reported) => prompt.AddRange(reported));
                         if (prompt.Count > 0) {

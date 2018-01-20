@@ -40,15 +40,11 @@ public class SampleTextFiller : MonoBehaviour
         ZodiacListInteractor zodiacInteractor = (ZodiacListInteractor)manager["zodiac-input"];
         ElementListInteractor elementsInteractor = (ElementListInteractor)manager["elements-input"];
         CharacterClassListInteractor charClassInteractor = (CharacterClassListInteractor)manager["charclass-input"];
-        yield return yesnoInteractor.RunInteraction(interactiveMessage, new InteractiveMessage.Prompt[] {
-            new InteractiveMessage.Prompt(INTRO), new InteractiveMessage.Prompt(QUESTION)
-        });
+        yield return yesnoInteractor.RunInteraction(interactiveMessage, new InteractiveMessage.PromptBuilder().Clear().Write(INTRO).Wait().Clear().Write(QUESTION).Wait().End());
         if (yesnoInteractor.Result == "yes")
         {
             textInteractor.PlaceholderPrompt = "Enter your name ...";
-            yield return textInteractor.RunInteraction(interactiveMessage, new InteractiveMessage.Prompt[] {
-                new InteractiveMessage.Prompt(YOURNAME)
-            });
+            yield return textInteractor.RunInteraction(interactiveMessage, new InteractiveMessage.PromptBuilder().Clear().Write(YOURNAME).Wait().End());
             string name;
             if (textInteractor.Result == true)
             {
@@ -57,37 +53,19 @@ public class SampleTextFiller : MonoBehaviour
             else
             {
                 name = "Anonymous";
-                yield return nullInteractor.RunInteraction(interactiveMessage, new[] {
-                    new InteractiveMessage.Prompt(string.Format(MISSING, name), false)
-                });
+                yield return nullInteractor.RunInteraction(interactiveMessage, new InteractiveMessage.PromptBuilder().Write(string.Format(MISSING, name)).Wait().End());
             }
-            yield return zodiacInteractor.RunInteraction(interactiveMessage, new[] {
-                new InteractiveMessage.Prompt(ZODIAC_QUESTION)
-            });
-            yield return nullInteractor.RunInteraction(interactiveMessage, new[] {
-                new InteractiveMessage.Prompt(string.Format(ZODIAC_ANSWER, zodiacInteractor.SelectedItems[0].Text), true)
-            });
-            yield return elementsInteractor.RunInteraction(interactiveMessage, new[] {
-                new InteractiveMessage.Prompt(ELEMENTS_QUESTION)
-            });
-            yield return nullInteractor.RunInteraction(interactiveMessage, new[] {
-                new InteractiveMessage.Prompt(string.Format(ELEMENTS_ANSWER, string.Join(", ", elementsInteractor.SelectedItems.Select((e) => e.Text).ToArray()), true))
-            });
-            yield return charClassInteractor.RunInteraction(interactiveMessage, new[] {
-                new InteractiveMessage.Prompt(CHARCLASS_QUESTION)
-            });
-            yield return nullInteractor.RunInteraction(interactiveMessage, new[] {
-                new InteractiveMessage.Prompt(string.Format(CHARCLASS_ANSWER, charClassInteractor.SelectedItems[0].Text), true)
-            });
-            yield return nullInteractor.RunInteraction(interactiveMessage, new[] {
-                new InteractiveMessage.Prompt(string.Format(THANKYOU, name), true)
-            });
+            yield return zodiacInteractor.RunInteraction(interactiveMessage, new InteractiveMessage.PromptBuilder().Clear().Write(ZODIAC_QUESTION).Wait().End());
+            yield return nullInteractor.RunInteraction(interactiveMessage, new InteractiveMessage.PromptBuilder().Clear().Write(string.Format(ZODIAC_ANSWER, zodiacInteractor.SelectedItems[0].Text)).Wait().End());
+            yield return elementsInteractor.RunInteraction(interactiveMessage, new InteractiveMessage.PromptBuilder().Clear().Write(ELEMENTS_QUESTION).Wait().End());
+            yield return nullInteractor.RunInteraction(interactiveMessage, new InteractiveMessage.PromptBuilder().Clear().Write(string.Format(ELEMENTS_ANSWER, string.Join(", ", elementsInteractor.SelectedItems.Select((e) => e.Text).ToArray()))).Wait().End());
+            yield return charClassInteractor.RunInteraction(interactiveMessage, new InteractiveMessage.PromptBuilder().Clear().Write(CHARCLASS_QUESTION).Wait().End());
+            yield return nullInteractor.RunInteraction(interactiveMessage, new InteractiveMessage.PromptBuilder().Clear().Write(string.Format(CHARCLASS_ANSWER, charClassInteractor.SelectedItems[0].Text)).Wait().End());
+            yield return nullInteractor.RunInteraction(interactiveMessage, new InteractiveMessage.PromptBuilder().Clear().Write(string.Format(THANKYOU, name)).Wait().End());
         }
         else
         {
-            yield return nullInteractor.RunInteraction(interactiveMessage, new[] {
-                new InteractiveMessage.Prompt(FUCKOFF)
-            });
+            yield return nullInteractor.RunInteraction(interactiveMessage, new InteractiveMessage.PromptBuilder().Clear().Write(FUCKOFF).Wait().End());
         }
     }
 }

@@ -63,15 +63,22 @@ namespace WindRose
                     public Direction? Movement { get; private set; }
                     public SolidnessStatus Solidness { get; private set; }
 
+                    private static bool MakesHole(SolidnessStatus solidness)
+                    {
+                        // Holes will occupy in the opposite way
+                        return solidness == SolidnessStatus.Hole;
+                    }
+
                     private static bool Occupies(SolidnessStatus solidness)
                     {
                         // Ghost objects will not occupy space
-                        return solidness != SolidnessStatus.Ghost;
+                        return solidness == SolidnessStatus.Solid || solidness == SolidnessStatus.SolidForOthers;
                     }
 
                     private static bool Traverses(SolidnessStatus solidness)
                     {
                         // Solid objects cannot traverse/overlap others.
+                        Debug.Log("Traverses: " + (solidness != SolidnessStatus.Solid));
                         return solidness != SolidnessStatus.Solid;
                     }
 
@@ -94,32 +101,67 @@ namespace WindRose
 
                     private static bool OccupianceChanges(SolidnessStatus oldStatus, SolidnessStatus newStatus)
                     {
-                        return Occupies(oldStatus) ^ Occupies(newStatus);
+                        return (Occupies(oldStatus) != Occupies(newStatus)) || (MakesHole(oldStatus) != MakesHole(newStatus));
                     }
 
                     private void IncrementBody()
                     {
-                        if (Occupies(Solidness)) Map.IncrementBody(X, Y, Width, Height);
+                        if (Occupies(Solidness))
+                        {
+                            Map.IncrementBody(X, Y, Width, Height);
+                        }
+                        else if (MakesHole(Solidness))
+                        {
+                            Map.DecrementBody(X, Y, Width, Height);
+                        }
                     }
 
                     private void DecrementBody()
                     {
-                        if (Occupies(Solidness)) Map.DecrementBody(X, Y, Width, Height);
+                        if (Occupies(Solidness))
+                        {
+                            Map.DecrementBody(X, Y, Width, Height);
+                        }
+                        else if (MakesHole(Solidness))
+                        {
+                            Map.IncrementBody(X, Y, Width, Height);
+                        }
                     }
 
                     private void IncrementAdjacent()
                     {
-                        if (Occupies(Solidness)) Map.IncrementAdjacent(X, Y, Width, Height, Movement);
+                        if (Occupies(Solidness))
+                        {
+                            Map.IncrementAdjacent(X, Y, Width, Height, Movement);
+                        }
+                        else if (MakesHole(Solidness))
+                        {
+                            Map.DecrementAdjacent(X, Y, Width, Height, Movement);
+                        }
                     }
 
                     private void DecrementAdjacent()
                     {
-                        if (Occupies(Solidness)) Map.DecrementAdjacent(X, Y, Width, Height, Movement);
+                        if (Occupies(Solidness))
+                        {
+                            Map.DecrementAdjacent(X, Y, Width, Height, Movement);
+                        }
+                        else if (MakesHole(Solidness))
+                        {
+                            Map.IncrementAdjacent(X, Y, Width, Height, Movement);
+                        }
                     }
 
                     private void DecrementOppositeAdjacent()
                     {
-                        if (Occupies(Solidness)) Map.DecrementAdjacent(X, Y, Width, Height, Opposite(Movement));
+                        if (Occupies(Solidness))
+                        {
+                            Map.DecrementAdjacent(X, Y, Width, Height, Opposite(Movement));
+                        }
+                        else if (MakesHole(Solidness))
+                        {
+                            Map.IncrementAdjacent(X, Y, Width, Height, Opposite(Movement));
+                        }
                     }
 
                     private void TriggerEvent(string targetEvent, params System.Object[] args)

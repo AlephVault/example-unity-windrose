@@ -9,7 +9,7 @@ namespace WindRose
     {
         namespace Tilemaps
         {
-            public enum SolidnessStatus { Ghost, SolidForOthers, Solid };
+            public enum SolidnessStatus { Hole, Ghost, SolidForOthers, Solid };
         }
     }
 }

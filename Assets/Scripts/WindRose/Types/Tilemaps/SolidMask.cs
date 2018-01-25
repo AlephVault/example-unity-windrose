@@ -31,13 +31,13 @@ namespace WindRose
                 }
 
                 public readonly uint width, height;
-                private ushort[] positions;
+                private short[] positions;
 
                 public SolidMask(uint width, uint height)
                 {
                     this.width = Values.Clamp<uint>(1, width, 100);
                     this.height = Values.Clamp<uint>(1, height, 100);
-                    this.positions = new ushort[this.width * this.height];
+                    this.positions = new short[this.width * this.height];
                     Array.Clear(this.positions, 0, (int)(this.width * this.height));
                 }
 
@@ -67,7 +67,7 @@ namespace WindRose
                         uint offset = j * this.width + x;
                         for (uint i = 0; i < width; i++)
                         {
-                            if (this.positions[offset] < ushort.MaxValue)
+                            if (this.positions[offset] < short.MaxValue)
                             {
                                 this.positions[offset++]++;
                             }
@@ -98,7 +98,7 @@ namespace WindRose
                         uint offset = j * this.width + x;
                         for (uint i = 0; i < width; i++)
                         {
-                            if (this.positions[offset] > ushort.MinValue)
+                            if (this.positions[offset] > short.MinValue)
                             {
                                 this.positions[offset++]--;
                             }

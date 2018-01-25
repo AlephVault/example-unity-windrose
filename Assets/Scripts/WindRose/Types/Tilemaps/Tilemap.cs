@@ -78,7 +78,6 @@ namespace WindRose
                     private static bool Traverses(SolidnessStatus solidness)
                     {
                         // Solid objects cannot traverse/overlap others.
-                        Debug.Log("Traverses: " + (solidness != SolidnessStatus.Solid));
                         return solidness != SolidnessStatus.Solid;
                     }
 

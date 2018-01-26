@@ -19,7 +19,7 @@ namespace WindRose
              *   design as consistent as possible among scene and sprites.
              */
 
-            public const uint GAME_UNITS_PER_TILE_UNITS = 1;
+            public const uint GAME_UNITS_PER_TILE_UNITS = Map.GAME_UNITS_PER_TILE_UNITS;
 
             private Positionable positionable;
 

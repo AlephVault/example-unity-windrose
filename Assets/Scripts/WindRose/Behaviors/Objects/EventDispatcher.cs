@@ -19,8 +19,6 @@ namespace WindRose
              *   provide external access
              */
 
-            private Positionable positionable;
-
             private Action<Map> onAttached = (_) => {};
             private Action onDetached = () => {};
             private Action<Types.Direction> onMovementStarted = (_) => {};

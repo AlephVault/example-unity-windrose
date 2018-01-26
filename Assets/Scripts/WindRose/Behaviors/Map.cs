@@ -19,6 +19,8 @@ namespace WindRose
              *   be used by children objects.
              */
 
+            public const uint GAME_UNITS_PER_TILE_UNITS = 1;
+
             [SerializeField]
             private uint width;
 

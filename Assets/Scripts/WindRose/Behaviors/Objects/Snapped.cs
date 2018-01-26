@@ -32,6 +32,9 @@ namespace WindRose
             // Update is called once per frame
             void Update()
             {
+                // Run this code only if this object is attached to a map
+                if (positionable.ParentMap == null) return;
+
                 bool snapInX = false;
                 bool snapInY = false;
                 bool clampInX = false;

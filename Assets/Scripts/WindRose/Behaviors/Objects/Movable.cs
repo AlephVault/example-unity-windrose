@@ -75,6 +75,8 @@ namespace WindRose
             // Update is called once per frame
             void Update()
             {
+                if (positionable.ParentMap == null) return;
+
                 if (IsMoving)
                 {
                     // The object has to perform movement.

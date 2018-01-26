@@ -21,6 +21,8 @@ class WaypointHandled : MonoBehaviour
     [SerializeField]
     private WayStep[] waySteps;
     private bool isDead = false;
+    private Coroutine currentCoroutine = null;
+    private int currentStepIndex = 0;
 
     // Use this for initialization
     void Start()
@@ -29,17 +31,22 @@ class WaypointHandled : MonoBehaviour
         oriented = GetComponent<Oriented>();
     }
 
-    void OnAttached()
+    void OnAttached(object[] args)
     {
         if (waySteps.Length != 0)
         {
-            StartCoroutine(PerformMovement());
+            currentCoroutine = StartCoroutine(PerformMovement());
         }
+    }
+
+    void OnDetached()
+    {
+        if (currentCoroutine != null) StopCoroutine(currentCoroutine);
+        currentCoroutine = null;
     }
 
     IEnumerator PerformMovement()
     {
-        int currentStepIndex = 0;
         while(true)
         {
             WayStep currentStep = waySteps[currentStepIndex];

@@ -45,7 +45,7 @@ namespace WindRose
             {
                 width = Values.Clamp<uint>(1, width, 100);
                 height = Values.Clamp<uint>(1, height, 100);
-                internalTilemap = new Tilemap(Width, Height, blockMask, maskApplicationOffsetX, maskApplicationOffsetY);
+                internalTilemap = new Tilemap(this, Width, Height, blockMask, maskApplicationOffsetX, maskApplicationOffsetY);
             }
 
             private void Start()

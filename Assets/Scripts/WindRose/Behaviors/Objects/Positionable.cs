@@ -63,6 +63,16 @@ namespace WindRose
                 tilemapObject.Detach();
             }
 
+            void OnAttached(object[] args)
+            {
+                parentMap = (Map)(((Tilemap)(args[0])).RelatedMap);
+            }
+
+            void OnDetached()
+            {
+                parentMap = null;
+            }
+
             public void Initialize()
             {
                 if (tilemapObject != null)
@@ -82,6 +92,17 @@ namespace WindRose
                 {
                     // nothing - diaper
                 }
+            }
+
+            public void Detach()
+            {
+                tilemapObject.Detach();
+            }
+
+            public void Attach(Map map, uint? x = null, uint? y = null, bool force = false)
+            {
+                if (force) Detach();
+                tilemapObject.Attach(map != null ? map.InternalTilemap : null, x, y);
             }
 
             public void Teleport(uint? x, uint? y)
@@ -106,7 +127,7 @@ namespace WindRose
 
             public bool CancelMovement()
             {
-                return tilemapObject != null  && !paused && tilemapObject.CancelMovement();
+                return tilemapObject != null && !paused && tilemapObject.CancelMovement();
             }
 
             void Pause(bool fullFreeze)

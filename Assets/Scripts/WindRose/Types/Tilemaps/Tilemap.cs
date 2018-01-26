@@ -49,6 +49,7 @@ namespace WindRose
                 private SolidMask solidMask;
                 public readonly uint Width;
                 public readonly uint Height;
+                public readonly Behaviours.Map RelatedMap;
 
                 public class TilemapObject
                 {
@@ -240,7 +241,7 @@ namespace WindRose
                         {
                             Movement = direction;
                             IncrementAdjacent();
-                            TriggerEvent("OnMovementStarted", Movement);
+                            TriggerEvent("OnMovementStarted", Movement.Value);
                             return true;
                         }
                         else
@@ -341,16 +342,22 @@ namespace WindRose
                  * The block mask will be immutable, since it will never be modified. OTOH the solid mask (for the objects layer)
                  *   will be mutable. But those layers are initialized inside the tilemap.
                  */
-                public Tilemap(uint width, uint height, Texture2D source, int maskApplicationOffsetX = 0, int maskApplicationOffsetY = 0)
+                public Tilemap(Behaviours.Map relatedMap, uint width, uint height, Texture2D source, int maskApplicationOffsetX = 0, int maskApplicationOffsetY = 0)
                 {
+                    if (relatedMap == null)
+                    {
+                        throw new NullReferenceException("Related map for tile map must not be null");
+                    }
+
                     if (width < 1 || width > MAX_WIDTH || height < 1 || height > MAX_HEIGHT)
                     {
                         throw new InvalidDimensionsException(width, height);
                     }
 
-                    this.Width = width;
-                    this.Height = height;
-                    this.solidMask = new SolidMask(width, height);
+                    RelatedMap = relatedMap;
+                    Width = width;
+                    Height = height;
+                    solidMask = new SolidMask(width, height);
                     if (source != null)
                     {
                         Bitmask bitMask = new Bitmask(source);
@@ -358,11 +365,11 @@ namespace WindRose
                         {
                             bitMask = bitMask.Translated(width, height, maskApplicationOffsetX, maskApplicationOffsetY);
                         }
-                        this.blockMask = bitMask;
+                        blockMask = bitMask;
                     }
                     else
                     {
-                        this.blockMask = new Bitmask(width, height);
+                        blockMask = new Bitmask(width, height);
                     }
                 }
 

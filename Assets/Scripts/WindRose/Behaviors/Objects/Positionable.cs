@@ -60,6 +60,12 @@ namespace WindRose
             }
 
             #if UNITY_EDITOR
+            // This is lame since the function will still exist when running in the editor mode.
+            // Although it will not exist when running the game once deployed, when testing this app
+            //   in the editor with a lot of Positionable objects, it will slow down somewhat since
+            //   there will a lot of calls to this Update method just checking the condition (which
+            //   will always return false). This is a crap I cannot get rid of, until Unity allows
+            //   a difference between Unity Editor being run, and Unity Editor in design time.
             private void Update()
             {
                 if (!Application.isPlaying)

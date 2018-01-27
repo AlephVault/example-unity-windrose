@@ -8,6 +8,7 @@ namespace WindRose
         using Types;
         using Types.Tilemaps;
 
+        [ExecuteInEditMode]
         [RequireComponent(typeof(Pausable))]
         public class Positionable : MonoBehaviour
         {
@@ -58,14 +59,24 @@ namespace WindRose
                 Initialize();
             }
 
+            #if UNITY_EDITOR
+            private void Update()
+            {
+                if (!Application.isPlaying)
+                {
+                    transform.localPosition = new Vector3(initialX * Map.GAME_UNITS_PER_TILE_UNITS, - (int)initialY * Map.GAME_UNITS_PER_TILE_UNITS, transform.localPosition.z);
+                }
+            }
+            #endif
+
             void OnDestroy()
             {
-                tilemapObject.Detach();
+                Detach();
             }
 
             void OnAttached(object[] args)
             {
-                parentMap = (Map)(((Tilemap)(args[0])).RelatedMap);
+                parentMap = ((Tilemap)(args[0])).RelatedMap;
             }
 
             void OnDetached()
@@ -75,6 +86,8 @@ namespace WindRose
 
             public void Initialize()
             {
+                if (!Application.isPlaying) return;
+
                 if (tilemapObject != null)
                 {
                     return;

@@ -52,10 +52,7 @@ class WaypointHandled : MonoBehaviour
             WayStep currentStep = waySteps[currentStepIndex];
 
             // Waiting for delay
-            if (currentStep.delay > 0)
-            {
-                yield return new WaitForSeconds(currentStep.delay);
-            }
+            yield return new WaitForSeconds(currentStep.delay);
 
             // If dead, aborting
             if (isDead)

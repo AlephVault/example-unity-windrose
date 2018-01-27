@@ -8,23 +8,35 @@ namespace Support
         {
             public delegate V DictionaryMergePicker<K, V>(K key, V leftValue, V rightValue);
 
-            public static T Min<T>(T a, T b)
+            public static T Min<T>(T a, T b) where T : struct
             {
                 return (Comparer<T>.Default.Compare(a, b) < 0) ? a : b;
             }
 
-            public static T Max<T>(T a, T b)
+            public static T Max<T>(T a, T b) where T : struct
             {
                 return (Comparer<T>.Default.Compare(a, b) > 0) ? a : b;
             }
 
-            public static T Clamp<T>(T min, T value, T max)
+            public static T Clamp<T>(T? min, T value, T? max) where T : struct
             {
-                if (Comparer<T>.Default.Compare(max, min) < 0)
+                if (min == null && max == null)
+                {
+                    return value;
+                }
+                else if (min == null)
+                {
+                    return Min<T>(value, max.Value);
+                }
+                else if (max == null)
+                {
+                    return Max<T>(value, min.Value);
+                }
+                else if (Comparer<T>.Default.Compare(max.Value, min.Value) < 0)
                 {
                     return Clamp<T>(max, value, min);
                 }
-                return Min<T>(Max<T>(min, value), max);
+                return Min<T>(Max<T>(min.Value, value), max.Value);
             }
 
             public static Dictionary<K, V> merge<K, V>(Dictionary<K, V> left, Dictionary<K, V> right, bool inplace = true, DictionaryMergePicker<K, V> picker = null)

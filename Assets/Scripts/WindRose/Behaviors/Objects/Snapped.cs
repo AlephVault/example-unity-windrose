@@ -44,10 +44,10 @@ namespace WindRose
                 float initialY = -transform.localPosition.y;
                 float innerX = 0;
                 float innerY = 0;
-                float minX = 0;
-                float maxX = 0;
-                float minY = 0;
-                float maxY = 0;
+                float? minX = 0;
+                float? maxX = 0;
+                float? minY = 0;
+                float? maxY = 0;
                 float finalX = 0;
                 float finalY = 0;
                 
@@ -59,26 +59,26 @@ namespace WindRose
                     case Types.Direction.LEFT:
                         snapInY = true;
                         clampInX = true;
-                        minX = (positionable.X - 1) * GAME_UNITS_PER_TILE_UNITS;
+                        minX = null; //(positionable.X - 1) * GAME_UNITS_PER_TILE_UNITS;
                         maxX = positionable.X * GAME_UNITS_PER_TILE_UNITS;
                         break;
                     case Types.Direction.RIGHT:
                         snapInY = true;
                         clampInX = true;
                         minX = positionable.X * GAME_UNITS_PER_TILE_UNITS;
-                        maxX = (positionable.X + 1) * GAME_UNITS_PER_TILE_UNITS;
+                        maxX = null; //(positionable.X + 1) * GAME_UNITS_PER_TILE_UNITS;
                         break;
                     case Types.Direction.UP:
                         snapInX = true;
                         clampInY = true;
-                        minY = (positionable.Y - 1) * GAME_UNITS_PER_TILE_UNITS;
+                        minY = null; //(positionable.Y - 1) * GAME_UNITS_PER_TILE_UNITS;
                         maxY = positionable.Y * GAME_UNITS_PER_TILE_UNITS;
                         break;
                     case Types.Direction.DOWN:
                         snapInX = true;
                         clampInY = true;
                         minY = positionable.Y * GAME_UNITS_PER_TILE_UNITS;
-                        maxY = (positionable.Y + 1) * GAME_UNITS_PER_TILE_UNITS;
+                        maxY = null; //(positionable.Y + 1) * GAME_UNITS_PER_TILE_UNITS;
                         break;
                     default:
                         snapInX = true;

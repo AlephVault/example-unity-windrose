@@ -44,8 +44,8 @@ namespace WindRose
             /* *********************** Public properties *********************** */
 
             public Map ParentMap { get { return parentMap; } }
-            public uint Width { get { return tilemapObject.Width; } }
-            public uint Height { get { return tilemapObject.Height; } }
+            public uint Width { get { return width; } } // Referencing directly allows us to query the width without a map assigned yet.
+            public uint Height { get { return width; } } // Referencing directly allows us to query the height without a map assigned yet.
             public uint X { get { return tilemapObject.X; } }
             public uint Y { get { return tilemapObject.Y; } }
             public uint Xf { get { return tilemapObject.Xf; } }

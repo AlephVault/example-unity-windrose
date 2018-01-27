@@ -99,7 +99,7 @@ namespace WindRose
 
             void OnAttached(object[] args)
             {
-                onAttached((Map)(args[0]));
+                onAttached((Map)(((Types.Tilemaps.Tilemap)(args[0])).RelatedMap));
             }
 
             void OnDetached()

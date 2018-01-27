@@ -109,7 +109,11 @@ namespace WindRose
 
             public void Detach()
             {
-                tilemapObject.Detach();
+                // There are some times at startup when the Tilemap object may be null.
+                // That's why we run the conditional.
+                //
+                // For the general cases, Detach will find a tilemapObject attached.
+                if (tilemapObject != null) tilemapObject.Detach();
             }
 
             public void Attach(Map map, uint? x = null, uint? y = null, bool force = false)

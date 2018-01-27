@@ -72,14 +72,14 @@ namespace Support
 
             public static T RequireComponentInChildren<T>(GameObject current) where T : Component
             {
-                T component = current.GetComponentsInChildren<T>(true).First();
-                if (component == null)
+                T[] components = current.GetComponentsInChildren<T>(true);
+                if (components.Length == 0)
                 {
                     throw new MissingComponentInChildrenException("Current object's children must, at least, have one component of type " + typeof(T).FullName);
                 }
                 else
                 {
-                    return component;
+                    return components.First();
                 }
             }
 

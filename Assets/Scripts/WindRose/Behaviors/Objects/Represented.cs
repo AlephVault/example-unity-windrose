@@ -11,7 +11,7 @@ namespace WindRose
         //   automatically be called, and Positionable will be
         //   present anyway.
         [RequireComponent(typeof(Snapped))]
-        [RequireComponent(typeof(SpriteRenderer))]
+        [RequireComponent(typeof(Sorted))]
         public class Represented : MonoBehaviour
         {
             /**
@@ -21,14 +21,9 @@ namespace WindRose
              */
 
             private SpriteRenderer spriteRenderer;
-            private Positionable positionable;
 
             [SerializeField]
             private Types.AnimationSpec defaultAnimation;
-
-            public enum SubLayer { LOW, MIDDLE, HIGH }
-            [SerializeField]
-            private SubLayer subLayer = SubLayer.MIDDLE;
 
             private Types.AnimationSpec currentAnimation;
 
@@ -46,17 +41,13 @@ namespace WindRose
             void Start()
             {
                 spriteRenderer = GetComponent<SpriteRenderer>();
-                positionable = GetComponent<Positionable>();
                 SetDefaultAnimation();
             }
 
             void Update()
             {
-                // We order the sprite
-                int sortingOffset = (int)(positionable.ParentMap.Width + positionable.ParentMap.Height) * ((int)(subLayer));
-                spriteRenderer.sortingOrder = sortingOffset + (int)(positionable.Yf * positionable.ParentMap.Width + positionable.Xf);
-                // And also set the current animation.
-                //   We are sure this animation will be non-empty.
+                // We set the current animation.
+                // We are sure this animation will be non-empty.
                 currentAnimation.Thick();
                 spriteRenderer.sprite = currentAnimation.CurrentSprite;
             }

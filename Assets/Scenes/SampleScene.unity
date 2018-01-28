@@ -2687,6 +2687,7 @@ GameObject:
   - component: {fileID: 850159753}
   - component: {fileID: 850159752}
   - component: {fileID: 850159751}
+  - component: {fileID: 850159756}
   m_Layer: 0
   m_Name: Hole
   m_TagString: Untagged
@@ -2722,7 +2723,6 @@ MonoBehaviour:
     sprites:
     - {fileID: 21300000, guid: 5acf5812dbc8de64f8072efbd559dd1a, type: 3}
     fps: 0
-  subLayer: 0
 --- !u!212 &850159752
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -2805,6 +2805,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c6b592f73c40ee543b4a91a132c2a574, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &850159756
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 850159749}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73f236f5f490f704c8fdd7dd1439a2d7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  subLayer: 0
 --- !u!1 &863551272
 GameObject:
   m_ObjectHideFlags: 0
@@ -5239,6 +5251,7 @@ GameObject:
   - component: {fileID: 1514043982}
   - component: {fileID: 1514043981}
   - component: {fileID: 1514043984}
+  - component: {fileID: 1514043985}
   m_Layer: 0
   m_Name: SampleTrigger
   m_TagString: Untagged
@@ -5274,7 +5287,6 @@ MonoBehaviour:
     sprites:
     - {fileID: 21300000, guid: a0e5dd3cc85437740ae87f306e155710, type: 3}
     fps: 1
-  subLayer: 1
 --- !u!114 &1514043977
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5420,6 +5432,18 @@ MonoBehaviour:
   logExit: 1
   logMoved: 1
   logStay: 1
+--- !u!114 &1514043985
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1514043974}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73f236f5f490f704c8fdd7dd1439a2d7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  subLayer: 1
 --- !u!1 &1581773166
 GameObject:
   m_ObjectHideFlags: 0
@@ -6185,6 +6209,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c6b592f73c40ee543b4a91a132c2a574, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1680133210
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1680133206}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73f236f5f490f704c8fdd7dd1439a2d7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  subLayer: 1
 --- !u!114 &1680133216
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7042,6 +7078,23 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1895116145}
+--- !u!1 &1903621701 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 1122780924300796, guid: 82eef48316d2a4e45997a37868a97d21,
+    type: 2}
+  m_PrefabInternal: {fileID: 429930737}
+--- !u!114 &1903621702
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1903621701}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73f236f5f490f704c8fdd7dd1439a2d7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  subLayer: 1
 --- !u!1 &1904334231 stripped
 GameObject:
   m_PrefabParentObject: {fileID: 1736310973645326, guid: e588751305668984a9984005971b08ab,

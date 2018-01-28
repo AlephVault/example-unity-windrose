@@ -10,6 +10,7 @@ namespace WindRose
         // We make no use of Snapped at all, but the behavior will
         //   automatically be called, and Positionable will be
         //   present anyway.
+        [RequireComponent(typeof(Snapped))]
         [RequireComponent(typeof(SpriteRenderer))]
         public class Sorted : MonoBehaviour
         {

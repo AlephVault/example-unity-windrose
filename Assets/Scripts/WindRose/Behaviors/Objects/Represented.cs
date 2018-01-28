@@ -26,6 +26,10 @@ namespace WindRose
             [SerializeField]
             private Types.AnimationSpec defaultAnimation;
 
+            public enum SubLayer { LOW, MIDDLE, HIGH }
+            [SerializeField]
+            private SubLayer subLayer = SubLayer.MIDDLE;
+
             private Types.AnimationSpec currentAnimation;
 
             public Types.AnimationSpec CurrentAnimation
@@ -49,7 +53,8 @@ namespace WindRose
             void Update()
             {
                 // We order the sprite
-                spriteRenderer.sortingOrder = (int)(positionable.Yf * positionable.ParentMap.Width + positionable.Xf) * 3 + 1;
+                int sortingOffset = (int)(positionable.ParentMap.Width + positionable.ParentMap.Height) * ((int)(subLayer));
+                spriteRenderer.sortingOrder = sortingOffset + (int)(positionable.Yf * positionable.ParentMap.Width + positionable.Xf);
                 // And also set the current animation.
                 //   We are sure this animation will be non-empty.
                 currentAnimation.Thick();

@@ -100,7 +100,7 @@ namespace WindRose
             {
                 MapTriggerCallbacks cbs = registeredCallbacks[sender];
                 registeredCallbacks.Remove(sender);
-                sender.GetComponent<EventDispatcher>().onMovementFinished.AddListener(cbs.OnMapTriggerMoved);
+                sender.GetComponent<EventDispatcher>().onMovementFinished.RemoveListener(cbs.OnMapTriggerMoved);
             }
 
             void ClearAllCallbacks()

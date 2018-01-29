@@ -53,7 +53,7 @@ namespace WindRose
                     return Map;
                 }
 
-                void Start()
+                void Awake()
                 {
                     InteractiveInterface interactiveInterface = GetComponent<InteractiveInterface>();
                     interactiveInterface.beforeRunningInteraction.AddListener(delegate () {

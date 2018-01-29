@@ -4990,7 +4990,7 @@ Prefab:
     - target: {fileID: 114907474632291964, guid: 4d49ab3f52c28d44c93e06dc49b8ea0c,
         type: 2}
       propertyPath: speed
-      value: 3
+      value: 8
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 0}
@@ -5430,10 +5430,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c990ff992fa30ef49877c4bc84306b5d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  logEnter: 1
-  logExit: 1
-  logMoved: 1
-  logStay: 1
+  logEnter: 0
+  logExit: 0
+  logMoved: 0
+  logStay: 0
 --- !u!114 &1514043985
 MonoBehaviour:
   m_ObjectHideFlags: 0

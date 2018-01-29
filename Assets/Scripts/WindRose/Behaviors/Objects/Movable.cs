@@ -146,23 +146,29 @@ namespace WindRose
                          *    This is intended to avoid movement clamping against the target due to high speeds.
                          * 2a. If the distance between this target position and the origin is less than the distance between the target and the origin,
                          *     we just increment the position.
-                         * 2c. Otherwise we ALSO mark the movement as completed, and start a new one (adapting origin and target)
+                         * 2c. Otherwise (LOOPING) we ALSO mark the movement as completed, and start a new one (adapting origin and target)
                          */
                         Vector2 movementDestination = target + versor * (1 + movementNorm);
                         Vector2 movement = Vector2.MoveTowards(transform.localPosition, movementDestination, movementNorm);
-                        float traversedDistanceSinceOrigin = (movement - origin).magnitude;
                         // Adjusting the position as usual
                         transform.localPosition = new Vector3(movement.x, movement.y, transform.localPosition.z);
-                        if (traversedDistanceSinceOrigin >= Map.GAME_UNITS_PER_TILE_UNITS)
+                        while (true)
                         {
-                            // Continue with a new movement
+                            float traversedDistanceSinceOrigin = (movement - origin).magnitude;
+
+                            // We break this loop if the delta is lower than 1 game unit because we
+                            //   do not need to mark new movements anymore.
+                            if (traversedDistanceSinceOrigin < Map.GAME_UNITS_PER_TILE_UNITS) break;
+
+                            // We intend to at least finish this movement and perhaps continue with a new one
                             Types.Direction currentMovement = Movement.Value;
                             positionable.FinishMovement();
                             if (traversedDistanceSinceOrigin > Map.GAME_UNITS_PER_TILE_UNITS)
                             {
                                 origin = target;
                                 target = target + targetOffset;
-                                positionable.StartMovement(currentMovement);
+                                // If the movement cannot be performed, we break this loop 
+                                if (!positionable.StartMovement(currentMovement)) break;
                             }
                         }
                     }

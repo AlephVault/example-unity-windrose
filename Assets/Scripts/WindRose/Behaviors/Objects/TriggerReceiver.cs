@@ -155,9 +155,13 @@ namespace WindRose
                 }
             }
 
-            void Start()
+            void Awake()
             {
                 positionable = GetComponent<Positionable>();
+            }
+
+            void Start()
+            {
                 if (positionable.Solidness != Types.Tilemaps.SolidnessStatus.Ghost && positionable.Solidness != Types.Tilemaps.SolidnessStatus.Hole)
                 {
                     positionable.SetSolidness(Types.Tilemaps.SolidnessStatus.Ghost);

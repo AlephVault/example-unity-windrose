@@ -38,9 +38,13 @@ namespace WindRose
                 CurrentAnimation = defaultAnimation;
             }
 
-            void Start()
+            void Awake()
             {
                 spriteRenderer = GetComponent<SpriteRenderer>();
+            }
+
+            void Start()
+            {
                 SetDefaultAnimation();
             }
 

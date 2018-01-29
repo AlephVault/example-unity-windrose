@@ -24,7 +24,7 @@ namespace WindRose
             private Positionable positionable;
 
             // Use this for initialization
-            void Start()
+            void Awake()
             {
                 positionable = GetComponent<Positionable>();
             }

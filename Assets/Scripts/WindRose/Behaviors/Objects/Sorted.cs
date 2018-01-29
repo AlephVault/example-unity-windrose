@@ -25,7 +25,7 @@ namespace WindRose
             [SerializeField]
             private SubLayer subLayer = SubLayer.MIDDLE;
 
-            void Start()
+            void Awake()
             {
                 spriteRenderer = GetComponent<SpriteRenderer>();
                 positionable = GetComponent<Positionable>();

@@ -132,7 +132,7 @@ namespace WindRose
             }
 
             // Use this for initialization
-            void Start()
+            void Awake()
             {
                 new TilemapLoader(Width, Height, TileSize).Load(this.gameObject, CreateLayers());
             }

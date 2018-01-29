@@ -110,12 +110,12 @@ namespace WindRose
                 // So I'm adding this code to ensure this particular field starts as null in Awake().
                 overriddenKeyForIdleAnimation = null;
                 AddAnimationSet(IDLE_ANIMATION, idleAnimationSet);
+                positionable = GetComponent<Positionable>();
+                represented = GetComponent<Represented>();
             }
 
             void Start()
             {
-                positionable = GetComponent<Positionable>();
-                represented = GetComponent<Represented>();
                 SetCurrentAnimation();
             }
 

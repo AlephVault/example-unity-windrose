@@ -62,11 +62,6 @@ namespace WindRose
                 // I DON'T KNOW WHY HIDDEN PROPERTIES FROM INSPECTOR ALSO AVOID NULL VALUES.
                 // So I'm adding this code to ensure this particular field starts as null in Start().
                 overriddenKeyForMovingAnimation = null;
-            }
-
-            // Use this for initialization
-            void Start()
-            {
                 oriented = GetComponent<Oriented>();
                 positionable = GetComponent<Positionable>();
                 oriented.AddAnimationSet(MOVE_ANIMATION, movingAnimationSet);

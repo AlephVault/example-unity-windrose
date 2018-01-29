@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace WindRose
 {
     namespace Behaviours
     {
-        using RelativeEvent = Action<Positionable, Positionable, int, int>;
-
         [RequireComponent(typeof(TriggerEnabled))]
         public class TriggerReceiver : MonoBehaviour
         {
@@ -33,8 +32,7 @@ namespace WindRose
              *   Other behaviours that could depend on TriggerReceiver may (and will) add callbacks to the
              *     new events TriggerReceiver provides.
              */
-            
-            
+                        
             private Positionable positionable;
 
             // Registered callbacks. These correspond to the callbacks actually registered in the
@@ -43,9 +41,9 @@ namespace WindRose
             // I will add, perhaps, more triggers later.
             private class MapTriggerCallbacks
             {
-                public readonly Action<Types.Direction> OnMapTriggerMoved;
+                public readonly UnityAction<Types.Direction> OnMapTriggerMoved;
 
-                public MapTriggerCallbacks(Action<Types.Direction> onMapTriggerMoved)
+                public MapTriggerCallbacks(UnityAction<Types.Direction> onMapTriggerMoved)
                 {
                     OnMapTriggerMoved = onMapTriggerMoved;
                 }
@@ -55,54 +53,16 @@ namespace WindRose
             // These five events are notified against the involved Positionable components of
             //   already registered TriggerSender objects, the positionable of this object,
             //   and the delta coordinates between them.
-            private RelativeEvent onMapTriggerEnter = (_pInner, _pSelf, _x, _y) => {};
-            private RelativeEvent onMapTriggerStay = (_pInner, _pSelf, _x, _y) => {};
-            private RelativeEvent onMapTriggerExit = (_pInner, _pSelf, _x, _y) => {};
-            private RelativeEvent onMapTriggerMoved = (_pInner, _pSelf, _x, _y) => {};
+            [Serializable]
+            public class UnityMapTriggerEvent : UnityEvent<Positionable, Positionable, int, int> {}
+            public readonly UnityMapTriggerEvent onMapTriggerEnter = new UnityMapTriggerEvent();
+            public readonly UnityMapTriggerEvent onMapTriggerStay = new UnityMapTriggerEvent();
+            public readonly UnityMapTriggerEvent onMapTriggerExit = new UnityMapTriggerEvent();
+            public readonly UnityMapTriggerEvent onMapTriggerMoved = new UnityMapTriggerEvent();
 
-            public void AddOnMapTriggerEnterListener(RelativeEvent callback)
+            private void InvokeEventCallback(Positionable senderObject, UnityMapTriggerEvent targetEvent)
             {
-                onMapTriggerEnter += callback;
-            }
-
-            public void AddOnMapTriggerStayListener(RelativeEvent callback)
-            {
-                onMapTriggerStay += callback;
-            }
-
-            public void AddOnMapTriggerExitListener(RelativeEvent callback)
-            {
-                onMapTriggerExit += callback;
-            }
-
-            public void AddOnMapTriggerMovedListener(RelativeEvent callback)
-            {
-                onMapTriggerMoved += callback;
-            }
-
-            public void RemoveOnMapTriggerEnterListener(RelativeEvent callback)
-            {
-                onMapTriggerEnter -= callback;
-            }
-
-            public void RemoveOnMapTriggerStayListener(RelativeEvent callback)
-            {
-                onMapTriggerStay -= callback;
-            }
-
-            public void RemoveOnMapTriggerExitListener(RelativeEvent callback)
-            {
-                onMapTriggerExit -= callback;
-            }
-
-            public void RemoveOnMapTriggerMovedListener(RelativeEvent callback)
-            {
-                onMapTriggerMoved -= callback;
-            }
-
-            private void InvokeEventCallback(Positionable senderObject, RelativeEvent eventCallback)
-            {
-                eventCallback(senderObject, positionable, (int)senderObject.X - (int)positionable.X, (int)senderObject.Y - (int)positionable.Y);
+                targetEvent.Invoke(senderObject, positionable, (int)senderObject.X - (int)positionable.X, (int)senderObject.Y - (int)positionable.Y);
             }
 
             private void CallOnMapTriggerEnter(Positionable senderObject)
@@ -132,7 +92,7 @@ namespace WindRose
                     CallOnMapTriggerMoved(sender.GetComponent<Positionable>());
                 });
 
-                sender.GetComponent<EventDispatcher>().AddOnMovementFinishedListener(registeredCallbacks[sender].OnMapTriggerMoved);
+                sender.GetComponent<EventDispatcher>().onMovementFinished.AddListener(registeredCallbacks[sender].OnMapTriggerMoved);
             }
 
             // Gets the registered callbacks, unregisters them, and removes them from the related object.
@@ -140,7 +100,7 @@ namespace WindRose
             {
                 MapTriggerCallbacks cbs = registeredCallbacks[sender];
                 registeredCallbacks.Remove(sender);
-                sender.GetComponent<EventDispatcher>().RemoveOnMovementFinishedListener(cbs.OnMapTriggerMoved);
+                sender.GetComponent<EventDispatcher>().onMovementFinished.AddListener(cbs.OnMapTriggerMoved);
             }
 
             void ClearAllCallbacks()
@@ -185,17 +145,6 @@ namespace WindRose
                 {
                     ExitAndDisconnect(sender);
                 }
-            }
-
-            void OnTriggerStay2D(Collider2D collision)
-            {
-                /**
-                TriggerSender sender = collision.GetComponent<TriggerSender>();
-                if (sender != null && registeredCallbacks.ContainsKey(sender))
-                {
-                    CallOnMapTriggerStay(sender.GetComponent<Positionable>());
-                }
-                */
             }
 
             void Update()

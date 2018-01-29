@@ -24,7 +24,7 @@ class SampleLoggingTriggerReceiver : MonoBehaviour
         receiver = GetComponent<TriggerReceiver>();
         if (logEnter)
         {
-            receiver.AddOnMapTriggerEnterListener((obj, platform, x, y) =>
+            receiver.onMapTriggerEnter.AddListener((obj, platform, x, y) =>
             {
                 Debug.Log(string.Format("Entering the trigger (currently, object is at ({0}, {1})", x, y));
             });
@@ -32,7 +32,7 @@ class SampleLoggingTriggerReceiver : MonoBehaviour
 
         if (logExit)
         {
-            receiver.AddOnMapTriggerExitListener((obj, platform, x, y) =>
+            receiver.onMapTriggerExit.AddListener((obj, platform, x, y) =>
             {
                 Debug.Log(string.Format("Leaving the trigger (currently, object is at ({0}, {1})", x, y));
             });
@@ -40,7 +40,7 @@ class SampleLoggingTriggerReceiver : MonoBehaviour
 
         if (logMoved)
         {
-            receiver.AddOnMapTriggerMovedListener((obj, platform, x, y) =>
+            receiver.onMapTriggerMoved.AddListener((obj, platform, x, y) =>
             {
                 Debug.Log(string.Format("Moved the object in the trigger (currently, object is at ({0}, {1})", x, y));
             });
@@ -48,7 +48,7 @@ class SampleLoggingTriggerReceiver : MonoBehaviour
 
         if (logStay)
         {
-            receiver.AddOnMapTriggerStayListener((obj, platform, x, y) =>
+            receiver.onMapTriggerStay.AddListener((obj, platform, x, y) =>
             {
                 Debug.Log(string.Format("Staying in the trigger (currently, object is at ({0}, {1})", x, y));
             });

@@ -30,8 +30,14 @@ public class SampleTextFiller : MonoBehaviour
     // Use this for initialization
     // THIS IS JUST AN EXAMPLE and not a real-life one. This Start method will be run as a coroutine
     //   just to give time to the interactive interfact to initialize.
-    void Start()
+    IEnumerator Start()
     {
+        // TODO: If I remove this wait, the map will be loaded, but the sprites (images) will not be
+        //         loaded until the Start() methods of the inner Sprite components run. This will
+        //         cause the map-pause be executed, but the sprites will not be yet visible since most
+        //         of this stuff was run in Awake(), but this method is Start() and the method that
+        //         initializes the sprites is also Start() or Update().
+        yield return new WaitForSeconds(0f);
         ui.RunInteraction(StartSampleMessages);
 	}
 

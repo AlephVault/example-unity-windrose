@@ -60,8 +60,7 @@ namespace WindRose
                         Map map = GetMap();
                         if (map != null) map.Pause(freezeAlsoAnimations);
                     });
-                    interactiveInterface.afterRunningInteraction.AddListener(delegate ()
-                    {
+                    interactiveInterface.afterRunningInteraction.AddListener(delegate () {
                         Map map = GetMap();
                         if (map != null) map.Resume();
                     });

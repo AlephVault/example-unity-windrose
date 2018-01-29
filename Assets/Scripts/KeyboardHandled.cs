@@ -9,7 +9,7 @@ public class KeyboardHandled : MonoBehaviour {
     private Oriented oriented;
 
 	// Use this for initialization
-	void Start () {
+	void Awake () {
         positionable = GetComponent<Positionable>();
         oriented = GetComponent<Oriented>();
 	}

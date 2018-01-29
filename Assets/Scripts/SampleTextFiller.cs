@@ -22,13 +22,16 @@ public class SampleTextFiller : MonoBehaviour
 
     private InteractiveInterface ui;
 
+    void Awake()
+    {
+        ui = Layout.RequireComponentInChildren<InteractiveInterface>(gameObject);
+    }
+
     // Use this for initialization
     // THIS IS JUST AN EXAMPLE and not a real-life one. This Start method will be run as a coroutine
     //   just to give time to the interactive interfact to initialize.
-    IEnumerator Start ()
+    void Start()
     {
-        ui = Layout.RequireComponentInChildren<InteractiveInterface>(gameObject);
-        yield return new WaitForSeconds(0.5f);
         ui.RunInteraction(StartSampleMessages);
 	}
 

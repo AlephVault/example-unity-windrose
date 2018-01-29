@@ -18,10 +18,14 @@ class SampleLoggingTriggerReceiver : MonoBehaviour
     [SerializeField]
     private bool logStay = false;
 
+    void Awake()
+    {
+        receiver = GetComponent<TriggerReceiver>();
+    }
+
     // Use this for initialization
     void Start()
     {
-        receiver = GetComponent<TriggerReceiver>();
         if (logEnter)
         {
             receiver.onMapTriggerEnter.AddListener((obj, platform, x, y) =>

@@ -25,7 +25,7 @@ class WaypointHandled : MonoBehaviour
     private int currentStepIndex = 0;
 
     // Use this for initialization
-    void Start()
+    void Awake()
     {
         positionable = GetComponent<Positionable>();
         oriented = GetComponent<Oriented>();

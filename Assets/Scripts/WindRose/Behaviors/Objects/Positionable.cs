@@ -52,7 +52,7 @@ namespace WindRose
             public uint Xf { get { return tilemapObject.Xf; } }
             public uint Yf { get { return tilemapObject.Yf; } }
             public Direction? Movement { get { return tilemapObject.Movement; } }
-            public SolidnessStatus Solidness { get { return tilemapObject.Solidness; } }
+            public SolidnessStatus Solidness { get { return tilemapObject != null ? tilemapObject.Solidness : initialSolidness; } }
             
             void Start()
             {

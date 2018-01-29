@@ -28,7 +28,9 @@ namespace WindRose
                  */
                 [SerializeField]
                 private GameObject mapHolder;
-                private Map map;
+
+                [HideInInspector]
+                public Map Map;
 
                 /**
                  * This determines whether the animations should also be frozen or not, when pausing the entire
@@ -39,14 +41,16 @@ namespace WindRose
 
                 /**
                  * Gets the Map component according to what is described in `map` and `mapHolder` members.
+                 * If map is null and mapHolder is not null, we retrieve map and release mapHolder.
                  */
                 private Map GetMap()
                 {
-                    if (map == null)
+                    if (Map == null && mapHolder != null)
                     {
-                        map = mapHolder.GetComponent<Map>();
+                        Map = mapHolder.GetComponent<Map>();
+                        mapHolder = null;
                     }
-                    return map;
+                    return Map;
                 }
 
                 void Start()

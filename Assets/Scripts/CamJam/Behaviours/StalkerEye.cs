@@ -11,7 +11,7 @@ namespace CamJam
             public GameObject target;
             public uint cameraDistance = 10;
 
-            private void Start()
+            private void Awake()
             {
                 camera = GetComponent<Camera>();
             }

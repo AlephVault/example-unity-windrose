@@ -46,7 +46,6 @@ namespace GabTab
 
                 void Start()
                 {
-                    base.Start();
                     Result = null;
                     foreach(System.Collections.Generic.KeyValuePair<Button, string> kvp in buttons)
                     {

@@ -47,7 +47,7 @@ namespace GabTab
                 [SerializeField]
                 private uint newlinesToAddWhenShowing = 0;
 
-                protected void Start()
+                protected void Awake()
                 {
                     hideable = GetComponent<Hideable>();
                 }

@@ -48,7 +48,7 @@ namespace GabTab
             private bool textBeingSent = false;
             public bool QuickTextMovement = false;
 
-            void Start()
+            void Awake()
             {
                 textComponent = GetComponent<UnityEngine.UI.Text>();
             }

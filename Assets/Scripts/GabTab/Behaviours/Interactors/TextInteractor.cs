@@ -62,7 +62,6 @@ namespace GabTab
                     */
                 void Start()
                 {
-                    base.Start();
                     Result = null;
                     Content = null;
 

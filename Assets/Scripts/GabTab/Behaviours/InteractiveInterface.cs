@@ -47,7 +47,7 @@ namespace GabTab
             public readonly UnityEvent beforeRunningInteraction = new UnityEvent();
             public readonly UnityEvent afterRunningInteraction = new UnityEvent();
 
-            void Start()
+            void Awake()
             {
                 interactorsManager = GetComponent<Interactors.InteractorsManager>();
                 hideable = GetComponent<Hideable>();

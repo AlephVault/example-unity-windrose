@@ -654,7 +654,6 @@ namespace GabTab
                     {
                         throw new Types.Exception("No continue button is specified, and the list has multiSelect=false - There is no way to end the interaction positively");
                     }
-                    base.Start();
 
                     // Setting click handlers for GameObjects that have buttons
                     // There are two possibilities:

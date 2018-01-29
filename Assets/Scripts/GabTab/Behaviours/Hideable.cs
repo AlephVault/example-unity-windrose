@@ -27,7 +27,7 @@ namespace GabTab
              * cg.alpha = Hidden ? 0 : 1;​
              * rt.BlockRaycasts = !Hidden;
              */
-            void Start()
+            void Awake()
             {
                 rectTransform = GetComponent<RectTransform>();
             }

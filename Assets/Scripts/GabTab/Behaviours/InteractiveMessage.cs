@@ -165,6 +165,7 @@ namespace GabTab
             }
 
             private Mask mask;
+            private RectTransform me;
 
             /**
              * A big part of the magic is delegated to this component, which actually performs the
@@ -183,6 +184,14 @@ namespace GabTab
                 set { messageContent.QuickTextMovement = value; }
             }
 
+            protected override void Awake()
+            {
+                base.Awake();
+                mask = GetComponent<Mask>();
+                me = GetComponent<RectTransform>();
+                content = messageContent.GetComponent<RectTransform>();
+            }
+
             /**
              * When starting, the inner message content will be centered horizontally. The fact that
              *   this component inherits ScrollRect helps us to clip it and align it vertically
@@ -191,9 +200,6 @@ namespace GabTab
             protected override void Start()
             {
                 base.Start();
-                mask = GetComponent<Mask>();
-                RectTransform me = GetComponent<RectTransform>();
-                content = messageContent.GetComponent<RectTransform>();
                 float myWidth = me.sizeDelta.x;
                 float itsWidth = content.sizeDelta.x;
                 content.localPosition = new Vector2((myWidth - itsWidth) / 2, 0);

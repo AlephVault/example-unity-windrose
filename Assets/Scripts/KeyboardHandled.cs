@@ -4,13 +4,12 @@ using WindRose.Types;
 
 [RequireComponent(typeof(Movable))]
 public class KeyboardHandled : MonoBehaviour {
-
-    private Positionable positionable;
+    private Movable movable;
     private Oriented oriented;
 
 	// Use this for initialization
 	void Awake () {
-        positionable = GetComponent<Positionable>();
+        movable = GetComponent<Movable>();
         oriented = GetComponent<Oriented>();
 	}
 	
@@ -31,7 +30,7 @@ public class KeyboardHandled : MonoBehaviour {
             {
                 if (oriented.orientation == Direction.UP)
                 {
-                    positionable.StartMovement(Direction.UP);
+                    movable.StartMovement(Direction.UP);
                 }
                 else
                 {
@@ -42,7 +41,7 @@ public class KeyboardHandled : MonoBehaviour {
             {
                 if (oriented.orientation == Direction.DOWN)
                 {
-                    positionable.StartMovement(Direction.DOWN);
+                    movable.StartMovement(Direction.DOWN);
                 }
                 else
                 {
@@ -53,7 +52,7 @@ public class KeyboardHandled : MonoBehaviour {
             {
                 if (oriented.orientation == Direction.LEFT)
                 {
-                    positionable.StartMovement(Direction.LEFT);
+                    movable.StartMovement(Direction.LEFT);
                 }
                 else
                 {
@@ -64,7 +63,7 @@ public class KeyboardHandled : MonoBehaviour {
             {
                 if (oriented.orientation == Direction.RIGHT)
                 {
-                    positionable.StartMovement(Direction.RIGHT);
+                    movable.StartMovement(Direction.RIGHT);
                 }
                 else
                 {
@@ -73,5 +72,4 @@ public class KeyboardHandled : MonoBehaviour {
             }
         }
     }
-
 }

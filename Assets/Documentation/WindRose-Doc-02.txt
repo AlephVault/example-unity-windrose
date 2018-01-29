@@ -45,6 +45,10 @@ En este sentido, tenemos algunas funcionalidades creadas para este fin:
  VI. CancelMovement(): Cancela el movimiento iniciado por StartMovement, restaurando la colisión anterior.
  VII. FinishMovement(): Confirma dicho movimiento, quedandonos solamente con las nuevas casillas ocupadas para colisionar, y liberando las anteriores, que ocupara el objeto.
 
+NOTA: Los métodos relacionados con movimiento son internos y no deberían ser invocados por nosotros en ningún momento.
+      Por ejemplo: El comportamiento Movable nos ofrece StartMovement() y CancelMovement().
+	  A futuro, lo más probable es que hagamos lo mismo con los métodos SetSolidness y Teleport.
+
 En el apéndice 2 vamos a tener un detalle de eventos que se pueden escuchar para saber cuando comienzan y terminan los movimientos, desde otros comportamientos.
 
 3.2 Represented (depende de Snapped, aunque la verdad al pedo pero we)

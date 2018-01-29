@@ -7,7 +7,7 @@ using WindRose.Types;
 [RequireComponent(typeof(Movable))]
 class WaypointHandled : MonoBehaviour
 {
-    private Positionable positionable;
+    private Movable movable;
     private Oriented oriented;
 
     [Serializable]
@@ -27,7 +27,7 @@ class WaypointHandled : MonoBehaviour
     // Use this for initialization
     void Awake()
     {
-        positionable = GetComponent<Positionable>();
+        movable = GetComponent<Movable>();
         oriented = GetComponent<Oriented>();
     }
 
@@ -67,11 +67,11 @@ class WaypointHandled : MonoBehaviour
             if (!currentStep.onlyLook)
             {
                 // Perform the movement until it is done.
-                bool result = positionable.StartMovement(currentStep.movementDirection);
+                bool result = movable.StartMovement(currentStep.movementDirection, false);
                 if (result)
                 {
                     // Wait until the movement is done.
-                    yield return new WaitUntil(() => positionable.Movement == null);
+                    yield return new WaitUntil(() => movable.Movement == null);
 
                     // Move to the next frame.
                     currentStepIndex = (currentStepIndex + 1) % waySteps.Length;

@@ -34,6 +34,7 @@ namespace GabTab
         [RequireComponent(typeof(Interactors.InteractorsManager))]
         public class InteractiveInterface : MonoBehaviour
         {
+            [SerializeField]
             private InteractiveMessage interactiveMessage;
             private Interactors.InteractorsManager interactorsManager;
             /**
@@ -48,7 +49,6 @@ namespace GabTab
 
             void Start()
             {
-                interactiveMessage = Layout.RequireComponentInChildren<InteractiveMessage>(gameObject);
                 interactorsManager = GetComponent<Interactors.InteractorsManager>();
                 hideable = GetComponent<Hideable>();
             }

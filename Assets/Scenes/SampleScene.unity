@@ -4321,6 +4321,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mapHolder: {fileID: 361721850}
+  Map: {fileID: 0}
   freezeAlsoAnimations: 0
 --- !u!114 &1264370712
 MonoBehaviour:
@@ -4333,6 +4334,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a7a1240ffd84b3c45a5e0f3e926a76c1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  interactiveMessage: {fileID: 1952929514}
 --- !u!114 &1264370713
 MonoBehaviour:
   m_ObjectHideFlags: 0

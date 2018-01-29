@@ -170,6 +170,7 @@ namespace GabTab
              * A big part of the magic is delegated to this component, which actually performs the
              *   display operation for each message.
              */
+            [SerializeField]
             private InteractiveMessageContent messageContent;
 
             /**
@@ -191,7 +192,6 @@ namespace GabTab
             {
                 base.Start();
                 mask = GetComponent<Mask>();
-                messageContent = Layout.RequireComponentInChildren<InteractiveMessageContent>(this.gameObject);
                 RectTransform me = GetComponent<RectTransform>();
                 content = messageContent.GetComponent<RectTransform>();
                 float myWidth = me.sizeDelta.x;

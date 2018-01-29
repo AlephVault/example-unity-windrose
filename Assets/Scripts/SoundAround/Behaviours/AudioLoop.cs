@@ -16,7 +16,7 @@ namespace SoundAround
             public bool relativeToFrequency;
             private AudioSource audioSource;
 
-            public void Start()
+            private void Awake()
             {
                 audioSource = GetComponent<AudioSource>();
             }

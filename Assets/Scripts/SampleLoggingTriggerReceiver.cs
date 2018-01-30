@@ -1,10 +1,10 @@
 ﻿using UnityEngine;
 using WindRose.Behaviours;
 
-[RequireComponent(typeof(TriggerReceiver))]
+[RequireComponent(typeof(TriggerPlatform))]
 class SampleLoggingTriggerReceiver : MonoBehaviour
 {
-    private TriggerReceiver receiver;
+    private TriggerPlatform platform;
     
     [SerializeField]
     private bool logEnter = true;
@@ -20,7 +20,7 @@ class SampleLoggingTriggerReceiver : MonoBehaviour
 
     void Awake()
     {
-        receiver = GetComponent<TriggerReceiver>();
+        platform = GetComponent<TriggerPlatform>();
     }
 
     // Use this for initialization
@@ -28,7 +28,7 @@ class SampleLoggingTriggerReceiver : MonoBehaviour
     {
         if (logEnter)
         {
-            receiver.onMapTriggerEnter.AddListener((obj, platform, x, y) =>
+            platform.onMapTriggerEnter.AddListener((obj, platform, x, y) =>
             {
                 Debug.Log(string.Format("Entering the trigger (currently, object is at ({0}, {1})", x, y));
             });
@@ -36,7 +36,7 @@ class SampleLoggingTriggerReceiver : MonoBehaviour
 
         if (logExit)
         {
-            receiver.onMapTriggerExit.AddListener((obj, platform, x, y) =>
+            platform.onMapTriggerExit.AddListener((obj, platform, x, y) =>
             {
                 Debug.Log(string.Format("Leaving the trigger (currently, object is at ({0}, {1})", x, y));
             });
@@ -44,7 +44,7 @@ class SampleLoggingTriggerReceiver : MonoBehaviour
 
         if (logMoved)
         {
-            receiver.onMapTriggerMoved.AddListener((obj, platform, x, y) =>
+            platform.onMapTriggerMoved.AddListener((obj, platform, x, y) =>
             {
                 Debug.Log(string.Format("Moved the object in the trigger (currently, object is at ({0}, {1})", x, y));
             });
@@ -52,7 +52,7 @@ class SampleLoggingTriggerReceiver : MonoBehaviour
 
         if (logStay)
         {
-            receiver.onMapTriggerStay.AddListener((obj, platform, x, y) =>
+            platform.onMapTriggerStay.AddListener((obj, platform, x, y) =>
             {
                 Debug.Log(string.Format("Staying in the trigger (currently, object is at ({0}, {1})", x, y));
             });

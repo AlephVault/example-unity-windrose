@@ -6,6 +6,7 @@ namespace WindRose
     namespace Behaviours
     {
         [RequireComponent(typeof(Rigidbody2D))]
+        [RequireComponent(typeof(EventDispatcher))]
         [RequireComponent(typeof(BoxCollider2D))]
         public class TriggerActivator : TriggerHolder
         {

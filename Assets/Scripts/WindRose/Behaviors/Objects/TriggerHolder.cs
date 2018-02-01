@@ -23,7 +23,7 @@ namespace WindRose
              *   only provides a way to update the box collider's position.
              */
 
-            private Collider2D collider2D;
+            protected Collider2D collider2D;
             protected abstract Collider2D GetCollider2D();
             protected abstract void SetupCollider(Collider2D collider2D);
 

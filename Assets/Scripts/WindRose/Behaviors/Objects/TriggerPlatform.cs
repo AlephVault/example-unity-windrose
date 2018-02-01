@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.Events;
+﻿using UnityEngine;
 
 namespace WindRose
 {
     namespace Behaviours
     {
-        [RequireComponent(typeof(Positionable))]
+        [RequireComponent(typeof(EventDispatcher))]
         [RequireComponent(typeof(BoxCollider2D))]
         public class TriggerPlatform : TriggerZone
         {
@@ -17,64 +14,10 @@ namespace WindRose
              * 
              * However, despite being a box collider as well, its purpose will be complementary to
              *   TriggerActivator.
-             * 
-             * This component will do/ensure/detect the following behaviour on each TriggerActivator:
-             *   1. A trigger activator has just fulfilled two conditions:
-             *      i. be in the same map as this trigger receiver.
-             *      ii. staying inside this trigger receiver.
-             *   2. A trigger activator has just fulfilled one or more of these conditions:
-             *      i. be in different map.
-             *      ii. getting out of this trigger platform.
-             *   3. A trigger activator is inside this map, and this trigger platform.
-             *   4. OnDestroy will clear all event callbacks on all currently staying TriggerActivators.
-             *   5. The installed callback will attend the "it moved!" event.
              */
-                        
-            private Positionable positionable;
-
-            // These five events are notified against the involved Positionable components of
-            //   already registered TriggerSender objects, the positionable of this object,
-            //   and the delta coordinates between them.
-            [Serializable]
-            public class UnityMapTriggerEvent : UnityEvent<Positionable, Positionable, int, int> {}
-            public readonly UnityMapTriggerEvent onMapTriggerEnter = new UnityMapTriggerEvent();
-            public readonly UnityMapTriggerEvent onMapTriggerStay = new UnityMapTriggerEvent();
-            public readonly UnityMapTriggerEvent onMapTriggerExit = new UnityMapTriggerEvent();
-            public readonly UnityMapTriggerEvent onMapTriggerMoved = new UnityMapTriggerEvent();
 
             [SerializeField]
-            private float innerMargin = 0.25f;
-
-            private void InvokeEventCallback(Positionable senderObject, UnityMapTriggerEvent targetEvent)
-            {
-                targetEvent.Invoke(senderObject, positionable, (int)senderObject.X - (int)positionable.X, (int)senderObject.Y - (int)positionable.Y);
-            }
-
-            protected override void CallOnMapTriggerEnter(Positionable senderObject)
-            {
-                InvokeEventCallback(senderObject, onMapTriggerEnter);
-            }
-
-            protected override void CallOnMapTriggerStay(Positionable senderObject)
-            {
-                InvokeEventCallback(senderObject, onMapTriggerStay);
-            }
-
-            protected override void CallOnMapTriggerExit(Positionable senderObject)
-            {
-                InvokeEventCallback(senderObject, onMapTriggerExit);
-            }
-
-            protected override void CallOnMapTriggerPositionChanged(Positionable senderObject)
-            {
-                InvokeEventCallback(senderObject, onMapTriggerMoved);
-            }
-
-            protected override void Awake()
-            {
-                base.Awake();
-                positionable = GetComponent<Positionable>();
-            }
+            private float innerMargin = 0.25f * Map.GAME_UNITS_PER_TILE_UNITS;
 
             protected override void Start()
             {
@@ -83,6 +26,21 @@ namespace WindRose
                 {
                     positionable.SetSolidness(Types.Tilemaps.SolidnessStatus.Ghost);
                 }
+            }
+
+            protected override int GetDeltaX()
+            {
+                return (int)positionable.X;
+            }
+
+            protected override int GetDeltaY()
+            {
+                return (int)positionable.Y;
+            }
+
+            protected override EventDispatcher GetRelatedEventDispatcher()
+            {
+                return GetComponent<EventDispatcher>();
             }
 
             protected override Collider2D GetCollider2D()

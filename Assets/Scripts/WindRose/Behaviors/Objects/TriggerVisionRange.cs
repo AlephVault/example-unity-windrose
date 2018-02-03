@@ -44,10 +44,24 @@ namespace WindRose
             [SerializeField]
             private uint visionLength = 0;
 
+            private uint halfWidth;
+            private uint halfHeight;
+
             protected override void Awake()
             {
                 base.Awake();
                 oriented = positionable.GetComponent<Oriented>();
+            }
+
+            protected override void Start()
+            {
+                base.Start();
+                if (positionable.Width % 2 == 0 || positionable.Height % 2 == 0)
+                {
+                    throw new Types.Exception("For a vision range to work appropriately, the related positionable must have an odd width and height");
+                }
+                halfHeight = positionable.Height / 2;
+                halfWidth = positionable.Width / 2;
             }
 
             protected override void Update()
@@ -59,12 +73,40 @@ namespace WindRose
 
             protected override int GetDeltaX()
             {
-                return (int)(direction == Types.Direction.RIGHT ? positionable.Width : 0) + (int)positionable.X;
+                int extra;
+                switch(direction)
+                {
+                    case Types.Direction.RIGHT:
+                        extra = (int)positionable.Width;
+                        break;
+                    case Types.Direction.UP:
+                    case Types.Direction.DOWN:
+                        extra = (int)halfWidth;
+                        break;
+                    default:
+                        extra = 0;
+                        break;
+                }
+                return extra + (int)positionable.X;
             }
 
             protected override int GetDeltaY()
             {
-                return (int)(direction == Types.Direction.DOWN ? positionable.Height : 0) + (int)positionable.Y;
+                int extra;
+                switch (direction)
+                {
+                    case Types.Direction.DOWN:
+                        extra = (int)positionable.Height;
+                        break;
+                    case Types.Direction.LEFT:
+                    case Types.Direction.RIGHT:
+                        extra = (int)halfHeight;
+                        break;
+                    default:
+                        extra = 0;
+                        break;
+                }
+                return extra + (int)positionable.Y;
             }
 
             protected override EventDispatcher GetRelatedEventDispatcher()

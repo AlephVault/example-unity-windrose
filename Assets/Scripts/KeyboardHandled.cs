@@ -1,16 +1,20 @@
 ﻿using UnityEngine;
 using WindRose.Behaviours;
+using WindRose.Behaviours.Objects.CommandExchange;
 using WindRose.Types;
 
 [RequireComponent(typeof(Movable))]
+[RequireComponent(typeof(TalkSender))]
 public class KeyboardHandled : MonoBehaviour {
     private Movable movable;
     private Oriented oriented;
+    private TalkSender talkSender;
 
 	// Use this for initialization
 	void Awake () {
         movable = GetComponent<Movable>();
         oriented = GetComponent<Oriented>();
+        talkSender = GetComponent<TalkSender>();
 	}
 	
 	// Update is called once per frame
@@ -19,11 +23,13 @@ public class KeyboardHandled : MonoBehaviour {
         bool downHeld = Input.GetKey(KeyCode.DownArrow);
         bool leftHeld = Input.GetKey(KeyCode.LeftArrow);
         bool rightHeld = Input.GetKey(KeyCode.RightArrow);
+        bool spacebarJustPressed = Input.GetKeyDown(KeyCode.Space);
         byte pressedKeys = 0;
         if (upHeld) pressedKeys++;
         if (downHeld) pressedKeys++;
         if (leftHeld) pressedKeys++;
         if (rightHeld) pressedKeys++;
+        if (spacebarJustPressed) pressedKeys++;
         if (pressedKeys == 1)
         {
             if (upHeld)
@@ -59,7 +65,7 @@ public class KeyboardHandled : MonoBehaviour {
                     oriented.orientation = Direction.LEFT;
                 }
             }
-            else // rightHeld
+            else if(rightHeld) // rightHeld
             {
                 if (oriented.orientation == Direction.RIGHT)
                 {
@@ -69,6 +75,10 @@ public class KeyboardHandled : MonoBehaviour {
                 {
                     oriented.orientation = Direction.RIGHT;
                 }
+            }
+            if (spacebarJustPressed)
+            {
+                talkSender.Talk();
             }
         }
     }

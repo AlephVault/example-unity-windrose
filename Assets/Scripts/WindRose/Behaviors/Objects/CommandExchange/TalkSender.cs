@@ -8,6 +8,10 @@ namespace WindRose
         {
             namespace CommandExchange
             {
+                /**
+                 * This behaviour offers a .Talk() method to start a usual chat
+                 *   interaction with an NPC.
+                 */
                 [RequireComponent(typeof(CloseCommandSender))]
                 class TalkSender : MonoBehaviour
                 {

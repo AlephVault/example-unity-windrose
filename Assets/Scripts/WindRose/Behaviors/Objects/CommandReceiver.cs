@@ -36,33 +36,33 @@ namespace WindRose
                     }
                 }
 
-                private Misc.Command GetCommand(Collision2D collision)
+                private Misc.Command GetCommand(Collider2D collider)
                 {
-                    return collision.collider.gameObject.GetComponent<Misc.Command>();
+                    return collider.gameObject.GetComponent<Misc.Command>();
                 }
 
-                private void SendCommandStatusFromCollision(Collision2D collision, CommandStage stage)
+                private void SendCommandStatusFromCollision(Collider2D collider, CommandStage stage)
                 {
-                    Misc.Command command = GetCommand(collision);
+                    Misc.Command command = GetCommand(collider);
                     if (command != null)
                     {
                         SendMessage("OnCommandReceived", new CommandStatus(command, stage), SendMessageOptions.DontRequireReceiver);
                     }
                 }
 
-                private void OnCollisionEnter2D(Collision2D collision)
+                private void OnTriggerEnter2D(Collider2D collider)
                 {
-                    SendCommandStatusFromCollision(collision, CommandStage.ENTER);
+                    SendCommandStatusFromCollision(collider, CommandStage.ENTER);
                 }
 
-                private void OnCollisionExit2D(Collision2D collision)
+                private void OnTriggerExit2D(Collider2D collider)
                 {
-                    SendCommandStatusFromCollision(collision, CommandStage.EXIT);
+                    SendCommandStatusFromCollision(collider, CommandStage.EXIT);
                 }
 
-                private void OnCollisionStay2D(Collision2D collision)
+                private void OnTriggerStay2D(Collider2D collider)
                 {
-                    SendCommandStatusFromCollision(collision, CommandStage.STAY);
+                    SendCommandStatusFromCollision(collider, CommandStage.STAY);
                 }
             }
         }

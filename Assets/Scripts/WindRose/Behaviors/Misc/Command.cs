@@ -28,8 +28,14 @@ namespace WindRose
                  *   a CloseCommandSender, which requires both odd width and height (in
                  *   map tiles) and casts a command appropriately in that direction.
                  */
+
+                [HideInInspector]
                 public GameObject sender;
+
+                [HideInInspector]
                 public string name;
+
+                [HideInInspector]
                 public object[] arguments;
 
                 public void Start()

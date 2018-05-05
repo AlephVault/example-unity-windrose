@@ -42,6 +42,16 @@ namespace WindRose
                 collider2D.isTrigger = true;
                 SetupCollider(collider2D);
             }
+
+            void Pause(bool fullFreeze)
+            {
+                collider2D.enabled = false;
+            }
+
+            void Resume()
+            {
+                collider2D.enabled = true;
+            }
         }
     }
 }

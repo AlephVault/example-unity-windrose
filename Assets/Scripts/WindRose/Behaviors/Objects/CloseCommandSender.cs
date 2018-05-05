@@ -84,7 +84,7 @@ namespace WindRose
                 {
                     FixCommandPosition();
                     SetCommandData(commandName, arguments);
-                    command.gameObject.SetActive(false);
+                    command.gameObject.SetActive(true);
                     if (instantaneous)
                     {
                         StartCoroutine(InstantRelease());

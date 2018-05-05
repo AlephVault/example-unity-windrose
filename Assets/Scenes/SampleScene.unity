@@ -5351,7 +5351,7 @@ Prefab:
     - target: {fileID: 114907474632291964, guid: 4d49ab3f52c28d44c93e06dc49b8ea0c,
         type: 2}
       propertyPath: speed
-      value: 16
+      value: 4
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 0}

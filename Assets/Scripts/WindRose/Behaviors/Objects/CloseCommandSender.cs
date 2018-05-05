@@ -73,8 +73,9 @@ namespace WindRose
                     command.transform.position = new Vector3(x, y, command.transform.position.z);
                 }
 
-                private void SetCommandArgs(string commandName, params object[] arguments)
+                private void SetCommandData(string commandName, params object[] arguments)
                 {
+                    command.sender = gameObject;
                     command.name = commandName;
                     command.arguments = arguments;
                 }
@@ -82,7 +83,7 @@ namespace WindRose
                 public void Cast(string commandName, bool instantaneous = true, params object[] arguments)
                 {
                     FixCommandPosition();
-                    SetCommandArgs(commandName, arguments);
+                    SetCommandData(commandName, arguments);
                     command.gameObject.SetActive(false);
                     if (instantaneous)
                     {

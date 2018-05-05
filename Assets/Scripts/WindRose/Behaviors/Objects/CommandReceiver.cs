@@ -20,9 +20,20 @@ namespace WindRose
                  *   need somehow to handle collisions.
                  */
 
-                public enum CommandStatus
+                public enum CommandStage
                 {
                     ENTER, EXIT, STAY
+                }
+
+                public class CommandStatus
+                {
+                    public readonly CommandStage Stage;
+                    public readonly Misc.Command Command;
+                    public CommandStatus(Misc.Command command, CommandStage stage)
+                    {
+                        Stage = stage;
+                        Command = command;
+                    }
                 }
 
                 private Misc.Command GetCommand(Collision2D collision)
@@ -30,28 +41,28 @@ namespace WindRose
                     return collision.collider.gameObject.GetComponent<Misc.Command>();
                 }
 
-                private void SendCommandStatusFromCollision(Collision2D collision, CommandStatus status)
+                private void SendCommandStatusFromCollision(Collision2D collision, CommandStage stage)
                 {
                     Misc.Command command = GetCommand(collision);
                     if (command != null)
                     {
-                        SendMessage("OnCommandReceived", status, SendMessageOptions.DontRequireReceiver);
+                        SendMessage("OnCommandReceived", new CommandStatus(command, stage), SendMessageOptions.DontRequireReceiver);
                     }
                 }
 
                 private void OnCollisionEnter2D(Collision2D collision)
                 {
-                    SendCommandStatusFromCollision(collision, CommandStatus.ENTER);
+                    SendCommandStatusFromCollision(collision, CommandStage.ENTER);
                 }
 
                 private void OnCollisionExit2D(Collision2D collision)
                 {
-                    SendCommandStatusFromCollision(collision, CommandStatus.EXIT);
+                    SendCommandStatusFromCollision(collision, CommandStage.EXIT);
                 }
 
                 private void OnCollisionStay2D(Collision2D collision)
                 {
-                    SendCommandStatusFromCollision(collision, CommandStatus.STAY);
+                    SendCommandStatusFromCollision(collision, CommandStage.STAY);
                 }
             }
         }

@@ -64,6 +64,16 @@ namespace WindRose
                 {
                     SendCommandStatusFromCollision(collider, CommandStage.STAY);
                 }
+
+                void Pause(bool fullFreeze)
+                {
+                    enabled = false;
+                }
+
+                void Resume()
+                {
+                    enabled = true;
+                }
             }
         }
     }

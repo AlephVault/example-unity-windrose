@@ -36,6 +36,7 @@ namespace WindRose
                 private Misc.Command command;
                 private Oriented oriented;
                 private Positionable positionable;
+                private bool paused = false;
 
                 private void Start()
                 {
@@ -82,6 +83,7 @@ namespace WindRose
 
                 public void Cast(string commandName, bool instantaneous = true, params object[] arguments)
                 {
+                    if (paused) return;
                     FixCommandPosition();
                     SetCommandData(commandName, arguments);
                     command.gameObject.SetActive(true);
@@ -100,6 +102,16 @@ namespace WindRose
                 public void Release()
                 {
                     command.gameObject.SetActive(false);
+                }
+
+                void Pause(bool fullFreeze)
+                {
+                    paused = true;
+                }
+
+                void Resume()
+                {
+                    paused = false;
                 }
             }
         }

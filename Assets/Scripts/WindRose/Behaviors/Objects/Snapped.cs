@@ -40,7 +40,7 @@ namespace WindRose
                 bool clampInX = false;
                 bool clampInY = false;
                 float initialX = transform.localPosition.x;
-                // We invert the Y coordinate because tilemaps usually go up->down, and we expect it to be negative beforehand
+                // We invert the Y coordinate because States usually go up->down, and we expect it to be negative beforehand
                 float initialY = -transform.localPosition.y;
                 float innerX = 0;
                 float innerY = 0;

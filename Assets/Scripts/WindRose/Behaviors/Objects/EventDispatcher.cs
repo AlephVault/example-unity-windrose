@@ -30,7 +30,7 @@ namespace WindRose
             public readonly UnityMovementEvent onMovementCancelled = new UnityMovementEvent();
             public readonly UnityMovementEvent onMovementFinished = new UnityMovementEvent();
             [Serializable]
-            public class UnitySolidnessStatusEvent : UnityEvent<Types.Tilemaps.SolidnessStatus> {}
+            public class UnitySolidnessStatusEvent : UnityEvent<Types.States.SolidnessStatus> {}
             public readonly UnitySolidnessStatusEvent onSolidnessChanged = new UnitySolidnessStatusEvent();
             [Serializable]
             public class UnityTeleportedEvent : UnityEvent<uint, uint> {}
@@ -38,7 +38,7 @@ namespace WindRose
 
             void OnAttached(object[] args)
             {
-                onAttached.Invoke(((Types.Tilemaps.Tilemap)(args[0])).RelatedMap);
+                onAttached.Invoke(((Types.States.MapState)(args[0])).RelatedMap);
             }
 
             void OnDetached()
@@ -63,7 +63,7 @@ namespace WindRose
 
             void OnSolidnessChanged(object[] args)
             {
-                onSolidnessChanged.Invoke((Types.Tilemaps.SolidnessStatus)(args[0]));
+                onSolidnessChanged.Invoke((Types.States.SolidnessStatus)(args[0]));
             }
 
             void OnTeleported(object[] args)

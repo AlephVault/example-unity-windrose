@@ -8,9 +8,9 @@ namespace WindRose
 {
     namespace Types
     {
-        namespace Tilemaps
+        namespace States
         {
-            public class Tilemap
+            public class MapState
             {
                 public const uint MAX_WIDTH = 100;
                 public const uint MAX_HEIGHT = 100;
@@ -51,9 +51,9 @@ namespace WindRose
                 public readonly uint Height;
                 public readonly Behaviours.Map RelatedMap;
 
-                public class TilemapObject
+                public class MapObjectState
                 {
-                    public Tilemap Map { get; private set; }
+                    public MapState Map { get; private set; }
                     public uint X { get; private set; }
                     public uint Y { get; private set; }
                     public uint Xf { get { return X + Width - 1; } }
@@ -176,7 +176,7 @@ namespace WindRose
                         return Traverses(Solidness) || Map.IsAdjacencyFree(X, Y, Width, Height, direction);
                     }
 
-                    public TilemapObject(Behaviours.Positionable relatedComponent, uint x, uint y, uint width, uint height, SolidnessStatus solidness)
+                    public MapObjectState(Behaviours.Positionable relatedComponent, uint x, uint y, uint width, uint height, SolidnessStatus solidness)
                     {
                         if (relatedComponent == null)
                         {
@@ -203,9 +203,9 @@ namespace WindRose
                         Map = null;
                     }
 
-                    public void Attach(Tilemap map, uint? x = null, uint? y = null)
+                    public void Attach(MapState map, uint? x = null, uint? y = null)
                     {
-                        if (Map != null) { throw new AlreadyAttachedException("This TilemapObject is already attached to a map"); }
+                        if (Map != null) { throw new AlreadyAttachedException("This MapObjectState is already attached to a map"); }
                         if (map == null) { throw new ArgumentNullException("map", "The specified map to attach to cannot be null"); }
                         if (x != null) { X = x.Value; }
                         if (y != null) { Y = y.Value; }
@@ -340,9 +340,9 @@ namespace WindRose
                 /**
                  * Constructing a map involves constructing the internal objects layer and the internal block layer.
                  * The block mask will be immutable, since it will never be modified. OTOH the solid mask (for the objects layer)
-                 *   will be mutable. But those layers are initialized inside the tilemap.
+                 *   will be mutable. But those layers are initialized inside the mapState.
                  */
-                public Tilemap(Behaviours.Map relatedMap, uint width, uint height)
+                public MapState(Behaviours.Map relatedMap, uint width, uint height)
                 {
                     if (relatedMap == null)
                     {

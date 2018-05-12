@@ -22,9 +22,9 @@ namespace WindRose
             protected override void Start()
             {
                 base.Start();
-                if (positionable.Solidness != Types.Tilemaps.SolidnessStatus.Ghost && positionable.Solidness != Types.Tilemaps.SolidnessStatus.Hole)
+                if (positionable.Solidness != Types.States.SolidnessStatus.Ghost && positionable.Solidness != Types.States.SolidnessStatus.Hole)
                 {
-                    positionable.SetSolidness(Types.Tilemaps.SolidnessStatus.Ghost);
+                    positionable.SetSolidness(Types.States.SolidnessStatus.Ghost);
                 }
             }
 

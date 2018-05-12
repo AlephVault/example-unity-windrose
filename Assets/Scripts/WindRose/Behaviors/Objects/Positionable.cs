@@ -6,7 +6,7 @@ namespace WindRose
     namespace Behaviours
     {
         using Types;
-        using Types.Tilemaps;
+        using Types.States;
 
         [ExecuteInEditMode]
         [RequireComponent(typeof(Pausable))]
@@ -39,7 +39,7 @@ namespace WindRose
             /* *********************** Additional data *********************** */
 
             private Map parentMap = null;
-            private Tilemap.TilemapObject tilemapObject = null;
+            private MapState.MapObjectState mapObjectState = null;
             private bool paused = false;
 
             /* *********************** Public properties *********************** */
@@ -47,12 +47,12 @@ namespace WindRose
             public Map ParentMap { get { return parentMap; } }
             public uint Width { get { return width; } } // Referencing directly allows us to query the width without a map assigned yet.
             public uint Height { get { return width; } } // Referencing directly allows us to query the height without a map assigned yet.
-            public uint X { get { return tilemapObject.X; } }
-            public uint Y { get { return tilemapObject.Y; } }
-            public uint Xf { get { return tilemapObject.Xf; } }
-            public uint Yf { get { return tilemapObject.Yf; } }
-            public Direction? Movement { get { return tilemapObject.Movement; } }
-            public SolidnessStatus Solidness { get { return tilemapObject != null ? tilemapObject.Solidness : initialSolidness; } }
+            public uint X { get { return mapObjectState.X; } }
+            public uint Y { get { return mapObjectState.Y; } }
+            public uint Xf { get { return mapObjectState.Xf; } }
+            public uint Yf { get { return mapObjectState.Yf; } }
+            public Direction? Movement { get { return mapObjectState.Movement; } }
+            public SolidnessStatus Solidness { get { return mapObjectState != null ? mapObjectState.Solidness : initialSolidness; } }
             
             void Start()
             {
@@ -82,7 +82,7 @@ namespace WindRose
 
             void OnAttached(object[] args)
             {
-                parentMap = ((Tilemap)(args[0])).RelatedMap;
+                parentMap = ((MapState)(args[0])).RelatedMap;
             }
 
             void OnDetached()
@@ -94,7 +94,7 @@ namespace WindRose
             {
                 if (!Application.isPlaying) return;
 
-                if (tilemapObject != null)
+                if (mapObjectState != null)
                 {
                     return;
                 }
@@ -104,8 +104,8 @@ namespace WindRose
                     // perhaps it will not be added now because the Map component is not yet initialized! (e.g. this method being called from Start())
                     // however, when the Map becomes ready, this method will be called, again, by the map itself, which will exist.
                     parentMap = Layout.RequireComponentInParent<Map>(this);
-                    tilemapObject = new Tilemap.TilemapObject(this, initialX, initialY, width, height, initialSolidness);
-                    tilemapObject.Attach(parentMap.InternalTilemap);
+                    mapObjectState = new MapState.MapObjectState(this, initialX, initialY, width, height, initialSolidness);
+                    mapObjectState.Attach(parentMap.InternalMapState);
                 }
                 catch (Layout.MissingComponentInParentException)
                 {
@@ -115,42 +115,42 @@ namespace WindRose
 
             public void Detach()
             {
-                // There are some times at startup when the Tilemap object may be null.
+                // There are some times at startup when the MapState object may be null.
                 // That's why we run the conditional.
                 //
-                // For the general cases, Detach will find a tilemapObject attached.
-                if (tilemapObject != null) tilemapObject.Detach();
+                // For the general cases, Detach will find a mapObjectState attached.
+                if (mapObjectState != null) mapObjectState.Detach();
             }
 
             public void Attach(Map map, uint? x = null, uint? y = null, bool force = false)
             {
                 if (force) Detach();
-                tilemapObject.Attach(map != null ? map.InternalTilemap : null, x, y);
+                mapObjectState.Attach(map != null ? map.InternalMapState : null, x, y);
             }
 
             public void Teleport(uint? x, uint? y)
             {
-                if (tilemapObject != null && !paused) tilemapObject.Teleport(x, y);
+                if (mapObjectState != null && !paused) mapObjectState.Teleport(x, y);
             }
 
             public void SetSolidness(SolidnessStatus newSolidness)
             {
-                if (tilemapObject != null && !paused) tilemapObject.SetSolidness(newSolidness);
+                if (mapObjectState != null && !paused) mapObjectState.SetSolidness(newSolidness);
             }
 
             public bool StartMovement(Direction movementDirection)
             {
-                return tilemapObject != null && !paused && tilemapObject.StartMovement(movementDirection);
+                return mapObjectState != null && !paused && mapObjectState.StartMovement(movementDirection);
             }
 
             public bool FinishMovement()
             {
-                return tilemapObject != null && !paused && tilemapObject.FinishMovement();
+                return mapObjectState != null && !paused && mapObjectState.FinishMovement();
             }
 
             public bool CancelMovement()
             {
-                return tilemapObject != null && !paused && tilemapObject.CancelMovement();
+                return mapObjectState != null && !paused && mapObjectState.CancelMovement();
             }
 
             void Pause(bool fullFreeze)

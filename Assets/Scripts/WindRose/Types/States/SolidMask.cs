@@ -5,7 +5,7 @@ namespace WindRose
 {
     namespace Types
     {
-        namespace Tilemaps
+        namespace States
         {
             public class SolidMask
             {

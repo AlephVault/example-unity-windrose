@@ -7,7 +7,7 @@ namespace WindRose
 {
     namespace Types
     {
-        namespace Tilemaps
+        namespace States
         {
             public enum SolidnessStatus { Hole, Ghost, SolidForOthers, Solid };
         }

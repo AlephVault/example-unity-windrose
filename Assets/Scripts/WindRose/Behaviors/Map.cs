@@ -5,7 +5,7 @@ namespace WindRose
 {
     namespace Behaviours
     {
-        using Types.Tilemaps;
+        using Types.States;
 
         public class Map : MonoBehaviour
         {
@@ -27,9 +27,9 @@ namespace WindRose
             [SerializeField]
             private uint height;
 
-            private Tilemap internalTilemap;
+            private MapState internalMapState;
 
-            public Tilemap InternalTilemap { get { return internalTilemap; } }
+            public MapState InternalMapState { get { return internalMapState; } }
             public uint Height { get { return height; } }
             public uint Width { get { return width; } }
 
@@ -38,7 +38,7 @@ namespace WindRose
             {
                 width = Values.Clamp<uint>(1, width, 100);
                 height = Values.Clamp<uint>(1, height, 100);
-                internalTilemap = new Tilemap(this, Width, Height);
+                internalMapState = new MapState(this, Width, Height);
             }
 
             private void Start()

@@ -1714,6 +1714,24 @@ Prefab:
       propertyPath: waySteps.Array.data[11].delay
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 114401396265092770, guid: 82eef48316d2a4e45997a37868a97d21,
+        type: 2}
+      propertyPath: defaultAnimation
+      value: 
+      objectReference: {fileID: 11400000, guid: c4a5e1de229d44d49884cf3c89df0cfb,
+        type: 2}
+    - target: {fileID: 114113076972470672, guid: 82eef48316d2a4e45997a37868a97d21,
+        type: 2}
+      propertyPath: idleAnimationSet
+      value: 
+      objectReference: {fileID: 11400000, guid: 472be9e212e83c34cb41e22cc92789ec,
+        type: 2}
+    - target: {fileID: 114636172155759372, guid: 82eef48316d2a4e45997a37868a97d21,
+        type: 2}
+      propertyPath: movingAnimationSet
+      value: 
+      objectReference: {fileID: 11400000, guid: 9242ac6ce1e0be545b9702964521fc82,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 82eef48316d2a4e45997a37868a97d21, type: 2}
   m_IsPrefabParent: 0
@@ -1914,23 +1932,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03942de37db743040a679af8cfa7f3ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  idleAnimationSet:
-    up:
-      sprites:
-      - {fileID: 21300020, guid: d74ce3d6376db5f409635e6adaaa549f, type: 3}
-      fps: 1
-    down:
-      sprites:
-      - {fileID: 21300002, guid: d74ce3d6376db5f409635e6adaaa549f, type: 3}
-      fps: 1
-    left:
-      sprites:
-      - {fileID: 21300008, guid: d74ce3d6376db5f409635e6adaaa549f, type: 3}
-      fps: 1
-    right:
-      sprites:
-      - {fileID: 21300014, guid: d74ce3d6376db5f409635e6adaaa549f, type: 3}
-      fps: 1
+  idleAnimationSet: {fileID: 11400000, guid: 4763a10f69e47c14bba0f419a9b345ea, type: 2}
   orientation: 0
   animationKey: 
   overriddenKeyForIdleAnimation: 
@@ -1945,10 +1947,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5170786109b5314e9bd6061588694ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultAnimation:
-    sprites:
-    - {fileID: 21300002, guid: d74ce3d6376db5f409635e6adaaa549f, type: 3}
-    fps: 1
+  defaultAnimation: {fileID: 11400000, guid: 1af7c8ac2458102438b054e00cc0d8ef, type: 2}
 --- !u!114 &586861183
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3153,10 +3152,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5170786109b5314e9bd6061588694ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultAnimation:
-    sprites:
-    - {fileID: 21300000, guid: 5acf5812dbc8de64f8072efbd559dd1a, type: 3}
-    fps: 0
+  defaultAnimation: {fileID: 11400000, guid: 71a8d44a5c92b00409d1a3e2d3c87e62, type: 2}
 --- !u!212 &850159752
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -5257,23 +5253,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03942de37db743040a679af8cfa7f3ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  idleAnimationSet:
-    up:
-      sprites:
-      - {fileID: 21300020, guid: f858765d4bfbe2640b8c50cd99b56ea1, type: 3}
-      fps: 1
-    down:
-      sprites:
-      - {fileID: 21300002, guid: f858765d4bfbe2640b8c50cd99b56ea1, type: 3}
-      fps: 1
-    left:
-      sprites:
-      - {fileID: 21300008, guid: f858765d4bfbe2640b8c50cd99b56ea1, type: 3}
-      fps: 1
-    right:
-      sprites:
-      - {fileID: 21300014, guid: f858765d4bfbe2640b8c50cd99b56ea1, type: 3}
-      fps: 1
+  idleAnimationSet: {fileID: 11400000, guid: 5d8191dc0ad7ed24fade20995cec4021, type: 2}
   orientation: 3
   animationKey: 
   overriddenKeyForIdleAnimation: 
@@ -5288,10 +5268,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5170786109b5314e9bd6061588694ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultAnimation:
-    sprites:
-    - {fileID: 21300002, guid: f858765d4bfbe2640b8c50cd99b56ea1, type: 3}
-    fps: 1
+  defaultAnimation: {fileID: 11400000, guid: 6892f8ae8fa8c634a9d3a0d5515da44d, type: 2}
 --- !u!114 &1358881516
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5696,6 +5673,24 @@ Prefab:
       propertyPath: speed
       value: 4
       objectReference: {fileID: 0}
+    - target: {fileID: 114121299827776052, guid: 4d49ab3f52c28d44c93e06dc49b8ea0c,
+        type: 2}
+      propertyPath: defaultAnimation
+      value: 
+      objectReference: {fileID: 11400000, guid: 4d2c798de7b3d5942807f3680fc92648,
+        type: 2}
+    - target: {fileID: 114099831494430252, guid: 4d49ab3f52c28d44c93e06dc49b8ea0c,
+        type: 2}
+      propertyPath: idleAnimationSet
+      value: 
+      objectReference: {fileID: 11400000, guid: 3dc6c2dd7ba1de14aad95b83e7ddbf48,
+        type: 2}
+    - target: {fileID: 114907474632291964, guid: 4d49ab3f52c28d44c93e06dc49b8ea0c,
+        type: 2}
+      propertyPath: movingAnimationSet
+      value: 
+      objectReference: {fileID: 11400000, guid: 67ec0d21aa427db4aa1698b75ad2eae0,
+        type: 2}
     m_RemovedComponents:
     - {fileID: 0}
   m_ParentPrefab: {fileID: 100100000, guid: 4d49ab3f52c28d44c93e06dc49b8ea0c, type: 2}
@@ -6072,10 +6067,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5170786109b5314e9bd6061588694ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultAnimation:
-    sprites:
-    - {fileID: 21300000, guid: a0e5dd3cc85437740ae87f306e155710, type: 3}
-    fps: 1
+  defaultAnimation: {fileID: 11400000, guid: 1221f6b97f4d4fb4488b196867cd4603, type: 2}
 --- !u!114 &1514043977
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6464,23 +6456,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03942de37db743040a679af8cfa7f3ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  idleAnimationSet:
-    up:
-      sprites:
-      - {fileID: 21300020, guid: f858765d4bfbe2640b8c50cd99b56ea1, type: 3}
-      fps: 1
-    down:
-      sprites:
-      - {fileID: 21300002, guid: f858765d4bfbe2640b8c50cd99b56ea1, type: 3}
-      fps: 1
-    left:
-      sprites:
-      - {fileID: 21300008, guid: f858765d4bfbe2640b8c50cd99b56ea1, type: 3}
-      fps: 1
-    right:
-      sprites:
-      - {fileID: 21300014, guid: f858765d4bfbe2640b8c50cd99b56ea1, type: 3}
-      fps: 1
+  idleAnimationSet: {fileID: 11400000, guid: 5d8191dc0ad7ed24fade20995cec4021, type: 2}
   orientation: 1
   animationKey: 
   overriddenKeyForIdleAnimation: 
@@ -6495,10 +6471,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5170786109b5314e9bd6061588694ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultAnimation:
-    sprites:
-    - {fileID: 21300002, guid: f858765d4bfbe2640b8c50cd99b56ea1, type: 3}
-    fps: 1
+  defaultAnimation: {fileID: 11400000, guid: 6892f8ae8fa8c634a9d3a0d5515da44d, type: 2}
 --- !u!114 &1597479048
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8584,23 +8557,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03942de37db743040a679af8cfa7f3ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  idleAnimationSet:
-    up:
-      sprites:
-      - {fileID: 21300020, guid: f858765d4bfbe2640b8c50cd99b56ea1, type: 3}
-      fps: 1
-    down:
-      sprites:
-      - {fileID: 21300002, guid: f858765d4bfbe2640b8c50cd99b56ea1, type: 3}
-      fps: 1
-    left:
-      sprites:
-      - {fileID: 21300008, guid: f858765d4bfbe2640b8c50cd99b56ea1, type: 3}
-      fps: 1
-    right:
-      sprites:
-      - {fileID: 21300014, guid: f858765d4bfbe2640b8c50cd99b56ea1, type: 3}
-      fps: 1
+  idleAnimationSet: {fileID: 11400000, guid: 5d8191dc0ad7ed24fade20995cec4021, type: 2}
   orientation: 0
   animationKey: 
   overriddenKeyForIdleAnimation: 
@@ -8615,10 +8572,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5170786109b5314e9bd6061588694ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultAnimation:
-    sprites:
-    - {fileID: 21300002, guid: f858765d4bfbe2640b8c50cd99b56ea1, type: 3}
-    fps: 1
+  defaultAnimation: {fileID: 11400000, guid: 6892f8ae8fa8c634a9d3a0d5515da44d, type: 2}
 --- !u!114 &2061497667
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8769,23 +8723,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03942de37db743040a679af8cfa7f3ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  idleAnimationSet:
-    up:
-      sprites:
-      - {fileID: 21300020, guid: f858765d4bfbe2640b8c50cd99b56ea1, type: 3}
-      fps: 1
-    down:
-      sprites:
-      - {fileID: 21300002, guid: f858765d4bfbe2640b8c50cd99b56ea1, type: 3}
-      fps: 1
-    left:
-      sprites:
-      - {fileID: 21300008, guid: f858765d4bfbe2640b8c50cd99b56ea1, type: 3}
-      fps: 1
-    right:
-      sprites:
-      - {fileID: 21300014, guid: f858765d4bfbe2640b8c50cd99b56ea1, type: 3}
-      fps: 1
+  idleAnimationSet: {fileID: 11400000, guid: 5d8191dc0ad7ed24fade20995cec4021, type: 2}
   orientation: 2
   animationKey: 
   overriddenKeyForIdleAnimation: 
@@ -8800,10 +8738,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5170786109b5314e9bd6061588694ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultAnimation:
-    sprites:
-    - {fileID: 21300002, guid: f858765d4bfbe2640b8c50cd99b56ea1, type: 3}
-    fps: 1
+  defaultAnimation: {fileID: 11400000, guid: 6892f8ae8fa8c634a9d3a0d5515da44d, type: 2}
 --- !u!114 &2062477406
 MonoBehaviour:
   m_ObjectHideFlags: 0

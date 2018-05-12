@@ -26,11 +26,19 @@ namespace WindRose
             private Types.AnimationSpec defaultAnimation;
 
             private Types.AnimationSpec currentAnimation;
+            private float currentTime;
+            private float frameInterval;
+            private int currentAnimationIndex;
 
             public Types.AnimationSpec CurrentAnimation
             {
-                get { return currentAnimation.Clone(); }
-                set { currentAnimation = value.Clone(); }
+                get { return currentAnimation; }
+                set {
+                    if (currentAnimation != value) {
+                        currentAnimation = value;
+                        Reset();
+                    }
+                }
             }
 
             public void SetDefaultAnimation()
@@ -48,12 +56,26 @@ namespace WindRose
                 SetDefaultAnimation();
             }
 
+            private void Reset()
+            {
+                currentTime = 0;
+                currentAnimationIndex = 0;
+                frameInterval = 1.0f / currentAnimation.FPS;                
+            }
+
+            private Sprite Thick() {
+                currentTime += Time.deltaTime;
+                if (currentTime > frameInterval)
+                {
+                    currentTime -= frameInterval;
+                    currentAnimationIndex = ((currentAnimationIndex + 1) % CurrentAnimation.Sprites.Length);
+                }
+                return CurrentAnimation.Sprites[currentAnimationIndex];
+            }
+
             void Update()
             {
-                // We set the current animation.
-                // We are sure this animation will be non-empty.
-                currentAnimation.Thick();
-                spriteRenderer.sprite = currentAnimation.CurrentSprite;
+                spriteRenderer.sprite = Thick();
             }
 
             void Pause(bool fullFreeze)

@@ -79,7 +79,7 @@ namespace WindRose
                 }
                 else
                 {
-                    animations.Add(key, animation.Clone());
+                    animations.Add(key, animation);
                 }
             }
 
@@ -98,7 +98,7 @@ namespace WindRose
                 }
                 else
                 {
-                    animations[key] = animation.Clone();
+                    animations[key] = animation;
                     if (key == animationKey) SetCurrentAnimation();
                 }
             }

@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f8586ea41ae3bf44835e92ad2551048, type: 3}
+  m_Name: LucWalking
+  m_EditorClassIdentifier: 
+  up: {fileID: 11400000, guid: 5837fc0bfc6fa364d8f9cb9b8c135e65, type: 2}
+  down: {fileID: 11400000, guid: 6b76604c1de02b44a815508d8d50cfa1, type: 2}
+  left: {fileID: 11400000, guid: a190dfbee4f23d240a9b1ffd9eec9715, type: 2}
+  right: {fileID: 11400000, guid: 47067d15dae99a349b0aa13e414c28e1, type: 2}

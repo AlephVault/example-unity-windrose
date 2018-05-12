@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f8586ea41ae3bf44835e92ad2551048, type: 3}
+  m_Name: DiabloStanding
+  m_EditorClassIdentifier: 
+  up: {fileID: 11400000, guid: ef1de97633a31fe4e94a82b97db49531, type: 2}
+  down: {fileID: 11400000, guid: 4d2c798de7b3d5942807f3680fc92648, type: 2}
+  left: {fileID: 11400000, guid: aa3399f9694b4cc4a812097fa4f09b62, type: 2}
+  right: {fileID: 11400000, guid: dc99e9b0b612d2044a5b68bc736a5428, type: 2}

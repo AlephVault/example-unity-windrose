@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f8586ea41ae3bf44835e92ad2551048, type: 3}
+  m_Name: AnneWalking
+  m_EditorClassIdentifier: 
+  up: {fileID: 11400000, guid: 2eb34b4ebf9daec4ca3a3546c247581e, type: 2}
+  down: {fileID: 11400000, guid: 3b13d9be2a53f5045ad858bd351352df, type: 2}
+  left: {fileID: 11400000, guid: 20f2bb30e5894854690dcab848d50323, type: 2}
+  right: {fileID: 11400000, guid: 8228f819180e4c542a9d13ea71ed82a2, type: 2}

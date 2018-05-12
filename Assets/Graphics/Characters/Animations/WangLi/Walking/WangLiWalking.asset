@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f8586ea41ae3bf44835e92ad2551048, type: 3}
+  m_Name: WangLiWalking
+  m_EditorClassIdentifier: 
+  up: {fileID: 11400000, guid: 6c90c71138c2eee4ba94cb03dc641ed5, type: 2}
+  down: {fileID: 11400000, guid: d4fa5f301427ca6488804962076c6ae8, type: 2}
+  left: {fileID: 11400000, guid: cd0097dedccb49f49a955e30f37386ab, type: 2}
+  right: {fileID: 11400000, guid: 39f8a8831caaef94baddfffd54734943, type: 2}

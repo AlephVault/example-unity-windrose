@@ -1,16 +1,16 @@
-﻿using System.Collections;
+﻿using System.IO;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
+using Support.Utils;
 
 namespace WindRose
 {
     namespace Types
     {
-        [System.Serializable]
-        public struct AnimationSet
+        [CreateAssetMenu(fileName = "NewAnimationSet", menuName = "Wind Rose/Objects/Animation Set", order = 201)]
+        public class AnimationSet : ScriptableObject
         {
-            private bool _initialized;
-
             [SerializeField]
             private AnimationSpec up;
             [SerializeField]
@@ -20,33 +20,37 @@ namespace WindRose
             [SerializeField]
             private AnimationSpec right;
 
-            public AnimationSet(AnimationSpec up, AnimationSpec down, AnimationSpec left, AnimationSpec right)
+#if UNITY_EDITOR
+            [MenuItem("Assets/Create/Wind Rose/Objects/Animation Set (with specs)")]
+            public static void CreateInstanceWithChildSpecs()
             {
-                this.up = up;
-                this.down = down;
-                this.left = left;
-                this.right = right;
-                this._initialized = false;
-                this.Initialize();
-            }
-
-            public AnimationSet Clone()
-            {
-                return new Types.AnimationSet(up.Clone(), down.Clone(), left.Clone(), right.Clone());
-            }
-
-            public void Initialize()
-            {
-                if (_initialized)
+                AnimationSet instance = ScriptableObject.CreateInstance<AnimationSet>();
+                AnimationSpec instanceUp = ScriptableObject.CreateInstance<AnimationSpec>();
+                AnimationSpec instanceDown = ScriptableObject.CreateInstance<AnimationSpec>();
+                AnimationSpec instanceLeft = ScriptableObject.CreateInstance<AnimationSpec>();
+                AnimationSpec instanceRight = ScriptableObject.CreateInstance<AnimationSpec>();
+                Layout.SetObjectFieldValues(instance, new Dictionary<string, object>() {
+                    { "up", instanceUp },
+                    { "down", instanceDown },
+                    { "left", instanceLeft },
+                    { "right", instanceRight },
+                });
+                string path = AssetDatabase.GetAssetPath(Selection.activeObject);
+                if (path == "")
                 {
-                    return;
+                    path = "Assets";
                 }
-                up.Initialize();
-                down.Initialize();
-                left.Initialize();
-                right.Initialize();
-                this._initialized = true;
+                if (!Directory.Exists(path))
+                {
+                    path = Path.GetDirectoryName(path);
+                }
+                AssetDatabase.CreateAsset(instanceUp, Path.Combine(path, "AnimationUpSpec.asset"));
+                AssetDatabase.CreateAsset(instanceDown, Path.Combine(path, "AnimationDownSpec.asset"));
+                AssetDatabase.CreateAsset(instanceLeft, Path.Combine(path, "AnimationLeftSpec.asset"));
+                AssetDatabase.CreateAsset(instanceRight, Path.Combine(path, "AnimationRightSpec.asset"));
+                AssetDatabase.CreateAsset(instance, Path.Combine(path, "AnimationSet.asset"));
             }
+#endif
 
             public AnimationSpec GetForDirection(Direction direction)
             {

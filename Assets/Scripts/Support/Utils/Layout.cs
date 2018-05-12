@@ -113,22 +113,27 @@ namespace Support
                 {
                     gameObject.SetActive(false);
                     T component = gameObject.AddComponent<T>();
-                    Type componentType = component.GetType();
-                    BindingFlags all = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static;
-                    foreach (KeyValuePair<string, object> pair in data)
-                    {
-                        FieldInfo field = componentType.GetField(pair.Key, all);
-                        if (field != null && !field.IsStatic && (field.IsPublic || field.IsDefined(typeof(SerializeField), true)))
-                        {
-                            field.SetValue(component, pair.Value);
-                        }
-                        else
-                        {
-                            throw new UnserializableFieldException("The field " + pair.Key + " cannot be populated for type " + typeof(T).FullName);
-                        }
-                    }
+                    SetObjectFieldValues(component, data);
                     gameObject.SetActive(true);
                     return component;
+                }
+            }
+
+            public static void SetObjectFieldValues(UnityEngine.Object target, Dictionary<string, object> data)
+            {
+                Type targetType = target.GetType();
+                BindingFlags all = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static;
+                foreach (KeyValuePair<string, object> pair in data)
+                {
+                    FieldInfo field = targetType.GetField(pair.Key, all);
+                    if (field != null && !field.IsStatic && (field.IsPublic || field.IsDefined(typeof(SerializeField), true)))
+                    {
+                        field.SetValue(target, pair.Value);
+                    }
+                    else
+                    {
+                        throw new UnserializableFieldException("The field " + pair.Key + " cannot be populated for type " + targetType.FullName);
+                    }
                 }
             }
         }

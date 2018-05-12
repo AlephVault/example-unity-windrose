@@ -342,7 +342,7 @@ namespace WindRose
                  * The block mask will be immutable, since it will never be modified. OTOH the solid mask (for the objects layer)
                  *   will be mutable. But those layers are initialized inside the tilemap.
                  */
-                public Tilemap(Behaviours.Map relatedMap, uint width, uint height, Texture2D source, int maskApplicationOffsetX = 0, int maskApplicationOffsetY = 0)
+                public Tilemap(Behaviours.Map relatedMap, uint width, uint height)
                 {
                     if (relatedMap == null)
                     {
@@ -358,19 +358,7 @@ namespace WindRose
                     Width = width;
                     Height = height;
                     solidMask = new SolidMask(width, height);
-                    if (source != null)
-                    {
-                        Bitmask bitMask = new Bitmask(source);
-                        if (width != bitMask.Width || height != bitMask.Height || maskApplicationOffsetX != 0 || maskApplicationOffsetY != 0)
-                        {
-                            bitMask = bitMask.Translated(width, height, maskApplicationOffsetX, maskApplicationOffsetY);
-                        }
-                        blockMask = bitMask;
-                    }
-                    else
-                    {
-                        blockMask = new Bitmask(width, height);
-                    }
+                    blockMask = new Bitmask(width, height);
                 }
 
                 // Private methods to modify solidness counters

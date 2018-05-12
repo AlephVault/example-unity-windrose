@@ -1210,8 +1210,8 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 361721852}
-  - component: {fileID: 361721853}
   - component: {fileID: 361721851}
+  - component: {fileID: 361721853}
   m_Layer: 0
   m_Name: GameMap
   m_TagString: Untagged
@@ -1266,147 +1266,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 361721850}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fccc134afdc46ff4da8bc4725283f10e, type: 3}
+  m_Script: {fileID: 11500000, guid: 38aa15984ecdcba41a2f23e12eed1fc9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Width: 16
-  Height: 12
-  Layers:
-  - EditorUnfolded: 1
-    LayerType: 0
-    FillingSource: {fileID: 2800000, guid: 902b4d2835b474448840068a68f6bcdc, type: 3}
-    FillingSourceRect:
-      serializedVersion: 2
-      x: 0.25
-      y: 0.25
-      width: 0.25
-      height: 0.25
-    FillingBlocks: 0
-    BiomeSource: {fileID: 0}
-    BiomePresenceData: {fileID: 0}
-    BiomeExtendedPresence: 0
-    BiomeBlockingMode: 0
-    BiomeOffsetX: 0
-    BiomeOffsetY: 0
-    CustomSource: {fileID: 0}
-    CustomPalette: []
-    RandomSource: {fileID: 2800000, guid: 214f731dfff60594ca162278fa96e49f, type: 3}
-    RandomOptions:
-    - Region:
-        serializedVersion: 2
-        x: 0
-        y: 0.5
-        width: 0.25
-        height: 0.25
-      Odds: 10
-    - Region:
-        serializedVersion: 2
-        x: 0.25
-        y: 0.5
-        width: 0.25
-        height: 0.25
-      Odds: 5
-    - Region:
-        serializedVersion: 2
-        x: 0.5
-        y: 0.5
-        width: 0.25
-        height: 0.25
-      Odds: 15
-  - EditorUnfolded: 1
-    LayerType: 1
-    FillingSource: {fileID: 2800000, guid: 902b4d2835b474448840068a68f6bcdc, type: 3}
-    FillingSourceRect:
-      serializedVersion: 2
-      x: 0.25
-      y: 0.25
-      width: 0.25
-      height: 0.25
-    FillingBlocks: 0
-    BiomeSource: {fileID: 2800000, guid: 1f05b3854a800494e9fb5d5927272ec9, type: 3}
-    BiomePresenceData: {fileID: 2800000, guid: 368fc893dd866bd40a36462166350430, type: 3}
-    BiomeExtendedPresence: 0
-    BiomeBlockingMode: 0
-    BiomeOffsetX: 0
-    BiomeOffsetY: 0
-    CustomSource: {fileID: 0}
-    CustomPalette: []
-    RandomSource: {fileID: 0}
-    RandomOptions: []
-  - EditorUnfolded: 1
-    LayerType: 1
-    FillingSource: {fileID: 2800000, guid: 902b4d2835b474448840068a68f6bcdc, type: 3}
-    FillingSourceRect:
-      serializedVersion: 2
-      x: 0.25
-      y: 0.25
-      width: 0.25
-      height: 0.25
-    FillingBlocks: 0
-    BiomeSource: {fileID: 2800000, guid: 4b13c11024000f34391cfaa571df9474, type: 3}
-    BiomePresenceData: {fileID: 2800000, guid: a4923e20e68ccd845a0b606908ce9562, type: 3}
-    BiomeExtendedPresence: 1
-    BiomeBlockingMode: 0
-    BiomeOffsetX: 0
-    BiomeOffsetY: 0
-    CustomSource: {fileID: 0}
-    CustomPalette: []
-    RandomSource: {fileID: 0}
-    RandomOptions: []
-  - EditorUnfolded: 1
-    LayerType: 2
-    FillingSource: {fileID: 2800000, guid: 902b4d2835b474448840068a68f6bcdc, type: 3}
-    FillingSourceRect:
-      serializedVersion: 2
-      x: 0.25
-      y: 0.25
-      width: 0.25
-      height: 0.25
-    FillingBlocks: 0
-    BiomeSource: {fileID: 2800000, guid: 4b13c11024000f34391cfaa571df9474, type: 3}
-    BiomePresenceData: {fileID: 2800000, guid: a4923e20e68ccd845a0b606908ce9562, type: 3}
-    BiomeExtendedPresence: 1
-    BiomeBlockingMode: 0
-    BiomeOffsetX: 0
-    BiomeOffsetY: 0
-    CustomSource: {fileID: 2800000, guid: 327d3cb87a1a41f40891a55e86b245eb, type: 3}
-    CustomPalette:
-    - Color:
-        serializedVersion: 2
-        rgba: 4278255360
-      Source: {fileID: 2800000, guid: c44d59dffd08d464b8966aa734b19d04, type: 3}
-      SourceRect:
-        serializedVersion: 2
-        x: 0.25
-        y: 0.5
-        width: 0.125
-        height: 0.125
-      Blocking: 2
-    - Color:
-        serializedVersion: 2
-        rgba: 4278255615
-      Source: {fileID: 2800000, guid: c44d59dffd08d464b8966aa734b19d04, type: 3}
-      SourceRect:
-        serializedVersion: 2
-        x: 0
-        y: 0.5
-        width: 0.125
-        height: 0.125
-      Blocking: 2
-    - Color:
-        serializedVersion: 2
-        rgba: 4278190335
-      Source: {fileID: 2800000, guid: c44d59dffd08d464b8966aa734b19d04, type: 3}
-      SourceRect:
-        serializedVersion: 2
-        x: 0.375
-        y: 0.5
-        width: 0.125
-        height: 0.125
-      Blocking: 2
-    RandomSource: {fileID: 0}
-    RandomOptions: []
-  TileSize: 32
+  width: 16
+  height: 12
+  blockMask: {fileID: 0}
+  maskApplicationOffsetX: 0
+  maskApplicationOffsetY: 0
 --- !u!1 &390190551
 GameObject:
   m_ObjectHideFlags: 0

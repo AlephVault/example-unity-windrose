@@ -27,15 +27,6 @@ namespace WindRose
             [SerializeField]
             private uint height;
 
-            [SerializeField]
-            private Texture2D blockMask;
-
-            [SerializeField]
-            private int maskApplicationOffsetX = 0;
-
-            [SerializeField]
-            private int maskApplicationOffsetY = 0;
-
             private Tilemap internalTilemap;
 
             public Tilemap InternalTilemap { get { return internalTilemap; } }
@@ -47,7 +38,7 @@ namespace WindRose
             {
                 width = Values.Clamp<uint>(1, width, 100);
                 height = Values.Clamp<uint>(1, height, 100);
-                internalTilemap = new Tilemap(this, Width, Height, blockMask, maskApplicationOffsetX, maskApplicationOffsetY);
+                internalTilemap = new Tilemap(this, Width, Height);
             }
 
             private void Start()

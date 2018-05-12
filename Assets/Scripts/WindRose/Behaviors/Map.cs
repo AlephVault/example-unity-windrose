@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Tilemaps;
 using Support.Utils;
 
 namespace WindRose
@@ -10,13 +11,8 @@ namespace WindRose
         public class Map : MonoBehaviour
         {
             /**
-             * A map has nothing on its own but serves as a base marker
-             *   for any object willing to act as a map. Children objects
-             *   will be map layers, which will have access to this map's
-             *   dimensions.
-             * 
-             * The map also provides dimensions for their cells/tiles, to
-             *   be used by children objects.
+             * A map manages its inner tilemaps and objects. It has few utilites beyond
+             *   being a shortcut of Grid/Tilemaps.
              */
 
             public const uint GAME_UNITS_PER_TILE_UNITS = 1;
@@ -34,7 +30,7 @@ namespace WindRose
             public uint Width { get { return width; } }
 
             // Use this for initialization
-            void Awake()
+            private void Awake()
             {
                 width = Values.Clamp<uint>(1, width, 100);
                 height = Values.Clamp<uint>(1, height, 100);
@@ -46,6 +42,32 @@ namespace WindRose
                 foreach (Positionable positionable in GetComponentsInChildren<Positionable>())
                 {
                     positionable.Initialize();
+                }
+            }
+
+            private void InitBlockedPositions()
+            {
+                int childCount = transform.childCount;
+                for(int index = 0; index < childCount; index++)
+                {
+                    GameObject go = transform.GetChild(index).gameObject;
+                    Tilemap tilemap = go.GetComponent<Tilemap>();
+                    if (tilemap != null) InitBlockedPositionsFromTilemap(tilemap);
+                }
+            }
+
+            private void InitBlockedPositionsFromTilemap(Tilemap tilemap)
+            {
+                for(int y = 0; y < height; y++)
+                {
+                    for(int x = 0; x < width; x++)
+                    {
+                        TileBase tile = tilemap.GetTile(new Vector3Int(x, y, 0));
+                        if (tile is Types.Tilemaps.IBlockingAwareTile)
+                        {
+                            internalMapState.SetBlocking((uint)x, (uint)y, ((Types.Tilemaps.IBlockingAwareTile)tile).Blocks());
+                        }
+                    }
                 }
             }
 

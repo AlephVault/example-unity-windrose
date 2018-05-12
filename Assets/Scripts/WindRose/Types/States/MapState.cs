@@ -361,6 +361,16 @@ namespace WindRose
                     blockMask = new Bitmask(width, height);
                 }
 
+                public void SetBlocking(uint x, uint y, bool block)
+                {
+                    blockMask[x, y] = block;
+                }
+
+                public bool GetBlocking(uint x, uint y)
+                {
+                    return blockMask[x, y];
+                }
+
                 // Private methods to modify solidness counters
 
                 private void IncrementBody(uint x, uint y, uint width, uint height)

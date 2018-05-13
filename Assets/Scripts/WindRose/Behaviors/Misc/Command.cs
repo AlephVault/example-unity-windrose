@@ -41,7 +41,7 @@ namespace WindRose
                 public void Start()
                 {
                     CircleCollider2D collider = GetComponent<CircleCollider2D>();
-                    collider.radius = 0.25f * Map.GAME_UNITS_PER_TILE_UNITS;
+                    collider.radius = 0;
                     collider.isTrigger = true;
                 }
             }

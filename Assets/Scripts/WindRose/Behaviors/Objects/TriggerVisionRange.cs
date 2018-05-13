@@ -62,6 +62,8 @@ namespace WindRose
                 }
                 halfHeight = positionable.Height / 2;
                 halfWidth = positionable.Width / 2;
+                // Forcing accurate position the first time
+                Update();
             }
 
             protected override void Update()

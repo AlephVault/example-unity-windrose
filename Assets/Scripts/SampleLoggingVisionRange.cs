@@ -4,11 +4,9 @@ using GabTab.Behaviours;
 using GabTab.Behaviours.Interactors;
 using System.Collections;
 
-[RequireComponent(typeof(TriggerVisionRange))]
+[RequireComponent(typeof(Watcher))]
 class SampleLoggingVisionRange : MonoBehaviour
 {
-    private TriggerVisionRange visionRange;
-    
     private bool stillInside = false;
     private int x;
     private int y;
@@ -16,19 +14,19 @@ class SampleLoggingVisionRange : MonoBehaviour
     [SerializeField]
     private InteractiveInterface ui;
 
-    void Awake()
+    // Use this for initialization
+    void OnWatcherReady()
     {
-        visionRange = GetComponent<TriggerVisionRange>();
+        Invoke("StartChatListener", 0.5f);
     }
 
-    // Use this for initialization
-    void Start()
+    void StartChatListener()
     {
+        TriggerVisionRange visionRange = GetComponent<Watcher>().RelatedVisionRange;
         visionRange.onMapTriggerExit.AddListener((obj, platform, x, y) =>
         {
             stillInside = false;
         });
-
         visionRange.onMapTriggerMoved.AddListener((obj, platform, px, py) =>
         {
             if (!stillInside)

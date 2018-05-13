@@ -119,7 +119,14 @@ namespace WindRose
             {
                 foreach(KeyValuePair<TriggerActivator, MapTriggerCallbacks> item in registeredCallbacks)
                 {
-                    ExitAndDisconnect(item.Key);
+                    try
+                    {
+                        ExitAndDisconnect(item.Key);
+                    }
+                    catch (MissingReferenceException e)
+                    {
+                        // Diaper! No further behaviour needed here
+                    }
                 }
                 registeredCallbacks.Clear();
                 collider2D.enabled = false;

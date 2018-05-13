@@ -42,6 +42,7 @@ namespace WindRose
             private void Start()
             {
                 grid = GetComponent<Grid>();
+                InitBlockedPositions();
                 initialized = true;
                 foreach (Positionable positionable in GetComponentsInChildren<Positionable>())
                 {
@@ -66,9 +67,12 @@ namespace WindRose
                 {
                     for(int x = 0; x < width; x++)
                     {
-                        TileBase tile = tilemap.GetTile(new Vector3Int(x, y, 0));
+                        TileBase tile = tilemap.GetTile(new Vector3Int(x, -y-1, 0));
                         if (tile is Types.Tilemaps.IBlockingAwareTile)
                         {
+                            // Why y-1? Because tiles "grow" up-right. So if I intend to pick the corner expanding from a point (x, -y)
+                            //   considering its pivot in top-left, I will actually be picking (x, -(y+1)), hence the correction factor
+                            //   of -1 to reference the proper index.
                             internalMapState.SetBlocking((uint)x, (uint)y, ((Types.Tilemaps.IBlockingAwareTile)tile).Blocks());
                         }
                     }

@@ -51,20 +51,20 @@ namespace WindRose
                     switch(oriented.orientation)
                     {
                         case Types.Direction.DOWN:
-                            x = positionable.transform.position.x + (positionable.Width / 2f) * Map.GAME_UNITS_PER_TILE_UNITS;
-                            y = positionable.transform.position.y - (positionable.Height + 0.5f) * Map.GAME_UNITS_PER_TILE_UNITS;
+                            x = positionable.transform.position.x + (positionable.Width / 2f) * positionable.GetCellWidth();
+                            y = positionable.transform.position.y - (positionable.Height + 0.5f) * positionable.GetCellHeight();
                             break;
                         case Types.Direction.UP:
-                            x = positionable.transform.position.x + (positionable.Width / 2f) * Map.GAME_UNITS_PER_TILE_UNITS;
-                            y = positionable.transform.position.y + 0.5f * Map.GAME_UNITS_PER_TILE_UNITS;
+                            x = positionable.transform.position.x + (positionable.Width / 2f) * positionable.GetCellWidth();
+                            y = positionable.transform.position.y + 0.5f * positionable.GetCellHeight();
                             break;
                         case Types.Direction.LEFT:
-                            y = positionable.transform.position.y - (positionable.Height / 2f) * Map.GAME_UNITS_PER_TILE_UNITS;
-                            x = positionable.transform.position.x - 0.5f * Map.GAME_UNITS_PER_TILE_UNITS;
+                            y = positionable.transform.position.y - (positionable.Height / 2f) * positionable.GetCellHeight();
+                            x = positionable.transform.position.x - 0.5f * positionable.GetCellWidth();
                             break;
                         case Types.Direction.RIGHT:
-                            y = positionable.transform.position.y - (positionable.Height / 2f) * Map.GAME_UNITS_PER_TILE_UNITS;
-                            x = positionable.transform.position.x + (positionable.Width + 0.5f) * Map.GAME_UNITS_PER_TILE_UNITS;
+                            y = positionable.transform.position.y - (positionable.Height / 2f) * positionable.GetCellHeight();
+                            x = positionable.transform.position.x + (positionable.Width + 0.5f) * positionable.GetCellWidth();
                             break;
                         default:
                             x = command.transform.position.x;

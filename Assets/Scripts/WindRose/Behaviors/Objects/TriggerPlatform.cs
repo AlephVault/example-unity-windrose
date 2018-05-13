@@ -17,7 +17,7 @@ namespace WindRose
              */
 
             [SerializeField]
-            private float innerMargin = 0.25f * Map.GAME_UNITS_PER_TILE_UNITS;
+            private float innerMarginFactor = 0.25f;
 
             protected override void Start()
             {
@@ -51,12 +51,14 @@ namespace WindRose
             protected override void SetupCollider(Collider2D collider2D)
             {
                 BoxCollider2D boxCollider2D = (BoxCollider2D)collider2D;
+                float cellWidth = positionable.GetCellWidth();
+                float cellHeight = positionable.GetCellHeight();
                 // collision mask will have certain width and height
-                boxCollider2D.size = new Vector2(positionable.Width * Map.GAME_UNITS_PER_TILE_UNITS, positionable.Height * Map.GAME_UNITS_PER_TILE_UNITS);
+                boxCollider2D.size = new Vector2(positionable.Width * cellWidth, positionable.Height * cellHeight);
                 // and starting with those dimensions, we compute the offset as >>> and vvv
                 boxCollider2D.offset = new Vector2(boxCollider2D.size.x / 2, -boxCollider2D.size.y / 2);
                 // adjust to tolerate inner delta and avoid bleeding
-                boxCollider2D.size = boxCollider2D.size - 2 * (new Vector2(innerMargin, innerMargin));
+                boxCollider2D.size = boxCollider2D.size - 2 * (new Vector2(innerMarginFactor * cellWidth,  innerMarginFactor * cellHeight));
             }
         }
     }

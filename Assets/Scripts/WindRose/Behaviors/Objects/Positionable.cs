@@ -59,22 +59,6 @@ namespace WindRose
                 Initialize();
             }
 
-            #if UNITY_EDITOR
-            // This is lame since the function will still exist when running in the editor mode.
-            // Although it will not exist when running the game once deployed, when testing this app
-            //   in the editor with a lot of Positionable objects, it will slow down somewhat since
-            //   there will a lot of calls to this Update method just checking the condition (which
-            //   will always return false). This is a crap I cannot get rid of, until Unity allows
-            //   a difference between Unity Editor being run, and Unity Editor in design time.
-            private void Update()
-            {
-                if (!Application.isPlaying)
-                {
-                    transform.localPosition = new Vector3(initialX * Map.GAME_UNITS_PER_TILE_UNITS, - (int)initialY * Map.GAME_UNITS_PER_TILE_UNITS, transform.localPosition.z);
-                }
-            }
-            #endif
-
             void OnDestroy()
             {
                 Detach();
@@ -151,6 +135,16 @@ namespace WindRose
             public bool CancelMovement()
             {
                 return mapObjectState != null && !paused && mapObjectState.CancelMovement();
+            }
+
+            public float GetCellWidth()
+            {
+                return parentMap.GetCellWidth();
+            }
+
+            public float GetCellHeight()
+            {
+                return parentMap.GetCellHeight();
             }
 
             void Pause(bool fullFreeze)

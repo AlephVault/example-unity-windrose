@@ -67,18 +67,18 @@ namespace WindRose
                 positionable.CancelMovement();
             }
 
-            private Vector2 VersorForCurrentDirection()
+            private Vector2 VectorForCurrentDirection()
             {
                 switch(Movement)
                 {
                     case Types.Direction.UP:
-                        return Vector2.up;
+                        return Vector2.up * positionable.GetCellHeight();
                     case Types.Direction.DOWN:
-                        return Vector2.down;
+                        return Vector2.down * positionable.GetCellHeight();
                     case Types.Direction.LEFT:
-                        return Vector2.left;
+                        return Vector2.left * positionable.GetCellWidth();
                     case Types.Direction.RIGHT:
-                        return Vector2.right;
+                        return Vector2.right * positionable.GetCellWidth();
                 }
                 // This one is never reached!
                 return Vector2.zero;
@@ -101,8 +101,8 @@ namespace WindRose
 
                 if (IsMoving)
                 {
-                    Vector2 versor = VersorForCurrentDirection();
-                    Vector2 targetOffset = versor * Map.GAME_UNITS_PER_TILE_UNITS;
+                    Vector2 vector = VectorForCurrentDirection();
+                    Vector2 targetOffset = vector;
 
                     // The object has to perform movement.
                     // Initially, we must set the appropriate target.
@@ -142,13 +142,13 @@ namespace WindRose
                     {
                         /**
                          * Inners will be more elaborated here:
-                         * 1. We calculate our movement with a target position of (target) + (a versor with norm of [movement offset by current speed and timedelta] + 1).
+                         * 1. We calculate our movement with a target position of (target) + (a vector with norm of [movement offset by current speed and timedelta] + 1).
                          *    This is intended to avoid movement clamping against the target due to high speeds.
                          * 2a. If the distance between this target position and the origin is less than the distance between the target and the origin,
                          *     we just increment the position.
                          * 2c. Otherwise (LOOPING) we ALSO mark the movement as completed, and start a new one (adapting origin and target)
                          */
-                        Vector2 movementDestination = target + versor * (1 + movementNorm);
+                        Vector2 movementDestination = target + vector * (1 + movementNorm);
                         Vector2 movement = Vector2.MoveTowards(transform.localPosition, movementDestination, movementNorm);
                         // Adjusting the position as usual
                         transform.localPosition = new Vector3(movement.x, movement.y, transform.localPosition.z);
@@ -156,14 +156,14 @@ namespace WindRose
                         {
                             float traversedDistanceSinceOrigin = (movement - origin).magnitude;
 
-                            // We break this loop if the delta is lower than 1 game unit because we
+                            // We break this loop if the delta is lower than cell dimension because we
                             //   do not need to mark new movements anymore.
-                            if (traversedDistanceSinceOrigin < Map.GAME_UNITS_PER_TILE_UNITS) break;
+                            if (traversedDistanceSinceOrigin < vector.magnitude) break;
 
                             // We intend to at least finish this movement and perhaps continue with a new one
                             Types.Direction currentMovement = Movement.Value;
                             positionable.FinishMovement();
-                            if (traversedDistanceSinceOrigin > Map.GAME_UNITS_PER_TILE_UNITS)
+                            if (traversedDistanceSinceOrigin > vector.magnitude)
                             {
                                 origin = target;
                                 target = target + targetOffset;

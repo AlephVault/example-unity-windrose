@@ -17,7 +17,7 @@ namespace WindRose
              */
 
             // This inner margin is not mutable and will work to avoid bleeding
-            private float BLEEDING_BUFFER = 0.1f * Map.GAME_UNITS_PER_TILE_UNITS;
+            const float BLEEDING_BUFFER = 0.1f;
 
             // This related component will be used to tie the events of attach/detach to it, and to
             //   calculate the offsets. It is different to the Platform, in the way that the Platform
@@ -124,42 +124,44 @@ namespace WindRose
             protected override void SetupCollider(Collider2D collider2D)
             {
                 BoxCollider2D boxCollider2D = (BoxCollider2D)collider2D;
+                float cellWidth = positionable.GetCellWidth();
+                float cellHeight = positionable.GetCellHeight();
                 // we set the size based on the direction we are looking, and also the offset back to the right-top corner
-                switch(direction)
+                switch (direction)
                 {
                     case Types.Direction.UP:
                     case Types.Direction.DOWN:
-                        boxCollider2D.size = new Vector2((visionSize * 2 + 1) * Map.GAME_UNITS_PER_TILE_UNITS, (visionLength + 1) * Map.GAME_UNITS_PER_TILE_UNITS);
+                        boxCollider2D.size = new Vector2((visionSize * 2 + 1) * cellWidth, (visionLength + 1) * cellHeight);
                         break;
                     default:
-                        boxCollider2D.size = new Vector2((visionLength + 1) * Map.GAME_UNITS_PER_TILE_UNITS, (visionSize * 2 + 1) * Map.GAME_UNITS_PER_TILE_UNITS);
+                        boxCollider2D.size = new Vector2((visionLength + 1) * cellWidth, (visionSize * 2 + 1) * cellHeight);
                         break;
                 }
                 boxCollider2D.offset = new Vector2(0.5f * boxCollider2D.size.x, -0.5f * boxCollider2D.size.y);
                 // also we set the transform of this vision range, using global coordinates:
                 Vector3 basePosition = positionable.transform.position;
-                Vector2 delta = new Vector2(GetDeltaX(), GetDeltaY()) * Map.GAME_UNITS_PER_TILE_UNITS;
+                Vector2 delta = new Vector2(GetDeltaX() * cellWidth, GetDeltaY() * cellHeight);
                 Vector3 newPosition = Vector3.zero;
                 switch(direction)
                 {
                     case Types.Direction.UP:
-                        newPosition = new Vector3(basePosition.x - visionSize * Map.GAME_UNITS_PER_TILE_UNITS, basePosition.y + boxCollider2D.size.y, basePosition.z);
+                        newPosition = new Vector3(basePosition.x - visionSize * cellWidth, basePosition.y + boxCollider2D.size.y, basePosition.z);
                         break;
                     case Types.Direction.DOWN:
-                        newPosition = new Vector3(basePosition.x - visionSize * Map.GAME_UNITS_PER_TILE_UNITS, basePosition.y - positionable.Height * Map.GAME_UNITS_PER_TILE_UNITS, basePosition.z);
+                        newPosition = new Vector3(basePosition.x - visionSize * cellWidth, basePosition.y - positionable.Height * cellHeight, basePosition.z);
                         break;
                     case Types.Direction.LEFT:
-                        newPosition = new Vector3(basePosition.x - boxCollider2D.size.x, basePosition.y + visionSize * Map.GAME_UNITS_PER_TILE_UNITS, basePosition.z);
+                        newPosition = new Vector3(basePosition.x - boxCollider2D.size.x, basePosition.y + visionSize * cellHeight, basePosition.z);
                         break;
                     case Types.Direction.RIGHT:
-                        newPosition = new Vector3(basePosition.x + positionable.Width * Map.GAME_UNITS_PER_TILE_UNITS, basePosition.y + visionSize * Map.GAME_UNITS_PER_TILE_UNITS, basePosition.z);
+                        newPosition = new Vector3(basePosition.x + positionable.Width * cellWidth, basePosition.y + visionSize * cellHeight, basePosition.z);
                         break;
                     default:
                         break;
                 }
                 transform.position = newPosition;
                 // We apply the bleeding buffer right here
-                boxCollider2D.size = boxCollider2D.size - 2 * new Vector2(BLEEDING_BUFFER, BLEEDING_BUFFER);
+                boxCollider2D.size = boxCollider2D.size - 2 * new Vector2(BLEEDING_BUFFER * cellWidth, BLEEDING_BUFFER * cellHeight);
             }
         }
     }

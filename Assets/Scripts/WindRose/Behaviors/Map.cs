@@ -8,14 +8,13 @@ namespace WindRose
     {
         using Types.States;
 
+        [RequireComponent(typeof(Grid))]
         public class Map : MonoBehaviour
         {
             /**
              * A map manages its inner tilemaps and objects. It has few utilites beyond
              *   being a shortcut of Grid/Tilemaps.
              */
-
-            public const uint GAME_UNITS_PER_TILE_UNITS = 1;
 
             [SerializeField]
             private uint width;
@@ -24,6 +23,7 @@ namespace WindRose
             private uint height;
 
             private MapState internalMapState;
+            private Grid grid;
 
             public MapState InternalMapState { get { return internalMapState; } }
             public uint Height { get { return height; } }
@@ -39,6 +39,7 @@ namespace WindRose
 
             private void Start()
             {
+                grid = GetComponent<Grid>();
                 foreach (Positionable positionable in GetComponentsInChildren<Positionable>())
                 {
                     positionable.Initialize();
@@ -69,6 +70,16 @@ namespace WindRose
                         }
                     }
                 }
+            }
+
+            public float GetCellWidth()
+            {
+                return grid.cellSize.x;
+            }
+
+            public float GetCellHeight()
+            {
+                return grid.cellSize.y;
             }
 
             public void Pause(bool fullFreeze)

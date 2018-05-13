@@ -19,8 +19,6 @@ namespace WindRose
              *   design as consistent as possible among scene and sprites.
              */
 
-            public const uint GAME_UNITS_PER_TILE_UNITS = Map.GAME_UNITS_PER_TILE_UNITS;
-
             private Positionable positionable;
 
             // Use this for initialization
@@ -50,35 +48,37 @@ namespace WindRose
                 float? maxY = 0;
                 float finalX = 0;
                 float finalY = 0;
-                
+                float cellWidth = positionable.GetCellWidth();
+                float cellHeight = positionable.GetCellHeight();
+
                 // A positionable will ALWAYS be attached, since Start, until Destroy.
                 // In this context, we can ALWAYS check for its current movement or position.
 
-                switch(positionable.Movement)
+                switch (positionable.Movement)
                 {
                     case Types.Direction.LEFT:
                         snapInY = true;
                         clampInX = true;
-                        minX = null; //(positionable.X - 1) * GAME_UNITS_PER_TILE_UNITS;
-                        maxX = positionable.X * GAME_UNITS_PER_TILE_UNITS;
+                        minX = null;
+                        maxX = positionable.X * cellWidth;
                         break;
                     case Types.Direction.RIGHT:
                         snapInY = true;
                         clampInX = true;
-                        minX = positionable.X * GAME_UNITS_PER_TILE_UNITS;
-                        maxX = null; //(positionable.X + 1) * GAME_UNITS_PER_TILE_UNITS;
+                        minX = positionable.X * cellWidth;
+                        maxX = null;
                         break;
                     case Types.Direction.UP:
                         snapInX = true;
                         clampInY = true;
-                        minY = null; //(positionable.Y - 1) * GAME_UNITS_PER_TILE_UNITS;
-                        maxY = positionable.Y * GAME_UNITS_PER_TILE_UNITS;
+                        minY = null;
+                        maxY = positionable.Y * cellHeight;
                         break;
                     case Types.Direction.DOWN:
                         snapInX = true;
                         clampInY = true;
-                        minY = positionable.Y * GAME_UNITS_PER_TILE_UNITS;
-                        maxY = null; //(positionable.Y + 1) * GAME_UNITS_PER_TILE_UNITS;
+                        minY = positionable.Y * cellHeight;
+                        maxY = null;
                         break;
                     default:
                         snapInX = true;
@@ -86,8 +86,8 @@ namespace WindRose
                         break;
                 }
 
-                innerX = snapInX ? positionable.X * GAME_UNITS_PER_TILE_UNITS : initialX;
-                innerY = snapInY ? positionable.Y * GAME_UNITS_PER_TILE_UNITS : initialY;
+                innerX = snapInX ? positionable.X * cellWidth : initialX;
+                innerY = snapInY ? positionable.Y * cellHeight : initialY;
 
                 finalX = clampInX ? Values.Clamp<float>(minX, innerX, maxX) : innerX;
                 finalY = clampInY ? Values.Clamp<float>(minY, innerY, maxY) : innerY;

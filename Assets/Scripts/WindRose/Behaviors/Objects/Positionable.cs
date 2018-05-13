@@ -87,7 +87,7 @@ namespace WindRose
                 {
                     // perhaps it will not be added now because the Map component is not yet initialized! (e.g. this method being called from Start())
                     // however, when the Map becomes ready, this method will be called, again, by the map itself, which will exist.
-                    parentMap = Layout.RequireComponentInParent<Map>(this);
+                    parentMap = Layout.RequireComponentInParent<Map>(this.transform.parent.gameObject);
                     mapObjectState = new MapState.MapObjectState(this, initialX, initialY, width, height, initialSolidness);
                     mapObjectState.Attach(parentMap.InternalMapState);
                 }

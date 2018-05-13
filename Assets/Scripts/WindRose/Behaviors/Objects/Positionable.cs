@@ -28,12 +28,6 @@ namespace WindRose
             private uint height = 1;
 
             [SerializeField]
-            private uint initialX = 0;
-
-            [SerializeField]
-            private uint initialY = 0;
-
-            [SerializeField]
             private SolidnessStatus initialSolidness = SolidnessStatus.Solid;
 
             /* *********************** Additional data *********************** */
@@ -87,8 +81,11 @@ namespace WindRose
                 {
                     // perhaps it will not be added now because the Map component is not yet initialized! (e.g. this method being called from Start())
                     // however, when the Map becomes ready, this method will be called, again, by the map itself, which will exist.
-                    parentMap = Layout.RequireComponentInParent<Map>(this.transform.parent.gameObject);
-                    mapObjectState = new MapState.MapObjectState(this, initialX, initialY, width, height, initialSolidness);
+                    parentMap = Layout.RequireComponentInParent<Map>(transform.parent.gameObject);
+                    if (!parentMap.Initialized) return;
+                    Vector3Int cellPosition = parentMap.WorldToCell(transform.position);
+                    // TODO: Clamp with `Values.Clamp(0, (uint)cellPosition.x, parentMap.Width-1), Values.Clamp(0, (uint)-cellPosition.y, parentMap.Height-1)` or let it raise exception?
+                    mapObjectState = new MapState.MapObjectState(this, (uint)cellPosition.x, (uint)-cellPosition.y, width, height, initialSolidness);
                     mapObjectState.Attach(parentMap.InternalMapState);
                 }
                 catch (Layout.MissingComponentInParentException)
@@ -109,6 +106,7 @@ namespace WindRose
             public void Attach(Map map, uint? x = null, uint? y = null, bool force = false)
             {
                 if (force) Detach();
+                // TODO: Clamp x, y? or raise exception?
                 mapObjectState.Attach(map != null ? map.InternalMapState : null, x, y);
             }
 

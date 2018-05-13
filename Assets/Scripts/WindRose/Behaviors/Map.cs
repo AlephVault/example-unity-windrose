@@ -24,22 +24,25 @@ namespace WindRose
 
             private MapState internalMapState;
             private Grid grid;
+            private bool initialized = false;
 
             public MapState InternalMapState { get { return internalMapState; } }
             public uint Height { get { return height; } }
             public uint Width { get { return width; } }
+            public bool Initialized { get { return initialized; } }
 
             // Use this for initialization
             private void Awake()
             {
-                width = Values.Clamp<uint>(1, width, 100);
-                height = Values.Clamp<uint>(1, height, 100);
+                width = Values.Clamp(1, width, 100);
+                height = Values.Clamp(1, height, 100);
                 internalMapState = new MapState(this, Width, Height);
             }
 
             private void Start()
             {
                 grid = GetComponent<Grid>();
+                initialized = true;
                 foreach (Positionable positionable in GetComponentsInChildren<Positionable>())
                 {
                     positionable.Initialize();
@@ -80,6 +83,11 @@ namespace WindRose
             public float GetCellHeight()
             {
                 return grid.cellSize.y;
+            }
+
+            public Vector3Int WorldToCell(Vector3 position)
+            {
+                return grid.WorldToCell(position);
             }
 
             public void Pause(bool fullFreeze)

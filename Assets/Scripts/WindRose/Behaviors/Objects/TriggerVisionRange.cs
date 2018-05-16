@@ -97,7 +97,7 @@ namespace WindRose
                 int extra;
                 switch (direction)
                 {
-                    case Types.Direction.DOWN:
+                    case Types.Direction.UP:
                         extra = (int)positionable.Height;
                         break;
                     case Types.Direction.LEFT:
@@ -140,20 +140,21 @@ namespace WindRose
                 boxCollider2D.offset = new Vector2(0.5f * boxCollider2D.size.x, 0.5f * boxCollider2D.size.y);
                 // also we set the transform of this vision range, using global coordinates:
                 Vector3 basePosition = positionable.transform.position;
+                Vector2 delta = new Vector2(GetDeltaX() * cellWidth, GetDeltaY() * cellHeight);
                 Vector3 newPosition = Vector3.zero;
                 switch(direction)
                 {
                     case Types.Direction.UP:
-                        newPosition = new Vector3(basePosition.x - visionSize * cellWidth, basePosition.y + boxCollider2D.size.y, basePosition.z);
+                        newPosition = new Vector3(basePosition.x - visionSize * cellWidth, basePosition.y + positionable.Height * cellHeight, basePosition.z);
                         break;
                     case Types.Direction.DOWN:
-                        newPosition = new Vector3(basePosition.x - visionSize * cellWidth, basePosition.y - positionable.Height * cellHeight, basePosition.z);
+                        newPosition = new Vector3(basePosition.x - visionSize * cellWidth, basePosition.y - (visionLength + 1) * cellHeight, basePosition.z);
                         break;
                     case Types.Direction.LEFT:
-                        newPosition = new Vector3(basePosition.x - boxCollider2D.size.x, basePosition.y + visionSize * cellHeight, basePosition.z);
+                        newPosition = new Vector3(basePosition.x - boxCollider2D.size.x, basePosition.y - visionSize * cellHeight, basePosition.z);
                         break;
                     case Types.Direction.RIGHT:
-                        newPosition = new Vector3(basePosition.x + positionable.Width * cellWidth, basePosition.y + visionSize * cellHeight, basePosition.z);
+                        newPosition = new Vector3(basePosition.x + positionable.Width * cellWidth, basePosition.y - visionSize * cellHeight, basePosition.z);
                         break;
                     default:
                         break;

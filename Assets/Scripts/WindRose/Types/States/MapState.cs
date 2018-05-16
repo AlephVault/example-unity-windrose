@@ -363,7 +363,6 @@ namespace WindRose
 
                 public void SetBlocking(uint x, uint y, bool block)
                 {
-                    Debug.Log("Setting block x=" + x + ", y=" + y);
                     blockMask[x, y] = block;
                 }
 

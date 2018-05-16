@@ -167,8 +167,14 @@ namespace WindRose
                             {
                                 origin = target;
                                 target = target + targetOffset;
-                                // If the movement cannot be performed, we break this loop 
-                                if (!positionable.StartMovement(currentMovement)) break;
+                                // If the movement cannot be performed, we break this loop
+                                //   and also clamp the movement to the actual box, so we
+                                //   avoid "bounces".
+                                if (!positionable.StartMovement(currentMovement))
+                                {
+                                    transform.localPosition = new Vector3(origin.x, origin.y, transform.localPosition.z);
+                                    break;
+                                }
                             }
                         }
                     }

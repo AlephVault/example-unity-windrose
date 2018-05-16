@@ -24,7 +24,7 @@ namespace WindRose
                 // collision mask will have certain width and height
                 boxCollider2D.size = new Vector2(positionable.Width * positionable.GetCellWidth(), positionable.Height * positionable.GetCellHeight());
                 // and starting with those dimensions, we compute the offset as >>> and vvv
-                boxCollider2D.offset = new Vector2(boxCollider2D.size.x / 2, -boxCollider2D.size.y / 2);
+                boxCollider2D.offset = new Vector2(boxCollider2D.size.x / 2, boxCollider2D.size.y / 2);
             }
         }
     }

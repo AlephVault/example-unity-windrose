@@ -39,7 +39,7 @@ namespace WindRose
                 bool clampInY = false;
                 float initialX = transform.localPosition.x;
                 // We invert the Y coordinate because States usually go up->down, and we expect it to be negative beforehand
-                float initialY = -transform.localPosition.y;
+                float initialY = transform.localPosition.y;
                 float innerX = 0;
                 float innerY = 0;
                 float? minX = 0;
@@ -71,14 +71,14 @@ namespace WindRose
                     case Types.Direction.UP:
                         snapInX = true;
                         clampInY = true;
-                        minY = null;
-                        maxY = positionable.Y * cellHeight;
+                        minY = positionable.Y * cellHeight;
+                        maxY = null;
                         break;
                     case Types.Direction.DOWN:
                         snapInX = true;
                         clampInY = true;
-                        minY = positionable.Y * cellHeight;
-                        maxY = null;
+                        minY = null;
+                        maxY = positionable.Y * cellHeight;
                         break;
                     default:
                         snapInX = true;
@@ -93,7 +93,7 @@ namespace WindRose
                 finalY = clampInY ? Values.Clamp<float>(minY, innerY, maxY) : innerY;
 
                 // We make the Y coordinate negative, as it was (or should be) in the beginning.
-                transform.localPosition = new Vector3(finalX, -finalY, transform.localPosition.z);
+                transform.localPosition = new Vector3(finalX, finalY, transform.localPosition.z);
             }
         }
     }

@@ -275,10 +275,10 @@ namespace WindRose
                             switch (Movement)
                             {
                                 case Direction.UP:
-                                    Y--;
+                                    Y++;
                                     break;
                                 case Direction.DOWN:
-                                    Y++;
+                                    Y--;
                                     break;
                                 case Direction.LEFT:
                                     X--;
@@ -363,6 +363,7 @@ namespace WindRose
 
                 public void SetBlocking(uint x, uint y, bool block)
                 {
+                    Debug.Log("Setting block x=" + x + ", y=" + y);
                     blockMask[x, y] = block;
                 }
 
@@ -390,11 +391,11 @@ namespace WindRose
                         case Direction.LEFT:
                             return x == 0;
                         case Direction.UP:
-                            return y == 0;
+                            return y + height == solidMask.height;
                         case Direction.RIGHT:
                             return x + width == solidMask.width;
                         case Direction.DOWN:
-                            return y + height == solidMask.height;
+                            return y == 0;
                     }
                     return false;
                 }
@@ -406,11 +407,11 @@ namespace WindRose
                     {
                         case Direction.LEFT:
                             return blockMask.GetColumn(x - 1, y, y + height - 1, Bitmask.CheckType.ANY_BLOCKED);
-                        case Direction.UP:
+                        case Direction.DOWN:
                             return blockMask.GetRow(x, x + width - 1, y - 1, Bitmask.CheckType.ANY_BLOCKED);
                         case Direction.RIGHT:
                             return blockMask.GetColumn(x + width, y, y + height - 1, Bitmask.CheckType.ANY_BLOCKED);
-                        case Direction.DOWN:
+                        case Direction.UP:
                             return blockMask.GetRow(x, x + width - 1, y + height, Bitmask.CheckType.ANY_BLOCKED);
                         default:
                             return true;
@@ -424,11 +425,11 @@ namespace WindRose
                     {
                         case Direction.LEFT:
                             return solidMask.EmptyColumn(x - 1, y, height);
-                        case Direction.UP:
+                        case Direction.DOWN:
                             return solidMask.EmptyRow(x, y - 1, width);
                         case Direction.RIGHT:
                             return solidMask.EmptyColumn(x + width, y, height);
-                        case Direction.DOWN:
+                        case Direction.UP:
                             return solidMask.EmptyRow(x, y + height, width);
                         default:
                             return true;
@@ -444,13 +445,13 @@ namespace WindRose
                             case Direction.LEFT:
                                 solidMask.IncColumn(x - 1, y, height);
                                 break;
-                            case Direction.UP:
+                            case Direction.DOWN:
                                 solidMask.IncRow(x, y - 1, width);
                                 break;
                             case Direction.RIGHT:
                                 solidMask.IncColumn(x + width, y, height);
                                 break;
-                            case Direction.DOWN:
+                            case Direction.UP:
                                 solidMask.IncRow(x, y + height, width);
                                 break;
                         }
@@ -466,13 +467,13 @@ namespace WindRose
                             case Direction.LEFT:
                                 solidMask.DecColumn(x - 1, y, height);
                                 break;
-                            case Direction.UP:
+                            case Direction.DOWN:
                                 solidMask.DecRow(x, y - 1, width);
                                 break;
                             case Direction.RIGHT:
                                 solidMask.DecColumn(x + width, y, height);
                                 break;
-                            case Direction.DOWN:
+                            case Direction.UP:
                                 solidMask.DecRow(x, y + height, width);
                                 break;
                         }

@@ -137,7 +137,7 @@ namespace WindRose
                         boxCollider2D.size = new Vector2((visionLength + 1) * cellWidth, (visionSize * 2 + 1) * cellHeight);
                         break;
                 }
-                boxCollider2D.offset = new Vector2(0.5f * boxCollider2D.size.x, -0.5f * boxCollider2D.size.y);
+                boxCollider2D.offset = new Vector2(0.5f * boxCollider2D.size.x, 0.5f * boxCollider2D.size.y);
                 // also we set the transform of this vision range, using global coordinates:
                 Vector3 basePosition = positionable.transform.position;
                 Vector2 delta = new Vector2(GetDeltaX() * cellWidth, GetDeltaY() * cellHeight);

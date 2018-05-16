@@ -85,7 +85,7 @@ namespace WindRose
                     if (!parentMap.Initialized) return;
                     Vector3Int cellPosition = parentMap.WorldToCell(transform.position);
                     // TODO: Clamp with `Values.Clamp(0, (uint)cellPosition.x, parentMap.Width-1), Values.Clamp(0, (uint)-cellPosition.y, parentMap.Height-1)` or let it raise exception?
-                    mapObjectState = new MapState.MapObjectState(this, (uint)cellPosition.x, (uint)-cellPosition.y, width, height, initialSolidness);
+                    mapObjectState = new MapState.MapObjectState(this, (uint)cellPosition.x, (uint)cellPosition.y, width, height, initialSolidness);
                     mapObjectState.Attach(parentMap.InternalMapState);
                 }
                 catch (Layout.MissingComponentInParentException)

@@ -56,7 +56,7 @@ namespace WindRose
                 // collision mask will have certain width and height
                 boxCollider2D.size = new Vector2(positionable.Width * cellWidth, positionable.Height * cellHeight);
                 // and starting with those dimensions, we compute the offset as >>> and vvv
-                boxCollider2D.offset = new Vector2(boxCollider2D.size.x / 2, -boxCollider2D.size.y / 2);
+                boxCollider2D.offset = new Vector2(boxCollider2D.size.x / 2, boxCollider2D.size.y / 2);
                 // adjust to tolerate inner delta and avoid bleeding
                 boxCollider2D.size = boxCollider2D.size - 2 * (new Vector2(innerMarginFactor * cellWidth,  innerMarginFactor * cellHeight));
             }

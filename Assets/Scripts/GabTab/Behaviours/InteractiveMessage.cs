@@ -164,7 +164,6 @@ namespace GabTab
                 }
             }
 
-            private Mask mask;
             private RectTransform me;
 
             /**
@@ -187,7 +186,6 @@ namespace GabTab
             protected override void Awake()
             {
                 base.Awake();
-                mask = GetComponent<Mask>();
                 me = GetComponent<RectTransform>();
                 content = messageContent.GetComponent<RectTransform>();
             }

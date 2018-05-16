@@ -123,7 +123,7 @@ namespace WindRose
                     {
                         ExitAndDisconnect(item.Key);
                     }
-                    catch (MissingReferenceException e)
+                    catch (MissingReferenceException)
                     {
                         // Diaper! No further behaviour needed here
                     }

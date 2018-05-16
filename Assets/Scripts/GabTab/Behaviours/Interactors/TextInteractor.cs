@@ -97,12 +97,12 @@ namespace GabTab
                         });
                         if (continueButton != null)
                         {
-                            textInput.onValueChange.AddListener(delegate (string inputText)
+                            textInput.onValueChanged.AddListener(delegate (string inputText)
                             {
                                 string text = TrimText(inputText);
                                 continueButton.interactable = IsTextAllowed(text);
                             });
-                            textInput.onValueChange.Invoke(textInput.text);
+                            textInput.onValueChanged.Invoke(textInput.text);
                         }
                     }
                 }

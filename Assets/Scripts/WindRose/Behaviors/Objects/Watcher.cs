@@ -45,7 +45,7 @@ namespace WindRose
                 {
                     if (relatedVisionRange.gameObject != null) Destroy(relatedVisionRange.gameObject);
                 }
-                catch (MissingReferenceException e)
+                catch (MissingReferenceException)
                 {
                     // It doesn't matter if this exception is fired when destroying this crap.
                     // This means that somehow the reference failed despite evaluating as not-null.

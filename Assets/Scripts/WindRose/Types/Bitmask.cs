@@ -38,60 +38,6 @@ namespace WindRose.Types
         }
 
         /**
-         * Creates a bitmask by passing a texture and considering the black pixels as 0, and others as 1.
-         */
-        public Bitmask(Texture2D source)
-        {
-            if (source == null) throw new ArgumentNullException("source");
-            uint width = (uint) source.width;
-            uint height = (uint) source.height;
-            uint size = width * height;
-            if (size == 0) throw new ArgumentException("Both width and height in the texture must be > 0");
-            bits = new uint[(size + 31) / 32];
-            Width = width;
-            Height = height;
-            Color32[] pixels = source.GetPixels32();
-            Textures.Flip(pixels, source.width, source.height);
-            IEnumerable<bool> pixelToBit = pixels.Select((Color32 color) => color != Color.black);
-            uint rowIdx = 0, colIdx = 0;
-            foreach (bool value in pixelToBit)
-            {
-                if (colIdx == 32)
-                {
-                    rowIdx++;
-                    colIdx = 0;
-                }
-
-                if (value)
-                {
-                    bits[rowIdx] |= (uint)(1 << (int)(colIdx));
-                }
-                else
-                {
-                    bits[rowIdx] &= ~(uint)(1 << (int)(colIdx));
-                }
-
-                colIdx++;
-            }
-        }
-
-        /**
-         * Creates a texture from the current bitmask. The texture will use 16bits per pixel, which is a crap but
-         *   we cannot do anything.
-         */
-        public Texture2D Export()
-        {
-            Texture2D texture = new Texture2D((int) Width, (int) Height, TextureFormat.ARGB32, false);
-            Color32[] pixels = Enumerable.Range(0, (int)(Width * Height)).Select<int, Color32>(
-                (int idx) => ((bits[idx / 32] & (1 << (int)(idx % 32))) != 0) ? Color.white : Color.black
-            ).ToArray();
-            Textures.Flip(pixels, texture.width, texture.height);
-            texture.SetPixels32(pixels);
-            texture.Apply();
-            return texture;
-        }
-
-        /**
          * Sets or gets a bit in the mask.
          */
         public bool this[uint x, uint y]

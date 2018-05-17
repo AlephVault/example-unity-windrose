@@ -44,9 +44,15 @@ namespace WindRose
                 private void SendCommandStatusFromCollision(Collider2D collider, CommandStage stage)
                 {
                     Misc.Command command = GetCommand(collider);
+
                     if (command != null)
                     {
-                        SendMessage("OnCommandReceived", new CommandStatus(command, stage), SendMessageOptions.DontRequireReceiver);
+                        Debug.Log("Colliding on stage " + stage);
+                        Debug.Log(command.sender);
+                        if (command.sender != null && command.sender.gameObject != gameObject)
+                        {
+                            SendMessage("OnCommandReceived", new CommandStatus(command, stage), SendMessageOptions.DontRequireReceiver);
+                        }
                     }
                 }
 

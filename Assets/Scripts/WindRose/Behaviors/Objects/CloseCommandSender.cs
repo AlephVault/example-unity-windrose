@@ -31,7 +31,6 @@ namespace WindRose
                  *   or implementing a talk mechanism with NPCs.
                  */
 
-                [SerializeField]
                 private Misc.Command command;
                 private Oriented oriented;
                 private Positionable positionable;
@@ -41,7 +40,6 @@ namespace WindRose
                 {
                     oriented = GetComponent<Oriented>();
                     positionable = GetComponent<Positionable>();
-                    Release();
                 }
                 
                 private void FixCommandPosition()
@@ -51,18 +49,18 @@ namespace WindRose
                     {
                         case Types.Direction.DOWN:
                             x = positionable.transform.position.x + (positionable.Width / 2f) * positionable.GetCellWidth();
-                            y = positionable.transform.position.y - (positionable.Height + 0.5f) * positionable.GetCellHeight();
+                            y = positionable.transform.position.y - 0.5f * positionable.GetCellHeight();
                             break;
                         case Types.Direction.UP:
                             x = positionable.transform.position.x + (positionable.Width / 2f) * positionable.GetCellWidth();
-                            y = positionable.transform.position.y + 0.5f * positionable.GetCellHeight();
+                            y = positionable.transform.position.y + (positionable.Height + 0.5f) * positionable.GetCellHeight();
                             break;
                         case Types.Direction.LEFT:
-                            y = positionable.transform.position.y - (positionable.Height / 2f) * positionable.GetCellHeight();
+                            y = positionable.transform.position.y + (positionable.Height / 2f) * positionable.GetCellHeight();
                             x = positionable.transform.position.x - 0.5f * positionable.GetCellWidth();
                             break;
                         case Types.Direction.RIGHT:
-                            y = positionable.transform.position.y - (positionable.Height / 2f) * positionable.GetCellHeight();
+                            y = positionable.transform.position.y + (positionable.Height / 2f) * positionable.GetCellHeight();
                             x = positionable.transform.position.x + (positionable.Width + 0.5f) * positionable.GetCellWidth();
                             break;
                         default:
@@ -83,9 +81,15 @@ namespace WindRose
                 public void Cast(string commandName, bool instantaneous = true, params object[] arguments)
                 {
                     if (paused) return;
-                    FixCommandPosition();
+                    GameObject commandObject = new GameObject("Command");
+                    CircleCollider2D collider = Support.Utils.Layout.AddComponent<CircleCollider2D>(commandObject);
+                    collider.enabled = false;
+                    collider.isTrigger = true;
+                    command = Support.Utils.Layout.AddComponent<Misc.Command>(commandObject);                    
                     SetCommandData(commandName, arguments);
-                    command.gameObject.SetActive(true);
+                    FixCommandPosition();
+                    collider.enabled = true;
+                    Debug.Log("Casting command " + commandName + " at " + command.transform.position);
                     if (instantaneous)
                     {
                         StartCoroutine(InstantRelease());
@@ -94,13 +98,13 @@ namespace WindRose
 
                 private IEnumerator InstantRelease()
                 {
-                    yield return new WaitForSeconds(0f);
+                    yield return new WaitForSeconds(0.1f);
                     Release();
                 }
 
                 public void Release()
                 {
-                    command.gameObject.SetActive(false);
+                    Destroy(command.gameObject);
                 }
 
                 void Pause(bool fullFreeze)

@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using WindRose.Behaviours;
+using WindRose.Behaviours.Objects;
 using WindRose.Behaviours.Objects.CommandExchange;
 using WindRose.Types;
 

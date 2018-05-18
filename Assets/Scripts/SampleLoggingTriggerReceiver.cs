@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using WindRose.Behaviours;
+using WindRose.Behaviours.Objects;
 
 [RequireComponent(typeof(TriggerPlatform))]
 class SampleLoggingTriggerReceiver : MonoBehaviour

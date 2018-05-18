@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections;
 using UnityEngine;
-using WindRose.Behaviours;
+using WindRose.Behaviours.Objects;
 using WindRose.Types;
 
 [RequireComponent(typeof(Movable))]

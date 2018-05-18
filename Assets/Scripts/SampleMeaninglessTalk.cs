@@ -2,7 +2,7 @@
 using UnityEngine;
 using GabTab.Behaviours;
 using GabTab.Behaviours.Interactors;
-using WindRose.Behaviours;
+using WindRose.Behaviours.Objects;
 using WindRose.Behaviours.Objects.CommandExchange;
 
 [RequireComponent(typeof(InteractionLauncher))]

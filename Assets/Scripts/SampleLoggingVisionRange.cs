@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using WindRose.Behaviours;
+using WindRose.Behaviours.Objects;
 using GabTab.Behaviours;
 using GabTab.Behaviours.Interactors;
 using System.Collections;

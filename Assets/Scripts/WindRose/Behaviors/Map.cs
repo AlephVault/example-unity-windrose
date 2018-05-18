@@ -6,6 +6,7 @@ namespace WindRose
 {
     namespace Behaviours
     {
+        using Objects;
         using Types.States;
 
         [RequireComponent(typeof(Grid))]

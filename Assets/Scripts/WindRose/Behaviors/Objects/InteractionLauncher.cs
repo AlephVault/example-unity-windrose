@@ -5,16 +5,19 @@ namespace WindRose
 {
     namespace Behaviours
     {
-        public class InteractionLauncher : MonoBehaviour
+        namespace Objects
         {
-            /**
-             * Retrieves the interaction tab from an ancestor InteractionProvider object.
-             */
-            public InteractiveInterface InteractionTab
+            public class InteractionLauncher : MonoBehaviour
             {
-                get
+                /**
+                 * Retrieves the interaction tab from an ancestor InteractionProvider object.
+                 */
+                public InteractiveInterface InteractionTab
                 {
-                    return GetComponentInParent<UI.InteractionProvider>().InteractionTab;
+                    get
+                    {
+                        return GetComponentInParent<UI.InteractionProvider>().InteractionTab;
+                    }
                 }
             }
         }

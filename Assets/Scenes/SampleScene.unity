@@ -7411,7 +7411,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2bdefe7dedaea2545a74d68b4c7101a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ui: {fileID: 1264370712}
 --- !u!114 &1358881524
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8561,7 +8560,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2bdefe7dedaea2545a74d68b4c7101a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ui: {fileID: 1264370712}
 --- !u!114 &1597479056
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10053,7 +10051,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e822672d7bf88e4a9a61e4b549a3e3d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mapInteractiveInterface: {fileID: 0}
 --- !u!114 &1732828861
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10224,7 +10221,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: 0.5, y: 0.5}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -12130,7 +12127,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2bdefe7dedaea2545a74d68b4c7101a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ui: {fileID: 1264370712}
 --- !u!114 &2061497675
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12335,7 +12331,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2bdefe7dedaea2545a74d68b4c7101a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ui: {fileID: 1264370712}
 --- !u!114 &2062477414
 MonoBehaviour:
   m_ObjectHideFlags: 0

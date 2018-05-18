@@ -89,7 +89,6 @@ namespace WindRose
                     SetCommandData(commandName, arguments);
                     FixCommandPosition();
                     collider.enabled = true;
-                    Debug.Log("Casting command " + commandName + " at " + command.transform.position);
                     if (instantaneous)
                     {
                         StartCoroutine(InstantRelease());

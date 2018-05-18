@@ -4,6 +4,7 @@ using GabTab.Behaviours;
 using GabTab.Behaviours.Interactors;
 using System.Collections;
 
+[RequireComponent(typeof(InteractionLauncher))]
 [RequireComponent(typeof(Watcher))]
 class SampleLoggingVisionRange : MonoBehaviour
 {
@@ -11,13 +12,13 @@ class SampleLoggingVisionRange : MonoBehaviour
     private int x;
     private int y;
 
-    [SerializeField]
-    private InteractiveInterface ui;
+    private InteractionLauncher interactionLauncher;
 
     // Use this for initialization
     void OnWatcherReady()
     {
         Invoke("StartChatListener", 0.5f);
+        interactionLauncher = GetComponent<InteractionLauncher>();
     }
 
     void StartChatListener()
@@ -33,7 +34,7 @@ class SampleLoggingVisionRange : MonoBehaviour
             {
                 x = px;
                 y = py;
-                ui.RunInteraction(Gotcha);
+                interactionLauncher.InteractionTab.RunInteraction(Gotcha);
                 stillInside = true;
             }
         });

@@ -1,34 +1,24 @@
-﻿using System.Linq;
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 using GabTab.Behaviours;
 using GabTab.Behaviours.Interactors;
-using WindRose.Behaviours.UI;
+using WindRose.Behaviours;
 using WindRose.Behaviours.Objects.CommandExchange;
-using Support.Utils;
 
+[RequireComponent(typeof(InteractionLauncher))]
 [RequireComponent(typeof(TalkReceiver))]
 class SampleMeaninglessTalk : MonoBehaviour
 {
-    [SerializeField]
-    MapInteractiveInterface mapInteractiveInterface;
-
-    InteractiveInterface interactiveInterface;
+    InteractionLauncher interactionLauncher;
 
     void Start()
     {
-        if (mapInteractiveInterface != null)
-        {
-            interactiveInterface = mapInteractiveInterface.GetComponent<InteractiveInterface>();
-        }
+        interactionLauncher = GetComponent<InteractionLauncher>();
     }
 
     void OnTalkCommandReceived(GameObject sender)
     {
-        if (interactiveInterface)
-        {
-            interactiveInterface.RunInteraction(MeaninglessInteraction);
-        }
+        interactionLauncher.InteractionTab.RunInteraction(MeaninglessInteraction);
     }
 
     IEnumerator MeaninglessInteraction(InteractorsManager manager, InteractiveMessage interactiveMessage)

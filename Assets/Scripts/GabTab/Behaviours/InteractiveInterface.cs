@@ -62,6 +62,16 @@ namespace GabTab
             }
 
             /**
+             * This property was described in InteractiveMessage. The actual implementation is in the underlying
+             *   InteractiveMessageContent object.
+             */
+            public bool QuickTextMovement
+            {
+                get { return interactiveMessage.QuickTextMovement; }
+                set { interactiveMessage.QuickTextMovement = value; }
+            }
+
+            /**
              * This part is the damn core of the whole.
              * 
              * We may call like RunInteraction(someObject.AGeneratorMethod).

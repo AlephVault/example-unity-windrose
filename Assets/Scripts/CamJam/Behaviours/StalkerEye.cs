@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using UnityEngine;
 
 namespace CamJam
@@ -25,6 +26,9 @@ namespace CamJam
             //   the movement is ended
             private Action onEnd = null;
 
+            public GameObject Followed { get { return followed; } }
+            public float Speed { get { return speed; } }
+
             public void Seek(GameObject newFollowed, float? newSpeed = null, bool remainOnEnd = true, Action onMovementEnd = null)
             {
                 if (newFollowed)
@@ -38,6 +42,22 @@ namespace CamJam
                 {
                     followed = null;
                 }
+            }
+
+            public Coroutine SeekInCoroutine(GameObject newFollowed, float? newSpeed = null, bool remainOnEnd = true, Action onMovementEnd = null)
+            {
+                return StartCoroutine(SeekCoroutine(newFollowed, newSpeed, remainOnEnd, onMovementEnd));
+            }
+
+            private IEnumerator SeekCoroutine(GameObject newFollowed, float? newSpeed = null, bool remainOnEnd = true, Action onMovementEnd = null)
+            {
+                bool routineShouldEnd = false;
+                Seek(newFollowed, newSpeed, remainOnEnd, delegate ()
+                {
+                    if (onMovementEnd != null) onMovementEnd();
+                    routineShouldEnd = true;
+                });
+                yield return new WaitUntil(delegate () { return routineShouldEnd; });
             }
 
             protected override void Tick(Camera camera)

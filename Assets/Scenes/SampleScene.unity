@@ -5155,7 +5155,9 @@ GameObject:
   - component: {fileID: 1038470348}
   - component: {fileID: 1038470346}
   - component: {fileID: 1038470345}
+  - component: {fileID: 1038470347}
   - component: {fileID: 1038470350}
+  - component: {fileID: 1038470351}
   m_Layer: 0
   m_Name: EyeInTheSky
   m_TagString: MainCamera
@@ -5177,6 +5179,17 @@ Behaviour:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1038470344}
   m_Enabled: 1
+--- !u!114 &1038470347
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1038470344}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a5d42fd6b2440645824f5a9e8ea5a85, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!20 &1038470348
 Camera:
   m_ObjectHideFlags: 0
@@ -5237,8 +5250,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1312c1cbdd8b56742896f8f889243f51, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 1680133206}
-  cameraDistance: 10
+  priority: 0
+  followed: {fileID: 1680133206}
+  speed: 0
+--- !u!114 &1038470351
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1038470344}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c281c79c267c3e94b85246a872d924a1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speed: 12
+  targets:
+  - {fileID: 1680133206}
+  - {fileID: 1732828858}
+  - {fileID: 1903621701}
+  - {fileID: 1358881512}
+  - {fileID: 2061497663}
+  - {fileID: 1597479044}
+  - {fileID: 2062477402}
 --- !u!1001 &1041904300
 Prefab:
   m_ObjectHideFlags: 0

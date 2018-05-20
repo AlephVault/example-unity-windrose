@@ -1,28 +1,72 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace CamJam
 {
     namespace Behaviours
     {
-        [RequireComponent(typeof(Camera))]
-        public class StalkerEye : MonoBehaviour
+        public class StalkerEye : CameraJammingEffect
         {
-            private Camera camera;
-            public GameObject target;
-            public uint cameraDistance = 10;
+            // The object being followed.
+            // If empty, this effect will do nothing.
+            [SerializeField]
+            private GameObject followed;
 
-            private void Awake()
+            // Units per second. Essentially, speed.
+            // If <= 0, the movement will be instantaneous.
+            [SerializeField]
+            private float speed = 0;
+
+            // Tells whether the camera should remain attached
+            //   to the target after reaching it.
+            private bool remain = true;
+
+            // Which action will be executed -just once!- when
+            //   the movement is ended
+            private Action onEnd = null;
+
+            public void Seek(GameObject newFollowed, float? newSpeed = null, bool remainOnEnd = true, Action onMovementEnd = null)
             {
-                camera = GetComponent<Camera>();
+                if (newFollowed)
+                {
+                    followed = newFollowed;
+                    speed = newSpeed.GetValueOrDefault(speed);
+                    remain = remainOnEnd;
+                    onEnd = onMovementEnd;
+                }
+                else
+                {
+                    followed = null;
+                }
             }
 
-            void Update()
+            protected override void Tick(Camera camera)
             {
-                camera.orthographic = true;
-                if (target)
+                Vector3 position = camera.transform.position;
+                Vector3 finalPosition = new Vector3(followed.transform.position.x, followed.transform.position.y, position.z);
+                if (followed)
                 {
-                    transform.position = target.transform.position - new Vector3(0, 0, cameraDistance);
-                    transform.LookAt(target.transform);
+                    if (speed <= 0)
+                    {
+                        position = finalPosition;
+                    }
+                    else
+                    {
+                        position = Vector3.MoveTowards(position, finalPosition, speed * Time.deltaTime);
+                    }
+
+                    camera.transform.position = position;
+
+                    if (position == finalPosition)
+                    {
+                        if (onEnd != null) onEnd();
+                        onEnd = null;
+                        speed = 0;
+                        if (!remain)
+                        {
+                            followed = null;
+                        }
+                    }
                 }
             }
         }

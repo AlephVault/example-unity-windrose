@@ -45,6 +45,10 @@ namespace WindRose
                 grid = GetComponent<Grid>();
                 InitBlockedPositions();
                 initialized = true;
+                foreach (Tilemap tilemap in GetComponentsInChildren<Tilemap>())
+                {
+                    tilemap.transform.localPosition = Vector3.zero;
+                }
                 foreach (Positionable positionable in GetComponentsInChildren<Positionable>())
                 {
                     positionable.Initialize();

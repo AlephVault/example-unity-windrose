@@ -73,6 +73,8 @@ namespace WindRose
                 public readonly UnityMapTriggerEvent onMapTriggerEnter = new UnityMapTriggerEvent();
                 public readonly UnityMapTriggerEvent onMapTriggerStay = new UnityMapTriggerEvent();
                 public readonly UnityMapTriggerEvent onMapTriggerExit = new UnityMapTriggerEvent();
+                public readonly UnityMapTriggerEvent onMapTriggerWalked = new UnityMapTriggerEvent();
+                public readonly UnityMapTriggerEvent onMapTriggerPlaced = new UnityMapTriggerEvent();
                 public readonly UnityMapTriggerEvent onMapTriggerMoved = new UnityMapTriggerEvent();
 
                 protected abstract int GetDeltaX();
@@ -98,16 +100,23 @@ namespace WindRose
                     InvokeEventCallback(senderObject, onMapTriggerExit);
                 }
 
-                protected void CallOnMapTriggerPositionChanged(Positionable senderObject)
+                protected void CallOnMapTriggerPlaced(Positionable senderObject)
                 {
+                    InvokeEventCallback(senderObject, onMapTriggerPlaced);
                     InvokeEventCallback(senderObject, onMapTriggerMoved);
+                }
+
+                protected void CallOnMapTriggerWalked(Positionable senderObject)
+                {
+                    InvokeEventCallback(senderObject, onMapTriggerWalked);
+                     InvokeEventCallback(senderObject, onMapTriggerMoved);
                 }
 
                 // Register a new sender, and add their callbacks
                 void Register(TriggerActivator sender)
                 {
                     Positionable positionable = sender.GetComponent<Positionable>();
-                    registeredCallbacks[sender] = new MapTriggerCallbacks(positionable, CallOnMapTriggerPositionChanged, positionable.X, positionable.Y);
+                    registeredCallbacks[sender] = new MapTriggerCallbacks(positionable, CallOnMapTriggerWalked, positionable.X, positionable.Y);
                 }
 
                 // Gets the registered callbacks, unregisters them.
@@ -158,7 +167,7 @@ namespace WindRose
                     // So we trigger that, right now.
                     if (positionable.Movement == null)
                     {
-                        CallOnMapTriggerPositionChanged(positionable);
+                        CallOnMapTriggerPlaced(positionable);
                     }
                 }
 

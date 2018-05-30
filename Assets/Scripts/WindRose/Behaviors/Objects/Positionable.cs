@@ -62,7 +62,21 @@ namespace WindRose
 
                 void OnAttached(object[] args)
                 {
+                    /*
+                     * Attaching to a map involves:
+                     * 1. Getting the RelatedMap to serve as "parent" of the object.
+                     * 2. The actual "parent" of the object will be a child of the RelatedMap being an ObjectsTilemap.
+                     * 3. We set the parent transform of the object to such ObjectsTilemap's transform.
+                     * 4. Finally we must ensure the transform.localPosition be updated accordingly (i.e. forcing a snap).
+                     */
                     parentMap = ((MapState)(args[0])).RelatedMap;
+                    Tilemaps.ObjectsTilemap objectsTilemap = parentMap.GetComponentInChildren<Tilemaps.ObjectsTilemap>();
+                    transform.parent = objectsTilemap.transform;
+                    transform.localPosition = new Vector3(
+                        X * parentMap.GetCellWidth(),
+                        Y * parentMap.GetCellHeight(),
+                        transform.localPosition.z
+                    );
                 }
 
                 void OnDetached()

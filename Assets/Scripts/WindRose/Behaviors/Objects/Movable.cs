@@ -111,6 +111,7 @@ namespace WindRose
                         if (!wasMoving)
                         {
                             origin = transform.localPosition;
+                            Debug.Log(string.Format("Setting the origin to: {0}", origin));
                             target = origin + targetOffset;
                             SetMovingAnimation();
                         }
@@ -154,6 +155,7 @@ namespace WindRose
                             Vector2 movement = Vector2.MoveTowards(transform.localPosition, movementDestination, movementNorm);
                             // Adjusting the position as usual
                             transform.localPosition = new Vector3(movement.x, movement.y, transform.localPosition.z);
+                            Debug.Log(string.Format("Movement so far: {0} by {1}", transform.localPosition, movementNorm));
                             while (true)
                             {
                                 float traversedDistanceSinceOrigin = (movement - origin).magnitude;
@@ -195,6 +197,16 @@ namespace WindRose
                     // We clean up the last commanded movement, so future frames
                     //   do not interpret this command as a must, since it expired.
                     CommandedMovement = null;
+                }
+
+                void OnAttached(object[] args)
+                {
+                    // Avoid inheriting former value of origin.
+                    // If a movement is being performed, then
+                    //   just set a new value to origin.
+                    origin = transform.localPosition;
+                    wasMoving = false;
+                    Debug.Log(string.Format("Resetting the origin to: {0}", origin));
                 }
 
                 void Pause(bool fullFreeze)

@@ -109,7 +109,7 @@ namespace WindRose
                 protected void CallOnMapTriggerWalked(Positionable senderObject)
                 {
                     InvokeEventCallback(senderObject, onMapTriggerWalked);
-                     InvokeEventCallback(senderObject, onMapTriggerMoved);
+                    InvokeEventCallback(senderObject, onMapTriggerMoved);
                 }
 
                 // Register a new sender, and add their callbacks
@@ -165,6 +165,11 @@ namespace WindRose
                     // Both cases involve the same: The positionable is not performing any movement.
                     //   In that case, no movement will be marked later, in the same position.
                     // So we trigger that, right now.
+
+                    // TODO modificar esta condicion. No vamos a preguntar si el movimiento es null,
+                    //   sino tal vez si "aparecio de repente" (aunque le estemos ordenando movimiento,
+                    //   pero en tanto ya tenga una posicion adentro del trigger y no se encuentre en la
+                    //   fronterita como para gatillar ambos eventos).
                     if (positionable.Movement == null)
                     {
                         CallOnMapTriggerPlaced(positionable);

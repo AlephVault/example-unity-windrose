@@ -66,7 +66,7 @@ namespace WindRose
                                 bool fullyContained = (x >= 0 && y >= 0 && x < (thisWidth - objWidth) && y < (thisHeight - objHeight));
                                 bool matchingTarget = (tgWidth >= objWidth && tgHeight >= objHeight && tgWidth % 2 == objWidth % 2 && tgHeight % 2 == objHeight % 2);
 
-                                if (CanTeleport(objectToBeTeleported, Target))
+                                if (fullyContained && matchingTarget && CanTeleport(objectToBeTeleported, Target))
                                 {
                                     DoTeleport(delegate ()
                                     {

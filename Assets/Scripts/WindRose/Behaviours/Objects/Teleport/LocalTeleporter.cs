@@ -63,7 +63,8 @@ namespace WindRose
                                 uint objHeight = objectToBeTeleported.Height;
                                 uint tgWidth = tgPositionable.Width;
                                 uint tgHeight = tgPositionable.Height;
-                                bool fullyContained = (x >= 0 && y >= 0 && x < (thisWidth - objWidth) && y < (thisHeight - objHeight));
+
+                                bool fullyContained = (x >= 0 && y >= 0 && x <= (thisWidth - objWidth) && y <= (thisHeight - objHeight));
                                 bool matchingTarget = (tgWidth >= objWidth && tgHeight >= objHeight && tgWidth % 2 == objWidth % 2 && tgHeight % 2 == objHeight % 2);
 
                                 if (fullyContained && matchingTarget && CanTeleport(objectToBeTeleported, Target))

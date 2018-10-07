@@ -99,7 +99,9 @@ namespace WindRose
                         // however, when the Map becomes ready, this method will be called, again, by the map itself, which will exist.
                         parentMap = Layout.RequireComponentInParent<Map>(transform.parent.gameObject);
                         if (!parentMap.Initialized) return;
-                        Vector3Int cellPosition = parentMap.WorldToCell(transform.position);
+                        Layout.RequireComponentInParent<Tilemaps.ObjectsTilemap>(gameObject);
+                        UnityEngine.Tilemaps.Tilemap tilemap = Layout.RequireComponentInParent<UnityEngine.Tilemaps.Tilemap>(gameObject);
+                        Vector3Int cellPosition = tilemap.WorldToCell(transform.position);
                         // TODO: Clamp with `Values.Clamp(0, (uint)cellPosition.x, parentMap.Width-1), Values.Clamp(0, (uint)-cellPosition.y, parentMap.Height-1)` or let it raise exception?
                         mapObjectState = new MapState.MapObjectState(this, (uint)cellPosition.x, (uint)cellPosition.y, width, height, initialSolidness);
                         mapObjectState.Attach(parentMap.InternalMapState);

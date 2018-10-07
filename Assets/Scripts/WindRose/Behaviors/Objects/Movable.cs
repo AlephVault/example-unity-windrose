@@ -111,7 +111,6 @@ namespace WindRose
                         if (!wasMoving)
                         {
                             origin = transform.localPosition;
-                            Debug.Log(string.Format("Setting the origin to: {0}", origin));
                             target = origin + targetOffset;
                             SetMovingAnimation();
                         }
@@ -155,7 +154,6 @@ namespace WindRose
                             Vector2 movement = Vector2.MoveTowards(transform.localPosition, movementDestination, movementNorm);
                             // Adjusting the position as usual
                             transform.localPosition = new Vector3(movement.x, movement.y, transform.localPosition.z);
-                            Debug.Log(string.Format("Movement so far: {0} by {1}", transform.localPosition, movementNorm));
                             while (true)
                             {
                                 float traversedDistanceSinceOrigin = (movement - origin).magnitude;
@@ -182,7 +180,6 @@ namespace WindRose
                                 }
                             }
                         }
-
                     }
                     else if (CommandedMovement != null)
                     {

@@ -99,7 +99,7 @@ namespace WindRose
                         }
                     }
 
-                    private static bool OccupianceChanges(SolidnessStatus oldStatus, SolidnessStatus newStatus)
+                    private static bool OccupancyChanges(SolidnessStatus oldStatus, SolidnessStatus newStatus)
                     {
                         return (Occupies(oldStatus) != Occupies(newStatus)) || (MakesHole(oldStatus) != MakesHole(newStatus));
                     }
@@ -302,7 +302,7 @@ namespace WindRose
                     public void SetSolidness(SolidnessStatus newSolidness)
                     {
                         if (Map == null) return;
-                        if (OccupianceChanges(Solidness, newSolidness))
+                        if (OccupancyChanges(Solidness, newSolidness))
                         {
                             CancelMovement();
                             DecrementBody();

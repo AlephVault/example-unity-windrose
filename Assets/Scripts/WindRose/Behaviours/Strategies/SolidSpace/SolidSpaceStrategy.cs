@@ -1,0 +1,326 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using UnityEngine;
+
+namespace WindRose
+{
+    namespace Behaviours
+    {
+        namespace Strategies
+        {
+            namespace SolidSpace
+            {
+                using Types;
+
+                public class SolidSpaceStrategy : Strategy
+                {
+                    private SolidMask solidMask;
+                    private Bitmask blockMask;
+
+                    /*****************************************************************************
+                     * 
+                     * Tilemap initialization will involve creating solid mask and block mask.
+                     * However, tilemap computation will only involve block mask, since solid mask
+                     *   will not be inferred from tiles but from positionables.
+                     * 
+                     *****************************************************************************/
+
+                    protected override void InitGlobalCellData()
+                    {
+                        uint width = Map.Width;
+                        uint height = Map.Height;
+                        solidMask = new SolidMask(width, height);
+                        blockMask = new Bitmask(width, height);
+                    }
+
+                    /**
+                     * Single-cell computing involves blocking. There are three blocking modes:
+                     *   * Blocking
+                     *   * Non-Blocking
+                     *   * The cell is not a BlockingAware tile, so no change in the blocks value will be done
+                     */
+                    protected override void ComputeCellData(uint x, uint y)
+                    {
+                        bool blocks = false;
+                        ForEachTilemap(delegate (UnityEngine.Tilemaps.Tilemap tilemap) {
+                            UnityEngine.Tilemaps.TileBase tile = tilemap.GetTile(new Vector3Int((int)x, (int)y, 0));
+                            if (tile is Tiles.IBlockingAwareTile)
+                            {
+                                blocks = ((Tiles.IBlockingAwareTile)tile).Blocks();
+                            }
+                            return false;
+                        });
+                        blockMask.SetCell(x, y, blocks);
+                    }
+
+                    /*****************************************************************************
+                     * 
+                     * Object attachment.
+                     * 
+                     *****************************************************************************/
+
+                    protected override bool AcceptsObjectStrategy(Objects.Strategies.ObjectStrategy strategy)
+                    {
+                        return strategy is Objects.Strategies.SolidSpace.SolidSpaceObjectStrategy;
+                    }
+
+                    protected override void AttachedStratergy(Objects.Strategies.ObjectStrategy strategy, Status status)
+                    {
+                        SolidnessStatus solidness = ((Objects.Strategies.SolidSpace.SolidSpaceObjectStrategy)strategy).Solidness;
+                        IncrementBody(strategy, status, solidness);
+                    }
+
+                    protected override void DetachedStratergy(Objects.Strategies.ObjectStrategy strategy, Status status)
+                    {
+                        SolidnessStatus solidness = ((Objects.Strategies.SolidSpace.SolidSpaceObjectStrategy)strategy).Solidness;
+                        DecrementBody(strategy, status, solidness);
+                    }
+
+                    /*****************************************************************************
+                     * 
+                     * Object movement.
+                     * 
+                     *****************************************************************************/
+
+                    protected override bool CanAllocateMovement(Objects.Strategies.ObjectStrategy strategy, Status status, Direction direction, bool continuated)
+                    {
+                        if (!base.CanAllocateMovement(strategy, status, direction, continuated))
+                        {
+                            return false;
+                        }
+
+                        if (IsAdjacencyBlocked(status.X, status.Y, strategy.Positionable.Width, strategy.Positionable.Height, direction)) return false;
+                        SolidnessStatus solidness = ((Objects.Strategies.SolidSpace.SolidSpaceObjectStrategy)strategy).Solidness;
+                        return solidness.Traverses() || IsAdjacencyFree(status.X, status.Y, strategy.Positionable.Width, strategy.Positionable.Height, direction);
+                    }
+
+                    protected override void DoAllocateMovement(Objects.Strategies.ObjectStrategy strategy, Status status, Direction direction, bool continuated, Action allocatingCallback, Action triggerEventCallback)
+                    {
+                        allocatingCallback();
+                        SolidnessStatus solidness = ((Objects.Strategies.SolidSpace.SolidSpaceObjectStrategy)strategy).Solidness;
+                        IncrementAdjacent(strategy, status, solidness);
+                        triggerEventCallback();
+                    }
+
+                    protected override void DoClearMovement(Objects.Strategies.ObjectStrategy strategy, Status status, Direction? formerMovement, Action clearingCallback, Action triggerEventCallback)
+                    {
+                        SolidnessStatus solidness = ((Objects.Strategies.SolidSpace.SolidSpaceObjectStrategy)strategy).Solidness;
+                        DecrementAdjacent(strategy, status, solidness);
+                        clearingCallback();
+                        triggerEventCallback();
+                    }
+
+                    protected override void DoConfirmMovement(Objects.Strategies.ObjectStrategy strategy, Status status, Direction? formerMovement, Action updatePositions, Action confirmingCallback, Action eventTriggerCallback)
+                    {
+                        updatePositions();
+                        SolidnessStatus solidness = ((Objects.Strategies.SolidSpace.SolidSpaceObjectStrategy)strategy).Solidness;
+                        DecrementOppositeAdjacent(strategy, status, solidness);
+                        confirmingCallback();
+                        eventTriggerCallback();
+                    }
+
+                    protected override void DoProcessPropertyUpdate(Objects.Strategies.ObjectStrategy strategy, Status status, string property, object oldValue, object newValue)
+                    {
+                        if (property == "solidness")
+                        {
+                            ClearMovement(strategy, status);
+                            DecrementBody(strategy, status, (SolidnessStatus)oldValue);
+                            IncrementBody(strategy, status, (SolidnessStatus)newValue);
+                        }
+                    }
+
+                    protected override void DoTeleport(Objects.Strategies.ObjectStrategy strategy, Status status, uint x, uint y, Action updatePositions, Action eventTriggerCallback)
+                    {
+                        ClearMovement(strategy, status);
+                        SolidnessStatus solidness = ((Objects.Strategies.SolidSpace.SolidSpaceObjectStrategy)strategy).Solidness;
+                        DecrementBody(strategy, status, solidness);
+                        updatePositions();
+                        IncrementBody(strategy, status, solidness);
+                        eventTriggerCallback();
+                    }
+
+                    /**
+                     * 
+                     * Private methods of this particular strategy according to a particular object
+                     *   strategy, solidness, and status.
+                     * 
+                     */
+
+                    private void IncrementBody(Objects.Strategies.ObjectStrategy strategy, Status status, SolidnessStatus solidness)
+                    {
+                        if (solidness.Occupies())
+                        {
+                            IncrementBody(status.X, status.Y, strategy.Positionable.Width, strategy.Positionable.Height);
+                        }
+                        else if (solidness.Carves())
+                        {
+                            DecrementBody(status.X, status.Y, strategy.Positionable.Width, strategy.Positionable.Height);
+                        }
+                    }
+
+                    private void DecrementBody(Objects.Strategies.ObjectStrategy strategy, Status status, SolidnessStatus solidness)
+                    {
+                        if (solidness.Occupies())
+                        {
+                            DecrementBody(status.X, status.Y, strategy.Positionable.Width, strategy.Positionable.Height);
+                        }
+                        else if (solidness.Carves())
+                        {
+                            IncrementBody(status.X, status.Y, strategy.Positionable.Width, strategy.Positionable.Height);
+                        }
+                    }
+
+                    private void IncrementAdjacent(Objects.Strategies.ObjectStrategy strategy, Status status, SolidnessStatus solidness)
+                    {
+                        if (solidness.Occupies())
+                        {
+                            IncrementAdjacent(status.X, status.Y, strategy.Positionable.Width, strategy.Positionable.Height, status.Movement);
+                        }
+                        else if (solidness.Carves())
+                        {
+                            DecrementAdjacent(status.X, status.Y, strategy.Positionable.Width, strategy.Positionable.Height, status.Movement);
+                        }
+                    }
+
+                    private void DecrementAdjacent(Objects.Strategies.ObjectStrategy strategy, Status status, SolidnessStatus solidness)
+                    {
+                        if (solidness.Occupies())
+                        {
+                            DecrementAdjacent(status.X, status.Y, strategy.Positionable.Width, strategy.Positionable.Height, status.Movement);
+                        }
+                        else if (solidness.Carves())
+                        {
+                            IncrementAdjacent(status.X, status.Y, strategy.Positionable.Width, strategy.Positionable.Height, status.Movement);
+                        }
+                    }
+
+                    private void DecrementOppositeAdjacent(Objects.Strategies.ObjectStrategy strategy, Status status, SolidnessStatus solidness)
+                    {
+                        if (solidness.Occupies())
+                        {
+                            DecrementAdjacent(status.X, status.Y, strategy.Positionable.Width, strategy.Positionable.Height, status.Movement.Opposite());
+                        }
+                        else if (solidness.Carves())
+                        {
+                            IncrementAdjacent(status.X, status.Y, strategy.Positionable.Width, strategy.Positionable.Height, status.Movement.Opposite());
+                        }
+                    }
+
+                    /*****************************************************************************
+                     * 
+                     * Private methods of this particular strategy.
+                     * 
+                     *****************************************************************************/
+
+                    private void IncrementBody(uint x, uint y, uint width, uint height)
+                    {
+                        solidMask.IncSquare(x, y, width, height);
+                    }
+
+                    private void DecrementBody(uint x, uint y, uint width, uint height)
+                    {
+                        solidMask.DecSquare(x, y, width, height);
+                    }
+
+                    private bool IsHittingEdge(uint x, uint y, uint width, uint height, Direction? direction)
+                    {
+                        switch (direction)
+                        {
+                            case Direction.LEFT:
+                                return x == 0;
+                            case Direction.UP:
+                                return y + height == solidMask.height;
+                            case Direction.RIGHT:
+                                return x + width == solidMask.width;
+                            case Direction.DOWN:
+                                return y == 0;
+                        }
+                        return false;
+                    }
+
+                    private bool IsAdjacencyBlocked(uint x, uint y, uint width, uint height, Direction? direction)
+                    {
+                        /** Precondition: IsHittingEdge was already called to this point */
+                        switch (direction)
+                        {
+                            case Direction.LEFT:
+                                return blockMask.GetColumn(x - 1, y, y + height - 1, Bitmask.CheckType.ANY_BLOCKED);
+                            case Direction.DOWN:
+                                return blockMask.GetRow(x, x + width - 1, y - 1, Bitmask.CheckType.ANY_BLOCKED);
+                            case Direction.RIGHT:
+                                return blockMask.GetColumn(x + width, y, y + height - 1, Bitmask.CheckType.ANY_BLOCKED);
+                            case Direction.UP:
+                                return blockMask.GetRow(x, x + width - 1, y + height, Bitmask.CheckType.ANY_BLOCKED);
+                            default:
+                                return true;
+                        }
+                    }
+
+                    private bool IsAdjacencyFree(uint x, uint y, uint width, uint height, Direction? direction)
+                    {
+                        /** Precondition: IsHittingEdge was already called to this point */
+                        switch (direction)
+                        {
+                            case Direction.LEFT:
+                                return solidMask.EmptyColumn(x - 1, y, height);
+                            case Direction.DOWN:
+                                return solidMask.EmptyRow(x, y - 1, width);
+                            case Direction.RIGHT:
+                                return solidMask.EmptyColumn(x + width, y, height);
+                            case Direction.UP:
+                                return solidMask.EmptyRow(x, y + height, width);
+                            default:
+                                return true;
+                        }
+                    }
+
+                    private void IncrementAdjacent(uint x, uint y, uint width, uint height, Direction? direction)
+                    {
+                        if (!IsHittingEdge(x, y, width, height, direction))
+                        {
+                            switch (direction)
+                            {
+                                case Direction.LEFT:
+                                    solidMask.IncColumn(x - 1, y, height);
+                                    break;
+                                case Direction.DOWN:
+                                    solidMask.IncRow(x, y - 1, width);
+                                    break;
+                                case Direction.RIGHT:
+                                    solidMask.IncColumn(x + width, y, height);
+                                    break;
+                                case Direction.UP:
+                                    solidMask.IncRow(x, y + height, width);
+                                    break;
+                            }
+                        }
+                    }
+
+                    private void DecrementAdjacent(uint x, uint y, uint width, uint height, Direction? direction)
+                    {
+                        if (!IsHittingEdge(x, y, width, height, direction))
+                        {
+                            switch (direction)
+                            {
+                                case Direction.LEFT:
+                                    solidMask.DecColumn(x - 1, y, height);
+                                    break;
+                                case Direction.DOWN:
+                                    solidMask.DecRow(x, y - 1, width);
+                                    break;
+                                case Direction.RIGHT:
+                                    solidMask.DecColumn(x + width, y, height);
+                                    break;
+                                case Direction.UP:
+                                    solidMask.DecRow(x, y + height, width);
+                                    break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -7,7 +7,6 @@ namespace WindRose
     namespace Behaviours
     {
         using Objects;
-        using Types.States;
 
         [RequireComponent(typeof(Grid))]
         public class Map : MonoBehaviour
@@ -23,61 +22,49 @@ namespace WindRose
             [SerializeField]
             private uint height;
 
-            private MapState internalMapState;
             private Grid grid;
             private bool initialized = false;
 
-            public MapState InternalMapState { get { return internalMapState; } }
             public uint Height { get { return height; } }
             public uint Width { get { return width; } }
             public bool Initialized { get { return initialized; } }
+            public Strategies.Strategy Strategy { get; private set; }
 
             // Use this for initialization
             private void Awake()
             {
+                grid = GetComponent<Grid>();
                 width = Values.Clamp(1, width, 100);
                 height = Values.Clamp(1, height, 100);
-                internalMapState = new MapState(this, Width, Height);
+                // Fetching strategy - needed
+                Strategy = GetComponent<Strategies.Strategy>();
             }
 
             private void Start()
             {
-                grid = GetComponent<Grid>();
-                InitBlockedPositions();
-                initialized = true;
+                // Initializing tilemap positions
                 foreach (Tilemap tilemap in GetComponentsInChildren<Tilemap>())
                 {
                     tilemap.transform.localPosition = Vector3.zero;
                 }
+                // Initializing strategy
+                if (Strategy == null)
+                {
+                    throw new Types.Exception("A map strategy is required when the map initializes.");
+                }
+                else
+                {
+                    Strategy.Initialize();
+                }
+                // TODO This line should be removed, and its behaviour moved to a particular
+                // TODO   subclass of (map-) Strategy upon initialization.
+                // InitBlockedPositions();
+                // We consider this map as initialized after its strategy started.
+                initialized = true;
+                // Now, it is turn of the already-in-place positionables to initialize.
                 foreach (Positionable positionable in GetComponentsInChildren<Positionable>())
                 {
                     positionable.Initialize();
-                }
-            }
-
-            private void InitBlockedPositions()
-            {
-                int childCount = transform.childCount;
-                for(int index = 0; index < childCount; index++)
-                {
-                    GameObject go = transform.GetChild(index).gameObject;
-                    Tilemap tilemap = go.GetComponent<Tilemap>();
-                    if (tilemap != null) InitBlockedPositionsFromTilemap(tilemap);
-                }
-            }
-
-            private void InitBlockedPositionsFromTilemap(Tilemap tilemap)
-            {
-                for(int y = 0; y < height; y++)
-                {
-                    for(int x = 0; x < width; x++)
-                    {
-                        TileBase tile = tilemap.GetTile(new Vector3Int(x, y, 0));
-                        if (tile is Types.Tilemaps.IBlockingAwareTile)
-                        {
-                            internalMapState.SetBlocking((uint)x, (uint)y, ((Types.Tilemaps.IBlockingAwareTile)tile).Blocks());
-                        }
-                    }
                 }
             }
 

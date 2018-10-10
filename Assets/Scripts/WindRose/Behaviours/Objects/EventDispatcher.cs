@@ -32,15 +32,15 @@ namespace WindRose
                 public readonly UnityMovementEvent onMovementCancelled = new UnityMovementEvent();
                 public readonly UnityMovementEvent onMovementFinished = new UnityMovementEvent();
                 [Serializable]
-                public class UnitySolidnessStatusEvent : UnityEvent<Types.States.SolidnessStatus> { }
-                public readonly UnitySolidnessStatusEvent onSolidnessChanged = new UnitySolidnessStatusEvent();
+                public class UnityPropertyUpdateEvent : UnityEvent<string, object, object> { }
+                public readonly UnityPropertyUpdateEvent onPropertyUpdated = new UnityPropertyUpdateEvent();
                 [Serializable]
                 public class UnityTeleportedEvent : UnityEvent<uint, uint> { }
                 public readonly UnityTeleportedEvent onTeleported = new UnityTeleportedEvent();
 
                 void OnAttached(object[] args)
                 {
-                    onAttached.Invoke(((Types.States.MapState)(args[0])).RelatedMap);
+                    onAttached.Invoke((Map)args[0]);
                 }
 
                 void OnDetached()
@@ -63,9 +63,12 @@ namespace WindRose
                     onMovementFinished.Invoke((Types.Direction)(args[0]));
                 }
 
-                void OnSolidnessChanged(object[] args)
+                void OnPropertyUpdated(object[] args)
                 {
-                    onSolidnessChanged.Invoke((Types.States.SolidnessStatus)(args[0]));
+                    string property = (string)args[0];
+                    object oldValue = args[1];
+                    object newValue = args[2];
+                    onPropertyUpdated.Invoke(property, oldValue, newValue);
                 }
 
                 void OnTeleported(object[] args)

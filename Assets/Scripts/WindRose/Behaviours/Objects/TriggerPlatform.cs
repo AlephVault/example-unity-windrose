@@ -24,10 +24,6 @@ namespace WindRose
                 protected override void Start()
                 {
                     base.Start();
-                    if (positionable.Solidness != Types.States.SolidnessStatus.Ghost && positionable.Solidness != Types.States.SolidnessStatus.Hole)
-                    {
-                        positionable.SetSolidness(Types.States.SolidnessStatus.Ghost);
-                    }
                 }
 
                 protected override int GetDeltaX()

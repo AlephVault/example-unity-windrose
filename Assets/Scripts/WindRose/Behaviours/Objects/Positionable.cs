@@ -8,7 +8,6 @@ namespace WindRose
         namespace Objects
         {
             using Types;
-            using Types.States;
 
             [ExecuteInEditMode]
             [RequireComponent(typeof(Pausable))]
@@ -29,26 +28,28 @@ namespace WindRose
                 [SerializeField]
                 private uint height = 1;
 
-                [SerializeField]
-                private SolidnessStatus initialSolidness = SolidnessStatus.Solid;
-
                 /* *********************** Additional data *********************** */
 
                 private Map parentMap = null;
-                private MapState.MapObjectState mapObjectState = null;
                 private bool paused = false;
+                private bool initialized = false;
 
                 /* *********************** Public properties *********************** */
 
                 public Map ParentMap { get { return parentMap; } }
                 public uint Width { get { return width; } } // Referencing directly allows us to query the width without a map assigned yet.
                 public uint Height { get { return width; } } // Referencing directly allows us to query the height without a map assigned yet.
-                public uint X { get { return mapObjectState.X; } }
-                public uint Y { get { return mapObjectState.Y; } }
-                public uint Xf { get { return mapObjectState.Xf; } }
-                public uint Yf { get { return mapObjectState.Yf; } }
-                public Direction? Movement { get { return mapObjectState.Movement; } }
-                public SolidnessStatus Solidness { get { return mapObjectState != null ? mapObjectState.Solidness : initialSolidness; } }
+                public uint X { get { return parentMap.Strategy.StatusFor(Strategy).X; } }
+                public uint Y { get { return parentMap.Strategy.StatusFor(Strategy).Y; } }
+                public uint Xf { get { return parentMap.Strategy.StatusFor(Strategy).X + Width - 1; } }
+                public uint Yf { get { return parentMap.Strategy.StatusFor(Strategy).Y + Height - 1; } }
+                public Direction? Movement { get { return parentMap.Strategy.StatusFor(Strategy).Movement; } }
+                public Strategies.ObjectStrategy Strategy  {  get; private set; }
+
+                private void Awake()
+                {
+                    Strategy = GetComponent<Strategies.ObjectStrategy>();
+                }
 
                 void Start()
                 {
@@ -64,12 +65,12 @@ namespace WindRose
                 {
                     /*
                      * Attaching to a map involves:
-                     * 1. Getting the RelatedMap to serve as "parent" of the object.
+                     * 1. Getting the Map in arguments.
                      * 2. The actual "parent" of the object will be a child of the RelatedMap being an ObjectsTilemap.
                      * 3. We set the parent transform of the object to such ObjectsTilemap's transform.
                      * 4. Finally we must ensure the transform.localPosition be updated accordingly (i.e. forcing a snap).
                      */
-                    parentMap = ((MapState)(args[0])).RelatedMap;
+                    parentMap = (Map)args[0];
                     Tilemaps.ObjectsTilemap objectsTilemap = parentMap.GetComponentInChildren<Tilemaps.ObjectsTilemap>();
                     transform.parent = objectsTilemap.transform;
                     transform.localPosition = new Vector3(
@@ -88,9 +89,15 @@ namespace WindRose
                 {
                     if (!Application.isPlaying) return;
 
-                    if (mapObjectState != null)
+                    if (initialized)
                     {
                         return;
+                    }
+
+                    // We will make use of strategy
+                    if (Strategy == null)
+                    {
+                        throw new Exception("A map strategy is required when the map initializes.");
                     }
 
                     try
@@ -103,8 +110,8 @@ namespace WindRose
                         UnityEngine.Tilemaps.Tilemap tilemap = Layout.RequireComponentInParent<UnityEngine.Tilemaps.Tilemap>(gameObject);
                         Vector3Int cellPosition = tilemap.WorldToCell(transform.position);
                         // TODO: Clamp with `Values.Clamp(0, (uint)cellPosition.x, parentMap.Width-1), Values.Clamp(0, (uint)-cellPosition.y, parentMap.Height-1)` or let it raise exception?
-                        mapObjectState = new MapState.MapObjectState(this, (uint)cellPosition.x, (uint)cellPosition.y, width, height, initialSolidness);
-                        mapObjectState.Attach(parentMap.InternalMapState);
+                        ParentMap.Strategy.Attach(Strategy, (uint)cellPosition.x, (uint)cellPosition.y);
+                        initialized = true;
                     }
                     catch (Layout.MissingComponentInParentException)
                     {
@@ -118,39 +125,34 @@ namespace WindRose
                     // That's why we run the conditional.
                     //
                     // For the general cases, Detach will find a mapObjectState attached.
-                    if (mapObjectState != null) mapObjectState.Detach();
+                    if (parentMap != null) parentMap.Strategy.Detach(Strategy);
                 }
 
-                public void Attach(Map map, uint? x = null, uint? y = null, bool force = false)
+                public void Attach(Map map, uint x, uint y, bool force = false)
                 {
                     if (force) Detach();
                     // TODO: Clamp x, y? or raise exception?
-                    mapObjectState.Attach(map != null ? map.InternalMapState : null, x, y);
+                    map.Strategy.Attach(Strategy, x, y);
                 }
 
-                public void Teleport(uint? x, uint? y)
+                public void Teleport(uint x, uint y)
                 {
-                    if (mapObjectState != null && !paused) mapObjectState.Teleport(x, y);
+                    if (parentMap != null && !paused) parentMap.Strategy.Teleport(Strategy, x, y);
                 }
 
-                public void SetSolidness(SolidnessStatus newSolidness)
+                public bool StartMovement(Direction movementDirection, bool continuated = false)
                 {
-                    if (mapObjectState != null && !paused) mapObjectState.SetSolidness(newSolidness);
-                }
-
-                public bool StartMovement(Direction movementDirection)
-                {
-                    return mapObjectState != null && !paused && mapObjectState.StartMovement(movementDirection);
+                    return parentMap != null && !paused && parentMap.Strategy.MovementStart(Strategy, movementDirection, continuated);
                 }
 
                 public bool FinishMovement()
                 {
-                    return mapObjectState != null && !paused && mapObjectState.FinishMovement();
+                    return parentMap != null && !paused && parentMap.Strategy.MovementFinish(Strategy);
                 }
 
                 public bool CancelMovement()
                 {
-                    return mapObjectState != null && !paused && mapObjectState.CancelMovement();
+                    return parentMap != null && !paused && parentMap.Strategy.MovementCancel(Strategy);
                 }
 
                 public float GetCellWidth()

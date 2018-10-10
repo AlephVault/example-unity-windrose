@@ -8,7 +8,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d8104c86007f5eb4c8216314f86797cf, type: 3}
+  m_Script: {fileID: 11500000, guid: 0cd1af4c4b8fe79459c043c4f5f297fd, type: 3}
   m_Name: Abyss-Left
   m_EditorClassIdentifier: 
   m_Sprite: {fileID: 21300014, guid: 4b13c11024000f34391cfaa571df9474, type: 3}

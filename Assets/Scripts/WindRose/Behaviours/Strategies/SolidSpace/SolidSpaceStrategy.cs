@@ -86,39 +86,43 @@ namespace WindRose
 
                     protected override bool CanAllocateMovement(Objects.Strategies.ObjectStrategy strategy, Status status, Direction direction, bool continuated)
                     {
-                        if (!base.CanAllocateMovement(strategy, status, direction, continuated))
-                        {
-                            return false;
-                        }
-
+                        if (status.Movement != null || IsHittingEdge(strategy.Positionable, status, direction)) return false;
                         if (IsAdjacencyBlocked(status.X, status.Y, strategy.Positionable.Width, strategy.Positionable.Height, direction)) return false;
                         SolidnessStatus solidness = ((Objects.Strategies.SolidSpace.SolidSpaceObjectStrategy)strategy).Solidness;
                         return solidness.Traverses() || IsAdjacencyFree(status.X, status.Y, strategy.Positionable.Width, strategy.Positionable.Height, direction);
                     }
 
-                    protected override void DoAllocateMovement(Objects.Strategies.ObjectStrategy strategy, Status status, Direction direction, bool continuated, Action allocatingCallback, Action triggerEventCallback)
+                    protected override void DoAllocateMovement(Objects.Strategies.ObjectStrategy strategy, Status status, Direction direction, bool continuated, string stage)
                     {
-                        allocatingCallback();
-                        SolidnessStatus solidness = ((Objects.Strategies.SolidSpace.SolidSpaceObjectStrategy)strategy).Solidness;
-                        IncrementAdjacent(strategy, status, solidness);
-                        triggerEventCallback();
+                        switch (stage)
+                        {
+                            case "AfterMovementAllocation":
+                                SolidnessStatus solidness = ((Objects.Strategies.SolidSpace.SolidSpaceObjectStrategy)strategy).Solidness;
+                                IncrementAdjacent(strategy, status, solidness);
+                                break;
+                        }
                     }
 
-                    protected override void DoClearMovement(Objects.Strategies.ObjectStrategy strategy, Status status, Direction? formerMovement, Action clearingCallback, Action triggerEventCallback)
+                    protected override void DoClearMovement(Objects.Strategies.ObjectStrategy strategy, Status status, Direction? formerMovement, string stage)
                     {
-                        SolidnessStatus solidness = ((Objects.Strategies.SolidSpace.SolidSpaceObjectStrategy)strategy).Solidness;
-                        DecrementAdjacent(strategy, status, solidness);
-                        clearingCallback();
-                        triggerEventCallback();
+                        switch(stage)
+                        {
+                            case "Before":
+                                SolidnessStatus solidness = ((Objects.Strategies.SolidSpace.SolidSpaceObjectStrategy)strategy).Solidness;
+                                DecrementAdjacent(strategy, status, solidness);
+                                break;
+                        }
                     }
 
-                    protected override void DoConfirmMovement(Objects.Strategies.ObjectStrategy strategy, Status status, Direction? formerMovement, Action updatePositions, Action confirmingCallback, Action eventTriggerCallback)
+                    protected override void DoConfirmMovement(Objects.Strategies.ObjectStrategy strategy, Status status, Direction? formerMovement, string stage)
                     {
-                        updatePositions();
-                        SolidnessStatus solidness = ((Objects.Strategies.SolidSpace.SolidSpaceObjectStrategy)strategy).Solidness;
-                        DecrementOppositeAdjacent(strategy, status, solidness);
-                        confirmingCallback();
-                        eventTriggerCallback();
+                        switch(stage)
+                        {
+                            case "AfterPositionChange":
+                                SolidnessStatus solidness = ((Objects.Strategies.SolidSpace.SolidSpaceObjectStrategy)strategy).Solidness;
+                                DecrementOppositeAdjacent(strategy, status, solidness);
+                                break;
+                        }
                     }
 
                     protected override void DoProcessPropertyUpdate(Objects.Strategies.ObjectStrategy strategy, Status status, string property, object oldValue, object newValue)
@@ -131,14 +135,19 @@ namespace WindRose
                         }
                     }
 
-                    protected override void DoTeleport(Objects.Strategies.ObjectStrategy strategy, Status status, uint x, uint y, Action updatePositions, Action eventTriggerCallback)
+                    protected override void DoAroundTeleport(Objects.Strategies.ObjectStrategy strategy, Status status, uint x, uint y, string stage)
                     {
-                        ClearMovement(strategy, status);
                         SolidnessStatus solidness = ((Objects.Strategies.SolidSpace.SolidSpaceObjectStrategy)strategy).Solidness;
-                        DecrementBody(strategy, status, solidness);
-                        updatePositions();
-                        IncrementBody(strategy, status, solidness);
-                        eventTriggerCallback();
+                        switch (stage)
+                        {
+                            case "Before":
+                                ClearMovement(strategy, status);
+                                DecrementBody(strategy, status, solidness);
+                                break;
+                            case "AfterPositionChange":
+                                IncrementBody(strategy, status, solidness);
+                                break;
+                        }
                     }
 
                     /**

@@ -310,12 +310,11 @@ namespace WindRose
                 {
                     if (CanAllocateMovement(strategy, status, direction, continuated))
                     {
-                        DoAllocateMovement(strategy, status, direction, continuated, delegate () {
-                            status.Movement = direction;
-                        }, delegate () {
-                            strategy.TriggerEvent("OnMovementStarted", direction);
-                        });
-
+                        DoAllocateMovement(strategy, status, direction, continuated, "Before");
+                        status.Movement = direction;
+                        DoAllocateMovement(strategy, status, direction, continuated, "AfterMovementAllocation");
+                        strategy.TriggerEvent("OnMovementStarted", direction);
+                        DoAllocateMovement(strategy, status, direction, continuated, "After");
                         return true;
                     }
                     else
@@ -325,15 +324,9 @@ namespace WindRose
                 }
 
                 /**
-                 * Tells whether movement can be allocated. By default this implies checking that no movement is being
-                 *   done, and that there is not an edge being hit.
-                 *  
-                 * Strategies can, and should, at least extend this method adding more logic.
+                 * Tells whether movement can be allocated.
                  */
-                protected virtual bool CanAllocateMovement(Objects.Strategies.ObjectStrategy strategy, Status status, Types.Direction direction, bool continuated)
-                {
-                    return status.Movement == null && !IsHittingEdge(strategy.Positionable, status, direction);
-                }
+                protected abstract bool CanAllocateMovement(Objects.Strategies.ObjectStrategy strategy, Status status, Types.Direction direction, bool continuated);
 
                 /**
                  * Performs a dumb bounds-check on the object's position, size, and current map.
@@ -355,10 +348,9 @@ namespace WindRose
                 }
 
                 /**
-                 * You have to define this method. At least, just invoke settingCallback(), which updates
-                 *   the movement, and triggerEventCallback(), which notifies the component.
+                 * You have to define this method. Ask conditionally for "Before", "AfterMovementAllocation", "After".
                  */
-                protected abstract void DoAllocateMovement(Objects.Strategies.ObjectStrategy strategy, Status status, Types.Direction direction, bool continuated, Action allocatingCallback, Action triggerEventCallback);
+                protected abstract void DoAllocateMovement(Objects.Strategies.ObjectStrategy strategy, Status status, Types.Direction direction, bool continuated, string stage);
 
                 /*************************************************************************************************
                  * 
@@ -392,13 +384,12 @@ namespace WindRose
                 {
                     if (CanClearMovement(strategy, status))
                     {
-                        Types.Direction? formerMovement = null;
-                        DoClearMovement(strategy, status, formerMovement, delegate () {
-                            formerMovement = status.Movement;
-                            status.Movement = null;
-                        }, delegate() {
-                            strategy.TriggerEvent("OnMovementCancelled", formerMovement);
-                        });
+                        Types.Direction? formerMovement = status.Movement;
+                        DoClearMovement(strategy, status, formerMovement, "Before");
+                        status.Movement = null;
+                        DoClearMovement(strategy, status, formerMovement, "AfterMovementClear");
+                        strategy.TriggerEvent("OnMovementCancelled", formerMovement);
+                        DoClearMovement(strategy, status, formerMovement, "Before");
                         return true;
                     }
                     else
@@ -408,10 +399,9 @@ namespace WindRose
                 }
 
                 /**
-                 * You have to define this method. At least, just invoke clearingCallback(), which clears the
-                 *   movement, and eventTriggerCallback(), which notifies the component.
+                 * You have to define this method. Ask conditionally for "Before", "AfterMovementClear", "After".
                  */
-                protected abstract void DoClearMovement(Objects.Strategies.ObjectStrategy strategy, Status status, Types.Direction? formerMovement, Action clearingCallback, Action triggerEventCallback);
+                protected abstract void DoClearMovement(Objects.Strategies.ObjectStrategy strategy, Status status, Types.Direction? formerMovement, string stage);
 
                 /*************************************************************************************************
                  * 
@@ -432,31 +422,31 @@ namespace WindRose
                     if (status.Movement != null)
                     {
                         Types.Direction formerMovement = status.Movement.Value;
-                        DoConfirmMovement(strategy, status, formerMovement, delegate() {
-                            switch (formerMovement)
-                            {
-                                case Types.Direction.UP:
-                                    Debug.Log("Y++ due to up");
-                                    status.Y++;
-                                    break;
-                                case Types.Direction.DOWN:
-                                    Debug.Log("X-- due to down");
-                                    status.Y--;
-                                    break;
-                                case Types.Direction.LEFT:
-                                    Debug.Log("X-- due to left");
-                                    status.X--;
-                                    break;
-                                case Types.Direction.RIGHT:
-                                    Debug.Log("X++ due to right");
-                                    status.X++;
-                                    break;
-                            }
-                        }, delegate () {
-                            status.Movement = null;
-                        }, delegate() {
-                            strategy.TriggerEvent("OnMovementFinished", formerMovement);
-                        });
+                        DoConfirmMovement(strategy, status, formerMovement, "Before");
+                        switch (formerMovement)
+                        {
+                            case Types.Direction.UP:
+                                Debug.Log("Y++ due to up");
+                                status.Y++;
+                                break;
+                            case Types.Direction.DOWN:
+                                Debug.Log("X-- due to down");
+                                status.Y--;
+                                break;
+                            case Types.Direction.LEFT:
+                                Debug.Log("X-- due to left");
+                                status.X--;
+                                break;
+                            case Types.Direction.RIGHT:
+                                Debug.Log("X++ due to right");
+                                status.X++;
+                                break;
+                        }
+                        DoConfirmMovement(strategy, status, formerMovement, "AfterPositionChange");
+                        status.Movement = null;
+                        DoConfirmMovement(strategy, status, formerMovement, "AfterMovementClear");
+                        strategy.TriggerEvent("OnMovementFinished", formerMovement);
+                        DoConfirmMovement(strategy, status, formerMovement, "After");
                         return true;
                     }
                     else
@@ -466,10 +456,9 @@ namespace WindRose
                 }
 
                 /**
-                 * You have to define this method. At least, just invoke updatePosition(), confirmingCallback(),
-                 *   which clars the movemnt, and eventTriggerCallback(), which notifies the component.
+                 * You have to define this method. Ask conditionally for "Before", "AfterPositionChange", "AfterMovementClear", "After".
                  */
-                protected abstract void DoConfirmMovement(Objects.Strategies.ObjectStrategy strategy, Status status, Types.Direction? formerMovement, Action updatePositions, Action confirmingCallback, Action eventTriggerCallback);
+                protected abstract void DoConfirmMovement(Objects.Strategies.ObjectStrategy strategy, Status status, Types.Direction? formerMovement, string stage);
 
                 /*************************************************************************************************
                  * 
@@ -490,19 +479,18 @@ namespace WindRose
 
                     ClearMovement(strategy, status);
 
-                    DoTeleport(strategy, status, x, y, delegate () {
-                        status.X = x;
-                        status.Y = y;
-                    }, delegate () {
-                        strategy.TriggerEvent("OnTeleported", x, y);
-                    });
+                    DoAroundTeleport(strategy, status, x, y, "Before");
+                    status.X = x;
+                    status.Y = y;
+                    DoAroundTeleport(strategy, status, x, y, "AfterPositionChange");
+                    strategy.TriggerEvent("OnTeleported", x, y);
+                    DoAroundTeleport(strategy, status, x, y, "After");
                 }
 
                 /**
-                 * You have to define this method. At least, just invoke updatePosition(), confirmingCallback(),
-                 *   which clars the movemnt, and eventTriggerCallback(), which notifies the component.
+                 * You have to define this method. Ask conditionally for stages "Before", "AfterPositionChange", "After".
                  */
-                protected abstract void DoTeleport(Objects.Strategies.ObjectStrategy strategy, Status status, uint x, uint y, Action updatePositions, Action eventTriggerCallback);
+                protected abstract void DoAroundTeleport(Objects.Strategies.ObjectStrategy strategy, Status status, uint x, uint y, string stage);
 
                 /*************************************************************************************************
                  * 

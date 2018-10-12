@@ -19,6 +19,8 @@ namespace WindRose
                     private SolidMask solidMask;
                     private Bitmask blockMask;
 
+                    public SolidSpaceStrategy(StrategyHolder StrategyHolder) : base(StrategyHolder) {}
+
                     /*****************************************************************************
                      * 
                      * Tilemap initialization will involve creating solid mask and block mask.
@@ -27,10 +29,10 @@ namespace WindRose
                      * 
                      *****************************************************************************/
 
-                    protected override void InitGlobalCellData()
+                    public override void InitGlobalCellData()
                     {
-                        uint width = Map.Width;
-                        uint height = Map.Height;
+                        uint width = StrategyHolder.Map.Width;
+                        uint height = StrategyHolder.Map.Height;
                         solidMask = new SolidMask(width, height);
                         blockMask = new Bitmask(width, height);
                     }
@@ -41,10 +43,10 @@ namespace WindRose
                      *   * Non-Blocking
                      *   * The cell is not a BlockingAware tile, so no change in the blocks value will be done
                      */
-                    protected override void ComputeCellData(uint x, uint y)
+                    public override void ComputeCellData(uint x, uint y)
                     {
                         bool blocks = false;
-                        ForEachTilemap(delegate (UnityEngine.Tilemaps.Tilemap tilemap) {
+                        StrategyHolder.ForEachTilemap(delegate (UnityEngine.Tilemaps.Tilemap tilemap) {
                             UnityEngine.Tilemaps.TileBase tile = tilemap.GetTile(new Vector3Int((int)x, (int)y, 0));
                             if (tile is Tiles.IBlockingAwareTile)
                             {
@@ -61,18 +63,18 @@ namespace WindRose
                      * 
                      *****************************************************************************/
 
-                    protected override bool AcceptsObjectStrategy(Objects.Strategies.ObjectStrategy strategy)
+                    public override bool AcceptsObjectStrategy(Objects.Strategies.ObjectStrategy strategy)
                     {
                         return strategy is Objects.Strategies.SolidSpace.SolidSpaceObjectStrategy;
                     }
 
-                    protected override void AttachedStratergy(Objects.Strategies.ObjectStrategy strategy, Status status)
+                    public override void AttachedStratergy(Objects.Strategies.ObjectStrategy strategy, StrategyHolder.Status status)
                     {
                         SolidnessStatus solidness = ((Objects.Strategies.SolidSpace.SolidSpaceObjectStrategy)strategy).Solidness;
                         IncrementBody(strategy, status, solidness);
                     }
 
-                    protected override void DetachedStratergy(Objects.Strategies.ObjectStrategy strategy, Status status)
+                    public override void DetachedStratergy(Objects.Strategies.ObjectStrategy strategy, StrategyHolder.Status status)
                     {
                         SolidnessStatus solidness = ((Objects.Strategies.SolidSpace.SolidSpaceObjectStrategy)strategy).Solidness;
                         DecrementBody(strategy, status, solidness);
@@ -84,15 +86,15 @@ namespace WindRose
                      * 
                      *****************************************************************************/
 
-                    protected override bool CanAllocateMovement(Objects.Strategies.ObjectStrategy strategy, Status status, Direction direction, bool continuated)
+                    public override bool CanAllocateMovement(Objects.Strategies.ObjectStrategy strategy, StrategyHolder.Status status, Direction direction, bool continuated)
                     {
-                        if (status.Movement != null || IsHittingEdge(strategy.Positionable, status, direction)) return false;
-                        if (IsAdjacencyBlocked(status.X, status.Y, strategy.Positionable.Width, strategy.Positionable.Height, direction)) return false;
+                        if (status.Movement != null || IsHittingEdge(strategy.StrategyHolder.Positionable, status, direction)) return false;
+                        if (IsAdjacencyBlocked(status.X, status.Y, strategy.StrategyHolder.Positionable.Width, strategy.StrategyHolder.Positionable.Height, direction)) return false;
                         SolidnessStatus solidness = ((Objects.Strategies.SolidSpace.SolidSpaceObjectStrategy)strategy).Solidness;
-                        return solidness.Traverses() || IsAdjacencyFree(status.X, status.Y, strategy.Positionable.Width, strategy.Positionable.Height, direction);
+                        return solidness.Traverses() || IsAdjacencyFree(status.X, status.Y, strategy.StrategyHolder.Positionable.Width, strategy.StrategyHolder.Positionable.Height, direction);
                     }
 
-                    protected override void DoAllocateMovement(Objects.Strategies.ObjectStrategy strategy, Status status, Direction direction, bool continuated, string stage)
+                    public override void DoAllocateMovement(Objects.Strategies.ObjectStrategy strategy, StrategyHolder.Status status, Direction direction, bool continuated, string stage)
                     {
                         switch (stage)
                         {
@@ -103,7 +105,7 @@ namespace WindRose
                         }
                     }
 
-                    protected override void DoClearMovement(Objects.Strategies.ObjectStrategy strategy, Status status, Direction? formerMovement, string stage)
+                    public override void DoClearMovement(Objects.Strategies.ObjectStrategy strategy, StrategyHolder.Status status, Direction? formerMovement, string stage)
                     {
                         switch(stage)
                         {
@@ -114,7 +116,7 @@ namespace WindRose
                         }
                     }
 
-                    protected override void DoConfirmMovement(Objects.Strategies.ObjectStrategy strategy, Status status, Direction? formerMovement, string stage)
+                    public override void DoConfirmMovement(Objects.Strategies.ObjectStrategy strategy, StrategyHolder.Status status, Direction? formerMovement, string stage)
                     {
                         switch(stage)
                         {
@@ -125,7 +127,7 @@ namespace WindRose
                         }
                     }
 
-                    protected override void DoProcessPropertyUpdate(Objects.Strategies.ObjectStrategy strategy, Status status, string property, object oldValue, object newValue)
+                    public override void DoProcessPropertyUpdate(Objects.Strategies.ObjectStrategy strategy, StrategyHolder.Status status, string property, object oldValue, object newValue)
                     {
                         if (property == "solidness")
                         {
@@ -135,7 +137,7 @@ namespace WindRose
                         }
                     }
 
-                    protected override void DoAroundTeleport(Objects.Strategies.ObjectStrategy strategy, Status status, uint x, uint y, string stage)
+                    public override void DoTeleport(Objects.Strategies.ObjectStrategy strategy, StrategyHolder.Status status, uint x, uint y, string stage)
                     {
                         SolidnessStatus solidness = ((Objects.Strategies.SolidSpace.SolidSpaceObjectStrategy)strategy).Solidness;
                         switch (stage)
@@ -157,63 +159,63 @@ namespace WindRose
                      * 
                      */
 
-                    private void IncrementBody(Objects.Strategies.ObjectStrategy strategy, Status status, SolidnessStatus solidness)
+                    private void IncrementBody(Objects.Strategies.ObjectStrategy strategy, StrategyHolder.Status status, SolidnessStatus solidness)
                     {
                         if (solidness.Occupies())
                         {
-                            IncrementBody(status.X, status.Y, strategy.Positionable.Width, strategy.Positionable.Height);
+                            IncrementBody(status.X, status.Y, strategy.StrategyHolder.Positionable.Width, strategy.StrategyHolder.Positionable.Height);
                         }
                         else if (solidness.Carves())
                         {
-                            DecrementBody(status.X, status.Y, strategy.Positionable.Width, strategy.Positionable.Height);
+                            DecrementBody(status.X, status.Y, strategy.StrategyHolder.Positionable.Width, strategy.StrategyHolder.Positionable.Height);
                         }
                     }
 
-                    private void DecrementBody(Objects.Strategies.ObjectStrategy strategy, Status status, SolidnessStatus solidness)
+                    private void DecrementBody(Objects.Strategies.ObjectStrategy strategy, StrategyHolder.Status status, SolidnessStatus solidness)
                     {
                         if (solidness.Occupies())
                         {
-                            DecrementBody(status.X, status.Y, strategy.Positionable.Width, strategy.Positionable.Height);
+                            DecrementBody(status.X, status.Y, strategy.StrategyHolder.Positionable.Width, strategy.StrategyHolder.Positionable.Height);
                         }
                         else if (solidness.Carves())
                         {
-                            IncrementBody(status.X, status.Y, strategy.Positionable.Width, strategy.Positionable.Height);
+                            IncrementBody(status.X, status.Y, strategy.StrategyHolder.Positionable.Width, strategy.StrategyHolder.Positionable.Height);
                         }
                     }
 
-                    private void IncrementAdjacent(Objects.Strategies.ObjectStrategy strategy, Status status, SolidnessStatus solidness)
+                    private void IncrementAdjacent(Objects.Strategies.ObjectStrategy strategy, StrategyHolder.Status status, SolidnessStatus solidness)
                     {
                         if (solidness.Occupies())
                         {
-                            IncrementAdjacent(status.X, status.Y, strategy.Positionable.Width, strategy.Positionable.Height, status.Movement);
+                            IncrementAdjacent(status.X, status.Y, strategy.StrategyHolder.Positionable.Width, strategy.StrategyHolder.Positionable.Height, status.Movement);
                         }
                         else if (solidness.Carves())
                         {
-                            DecrementAdjacent(status.X, status.Y, strategy.Positionable.Width, strategy.Positionable.Height, status.Movement);
+                            DecrementAdjacent(status.X, status.Y, strategy.StrategyHolder.Positionable.Width, strategy.StrategyHolder.Positionable.Height, status.Movement);
                         }
                     }
 
-                    private void DecrementAdjacent(Objects.Strategies.ObjectStrategy strategy, Status status, SolidnessStatus solidness)
+                    private void DecrementAdjacent(Objects.Strategies.ObjectStrategy strategy, StrategyHolder.Status status, SolidnessStatus solidness)
                     {
                         if (solidness.Occupies())
                         {
-                            DecrementAdjacent(status.X, status.Y, strategy.Positionable.Width, strategy.Positionable.Height, status.Movement);
+                            DecrementAdjacent(status.X, status.Y, strategy.StrategyHolder.Positionable.Width, strategy.StrategyHolder.Positionable.Height, status.Movement);
                         }
                         else if (solidness.Carves())
                         {
-                            IncrementAdjacent(status.X, status.Y, strategy.Positionable.Width, strategy.Positionable.Height, status.Movement);
+                            IncrementAdjacent(status.X, status.Y, strategy.StrategyHolder.Positionable.Width, strategy.StrategyHolder.Positionable.Height, status.Movement);
                         }
                     }
 
-                    private void DecrementOppositeAdjacent(Objects.Strategies.ObjectStrategy strategy, Status status, SolidnessStatus solidness)
+                    private void DecrementOppositeAdjacent(Objects.Strategies.ObjectStrategy strategy, StrategyHolder.Status status, SolidnessStatus solidness)
                     {
                         if (solidness.Occupies())
                         {
-                            DecrementAdjacent(status.X, status.Y, strategy.Positionable.Width, strategy.Positionable.Height, status.Movement.Opposite());
+                            DecrementAdjacent(status.X, status.Y, strategy.StrategyHolder.Positionable.Width, strategy.StrategyHolder.Positionable.Height, status.Movement.Opposite());
                         }
                         else if (solidness.Carves())
                         {
-                            IncrementAdjacent(status.X, status.Y, strategy.Positionable.Width, strategy.Positionable.Height, status.Movement.Opposite());
+                            IncrementAdjacent(status.X, status.Y, strategy.StrategyHolder.Positionable.Width, strategy.StrategyHolder.Positionable.Height, status.Movement.Opposite());
                         }
                     }
 

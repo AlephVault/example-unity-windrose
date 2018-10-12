@@ -28,7 +28,7 @@ namespace WindRose
             public uint Height { get { return height; } }
             public uint Width { get { return width; } }
             public bool Initialized { get { return initialized; } }
-            public Strategies.Strategy Strategy { get; private set; }
+            public Strategies.StrategyHolder StrategyHolder { get; private set; }
 
             // Use this for initialization
             private void Awake()
@@ -37,7 +37,7 @@ namespace WindRose
                 width = Values.Clamp(1, width, 100);
                 height = Values.Clamp(1, height, 100);
                 // Fetching strategy - needed
-                Strategy = GetComponent<Strategies.Strategy>();
+                StrategyHolder = GetComponent<Strategies.StrategyHolder>();
             }
 
             private void Start()
@@ -48,13 +48,13 @@ namespace WindRose
                     tilemap.transform.localPosition = Vector3.zero;
                 }
                 // Initializing strategy
-                if (Strategy == null)
+                if (StrategyHolder == null)
                 {
-                    throw new Types.Exception("A map strategy is required when the map initializes.");
+                    throw new Types.Exception("A map strategy holder is required when the map initializes.");
                 }
                 else
                 {
-                    Strategy.Initialize();
+                    StrategyHolder.Initialize();
                 }
                 // TODO This line should be removed, and its behaviour moved to a particular
                 // TODO   subclass of (map-) Strategy upon initialization.

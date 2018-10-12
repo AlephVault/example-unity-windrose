@@ -10,44 +10,57 @@ namespace WindRose
             namespace Strategies
             {
                 /**
-                 * A map strategy requires a map, but will not perform any particular event but, instead, provide
-                 *   functionality.
-                 * 
-                 * The Map behaviour will try to find a strategy (a subclass of this class) or die trying. When
-                 *   needed, the map will invoke stuff on this class.
+                 * This is an object strategy. It will know:
+                 * - The strategy-holder it is tied to (directly or indirectly).
+                 * And it will have as behaviour:
+                 * - A way of notifying the strategy-holder's positionable's map's
+                 *   strategy about changes. Actually, each subclass of strategy
+                 *   will decide when to notify the changes appropriately.
                  */
-                [RequireComponent(typeof(Positionable))]
-                public abstract class ObjectStrategy : MonoBehaviour
+                public abstract class ObjectStrategy
                 {
                     /**
-                     * Each strategy knows its positionable.
+                     * Each strategy knows its holder.
                      */
-                    public Positionable Positionable { get; private set; }
+                    public ObjectStrategyHolder StrategyHolder { get; private set; }
 
-                    /**
-                     * On initialization, the strategy will fetch its positionable to, actually, know it.
-                     */
-                    protected virtual void Awake()
+                    public ObjectStrategy(ObjectStrategyHolder StrategyHolder)
                     {
-                        Positionable = GetComponent<Positionable>();
+                        this.StrategyHolder = StrategyHolder;
                     }
 
                     /**
-                     * Sends an event to the positionable and the whole component.
+                     * Sends an event to the strategy holder. Even for combined strategies,
+                     *   this method will be available but triggered accordingly.
                      */
                     public void TriggerEvent(string targetEvent, params object[] args)
                     {
-                        SendMessage(targetEvent, args, SendMessageOptions.DontRequireReceiver);
+                        StrategyHolder.SendMessage(targetEvent, args, SendMessageOptions.DontRequireReceiver);
                     }
+
+                    /**
+                     * You may define this method to perform custom initialization of your component (even
+                     *   perhaps interacting back with the positionable).
+                     * 
+                     * This method is invoked externally, by the positionable.
+                     */
+                    public virtual void Initialize() {}
 
                     /**
                      * Sends the property update to the map strategy.
                      */
                     protected void PropertyWasUpdated(string property, object oldValue, object newValue)
                     {
-                        Map map = Positionable == null ? null : Positionable.ParentMap;
-                        Behaviours.Strategies.Strategy mapStrategy = map == null ? null : map.Strategy;
-                        if (mapStrategy != null) { mapStrategy.PropertyWasUpdated(this, property, oldValue, newValue); }
+                        Behaviours.Strategies.StrategyHolder mapStrategyHolder = null;
+                        try
+                        {
+                            mapStrategyHolder = StrategyHolder.Positionable.ParentMap.StrategyHolder;
+                        }
+                        catch(NullReferenceException)
+                        {
+                            mapStrategyHolder = null;
+                        }
+                        if (mapStrategyHolder != null) { mapStrategyHolder.PropertyWasUpdated(StrategyHolder, property, oldValue, newValue); }
                     }
                 }
             }

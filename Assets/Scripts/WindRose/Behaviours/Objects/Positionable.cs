@@ -39,16 +39,16 @@ namespace WindRose
                 public Map ParentMap { get { return parentMap; } }
                 public uint Width { get { return width; } } // Referencing directly allows us to query the width without a map assigned yet.
                 public uint Height { get { return width; } } // Referencing directly allows us to query the height without a map assigned yet.
-                public uint X { get { return parentMap.Strategy.StatusFor(Strategy).X; } }
-                public uint Y { get { return parentMap.Strategy.StatusFor(Strategy).Y; } }
-                public uint Xf { get { return parentMap.Strategy.StatusFor(Strategy).X + Width - 1; } }
-                public uint Yf { get { return parentMap.Strategy.StatusFor(Strategy).Y + Height - 1; } }
-                public Direction? Movement { get { return parentMap.Strategy.StatusFor(Strategy).Movement; } }
-                public Strategies.ObjectStrategy Strategy  {  get; private set; }
+                public uint X { get { return parentMap.StrategyHolder.StatusFor(StrategyHolder).X; } }
+                public uint Y { get { return parentMap.StrategyHolder.StatusFor(StrategyHolder).Y; } }
+                public uint Xf { get { return parentMap.StrategyHolder.StatusFor(StrategyHolder).X + Width - 1; } }
+                public uint Yf { get { return parentMap.StrategyHolder.StatusFor(StrategyHolder).Y + Height - 1; } }
+                public Direction? Movement { get { return parentMap.StrategyHolder.StatusFor(StrategyHolder).Movement; } }
+                public Strategies.ObjectStrategyHolder StrategyHolder { get; private set; }
 
                 private void Awake()
                 {
-                    Strategy = GetComponent<Strategies.ObjectStrategy>();
+                    StrategyHolder = GetComponent<Strategies.ObjectStrategyHolder>();
                 }
 
                 void Start()
@@ -95,9 +95,13 @@ namespace WindRose
                     }
 
                     // We will make use of strategy
-                    if (Strategy == null)
+                    if (StrategyHolder == null)
                     {
-                        throw new Exception("A map strategy is required when the map initializes.");
+                        throw new Exception("A map strategy holder is required when the map initializes.");
+                    }
+                    else
+                    {
+                        StrategyHolder.Initialize();
                     }
 
                     try
@@ -110,7 +114,7 @@ namespace WindRose
                         UnityEngine.Tilemaps.Tilemap tilemap = Layout.RequireComponentInParent<UnityEngine.Tilemaps.Tilemap>(gameObject);
                         Vector3Int cellPosition = tilemap.WorldToCell(transform.position);
                         // TODO: Clamp with `Values.Clamp(0, (uint)cellPosition.x, parentMap.Width-1), Values.Clamp(0, (uint)-cellPosition.y, parentMap.Height-1)` or let it raise exception?
-                        ParentMap.Strategy.Attach(Strategy, (uint)cellPosition.x, (uint)cellPosition.y);
+                        ParentMap.StrategyHolder.Attach(StrategyHolder, (uint)cellPosition.x, (uint)cellPosition.y);
                         initialized = true;
                     }
                     catch (Layout.MissingComponentInParentException)
@@ -125,34 +129,34 @@ namespace WindRose
                     // That's why we run the conditional.
                     //
                     // For the general cases, Detach will find a mapObjectState attached.
-                    if (parentMap != null) parentMap.Strategy.Detach(Strategy);
+                    if (parentMap != null) parentMap.StrategyHolder.Detach(StrategyHolder);
                 }
 
                 public void Attach(Map map, uint x, uint y, bool force = false)
                 {
                     if (force) Detach();
                     // TODO: Clamp x, y? or raise exception?
-                    map.Strategy.Attach(Strategy, x, y);
+                    map.StrategyHolder.Attach(StrategyHolder, x, y);
                 }
 
                 public void Teleport(uint x, uint y)
                 {
-                    if (parentMap != null && !paused) parentMap.Strategy.Teleport(Strategy, x, y);
+                    if (parentMap != null && !paused) parentMap.StrategyHolder.Teleport(StrategyHolder, x, y);
                 }
 
                 public bool StartMovement(Direction movementDirection, bool continuated = false)
                 {
-                    return parentMap != null && !paused && parentMap.Strategy.MovementStart(Strategy, movementDirection, continuated);
+                    return parentMap != null && !paused && parentMap.StrategyHolder.MovementStart(StrategyHolder, movementDirection, continuated);
                 }
 
                 public bool FinishMovement()
                 {
-                    return parentMap != null && !paused && parentMap.Strategy.MovementFinish(Strategy);
+                    return parentMap != null && !paused && parentMap.StrategyHolder.MovementFinish(StrategyHolder);
                 }
 
                 public bool CancelMovement()
                 {
-                    return parentMap != null && !paused && parentMap.Strategy.MovementCancel(Strategy);
+                    return parentMap != null && !paused && parentMap.StrategyHolder.MovementCancel(StrategyHolder);
                 }
 
                 public float GetCellWidth()

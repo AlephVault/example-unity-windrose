@@ -18,6 +18,19 @@ namespace WindRose
                         [SerializeField]
                         private SolidnessStatus solidness = SolidnessStatus.Solid;
 
+                        public SolidSpaceObjectStrategy(ObjectStrategyHolder StrategyHolder, SolidnessStatus solidness) : base(StrategyHolder) {
+                            this.solidness = solidness;
+                        }
+
+                        public override void Initialize()
+                        {
+                            TriggerPlatform triggerPlatform = StrategyHolder.GetComponent<TriggerPlatform>();
+                            if (triggerPlatform != null && solidness != SolidnessStatus.Ghost && solidness != SolidnessStatus.Hole)
+                            {
+                                solidness = SolidnessStatus.Ghost;
+                            }
+                        }
+
                         public SolidnessStatus Solidness
                         {
                             get { return solidness; }
@@ -25,16 +38,6 @@ namespace WindRose
                             {
                                 var oldValue = solidness;
                                 PropertyWasUpdated("solidness", oldValue, value);
-                            }
-                        }
-
-                        protected override void Awake()
-                        {
-                            base.Awake();
-                            TriggerPlatform triggerPlatform = GetComponent<TriggerPlatform>();
-                            if (triggerPlatform != null && solidness != SolidnessStatus.Ghost && solidness != SolidnessStatus.Hole)
-                            {
-                                solidness = SolidnessStatus.Ghost;
                             }
                         }
                     }

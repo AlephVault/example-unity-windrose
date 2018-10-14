@@ -53,11 +53,28 @@ namespace WindRose
                 void Awake()
                 {
                     spriteRenderer = GetComponent<SpriteRenderer>();
+                    spriteRenderer.enabled = false;
                 }
 
                 void Start()
                 {
                     SetDefaultAnimation();
+                }
+
+                void OnAttached(object[] args)
+                {
+                    /*
+                     * This behaviour must only get the appropriate sorting layer.
+                     */
+                    Tilemaps.ObjectsTilemap objectsTilemap = ((Map)args[0]).GetComponentInChildren<Tilemaps.ObjectsTilemap>();
+                    spriteRenderer.sortingLayerID = objectsTilemap.SortingLayer;
+                    spriteRenderer.enabled = true;
+                }
+
+                void OnDetached()
+                {
+                    spriteRenderer.enabled = false;
+                    spriteRenderer.sortingLayerID = 0;
                 }
 
                 private void Reset()

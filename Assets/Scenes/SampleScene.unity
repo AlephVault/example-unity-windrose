@@ -8377,6 +8377,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf9596816e702c4439e85e97e2100391, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sortingLayer: 0
 --- !u!483693784 &1063698776
 TilemapRenderer:
   m_ObjectHideFlags: 0
@@ -14712,6 +14713,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf9596816e702c4439e85e97e2100391, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sortingLayer: 902006497
 --- !u!1 &1764890180
 GameObject:
   m_ObjectHideFlags: 0

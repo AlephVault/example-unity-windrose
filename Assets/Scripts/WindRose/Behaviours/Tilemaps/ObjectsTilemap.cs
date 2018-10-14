@@ -11,13 +11,22 @@ namespace WindRose
         namespace Tilemaps
         {
             /**
-             * Just a marker class to ensure all Positionable objects are
-             *   attached to an object of this class, when attached to the
-             *   map.
+             * Not Just a marker class to ensure all Positionable objects
+             *   are attached to an object of this class, when attached to
+             *   the map - it also tells the underlying represented objects
+             *   which sorting layer to use when rendering.
              */
             [RequireComponent(typeof(Tilemap))]
             public class ObjectsTilemap : MonoBehaviour
             {
+                [SerializeField]
+                private int sortingLayer;
+
+                /**
+                 * This sorting layer will be assigned to children objects.
+                 */
+                public int SortingLayer { get { return sortingLayer; } }
+
                 void Start()
                 {
                     Layout.RequireComponentInParent<Map>(this);                    

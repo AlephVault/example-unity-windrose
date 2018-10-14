@@ -117,9 +117,9 @@ namespace WindRose
                  */
                 public bool ForEachTilemap(Predicate<UnityEngine.Tilemaps.Tilemap> callback)
                 {
-                    for (int i = 0; i < tilemaps.Length; i++)
+                    foreach(UnityEngine.Tilemaps.Tilemap tilemap in tilemaps)
                     {
-                        if (callback(tilemaps[i])) return true;
+                        if (callback(tilemap)) return true;
                     }
                     return false;
                 }

@@ -70,6 +70,16 @@ namespace WindRose
                     {
                         get { return childrenStrategies[index]; }
                     }
+
+                    /**
+                     * Initializing the combined strategy will involve initializing the children strategies.
+                     */
+                    public override void Initialize() {
+                        foreach(CombinedObjectStrategy strategy in childrenStrategies)
+                        {
+                            strategy.Initialize();
+                        }
+                    }
                 }
             }
         }

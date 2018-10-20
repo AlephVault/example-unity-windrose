@@ -4,7 +4,7 @@
     {
         namespace Strategies
         {
-            namespace SolidSpace
+            namespace Solidness
             {
                 public enum SolidnessStatus { Hole, Ghost, SolidForOthers, Solid };
 

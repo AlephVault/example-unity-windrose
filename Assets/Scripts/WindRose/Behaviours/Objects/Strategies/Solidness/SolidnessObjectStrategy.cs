@@ -9,18 +9,14 @@ namespace WindRose
         {
             namespace Strategies
             {
-                namespace SolidSpace
+                namespace Solidness
                 {
-                    using Behaviours.Strategies.SolidSpace;
+                    using Behaviours.Strategies.Solidness;
 
-                    public class SolidSpaceObjectStrategy : ObjectStrategy
+                    public class SolidnessObjectStrategy : ObjectStrategy
                     {
                         [SerializeField]
                         private SolidnessStatus solidness = SolidnessStatus.Solid;
-
-                        public SolidSpaceObjectStrategy(ObjectStrategyHolder StrategyHolder, SolidnessStatus solidness) : base(StrategyHolder) {
-                            this.solidness = solidness;
-                        }
 
                         public override void Initialize()
                         {
@@ -29,6 +25,11 @@ namespace WindRose
                             {
                                 solidness = SolidnessStatus.Ghost;
                             }
+                        }
+
+                        protected override Type GetCounterpartType()
+                        {
+                            return typeof(SolidnessStrategy);
                         }
 
                         public SolidnessStatus Solidness

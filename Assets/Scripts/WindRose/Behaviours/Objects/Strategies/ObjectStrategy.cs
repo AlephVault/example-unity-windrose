@@ -16,17 +16,49 @@ namespace WindRose
                  * - A way of notifying the strategy-holder's positionable's map's
                  *   strategy about changes. Actually, each subclass of strategy
                  *   will decide when to notify the changes appropriately.
+                 * This behaviour will be a Unity Behaviour, so it will be attached
+                 *   to the same object of the ObjectStrategyHolder.
+                 * It is related to a counterpart type which is a subtype of map
+                 *   strategy.
                  */
-                public abstract class ObjectStrategy
+                public abstract class ObjectStrategy : MonoBehaviour
                 {
+                    private static Type baseCounterpartStrategyType = typeof(Behaviours.Strategies.Strategy);
+
+                    public class UnsupportedTypeException : Types.Exception
+                    {
+                        public UnsupportedTypeException() { }
+                        public UnsupportedTypeException(string message) : base(message) { }
+                        public UnsupportedTypeException(string message, Exception inner) : base(message, inner) { }
+                    }
+
                     /**
-                     * Each strategy knows its holder.
+                     * Each strategy knows its holder and its counterpart type.
                      */
                     public ObjectStrategyHolder StrategyHolder { get; private set; }
+                    public Type CounterpartType { get; private set; }
 
-                    public ObjectStrategy(ObjectStrategyHolder StrategyHolder)
+                    public virtual void Awake()
                     {
-                        this.StrategyHolder = StrategyHolder;
+                        StrategyHolder = GetComponent<ObjectStrategyHolder>();
+                        CounterpartType = GetCounterpartType();
+                        if (CounterpartType == null || !CounterpartType.IsSubclassOf(baseCounterpartStrategyType))
+                        {
+                            Destroy(gameObject);
+                            throw new UnsupportedTypeException(string.Format("The type returned by CounterpartType must be a subclass of {0}", baseCounterpartStrategyType.FullName));
+                        }
+                    }
+
+                    /**
+                     * Gets the counterpart type to operate against (in the map).
+                     */
+                    protected abstract Type GetCounterpartType();
+
+                    /**
+                     * This method initializes the current strategy.
+                     */
+                    public virtual void Initialize()
+                    {
                     }
 
                     /**
@@ -37,14 +69,6 @@ namespace WindRose
                     {
                         StrategyHolder.SendMessage(targetEvent, args, SendMessageOptions.DontRequireReceiver);
                     }
-
-                    /**
-                     * You may define this method to perform custom initialization of your component (even
-                     *   perhaps interacting back with the positionable).
-                     * 
-                     * This method is invoked externally, by the positionable.
-                     */
-                    public virtual void Initialize() {}
 
                     /**
                      * Sends the property update to the map strategy.
@@ -60,7 +84,7 @@ namespace WindRose
                         {
                             mapStrategyHolder = null;
                         }
-                        if (mapStrategyHolder != null) { mapStrategyHolder.PropertyWasUpdated(StrategyHolder, property, oldValue, newValue); }
+                        if (mapStrategyHolder != null) { mapStrategyHolder.PropertyWasUpdated(StrategyHolder, this, property, oldValue, newValue); }
                     }
                 }
             }

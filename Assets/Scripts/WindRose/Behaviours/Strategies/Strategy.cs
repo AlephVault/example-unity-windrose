@@ -14,66 +14,67 @@ namespace WindRose
              * And it will have as behaviour:
              * - List of all methods invoked by the strategy holder that are
              *   related to the current logic.
+             * This behaviour will be a Unity Behaviour, so it will be attached
+             *   to the same object of the StrategyHolder.
+             * It is related to a counterpart type which is a subtype of object
+             *   strategy.
              */
-            public abstract class Strategy
+            public abstract class Strategy : MonoBehaviour
             {
+                private static Type baseCounterpartStrategyType = typeof(Objects.Strategies.ObjectStrategy);
+
+                public class UnsupportedTypeException : Types.Exception
+                {
+                    public UnsupportedTypeException() { }
+                    public UnsupportedTypeException(string message) : base(message) { }
+                    public UnsupportedTypeException(string message, Exception inner) : base(message, inner) { }
+                }
+
                 /**
-                 * Each strategy knows its holder.
+                 * Each strategy knows its holder and its counterpart type.
                  */
                 public StrategyHolder StrategyHolder { get; private set; }
+                public Type CounterpartType { get; private set; }
 
-                public Strategy(StrategyHolder StrategyHolder)
+                public void Awake()
                 {
-                    this.StrategyHolder = StrategyHolder;
-                }
-
-                /**
-                 * Initializing the cell data will require initializing masks and other arrays, in a per-strategy
-                 *   basis.
-                 */
-                public abstract void InitGlobalCellData();
-
-                /**
-                 * This method tells whether the strategy has cells to compute, or not.
-                 */
-                protected virtual bool ComputesCellsData()
-                {
-                    return true;
-                }
-
-                /**
-                 * This method updates all the cells in the strategy. It depends on the method to update a
-                 *   single cell. This is an utility method that will frequently be used when
-                 */
-                private void ComputeCellsData()
-                {
-                    for (uint y = 0; y < StrategyHolder.Map.Height; y++)
+                    StrategyHolder = GetComponent<StrategyHolder>();
+                    CounterpartType = GetCounterpartType();
+                    if (CounterpartType == null || !CounterpartType.IsSubclassOf(baseCounterpartStrategyType))
                     {
-                        for (uint x = 0; x < StrategyHolder.Map.Width; x++)
-                        {
-                            ComputeCellData(x, y);
-                        }
+                        Destroy(gameObject);
+                        throw new UnsupportedTypeException(string.Format("The type returned by CounterpartType must be a subclass of {0}", baseCounterpartStrategyType.FullName));
                     }
                 }
 
                 /**
-                 * This method initializes the current strategy.
-                 * [For computed strategies, it will also call initialize on children]
+                 * Gets the counterpart type to operate against (in the map).
                  */
-                public virtual void Initialize()
+                protected abstract Type GetCounterpartType();
+
+                /**
+                 * Initializing the global data will require initializing masks and other arrays, in a
+                 *   per-strategy basis.
+                 */
+                public virtual void InitGlobalCellsData()
                 {
-                    InitGlobalCellData();
-                    if (ComputesCellsData())
-                    {
-                        ComputeCellsData();
-                    }
+                }
+
+                /**
+                 * Initializing the cells data may involve an individual iterator, or not.
+                 */
+                public virtual void InitIndividualCellsData(Action<Action<uint, uint>> allCellsIterator)
+                {
+                    allCellsIterator(ComputeCellData);
                 }
 
                 /**
                  * Updating a strategy actually computes a single cell. It is intended to be run after a tilemap
                  *   was changed a single tile, or in per-cell basis on initialization.
                  */
-                public abstract void ComputeCellData(uint x, uint y);
+                public virtual void ComputeCellData(uint x, uint y)
+                {
+                }
 
                 /*************************************************************************************************
                  * 
@@ -82,19 +83,18 @@ namespace WindRose
                  *************************************************************************************************/
 
                 /**
-                 * Object strategy allowance. It will tell whether it accepts, or not, a certain strategy to be passed.
-                 */
-                public abstract bool AcceptsObjectStrategy(Objects.Strategies.ObjectStrategy strategy);
-
-                /**
                  * Object strategy was added. Compute relevant data here.
                  */
-                public abstract void AttachedStratergy(Objects.Strategies.ObjectStrategy strategy, StrategyHolder.Status status);
+                public virtual void AttachedStrategy(Objects.Strategies.ObjectStrategy strategy, StrategyHolder.Status status)
+                {
+                }
 
                 /**
                  * Object strategy is to be removed. Compute relevant data here.
                  */
-                public abstract void DetachedStratergy(Objects.Strategies.ObjectStrategy strategy, StrategyHolder.Status status);
+                public virtual void DetachedStrategy(Objects.Strategies.ObjectStrategy strategy, StrategyHolder.Status status)
+                {
+                }
 
                 /*************************************************************************************************
                  * 
@@ -104,53 +104,16 @@ namespace WindRose
                  *************************************************************************************************/
 
                 /**
-                 * Executes the actual movement allocation.
-                 */
-                public bool AllocateMovement(Objects.Strategies.ObjectStrategy strategy, StrategyHolder.Status status, Types.Direction direction, bool continuated = false)
-                {
-                    if (CanAllocateMovement(strategy, status, direction, continuated))
-                    {
-                        DoAllocateMovement(strategy, status, direction, continuated, "Before");
-                        status.Movement = direction;
-                        DoAllocateMovement(strategy, status, direction, continuated, "AfterMovementAllocation");
-                        strategy.TriggerEvent("OnMovementStarted", direction);
-                        DoAllocateMovement(strategy, status, direction, continuated, "After");
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
-
-                /**
                  * Tells whether movement can be allocated.
                  */
-                public abstract bool CanAllocateMovement(Objects.Strategies.ObjectStrategy strategy, StrategyHolder.Status status, Types.Direction direction, bool continuated);
+                public abstract bool CanAllocateMovement(Dictionary<Type, bool> otherComponentsResults, Objects.Strategies.ObjectStrategy strategy, StrategyHolder.Status status, Types.Direction direction, bool continuated);
 
                 /**
-                 * Performs a dumb bounds-check on the object's position, size, and current map.
+                 * You may define this method. Ask conditionally for "Before", "AfterMovementAllocation", "After".
                  */
-                protected bool IsHittingEdge(Objects.Positionable positionable, StrategyHolder.Status status, Types.Direction direction)
+                public virtual void DoAllocateMovement(Objects.Strategies.ObjectStrategy strategy, StrategyHolder.Status status, Types.Direction direction, bool continuated, string stage)
                 {
-                    switch (direction)
-                    {
-                        case Types.Direction.LEFT:
-                            return status.X == 0;
-                        case Types.Direction.UP:
-                            return status.Y + positionable.Height == StrategyHolder.Map.Height;
-                        case Types.Direction.RIGHT:
-                            return status.X + positionable.Width == StrategyHolder.Map.Width;
-                        case Types.Direction.DOWN:
-                            return status.Y == 0;
-                    }
-                    return false;
                 }
-
-                /**
-                 * You have to define this method. Ask conditionally for "Before", "AfterMovementAllocation", "After".
-                 */
-                public abstract void DoAllocateMovement(Objects.Strategies.ObjectStrategy strategy, StrategyHolder.Status status, Types.Direction direction, bool continuated, string stage);
 
                 /*************************************************************************************************
                  * 
@@ -159,38 +122,20 @@ namespace WindRose
                  *************************************************************************************************/
 
                 /**
-                 * Executes the actual movement clearing.
-                 */
-                public bool ClearMovement(Objects.Strategies.ObjectStrategy strategy, StrategyHolder.Status status)
-                {
-                    if (CanClearMovement(strategy, status))
-                    {
-                        Types.Direction? formerMovement = status.Movement;
-                        DoClearMovement(strategy, status, formerMovement, "Before");
-                        status.Movement = null;
-                        DoClearMovement(strategy, status, formerMovement, "AfterMovementClear");
-                        strategy.TriggerEvent("OnMovementCancelled", formerMovement);
-                        DoClearMovement(strategy, status, formerMovement, "Before");
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
-
-                /**
                  * Override it to use a different criteria for allowing movement cancel.
                  */
-                public virtual bool CanClearMovement(Objects.Strategies.ObjectStrategy strategy, StrategyHolder.Status status)
-                {
-                    return status.Movement != null;
-                }
+                // public virtual bool CanClearMovement(Objects.Strategies.ObjectStrategy strategy, StrategyHolder.Status status)
+                // {
+                //     return status.Movement != null;
+                // }
+                public abstract bool CanClearMovement(Dictionary<Type, bool> otherComponentsResults, Objects.Strategies.ObjectStrategy strategy, StrategyHolder.Status status);
 
                 /**
-                 * You have to define this method. Ask conditionally for "Before", "AfterMovementClear", "After".
+                 * You may define this method. Ask conditionally for "Before", "AfterMovementClear", "After".
                  */
-                public abstract void DoClearMovement(Objects.Strategies.ObjectStrategy strategy, StrategyHolder.Status status, Types.Direction? formerMovement, string stage);
+                public virtual void DoClearMovement(Objects.Strategies.ObjectStrategy strategy, StrategyHolder.Status status, Types.Direction? formerMovement, string stage)
+                {
+                }
 
                 /*************************************************************************************************
                  * 
@@ -199,9 +144,11 @@ namespace WindRose
                  *************************************************************************************************/
 
                 /**
-                 * You have to define this method. Ask conditionally for "Before", "AfterPositionChange", "AfterMovementClear", "After".
+                 * You may define this method. Ask conditionally for "Before", "AfterPositionChange", "AfterMovementClear", "After".
                  */
-                public abstract void DoConfirmMovement(Objects.Strategies.ObjectStrategy strategy, StrategyHolder.Status status, Types.Direction? formerMovement, string stage);
+                public virtual void DoConfirmMovement(Objects.Strategies.ObjectStrategy strategy, StrategyHolder.Status status, Types.Direction? formerMovement, string stage)
+                {
+                }
 
                 /*************************************************************************************************
                  * 
@@ -210,9 +157,11 @@ namespace WindRose
                  *************************************************************************************************/
 
                 /**
-                 * You have to define this method. Ask conditionally for stages "Before", "AfterPositionChange", "After".
+                 * You may define this method. Ask conditionally for stages "Before", "AfterPositionChange", "After".
                  */
-                public abstract void DoTeleport(Objects.Strategies.ObjectStrategy strategy, StrategyHolder.Status status, uint x, uint y, string stage);
+                public virtual void DoTeleport(Objects.Strategies.ObjectStrategy strategy, StrategyHolder.Status status, uint x, uint y, string stage)
+                {
+                }
 
                 /*************************************************************************************************
                  * 
@@ -221,9 +170,11 @@ namespace WindRose
                  *************************************************************************************************/
 
                 /**
-                 * You have to define this method.
+                 * You may define this method.
                  */
-                public abstract void DoProcessPropertyUpdate(Objects.Strategies.ObjectStrategy strategy, StrategyHolder.Status status, string property, object oldValue, object newValue);
+                public virtual void DoProcessPropertyUpdate(Objects.Strategies.ObjectStrategy strategy, StrategyHolder.Status status, string property, object oldValue, object newValue)
+                {
+                }
             }
         }
     }

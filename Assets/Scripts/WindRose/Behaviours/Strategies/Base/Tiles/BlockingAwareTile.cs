@@ -7,12 +7,12 @@ namespace WindRose
     {
         namespace Strategies
         {
-            namespace SolidSpace
+            namespace Base
             {
                 namespace Tiles
                 {
-                    [CreateAssetMenu(fileName = "NewBlockingAnimatedTile", menuName = "Wind Rose/Tiles/Blocking Animated Tile", order = 202)]
-                    public class BlockingAwareAnimatedTile : AnimatedTile, IBlockingAwareTile
+                    [CreateAssetMenu(fileName = "NewBlockingTile", menuName = "Wind Rose/Tiles/Blocking Tile", order = 201)]
+                    public class BlockingAwareTile : Tile, IBlockingAwareTile
                     {
                         [SerializeField]
                         private bool blocks = true;

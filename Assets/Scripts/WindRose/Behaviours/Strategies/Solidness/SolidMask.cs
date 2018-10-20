@@ -7,7 +7,7 @@ namespace WindRose
     {
         namespace Strategies
         {
-            namespace SolidSpace
+            namespace Solidness
             {
                 public class SolidMask
                 {

@@ -4,7 +4,7 @@
     {
         namespace Strategies
         {
-            namespace SolidSpace
+            namespace Base
             {
                 namespace Tiles
                 {

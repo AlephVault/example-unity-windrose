@@ -10,16 +10,19 @@ namespace WindRose
     {
         namespace Strategies
         {
-            namespace SolidSpace
+            namespace Solidness
             {
                 using Types;
 
-                public class SolidSpaceStrategy : Strategy
+                [RequireComponent(typeof(Base.BaseStrategy))]
+                public class SolidnessStrategy : Strategy
                 {
                     private SolidMask solidMask;
-                    private Bitmask blockMask;
 
-                    public SolidSpaceStrategy(StrategyHolder StrategyHolder) : base(StrategyHolder) {}
+                    protected override Type GetCounterpartType()
+                    {
+                        return typeof(Objects.Strategies.Solidness.SolidnessObjectStrategy);
+                    }
 
                     /*****************************************************************************
                      * 
@@ -29,32 +32,11 @@ namespace WindRose
                      * 
                      *****************************************************************************/
 
-                    public override void InitGlobalCellData()
+                    public override void InitGlobalCellsData()
                     {
                         uint width = StrategyHolder.Map.Width;
                         uint height = StrategyHolder.Map.Height;
                         solidMask = new SolidMask(width, height);
-                        blockMask = new Bitmask(width, height);
-                    }
-
-                    /**
-                     * Single-cell computing involves blocking. There are three blocking modes:
-                     *   * Blocking
-                     *   * Non-Blocking
-                     *   * The cell is not a BlockingAware tile, so no change in the blocks value will be done
-                     */
-                    public override void ComputeCellData(uint x, uint y)
-                    {
-                        bool blocks = false;
-                        StrategyHolder.ForEachTilemap(delegate (UnityEngine.Tilemaps.Tilemap tilemap) {
-                            UnityEngine.Tilemaps.TileBase tile = tilemap.GetTile(new Vector3Int((int)x, (int)y, 0));
-                            if (tile is Tiles.IBlockingAwareTile)
-                            {
-                                blocks = ((Tiles.IBlockingAwareTile)tile).Blocks();
-                            }
-                            return false;
-                        });
-                        blockMask.SetCell(x, y, blocks);
                     }
 
                     /*****************************************************************************
@@ -63,20 +45,15 @@ namespace WindRose
                      * 
                      *****************************************************************************/
 
-                    public override bool AcceptsObjectStrategy(Objects.Strategies.ObjectStrategy strategy)
+                    public override void AttachedStrategy(Objects.Strategies.ObjectStrategy strategy, StrategyHolder.Status status)
                     {
-                        return strategy is Objects.Strategies.SolidSpace.SolidSpaceObjectStrategy;
-                    }
-
-                    public override void AttachedStratergy(Objects.Strategies.ObjectStrategy strategy, StrategyHolder.Status status)
-                    {
-                        SolidnessStatus solidness = ((Objects.Strategies.SolidSpace.SolidSpaceObjectStrategy)strategy).Solidness;
+                        SolidnessStatus solidness = ((Objects.Strategies.Solidness.SolidnessObjectStrategy)strategy).Solidness;
                         IncrementBody(strategy, status, solidness);
                     }
 
-                    public override void DetachedStratergy(Objects.Strategies.ObjectStrategy strategy, StrategyHolder.Status status)
+                    public override void DetachedStrategy(Objects.Strategies.ObjectStrategy strategy, StrategyHolder.Status status)
                     {
-                        SolidnessStatus solidness = ((Objects.Strategies.SolidSpace.SolidSpaceObjectStrategy)strategy).Solidness;
+                        SolidnessStatus solidness = ((Objects.Strategies.Solidness.SolidnessObjectStrategy)strategy).Solidness;
                         DecrementBody(strategy, status, solidness);
                     }
 
@@ -86,12 +63,17 @@ namespace WindRose
                      * 
                      *****************************************************************************/
 
-                    public override bool CanAllocateMovement(Objects.Strategies.ObjectStrategy strategy, StrategyHolder.Status status, Direction direction, bool continuated)
+                    public override bool CanAllocateMovement(Dictionary<Type, bool> otherComponentsResults, Objects.Strategies.ObjectStrategy strategy, StrategyHolder.Status status, Direction direction, bool continuated)
                     {
-                        if (status.Movement != null || IsHittingEdge(strategy.StrategyHolder.Positionable, status, direction)) return false;
-                        if (IsAdjacencyBlocked(status.X, status.Y, strategy.StrategyHolder.Positionable.Width, strategy.StrategyHolder.Positionable.Height, direction)) return false;
-                        SolidnessStatus solidness = ((Objects.Strategies.SolidSpace.SolidSpaceObjectStrategy)strategy).Solidness;
+                        // TODO check parent strategy
+                        SolidnessStatus solidness = ((Objects.Strategies.Solidness.SolidnessObjectStrategy)strategy).Solidness;
                         return solidness.Traverses() || IsAdjacencyFree(status.X, status.Y, strategy.StrategyHolder.Positionable.Width, strategy.StrategyHolder.Positionable.Height, direction);
+                    }
+
+                    public override bool CanClearMovement(Dictionary<Type, bool> otherComponentsResults, Objects.Strategies.ObjectStrategy strategy, StrategyHolder.Status status)
+                    {
+                        // Just follows what the BaseStrategy tells
+                        return otherComponentsResults[typeof(Base.BaseStrategy)];
                     }
 
                     public override void DoAllocateMovement(Objects.Strategies.ObjectStrategy strategy, StrategyHolder.Status status, Direction direction, bool continuated, string stage)
@@ -99,7 +81,7 @@ namespace WindRose
                         switch (stage)
                         {
                             case "AfterMovementAllocation":
-                                SolidnessStatus solidness = ((Objects.Strategies.SolidSpace.SolidSpaceObjectStrategy)strategy).Solidness;
+                                SolidnessStatus solidness = ((Objects.Strategies.Solidness.SolidnessObjectStrategy)strategy).Solidness;
                                 IncrementAdjacent(strategy, status, solidness);
                                 break;
                         }
@@ -110,7 +92,7 @@ namespace WindRose
                         switch(stage)
                         {
                             case "Before":
-                                SolidnessStatus solidness = ((Objects.Strategies.SolidSpace.SolidSpaceObjectStrategy)strategy).Solidness;
+                                SolidnessStatus solidness = ((Objects.Strategies.Solidness.SolidnessObjectStrategy)strategy).Solidness;
                                 DecrementAdjacent(strategy, status, solidness);
                                 break;
                         }
@@ -121,7 +103,7 @@ namespace WindRose
                         switch(stage)
                         {
                             case "AfterPositionChange":
-                                SolidnessStatus solidness = ((Objects.Strategies.SolidSpace.SolidSpaceObjectStrategy)strategy).Solidness;
+                                SolidnessStatus solidness = ((Objects.Strategies.Solidness.SolidnessObjectStrategy)strategy).Solidness;
                                 DecrementOppositeAdjacent(strategy, status, solidness);
                                 break;
                         }
@@ -131,7 +113,7 @@ namespace WindRose
                     {
                         if (property == "solidness")
                         {
-                            ClearMovement(strategy, status);
+                            StrategyHolder.MovementCancel(strategy.StrategyHolder);
                             DecrementBody(strategy, status, (SolidnessStatus)oldValue);
                             IncrementBody(strategy, status, (SolidnessStatus)newValue);
                         }
@@ -139,11 +121,11 @@ namespace WindRose
 
                     public override void DoTeleport(Objects.Strategies.ObjectStrategy strategy, StrategyHolder.Status status, uint x, uint y, string stage)
                     {
-                        SolidnessStatus solidness = ((Objects.Strategies.SolidSpace.SolidSpaceObjectStrategy)strategy).Solidness;
+                        SolidnessStatus solidness = ((Objects.Strategies.Solidness.SolidnessObjectStrategy)strategy).Solidness;
                         switch (stage)
                         {
                             case "Before":
-                                ClearMovement(strategy, status);
+                                StrategyHolder.MovementCancel(strategy.StrategyHolder);
                                 DecrementBody(strategy, status, solidness);
                                 break;
                             case "AfterPositionChange":
@@ -249,24 +231,6 @@ namespace WindRose
                                 return y == 0;
                         }
                         return false;
-                    }
-
-                    private bool IsAdjacencyBlocked(uint x, uint y, uint width, uint height, Direction? direction)
-                    {
-                        /** Precondition: IsHittingEdge was already called to this point */
-                        switch (direction)
-                        {
-                            case Direction.LEFT:
-                                return blockMask.GetColumn(x - 1, y, y + height - 1, Bitmask.CheckType.ANY_BLOCKED);
-                            case Direction.DOWN:
-                                return blockMask.GetRow(x, x + width - 1, y - 1, Bitmask.CheckType.ANY_BLOCKED);
-                            case Direction.RIGHT:
-                                return blockMask.GetColumn(x + width, y, y + height - 1, Bitmask.CheckType.ANY_BLOCKED);
-                            case Direction.UP:
-                                return blockMask.GetRow(x, x + width - 1, y + height, Bitmask.CheckType.ANY_BLOCKED);
-                            default:
-                                return true;
-                        }
                     }
 
                     private bool IsAdjacencyFree(uint x, uint y, uint width, uint height, Direction? direction)

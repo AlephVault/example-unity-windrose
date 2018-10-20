@@ -46,7 +46,6 @@ namespace WindRose
                         if (!otherComponentsResults[typeof(BaseStrategy)]) return false;
 
                         // Then check for cells being blocked
-                        Debug.Log(string.Format("LayoutStrategy::CanAllocateMovement strategy={0}", strategy));
                         return !IsAdjacencyBlocked(status.X, status.Y, strategy.StrategyHolder.Positionable.Width, strategy.StrategyHolder.Positionable.Height, direction);
                     }
 

@@ -203,7 +203,6 @@ namespace WindRose
                     //   just set a new value to origin.
                     origin = transform.localPosition;
                     wasMoving = false;
-                    Debug.Log(string.Format("Resetting the origin to: {0}", origin));
                 }
 
                 void Pause(bool fullFreeze)

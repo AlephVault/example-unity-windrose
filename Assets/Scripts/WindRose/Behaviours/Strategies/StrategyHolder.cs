@@ -543,19 +543,15 @@ namespace WindRose
                         switch (formerMovement)
                         {
                             case Types.Direction.UP:
-                                Debug.Log("Y++ due to up");
                                 status.Y++;
                                 break;
                             case Types.Direction.DOWN:
-                                Debug.Log("X-- due to down");
                                 status.Y--;
                                 break;
                             case Types.Direction.LEFT:
-                                Debug.Log("X-- due to left");
                                 status.X--;
                                 break;
                             case Types.Direction.RIGHT:
-                                Debug.Log("X++ due to right");
                                 status.X++;
                                 break;
                         }

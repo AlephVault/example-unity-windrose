@@ -24,7 +24,6 @@ namespace WindRose
                     {
                         bool layoutAllowsAllocation = otherComponentsResults[typeof(Base.LayoutStrategy)];
                         bool solidnessAllowsAllocaction = otherComponentsResults[typeof(Solidness.SolidnessStrategy)];
-                        Debug.Log(string.Format("On AllocateMovement - Layout={0} Solidness={1}", layoutAllowsAllocation, solidnessAllowsAllocaction));
                         return layoutAllowsAllocation && solidnessAllowsAllocaction;
                     }
 
@@ -32,7 +31,6 @@ namespace WindRose
                     {
                         bool layoutAllowsClearing = otherComponentsResults[typeof(Base.LayoutStrategy)];
                         bool solidnessAllowsClearing = otherComponentsResults[typeof(Solidness.SolidnessStrategy)];
-                        Debug.Log(string.Format("On AllocateMovement - Layout={0} Solidness={1}", layoutAllowsClearing, solidnessAllowsClearing));
                         return layoutAllowsClearing && solidnessAllowsClearing;
                     }
 

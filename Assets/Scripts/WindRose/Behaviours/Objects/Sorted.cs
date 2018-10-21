@@ -39,6 +39,7 @@ namespace WindRose
                     uint h = positionable.ParentMap.Height;
                     uint w = positionable.ParentMap.Width;
                     int sortingOffset = (int)(w * h) * ((int)(subLayer));
+                    spriteRenderer.sortingLayerID = 0;
                     spriteRenderer.sortingOrder = sortingOffset + (int)((h - 1 - positionable.Yf) * w + positionable.Xf);
                 }
 

@@ -7,6 +7,7 @@ namespace WindRose
         namespace Objects
         {
             using World;
+            using World.Layers;
 
             // Requiring Snapped, instead of Positionable, allows us to
             //   have the features of position automatically updated.
@@ -68,15 +69,12 @@ namespace WindRose
                     /*
                      * This behaviour must only get the appropriate sorting layer.
                      */
-                    Tilemaps.ObjectsTilemap objectsTilemap = ((Map)args[0]).GetComponentInChildren<Tilemaps.ObjectsTilemap>();
-                    spriteRenderer.sortingLayerID = objectsTilemap.SortingLayer;
                     spriteRenderer.enabled = true;
                 }
 
                 void OnDetached()
                 {
                     spriteRenderer.enabled = false;
-                    spriteRenderer.sortingLayerID = 0;
                 }
 
                 private void Reset()

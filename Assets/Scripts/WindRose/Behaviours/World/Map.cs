@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.Tilemaps;
+using UnityEngine.Rendering;
 using Support.Utils;
 
 namespace WindRose
@@ -10,13 +11,52 @@ namespace WindRose
         {
             using Objects;
 
-            [RequireComponent(typeof(Grid))]
+            /**
+             * A map contains its dimensions and internal layers.
+             * The dimensions are used on its strategy.
+             */
+            [RequireComponent(typeof(SortingGroup))]
             public class Map : MonoBehaviour
             {
+                public class OneComponentIsNeeded : Types.Exception
+                {
+                    public OneComponentIsNeeded() { }
+                    public OneComponentIsNeeded(string message) : base(message) { }
+                    public OneComponentIsNeeded(string message, System.Exception inner) : base(message, inner) { }
+                }
+
                 /**
-                 * A map manages its inner tilemaps and objects. It has few utilites beyond
-                 *   being a shortcut of Grid/Tilemaps.
+                 * Requires a component (being child of MapLayer). It may be optional or mandatory
+                 *   but only one of that type will be allowed. It also fixes the size of the grids,
+                 *   if any, and always resets the transform.
                  */
+                private T ExpectOneLayerComponent<T>(bool require = false) where T : Layers.MapLayer
+                {
+                    T[] components = GetComponentsInChildren<T>();
+                    if (require ? (components.Length != 1) : (components.Length > 1))
+                    {
+                        Destroy(gameObject);
+                        throw new OneComponentIsNeeded(string.Format("One {0} component of type {1} is expected on this object", require ? "mandatory" : "optional", typeof(T).FullName));
+                    }
+                    else if (components.Length == 0)
+                    {
+                        return null;
+                    }
+                    else
+                    {
+                        T component = components[0];
+                        Grid componentGrid = component.GetComponent<Grid>();
+                        if (componentGrid != null)
+                        {
+                            componentGrid.cellGap = Vector3.zero;
+                            componentGrid.cellSize = cellSize;
+                        }
+                        component.transform.localPosition = Vector3.zero;
+                        component.transform.localRotation = Quaternion.identity;
+                        component.transform.localScale = Vector3.one;
+                        return component;
+                    }
+                }
 
                 [SerializeField]
                 private uint width;
@@ -24,7 +64,14 @@ namespace WindRose
                 [SerializeField]
                 private uint height;
 
-                private Grid grid;
+                [SerializeField]
+                private Vector3 cellSize = Vector3.one;
+
+                public Layers.FloorLayer FloorLayer { get; private set; }
+                public Layers.DropLayer DropLayer { get; private set; }
+                public Layers.ObjectsLayer ObjectsLayer { get; private set; }
+                public Layers.CeilingLayer CeilingLayer { get; private set; }
+
                 private bool initialized = false;
 
                 public uint Height { get { return height; } }
@@ -35,20 +82,20 @@ namespace WindRose
                 // Use this for initialization
                 private void Awake()
                 {
-                    grid = GetComponent<Grid>();
+                    // Starting the dimensions
                     width = Values.Clamp(1, width, 100);
                     height = Values.Clamp(1, height, 100);
+                    // Requiring the layers - at most one of each them may exist per map
+                    FloorLayer = ExpectOneLayerComponent<Layers.FloorLayer>(true);
+                    DropLayer = ExpectOneLayerComponent<Layers.DropLayer>();
+                    ObjectsLayer = ExpectOneLayerComponent<Layers.ObjectsLayer>(true);
+                    CeilingLayer = ExpectOneLayerComponent<Layers.CeilingLayer>();
                     // Fetching strategy - needed
                     StrategyHolder = GetComponent<Strategies.StrategyHolder>();
                 }
 
                 private void Start()
                 {
-                    // Initializing tilemap positions
-                    foreach (Tilemap tilemap in GetComponentsInChildren<Tilemap>())
-                    {
-                        tilemap.transform.localPosition = Vector3.zero;
-                    }
                     // Initializing strategy
                     if (StrategyHolder == null)
                     {
@@ -68,21 +115,6 @@ namespace WindRose
                     {
                         positionable.Initialize();
                     }
-                }
-
-                public float GetCellWidth()
-                {
-                    return grid.cellSize.x;
-                }
-
-                public float GetCellHeight()
-                {
-                    return grid.cellSize.y;
-                }
-
-                public Vector3Int WorldToCell(Vector3 position)
-                {
-                    return grid.WorldToCell(position);
                 }
 
                 public void Pause(bool fullFreeze)

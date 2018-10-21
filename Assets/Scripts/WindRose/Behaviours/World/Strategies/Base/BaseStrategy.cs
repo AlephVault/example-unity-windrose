@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using WindRose.Behaviours.Objects.Strategies;
 using WindRose.Types;
+using UnityEngine;
 
 namespace WindRose
 {
@@ -35,9 +36,9 @@ namespace WindRose
                                 case Direction.LEFT:
                                     return status.X != 0;
                                 case Direction.UP:
-                                    return status.Y + positionable.Height != StrategyHolder.Map.Height;
+                                    return status.Y + positionable.Height < StrategyHolder.Map.Height;
                                 case Direction.RIGHT:
-                                    return status.X + positionable.Width != StrategyHolder.Map.Width;
+                                    return status.X + positionable.Width < StrategyHolder.Map.Width;
                                 case Direction.DOWN:
                                     return status.Y != 0;
                             }

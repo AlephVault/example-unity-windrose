@@ -67,7 +67,7 @@ namespace WindRose
 
                         public override bool CanAllocateMovement(Dictionary<Type, bool> otherComponentsResults, Objects.Strategies.ObjectStrategy strategy, StrategyHolder.Status status, Direction direction, bool continuated)
                         {
-                            // TODO check parent strategy
+                            if (!otherComponentsResults[typeof(Base.BaseStrategy)]) return false;
                             SolidnessStatus solidness = ((Objects.Strategies.Solidness.SolidnessObjectStrategy)strategy).Solidness;
                             return solidness.Traverses() || IsAdjacencyFree(status.X, status.Y, strategy.StrategyHolder.Positionable.Width, strategy.StrategyHolder.Positionable.Height, direction);
                         }

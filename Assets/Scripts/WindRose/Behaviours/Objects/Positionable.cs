@@ -9,6 +9,7 @@ namespace WindRose
         {
             using Types;
             using World;
+            using World.Layers;
 
             [ExecuteInEditMode]
             [RequireComponent(typeof(Pausable))]
@@ -67,16 +68,16 @@ namespace WindRose
                     /*
                      * Attaching to a map involves:
                      * 1. Getting the Map in arguments.
-                     * 2. The actual "parent" of the object will be a child of the RelatedMap being an ObjectsTilemap.
-                     * 3. We set the parent transform of the object to such ObjectsTilemap's transform.
+                     * 2. The actual "parent" of the object will be a child of the RelatedMap being an ObjectsLayer.
+                     * 3. We set the parent transform of the object to such ObjectsLayer's transform.
                      * 4. Finally we must ensure the transform.localPosition be updated accordingly (i.e. forcing a snap).
                      */
                     parentMap = (Map)args[0];
-                    Tilemaps.ObjectsTilemap objectsTilemap = parentMap.GetComponentInChildren<Tilemaps.ObjectsTilemap>();
-                    transform.parent = objectsTilemap.transform;
+                    ObjectsLayer objectsLayer = parentMap.GetComponentInChildren<ObjectsLayer>();
+                    transform.parent = objectsLayer.transform;
                     transform.localPosition = new Vector3(
-                        X * parentMap.GetCellWidth(),
-                        Y * parentMap.GetCellHeight(),
+                        X * objectsLayer.GetCellWidth(),
+                        Y * objectsLayer.GetCellHeight(),
                         transform.localPosition.z
                     );
                 }
@@ -107,14 +108,15 @@ namespace WindRose
 
                     try
                     {
-                        // perhaps it will not be added now because the Map component is not yet initialized! (e.g. this method being called from Start())
-                        // however, when the Map becomes ready, this method will be called, again, by the map itself, which will exist.
+                        // We find the parent map like this: (current) -> ObjectsLayer -> map
                         parentMap = Layout.RequireComponentInParent<Map>(transform.parent.gameObject);
                         if (!parentMap.Initialized) return;
-                        Layout.RequireComponentInParent<Tilemaps.ObjectsTilemap>(gameObject);
-                        UnityEngine.Tilemaps.Tilemap tilemap = Layout.RequireComponentInParent<UnityEngine.Tilemaps.Tilemap>(gameObject);
-                        Vector3Int cellPosition = tilemap.WorldToCell(transform.position);
-                        // TODO: Clamp with `Values.Clamp(0, (uint)cellPosition.x, parentMap.Width-1), Values.Clamp(0, (uint)-cellPosition.y, parentMap.Height-1)` or let it raise exception?
+                        // And we also keep its objects layer
+                        Layout.RequireComponentInParent<ObjectsLayer>(gameObject);
+                        // Then we calculate the cell position from the grid in the layer.
+                        Grid grid = Layout.RequireComponentInParent<Grid>(gameObject);
+                        Vector3Int cellPosition = grid.WorldToCell(transform.position);
+                        // Then we initialize, and perhaps it may explode due to exception.
                         ParentMap.StrategyHolder.Attach(StrategyHolder, (uint)cellPosition.x, (uint)cellPosition.y);
                         initialized = true;
                     }
@@ -162,12 +164,12 @@ namespace WindRose
 
                 public float GetCellWidth()
                 {
-                    return parentMap.GetCellWidth();
+                    return GetComponentInParent<ObjectsLayer>().GetCellWidth();
                 }
 
                 public float GetCellHeight()
                 {
-                    return parentMap.GetCellHeight();
+                    return GetComponentInParent<ObjectsLayer>().GetCellHeight();
                 }
 
                 void Pause(bool fullFreeze)

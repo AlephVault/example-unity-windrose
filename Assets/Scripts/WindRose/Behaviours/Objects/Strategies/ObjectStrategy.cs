@@ -23,7 +23,7 @@ namespace WindRose
                  */
                 public abstract class ObjectStrategy : MonoBehaviour
                 {
-                    private static Type baseCounterpartStrategyType = typeof(Behaviours.Strategies.Strategy);
+                    private static Type baseCounterpartStrategyType = typeof(World.Strategies.Strategy);
 
                     public class UnsupportedTypeException : Types.Exception
                     {
@@ -75,7 +75,7 @@ namespace WindRose
                      */
                     protected void PropertyWasUpdated(string property, object oldValue, object newValue)
                     {
-                        Behaviours.Strategies.StrategyHolder mapStrategyHolder = null;
+                        World.Strategies.StrategyHolder mapStrategyHolder = null;
                         try
                         {
                             mapStrategyHolder = StrategyHolder.Positionable.ParentMap.StrategyHolder;

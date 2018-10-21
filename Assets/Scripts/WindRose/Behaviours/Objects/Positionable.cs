@@ -8,6 +8,7 @@ namespace WindRose
         namespace Objects
         {
             using Types;
+            using World;
 
             [ExecuteInEditMode]
             [RequireComponent(typeof(Pausable))]

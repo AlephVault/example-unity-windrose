@@ -9,6 +9,8 @@ namespace WindRose
     {
         namespace UI
         {
+            using World;
+
             public class InteractionProvider : MonoBehaviour
             {
                 /**

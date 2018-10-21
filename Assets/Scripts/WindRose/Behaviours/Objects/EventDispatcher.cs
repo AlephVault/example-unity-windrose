@@ -8,6 +8,8 @@ namespace WindRose
     {
         namespace Objects
         {
+            using World;
+
             [RequireComponent(typeof(Positionable))]
             public class EventDispatcher : MonoBehaviour
             {

@@ -6,6 +6,8 @@ namespace WindRose
     {
         namespace Objects
         {
+            using World;
+
             // Requiring Snapped, instead of Positionable, allows us to
             //   have the features of position automatically updated.
             //

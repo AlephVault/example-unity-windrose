@@ -10,6 +10,8 @@ namespace WindRose
     {
         namespace Tilemaps
         {
+            using World;
+
             /**
              * Not Just a marker class to ensure all Positionable objects
              *   are attached to an object of this class, when attached to

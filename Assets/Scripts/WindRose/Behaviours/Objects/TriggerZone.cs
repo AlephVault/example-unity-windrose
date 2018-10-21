@@ -9,6 +9,8 @@ namespace WindRose
     {
         namespace Objects
         {
+            using World;
+
             public abstract class TriggerZone : TriggerHolder
             {
                 /**

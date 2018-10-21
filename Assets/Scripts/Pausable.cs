@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-using WindRose.Behaviours;
+using WindRose.Behaviours.World;
 
 public class Pausable : MonoBehaviour {
 

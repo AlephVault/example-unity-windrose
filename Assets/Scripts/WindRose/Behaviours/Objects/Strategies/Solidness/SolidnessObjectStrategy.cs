@@ -11,7 +11,7 @@ namespace WindRose
             {
                 namespace Solidness
                 {
-                    using Behaviours.Strategies.Solidness;
+                    using World.Strategies.Solidness;
 
                     public class SolidnessObjectStrategy : ObjectStrategy
                     {

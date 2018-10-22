@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using WindRose.Behaviours.Objects;
-using WindRose.Behaviours.Objects.CommandExchange;
+using WindRose.Behaviours.Objects.CommandExchange.Talk;
 using WindRose.Types;
 
 [RequireComponent(typeof(Movable))]

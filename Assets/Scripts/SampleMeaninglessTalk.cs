@@ -3,7 +3,7 @@ using UnityEngine;
 using GabTab.Behaviours;
 using GabTab.Behaviours.Interactors;
 using WindRose.Behaviours.Objects;
-using WindRose.Behaviours.Objects.CommandExchange;
+using WindRose.Behaviours.Objects.CommandExchange.Talk;
 
 [RequireComponent(typeof(InteractionLauncher))]
 [RequireComponent(typeof(TalkReceiver))]

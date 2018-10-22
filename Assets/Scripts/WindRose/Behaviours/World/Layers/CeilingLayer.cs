@@ -11,7 +11,6 @@ namespace WindRose
         {
             namespace Layers
             {
-                // TODO implement this class
                 [RequireComponent(typeof(Grid))]
                 public class CeilingLayer : MapLayer
                 {

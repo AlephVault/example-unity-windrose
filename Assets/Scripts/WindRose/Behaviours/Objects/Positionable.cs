@@ -78,7 +78,7 @@ namespace WindRose
                     transform.localPosition = new Vector3(
                         X * objectsLayer.GetCellWidth(),
                         Y * objectsLayer.GetCellHeight(),
-                        transform.localPosition.z
+                        0
                     );
                 }
 

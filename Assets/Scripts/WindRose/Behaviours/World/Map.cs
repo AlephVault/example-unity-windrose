@@ -51,9 +51,6 @@ namespace WindRose
                             componentGrid.cellGap = Vector3.zero;
                             componentGrid.cellSize = cellSize;
                         }
-                        component.transform.localPosition = Vector3.zero;
-                        component.transform.localRotation = Quaternion.identity;
-                        component.transform.localScale = Vector3.one;
                         return component;
                     }
                 }

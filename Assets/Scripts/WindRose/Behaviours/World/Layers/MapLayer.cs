@@ -14,6 +14,7 @@ namespace WindRose
                  * They sort themselves in the DEFAULT layer, but this will
                  *   occur in the context of their parent Map.
                  */
+                [RequireComponent(typeof(Support.Behaviours.Normalized))]
                 [RequireComponent(typeof(SortingGroup))]
                 public abstract class MapLayer : MonoBehaviour
                 {

@@ -21,6 +21,12 @@ namespace WindRose
                  *   show it, hide it, or make it translucent.
                  */
 
+                public class ParentMustBeCeilingLayerException : Types.Exception
+                {
+                    public ParentMustBeCeilingLayerException() : base() { }
+                    public ParentMustBeCeilingLayerException(string message) : base(message) { }
+                } 
+
                 private TilemapRenderer tilemapRenderer;
                 private Grid parentGrid;
 
@@ -43,9 +49,17 @@ namespace WindRose
 
                 private void Awake()
                 {
-                    CeilingLayer ceilingLayer = Support.Utils.Layout.RequireComponentInParent<CeilingLayer>(this);
-                    parentGrid = ceilingLayer.GetComponent<Grid>();
-                    tilemapRenderer = GetComponent<TilemapRenderer>();
+                    try
+                    {
+                        CeilingLayer ceilingLayer = Support.Utils.Layout.RequireComponentInParent<CeilingLayer>(this);
+                        parentGrid = ceilingLayer.GetComponent<Grid>();
+                        tilemapRenderer = GetComponent<TilemapRenderer>();
+                    }
+                    catch (Exception)
+                    {
+                        Destroy(gameObject);
+                        throw new ParentMustBeCeilingLayerException();
+                    }
                 }
 
                 private void Start()

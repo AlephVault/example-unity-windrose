@@ -16,9 +16,24 @@ namespace WindRose
                  * A floor can only exist in a floor layer, and will require a tilemap.
                  * It will also be normalized in position on initialization.
                  */
+
+                public class ParentMustBeFloorLayerException : Types.Exception
+                {
+                    public ParentMustBeFloorLayerException() : base() { }
+                    public ParentMustBeFloorLayerException(string message) : base(message) { }
+                }
+
                 private void Awake()
                 {
-                    Support.Utils.Layout.RequireComponentInParent<World.Layers.FloorLayer>(this);
+                    try
+                    {
+                        Support.Utils.Layout.RequireComponentInParent<World.Layers.FloorLayer>(this);
+                    }
+                    catch(Types.Exception)
+                    {
+                        Destroy(gameObject);
+                        throw new ParentMustBeFloorLayerException();
+                    }
                 }
             }
         }

@@ -18,12 +18,27 @@ namespace WindRose
                 [RequireComponent(typeof(SortingGroup))]
                 public abstract class MapLayer : MonoBehaviour
                 {
+                    public class ParentMustBeMapException : Types.Exception
+                    {
+                        public ParentMustBeMapException() : base() { }
+                        public ParentMustBeMapException(string message) : base(message) { }
+                    }
+
                     private SortingGroup sortingGroup;
+                    public Map Map { get; private set; }
 
                     protected virtual void Awake()
                     {
                         sortingGroup = GetComponent<SortingGroup>();
-                        Support.Utils.Layout.RequireComponentInParent<Map>(this);
+                        try
+                        {
+                            Map = Support.Utils.Layout.RequireComponentInParent<Map>(this);
+                        }
+                        catch (Types.Exception)
+                        {
+                            Destroy(gameObject);
+                            throw new ParentMustBeMapException();
+                        }
                     }
 
                     protected virtual void Start()

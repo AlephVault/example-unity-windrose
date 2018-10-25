@@ -10,14 +10,14 @@ namespace WindRose
     {
         namespace World
         {
-            namespace Strategies
+            namespace ObjectsManagementStrategies
             {
                 namespace Solidness
                 {
                     using Types;
 
-                    [RequireComponent(typeof(Base.BaseStrategy))]
-                    public class SolidnessStrategy : Strategy
+                    [RequireComponent(typeof(Base.BaseObjectsManagementStrategy))]
+                    public class SolidnessObjectsManagementStrategy : ObjectsManagementStrategy
                     {
                         private SolidMask solidMask;
 
@@ -47,13 +47,13 @@ namespace WindRose
                          * 
                          *****************************************************************************/
 
-                        public override void AttachedStrategy(Objects.Strategies.ObjectStrategy strategy, StrategyHolder.Status status)
+                        public override void AttachedStrategy(Objects.Strategies.ObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status)
                         {
                             SolidnessStatus solidness = ((Objects.Strategies.Solidness.SolidnessObjectStrategy)strategy).Solidness;
                             IncrementBody(strategy, status, solidness);
                         }
 
-                        public override void DetachedStrategy(Objects.Strategies.ObjectStrategy strategy, StrategyHolder.Status status)
+                        public override void DetachedStrategy(Objects.Strategies.ObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status)
                         {
                             SolidnessStatus solidness = ((Objects.Strategies.Solidness.SolidnessObjectStrategy)strategy).Solidness;
                             DecrementBody(strategy, status, solidness);
@@ -65,20 +65,20 @@ namespace WindRose
                          * 
                          *****************************************************************************/
 
-                        public override bool CanAllocateMovement(Dictionary<Type, bool> otherComponentsResults, Objects.Strategies.ObjectStrategy strategy, StrategyHolder.Status status, Direction direction, bool continuated)
+                        public override bool CanAllocateMovement(Dictionary<Type, bool> otherComponentsResults, Objects.Strategies.ObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status, Direction direction, bool continuated)
                         {
-                            if (!otherComponentsResults[typeof(Base.BaseStrategy)]) return false;
+                            if (!otherComponentsResults[typeof(Base.BaseObjectsManagementStrategy)]) return false;
                             SolidnessStatus solidness = ((Objects.Strategies.Solidness.SolidnessObjectStrategy)strategy).Solidness;
                             return solidness.Traverses() || IsAdjacencyFree(status.X, status.Y, strategy.StrategyHolder.Positionable.Width, strategy.StrategyHolder.Positionable.Height, direction);
                         }
 
-                        public override bool CanClearMovement(Dictionary<Type, bool> otherComponentsResults, Objects.Strategies.ObjectStrategy strategy, StrategyHolder.Status status)
+                        public override bool CanClearMovement(Dictionary<Type, bool> otherComponentsResults, Objects.Strategies.ObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status)
                         {
                             // Just follows what the BaseStrategy tells
-                            return otherComponentsResults[typeof(Base.BaseStrategy)];
+                            return otherComponentsResults[typeof(Base.BaseObjectsManagementStrategy)];
                         }
 
-                        public override void DoAllocateMovement(Objects.Strategies.ObjectStrategy strategy, StrategyHolder.Status status, Direction direction, bool continuated, string stage)
+                        public override void DoAllocateMovement(Objects.Strategies.ObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status, Direction direction, bool continuated, string stage)
                         {
                             switch (stage)
                             {
@@ -89,7 +89,7 @@ namespace WindRose
                             }
                         }
 
-                        public override void DoClearMovement(Objects.Strategies.ObjectStrategy strategy, StrategyHolder.Status status, Direction? formerMovement, string stage)
+                        public override void DoClearMovement(Objects.Strategies.ObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status, Direction? formerMovement, string stage)
                         {
                             switch (stage)
                             {
@@ -100,7 +100,7 @@ namespace WindRose
                             }
                         }
 
-                        public override void DoConfirmMovement(Objects.Strategies.ObjectStrategy strategy, StrategyHolder.Status status, Direction? formerMovement, string stage)
+                        public override void DoConfirmMovement(Objects.Strategies.ObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status, Direction? formerMovement, string stage)
                         {
                             switch (stage)
                             {
@@ -111,7 +111,7 @@ namespace WindRose
                             }
                         }
 
-                        public override void DoProcessPropertyUpdate(Objects.Strategies.ObjectStrategy strategy, StrategyHolder.Status status, string property, object oldValue, object newValue)
+                        public override void DoProcessPropertyUpdate(Objects.Strategies.ObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status, string property, object oldValue, object newValue)
                         {
                             if (property == "solidness")
                             {
@@ -121,7 +121,7 @@ namespace WindRose
                             }
                         }
 
-                        public override void DoTeleport(Objects.Strategies.ObjectStrategy strategy, StrategyHolder.Status status, uint x, uint y, string stage)
+                        public override void DoTeleport(Objects.Strategies.ObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status, uint x, uint y, string stage)
                         {
                             SolidnessStatus solidness = ((Objects.Strategies.Solidness.SolidnessObjectStrategy)strategy).Solidness;
                             switch (stage)
@@ -143,7 +143,7 @@ namespace WindRose
                          * 
                          */
 
-                        private void IncrementBody(Objects.Strategies.ObjectStrategy strategy, StrategyHolder.Status status, SolidnessStatus solidness)
+                        private void IncrementBody(Objects.Strategies.ObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status, SolidnessStatus solidness)
                         {
                             if (solidness.Occupies())
                             {
@@ -155,7 +155,7 @@ namespace WindRose
                             }
                         }
 
-                        private void DecrementBody(Objects.Strategies.ObjectStrategy strategy, StrategyHolder.Status status, SolidnessStatus solidness)
+                        private void DecrementBody(Objects.Strategies.ObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status, SolidnessStatus solidness)
                         {
                             if (solidness.Occupies())
                             {
@@ -167,7 +167,7 @@ namespace WindRose
                             }
                         }
 
-                        private void IncrementAdjacent(Objects.Strategies.ObjectStrategy strategy, StrategyHolder.Status status, SolidnessStatus solidness)
+                        private void IncrementAdjacent(Objects.Strategies.ObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status, SolidnessStatus solidness)
                         {
                             if (solidness.Occupies())
                             {
@@ -179,7 +179,7 @@ namespace WindRose
                             }
                         }
 
-                        private void DecrementAdjacent(Objects.Strategies.ObjectStrategy strategy, StrategyHolder.Status status, SolidnessStatus solidness)
+                        private void DecrementAdjacent(Objects.Strategies.ObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status, SolidnessStatus solidness)
                         {
                             if (solidness.Occupies())
                             {
@@ -191,7 +191,7 @@ namespace WindRose
                             }
                         }
 
-                        private void DecrementOppositeAdjacent(Objects.Strategies.ObjectStrategy strategy, StrategyHolder.Status status, SolidnessStatus solidness)
+                        private void DecrementOppositeAdjacent(Objects.Strategies.ObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status, SolidnessStatus solidness)
                         {
                             if (solidness.Occupies())
                             {

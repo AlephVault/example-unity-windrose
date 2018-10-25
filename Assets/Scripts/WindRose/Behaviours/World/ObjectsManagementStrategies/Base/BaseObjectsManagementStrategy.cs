@@ -10,7 +10,7 @@ namespace WindRose
     {
         namespace World
         {
-            namespace Strategies
+            namespace ObjectsManagementStrategies
             {
                 namespace Base
                 {
@@ -19,13 +19,13 @@ namespace WindRose
                      *   in order to even prevent RuntimeErrors. This class disallows starting movement
                      *   if a movement is in progress OR if an edge is being hit.
                      */
-                    public class BaseStrategy : Strategy
+                    public class BaseObjectsManagementStrategy : ObjectsManagementStrategy
                     {
-                        public override void AttachedStrategy(ObjectStrategy strategy, StrategyHolder.Status status)
+                        public override void AttachedStrategy(ObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status)
                         {
                         }
 
-                        public override bool CanAllocateMovement(Dictionary<Type, bool> otherComponentsResults, ObjectStrategy strategy, StrategyHolder.Status status, Direction direction, bool continuated)
+                        public override bool CanAllocateMovement(Dictionary<Type, bool> otherComponentsResults, ObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status, Direction direction, bool continuated)
                         {
                             if (status.Movement != null) return false;
 
@@ -45,7 +45,7 @@ namespace WindRose
                             return true;
                         }
 
-                        public override bool CanClearMovement(Dictionary<Type, bool> otherComponentsResults, ObjectStrategy strategy, StrategyHolder.Status status)
+                        public override bool CanClearMovement(Dictionary<Type, bool> otherComponentsResults, ObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status)
                         {
                             return status.Movement != null;
                         }
@@ -54,27 +54,27 @@ namespace WindRose
                         {
                         }
 
-                        public override void DetachedStrategy(ObjectStrategy strategy, StrategyHolder.Status status)
+                        public override void DetachedStrategy(ObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status)
                         {
                         }
 
-                        public override void DoAllocateMovement(ObjectStrategy strategy, StrategyHolder.Status status, Direction direction, bool continuated, string stage)
+                        public override void DoAllocateMovement(ObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status, Direction direction, bool continuated, string stage)
                         {
                         }
 
-                        public override void DoClearMovement(ObjectStrategy strategy, StrategyHolder.Status status, Direction? formerMovement, string stage)
+                        public override void DoClearMovement(ObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status, Direction? formerMovement, string stage)
                         {
                         }
 
-                        public override void DoConfirmMovement(ObjectStrategy strategy, StrategyHolder.Status status, Direction? formerMovement, string stage)
+                        public override void DoConfirmMovement(ObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status, Direction? formerMovement, string stage)
                         {
                         }
 
-                        public override void DoProcessPropertyUpdate(ObjectStrategy strategy, StrategyHolder.Status status, string property, object oldValue, object newValue)
+                        public override void DoProcessPropertyUpdate(ObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status, string property, object oldValue, object newValue)
                         {
                         }
 
-                        public override void DoTeleport(ObjectStrategy strategy, StrategyHolder.Status status, uint x, uint y, string stage)
+                        public override void DoTeleport(ObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status, uint x, uint y, string stage)
                         {
                         }
 

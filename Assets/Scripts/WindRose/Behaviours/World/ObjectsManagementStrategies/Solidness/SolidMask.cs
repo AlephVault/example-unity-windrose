@@ -7,7 +7,7 @@ namespace WindRose
     {
         namespace World
         {
-            namespace Strategies
+            namespace ObjectsManagementStrategies
             {
                 namespace Solidness
                 {

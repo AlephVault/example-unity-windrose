@@ -17,7 +17,7 @@ namespace WindRose
                     {
                         protected override Type GetCounterpartType()
                         {
-                            return typeof(World.Strategies.Simple.SimpleStrategy);
+                            return typeof(World.ObjectsManagementStrategies.Simple.SimpleObjectsManagementStrategy);
                         }
                     }
                 }

@@ -9,7 +9,7 @@ namespace WindRose
     {
         namespace World
         {
-            namespace Strategies
+            namespace ObjectsManagementStrategies
             {
                 namespace Base
                 {
@@ -23,8 +23,8 @@ namespace WindRose
                      *   and determined by the topmost blocking (or unblocking) tilemap's cell for
                      *   a certain (x, y) pair.
                      */
-                    [RequireComponent(typeof(BaseStrategy))]
-                    public class LayoutStrategy : Strategy
+                    [RequireComponent(typeof(BaseObjectsManagementStrategy))]
+                    public class LayoutObjectsManagementStrategy : ObjectsManagementStrategy
                     {
                         private Bitmask blockMask;
 
@@ -45,19 +45,19 @@ namespace WindRose
                             }
                         }
 
-                        public override bool CanAllocateMovement(Dictionary<Type, bool> otherComponentsResults, ObjectStrategy strategy, StrategyHolder.Status status, Direction direction, bool continuated)
+                        public override bool CanAllocateMovement(Dictionary<Type, bool> otherComponentsResults, ObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status, Direction direction, bool continuated)
                         {
                             // First follows what the BaseStrategy tells
-                            if (!otherComponentsResults[typeof(BaseStrategy)]) return false;
+                            if (!otherComponentsResults[typeof(BaseObjectsManagementStrategy)]) return false;
 
                             // Then check for cells being blocked
                             return !IsAdjacencyBlocked(status.X, status.Y, strategy.StrategyHolder.Positionable.Width, strategy.StrategyHolder.Positionable.Height, direction);
                         }
 
-                        public override bool CanClearMovement(Dictionary<Type, bool> otherComponentsResults, ObjectStrategy strategy, StrategyHolder.Status status)
+                        public override bool CanClearMovement(Dictionary<Type, bool> otherComponentsResults, ObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status)
                         {
                             // Just follows what the BaseStrategy tells
-                            return otherComponentsResults[typeof(BaseStrategy)];
+                            return otherComponentsResults[typeof(BaseObjectsManagementStrategy)];
                         }
 
                         public override void ComputeCellData(uint x, uint y)

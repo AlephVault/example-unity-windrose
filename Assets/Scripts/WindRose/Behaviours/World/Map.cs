@@ -74,7 +74,7 @@ namespace WindRose
                 public uint Height { get { return height; } }
                 public uint Width { get { return width; } }
                 public bool Initialized { get { return initialized; } }
-                public Strategies.StrategyHolder StrategyHolder { get; private set; }
+                public ObjectsManagementStrategies.ObjectsManagementStrategyHolder StrategyHolder { get; private set; }
 
                 // Use this for initialization
                 private void Awake()
@@ -88,7 +88,7 @@ namespace WindRose
                     ObjectsLayer = ExpectOneLayerComponent<Layers.ObjectsLayer>(true);
                     CeilingLayer = ExpectOneLayerComponent<Layers.CeilingLayer>();
                     // Fetching strategy - needed
-                    StrategyHolder = GetComponent<Strategies.StrategyHolder>();
+                    StrategyHolder = GetComponent<ObjectsManagementStrategies.ObjectsManagementStrategyHolder>();
                 }
 
                 private void Start()

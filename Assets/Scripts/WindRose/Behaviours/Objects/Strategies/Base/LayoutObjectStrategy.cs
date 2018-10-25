@@ -20,7 +20,7 @@ namespace WindRose
                     {
                         protected override Type GetCounterpartType()
                         {
-                            return typeof(World.Strategies.Base.LayoutStrategy);
+                            return typeof(World.ObjectsManagementStrategies.Base.LayoutObjectsManagementStrategy);
                         }
                     }
                 }

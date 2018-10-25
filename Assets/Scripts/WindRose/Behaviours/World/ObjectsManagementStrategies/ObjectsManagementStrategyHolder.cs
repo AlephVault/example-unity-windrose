@@ -9,15 +9,16 @@ namespace WindRose
     {
         namespace World
         {
-            namespace Strategies
+            namespace ObjectsManagementStrategies
             {
                 /**
-                 * A map strategy holder will reference its map and also will find its way to
-                 *   initialize its strategy. When initializing the strategy, it should provide
-                 *   itself to the strategy constructor (alongside any needed data).
+                 * An objects management strategy holder will reference its map and also will
+                 *   find its way to initialize its strategy. When initializing the strategy,
+                 *   it should provide itself to the strategy constructor (alongside any needed
+                 *   data).
                  */
                 [RequireComponent(typeof(Map))]
-                public class StrategyHolder : MonoBehaviour
+                public class ObjectsManagementStrategyHolder : MonoBehaviour
                 {
                     /**
                      * All the needed exceptions go here.
@@ -86,12 +87,12 @@ namespace WindRose
                      * The root strategy that can be picked in the editor.
                      */
                     [SerializeField]
-                    private Strategy strategy;
+                    private ObjectsManagementStrategy strategy;
 
                     /**
                      * Each strategy holder tells its strategy.
                      */
-                    public Strategy Strategy { get { return strategy; } }
+                    public ObjectsManagementStrategy Strategy { get { return strategy; } }
 
                     /**
                      * And which tilemaps does it have.
@@ -101,7 +102,7 @@ namespace WindRose
                     /**
                      * This is the list of sorted strategy componentes here.
                      */
-                    private Strategy[] sortedStrategies;
+                    private ObjectsManagementStrategy[] sortedStrategies;
 
                     /**
                      * On initialization, the strategy will fetch its map to, actually, know it.
@@ -110,16 +111,16 @@ namespace WindRose
                     private void Awake()
                     {
                         Map = GetComponent<Map>();
-                        if (strategy == null || !(new HashSet<Strategy>(GetComponents<Strategy>()).Contains(strategy)))
+                        if (strategy == null || !(new HashSet<ObjectsManagementStrategy>(GetComponents<ObjectsManagementStrategy>()).Contains(strategy)))
                         {
                             Destroy(gameObject);
                             throw new InvalidStrategyComponentException("The selected strategy component must be non-null and present among the current map's components");
                         }
                         // We enumerate all the strategies attached. We will iterate their calls and cache their results, if any.
-                        sortedStrategies = (from component in Support.Utils.Layout.SortByDependencies(GetComponents<Strategy>()) select (component as Strategy)).ToArray();
+                        sortedStrategies = (from component in Support.Utils.Layout.SortByDependencies(GetComponents<ObjectsManagementStrategy>()) select (component as ObjectsManagementStrategy)).ToArray();
 
                         // We cannot allow a strategy type being added (depended) twice.
-                        if (sortedStrategies.Length != new HashSet<Strategy>(sortedStrategies).Count)
+                        if (sortedStrategies.Length != new HashSet<ObjectsManagementStrategy>(sortedStrategies).Count)
                         {
                             Destroy(gameObject);
                             throw new DuplicatedComponentException("Cannot add the same strategy component more than one time per component type to a strategy");
@@ -133,10 +134,10 @@ namespace WindRose
                      * Iterates and collects the same boolean call to each strategy into a dictionary. Returns the
                      *   value according to the main strategy.
                      */
-                    private bool Collect(Func<Dictionary<Type, bool>, Strategy, bool> predicate)
+                    private bool Collect(Func<Dictionary<Type, bool>, ObjectsManagementStrategy, bool> predicate)
                     {
                         Dictionary<Type, bool> collected = new Dictionary<Type, bool>();
-                        foreach (Strategy subStrategy in sortedStrategies)
+                        foreach (ObjectsManagementStrategy subStrategy in sortedStrategies)
                         {
                             collected[subStrategy.GetType()] = predicate(collected, subStrategy);
                         }
@@ -146,9 +147,9 @@ namespace WindRose
                     /**
                      * Iterates on each strategy and calls a function.
                      */
-                    private void Traverse(Action<Strategy> traverser)
+                    private void Traverse(Action<ObjectsManagementStrategy> traverser)
                     {
-                        foreach (Strategy subStrategy in sortedStrategies)
+                        foreach (ObjectsManagementStrategy subStrategy in sortedStrategies)
                         {
                             traverser(subStrategy);
                         }
@@ -158,7 +159,7 @@ namespace WindRose
                      * Given a particular strategy component, obtain the appropriate objectStrategy component from a main object
                      *   strategy.
                      */
-                    private Objects.Strategies.ObjectStrategy GetCompatible(Objects.Strategies.ObjectStrategy target, Strategy source)
+                    private Objects.Strategies.ObjectStrategy GetCompatible(Objects.Strategies.ObjectStrategy target, ObjectsManagementStrategy source)
                     {
                         return target.GetComponent(source.CounterpartType) as Objects.Strategies.ObjectStrategy;
                     }
@@ -188,7 +189,7 @@ namespace WindRose
                      */
                     public void Initialize()
                     {
-                        Traverse(delegate (Strategy strategy)
+                        Traverse(delegate (ObjectsManagementStrategy strategy)
                         {
                             strategy.InitGlobalCellsData();
                             strategy.InitIndividualCellsData(delegate (Action<uint, uint> callback)
@@ -351,7 +352,7 @@ namespace WindRose
                      */
                     private void AttachedStrategy(Objects.Strategies.ObjectStrategy objectStrategy, Status status)
                     {
-                        Traverse(delegate (Strategy strategy)
+                        Traverse(delegate (ObjectsManagementStrategy strategy)
                         {
                             strategy.AttachedStrategy(GetCompatible(objectStrategy, strategy), status);
                         });
@@ -387,7 +388,7 @@ namespace WindRose
                      */
                     private void DetachedStrategy(Objects.Strategies.ObjectStrategy objectStrategy, Status status)
                     {
-                        Traverse(delegate (Strategy strategy)
+                        Traverse(delegate (ObjectsManagementStrategy strategy)
                         {
                             strategy.DetachedStrategy(GetCompatible(objectStrategy, strategy), status);
                         });
@@ -437,7 +438,7 @@ namespace WindRose
                      */
                     private bool CanAllocateMovement(Objects.Strategies.ObjectStrategy objectStrategy, Status status, Types.Direction direction, bool continuated = false)
                     {
-                        return Collect(delegate (Dictionary<Type, bool> collected, Strategy strategy)
+                        return Collect(delegate (Dictionary<Type, bool> collected, ObjectsManagementStrategy strategy)
                         {
                             return strategy.CanAllocateMovement(collected, GetCompatible(objectStrategy, strategy), status, direction, continuated);
                         });
@@ -448,7 +449,7 @@ namespace WindRose
                      */
                     private void DoAllocateMovement(Objects.Strategies.ObjectStrategy objectStrategy, Status status, Types.Direction direction, bool continuated, string stage)
                     {
-                        Traverse(delegate (Strategy strategy)
+                        Traverse(delegate (ObjectsManagementStrategy strategy)
                         {
                             strategy.DoAllocateMovement(GetCompatible(objectStrategy, strategy), status, direction, continuated, stage);
                         });
@@ -499,7 +500,7 @@ namespace WindRose
                      */
                     private bool CanClearMovement(Objects.Strategies.ObjectStrategy objectStrategy, Status status)
                     {
-                        return Collect(delegate (Dictionary<Type, bool> collected, Strategy strategy)
+                        return Collect(delegate (Dictionary<Type, bool> collected, ObjectsManagementStrategy strategy)
                         {
                             return strategy.CanClearMovement(collected, GetCompatible(objectStrategy, strategy), status);
                         });
@@ -510,7 +511,7 @@ namespace WindRose
                      */
                     private void DoClearMovement(Objects.Strategies.ObjectStrategy objectStrategy, Status status, Types.Direction? formerMovement, string stage)
                     {
-                        Traverse(delegate (Strategy strategy)
+                        Traverse(delegate (ObjectsManagementStrategy strategy)
                         {
                             strategy.DoClearMovement(GetCompatible(objectStrategy, strategy), status, formerMovement, stage);
                         });
@@ -571,7 +572,7 @@ namespace WindRose
                      */
                     private void DoConfirmMovement(Objects.Strategies.ObjectStrategy objectStrategy, Status status, Types.Direction? formerMovement, string stage)
                     {
-                        Traverse(delegate (Strategy strategy)
+                        Traverse(delegate (ObjectsManagementStrategy strategy)
                         {
                             strategy.DoConfirmMovement(GetCompatible(objectStrategy, strategy), status, formerMovement, stage);
                         });
@@ -610,7 +611,7 @@ namespace WindRose
                      */
                     private void DoTeleport(Objects.Strategies.ObjectStrategy objectStrategy, Status status, uint x, uint y, string stage)
                     {
-                        Traverse(delegate (Strategy strategy)
+                        Traverse(delegate (ObjectsManagementStrategy strategy)
                         {
                             strategy.DoTeleport(GetCompatible(objectStrategy, strategy), status, x, y, stage);
                         });
@@ -636,7 +637,7 @@ namespace WindRose
 
                         RequireAttached(mainObjectStrategy);
 
-                        (GetComponent(objectStrategy.CounterpartType) as Strategy).DoProcessPropertyUpdate(mainObjectStrategy, attachedStrategies[mainObjectStrategy], property, oldValue, newValue);
+                        (GetComponent(objectStrategy.CounterpartType) as ObjectsManagementStrategy).DoProcessPropertyUpdate(mainObjectStrategy, attachedStrategies[mainObjectStrategy], property, oldValue, newValue);
 
                         mainObjectStrategy.TriggerEvent("OnPropertyUpdated", property, oldValue, newValue);
                     }

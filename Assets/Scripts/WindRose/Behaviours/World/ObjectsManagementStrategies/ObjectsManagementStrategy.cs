@@ -8,10 +8,10 @@ namespace WindRose
     {
         namespace World
         {
-            namespace Strategies
+            namespace ObjectsManagementStrategies
             {
                 /**
-                 * This is a map strategy. It will know:
+                 * This is an objects management strategy. It will know:
                  * - The strategy-holder it is tied to (directly or indirectly).
                  * And it will have as behaviour:
                  * - List of all methods invoked by the strategy holder that are
@@ -21,7 +21,7 @@ namespace WindRose
                  * It is related to a counterpart type which is a subtype of object
                  *   strategy.
                  */
-                public abstract class Strategy : MonoBehaviour
+                public abstract class ObjectsManagementStrategy : MonoBehaviour
                 {
                     private static Type baseCounterpartStrategyType = typeof(Objects.Strategies.ObjectStrategy);
 
@@ -35,12 +35,12 @@ namespace WindRose
                     /**
                      * Each strategy knows its holder and its counterpart type.
                      */
-                    public StrategyHolder StrategyHolder { get; private set; }
+                    public ObjectsManagementStrategyHolder StrategyHolder { get; private set; }
                     public Type CounterpartType { get; private set; }
 
                     public void Awake()
                     {
-                        StrategyHolder = GetComponent<StrategyHolder>();
+                        StrategyHolder = GetComponent<ObjectsManagementStrategyHolder>();
                         CounterpartType = GetCounterpartType();
                         if (CounterpartType == null || !CounterpartType.IsSubclassOf(baseCounterpartStrategyType))
                         {
@@ -87,14 +87,14 @@ namespace WindRose
                     /**
                      * Object strategy was added. Compute relevant data here.
                      */
-                    public virtual void AttachedStrategy(Objects.Strategies.ObjectStrategy strategy, StrategyHolder.Status status)
+                    public virtual void AttachedStrategy(Objects.Strategies.ObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status)
                     {
                     }
 
                     /**
                      * Object strategy is to be removed. Compute relevant data here.
                      */
-                    public virtual void DetachedStrategy(Objects.Strategies.ObjectStrategy strategy, StrategyHolder.Status status)
+                    public virtual void DetachedStrategy(Objects.Strategies.ObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status)
                     {
                     }
 
@@ -108,12 +108,12 @@ namespace WindRose
                     /**
                      * Tells whether movement can be allocated.
                      */
-                    public abstract bool CanAllocateMovement(Dictionary<Type, bool> otherComponentsResults, Objects.Strategies.ObjectStrategy strategy, StrategyHolder.Status status, Types.Direction direction, bool continuated);
+                    public abstract bool CanAllocateMovement(Dictionary<Type, bool> otherComponentsResults, Objects.Strategies.ObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status, Types.Direction direction, bool continuated);
 
                     /**
                      * You may define this method. Ask conditionally for "Before", "AfterMovementAllocation", "After".
                      */
-                    public virtual void DoAllocateMovement(Objects.Strategies.ObjectStrategy strategy, StrategyHolder.Status status, Types.Direction direction, bool continuated, string stage)
+                    public virtual void DoAllocateMovement(Objects.Strategies.ObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status, Types.Direction direction, bool continuated, string stage)
                     {
                     }
 
@@ -130,12 +130,12 @@ namespace WindRose
                     // {
                     //     return status.Movement != null;
                     // }
-                    public abstract bool CanClearMovement(Dictionary<Type, bool> otherComponentsResults, Objects.Strategies.ObjectStrategy strategy, StrategyHolder.Status status);
+                    public abstract bool CanClearMovement(Dictionary<Type, bool> otherComponentsResults, Objects.Strategies.ObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status);
 
                     /**
                      * You may define this method. Ask conditionally for "Before", "AfterMovementClear", "After".
                      */
-                    public virtual void DoClearMovement(Objects.Strategies.ObjectStrategy strategy, StrategyHolder.Status status, Types.Direction? formerMovement, string stage)
+                    public virtual void DoClearMovement(Objects.Strategies.ObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status, Types.Direction? formerMovement, string stage)
                     {
                     }
 
@@ -148,7 +148,7 @@ namespace WindRose
                     /**
                      * You may define this method. Ask conditionally for "Before", "AfterPositionChange", "AfterMovementClear", "After".
                      */
-                    public virtual void DoConfirmMovement(Objects.Strategies.ObjectStrategy strategy, StrategyHolder.Status status, Types.Direction? formerMovement, string stage)
+                    public virtual void DoConfirmMovement(Objects.Strategies.ObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status, Types.Direction? formerMovement, string stage)
                     {
                     }
 
@@ -161,7 +161,7 @@ namespace WindRose
                     /**
                      * You may define this method. Ask conditionally for stages "Before", "AfterPositionChange", "After".
                      */
-                    public virtual void DoTeleport(Objects.Strategies.ObjectStrategy strategy, StrategyHolder.Status status, uint x, uint y, string stage)
+                    public virtual void DoTeleport(Objects.Strategies.ObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status, uint x, uint y, string stage)
                     {
                     }
 
@@ -174,7 +174,7 @@ namespace WindRose
                     /**
                      * You may define this method.
                      */
-                    public virtual void DoProcessPropertyUpdate(Objects.Strategies.ObjectStrategy strategy, StrategyHolder.Status status, string property, object oldValue, object newValue)
+                    public virtual void DoProcessPropertyUpdate(Objects.Strategies.ObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status, string property, object oldValue, object newValue)
                     {
                     }
                 }

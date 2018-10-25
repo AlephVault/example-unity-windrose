@@ -11,7 +11,7 @@ namespace WindRose
             {
                 namespace Solidness
                 {
-                    using World.Strategies.Solidness;
+                    using World.ObjectsManagementStrategies.Solidness;
 
                     public class SolidnessObjectStrategy : ObjectStrategy
                     {
@@ -29,7 +29,7 @@ namespace WindRose
 
                         protected override Type GetCounterpartType()
                         {
-                            return typeof(SolidnessStrategy);
+                            return typeof(SolidnessObjectsManagementStrategy);
                         }
 
                         public SolidnessStatus Solidness

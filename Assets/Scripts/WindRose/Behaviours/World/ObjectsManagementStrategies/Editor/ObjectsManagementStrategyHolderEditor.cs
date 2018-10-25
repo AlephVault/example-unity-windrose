@@ -8,11 +8,11 @@ namespace WindRose
     {
         namespace World
         {
-            namespace Strategies
+            namespace ObjectsManagementStrategies
             {
-                [CustomEditor(typeof(StrategyHolder))]
+                [CustomEditor(typeof(ObjectsManagementStrategyHolder))]
                 [CanEditMultipleObjects]
-                public class StrategyHolderEditor : Editor
+                public class ObjectsManagementStrategyHolderEditor : Editor
                 {
                     SerializedProperty strategy;
 
@@ -25,11 +25,11 @@ namespace WindRose
                     {
                         serializedObject.Update();
 
-                        StrategyHolder underlyingObject = (serializedObject.targetObject as StrategyHolder);
-                        Strategy[] strategies = underlyingObject.GetComponents<Strategy>();
+                        ObjectsManagementStrategyHolder underlyingObject = (serializedObject.targetObject as ObjectsManagementStrategyHolder);
+                        ObjectsManagementStrategy[] strategies = underlyingObject.GetComponents<ObjectsManagementStrategy>();
                         GUIContent[] strategyNames = (from strategy in strategies select new GUIContent(strategy.GetType().Name)).ToArray();
 
-                        int index = ArrayUtility.IndexOf(strategies, strategy.objectReferenceValue as Strategy);
+                        int index = ArrayUtility.IndexOf(strategies, strategy.objectReferenceValue as ObjectsManagementStrategy);
                         index = EditorGUILayout.Popup(new GUIContent("Main Strategy"), index, strategyNames);
                         strategy.objectReferenceValue = index >= 0 ? strategies[index] : null;
 

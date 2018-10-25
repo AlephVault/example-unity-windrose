@@ -23,7 +23,7 @@ namespace WindRose
                  */
                 public abstract class ObjectStrategy : MonoBehaviour
                 {
-                    private static Type baseCounterpartStrategyType = typeof(World.Strategies.Strategy);
+                    private static Type baseCounterpartStrategyType = typeof(World.ObjectsManagementStrategies.ObjectsManagementStrategy);
 
                     public class UnsupportedTypeException : Types.Exception
                     {
@@ -75,16 +75,16 @@ namespace WindRose
                      */
                     protected void PropertyWasUpdated(string property, object oldValue, object newValue)
                     {
-                        World.Strategies.StrategyHolder mapStrategyHolder = null;
+                        World.ObjectsManagementStrategies.ObjectsManagementStrategyHolder strategyHolder = null;
                         try
                         {
-                            mapStrategyHolder = StrategyHolder.Positionable.ParentMap.StrategyHolder;
+                            strategyHolder = StrategyHolder.Positionable.ParentMap.StrategyHolder;
                         }
                         catch(NullReferenceException)
                         {
-                            mapStrategyHolder = null;
+                            strategyHolder = null;
                         }
-                        if (mapStrategyHolder != null) { mapStrategyHolder.PropertyWasUpdated(StrategyHolder, this, property, oldValue, newValue); }
+                        if (strategyHolder != null) { strategyHolder.PropertyWasUpdated(StrategyHolder, this, property, oldValue, newValue); }
                     }
                 }
             }

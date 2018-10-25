@@ -40,7 +40,7 @@ namespace WindRose
 
                 public Map ParentMap { get { return parentMap; } }
                 public uint Width { get { return width; } } // Referencing directly allows us to query the width without a map assigned yet.
-                public uint Height { get { return width; } } // Referencing directly allows us to query the height without a map assigned yet.
+                public uint Height { get { return height; } } // Referencing directly allows us to query the height without a map assigned yet.
                 public uint X { get { return parentMap.StrategyHolder.StatusFor(StrategyHolder).X; } }
                 public uint Y { get { return parentMap.StrategyHolder.StatusFor(StrategyHolder).Y; } }
                 public uint Xf { get { return parentMap.StrategyHolder.StatusFor(StrategyHolder).X + Width - 1; } }

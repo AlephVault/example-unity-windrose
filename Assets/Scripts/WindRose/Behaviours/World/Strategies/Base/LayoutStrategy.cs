@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
-using WindRose.Behaviours.Objects.Strategies;
 using WindRose.Types;
 
 namespace WindRose
@@ -14,6 +13,10 @@ namespace WindRose
             {
                 namespace Base
                 {
+                    using Objects.Strategies;
+                    using ScriptableObjects.Tiles;
+                    using ScriptableObjects.Tiles.Strategies.Base;
+
                     /**
                      * This class allows telling which cells are blocking. Objects are not allowed to
                      *   traverse blocking cells. Blocked positions will be mantained in a bitmask
@@ -62,9 +65,11 @@ namespace WindRose
                             bool blocks = false;
                             StrategyHolder.ForEachTilemap(delegate (UnityEngine.Tilemaps.Tilemap tilemap) {
                                 UnityEngine.Tilemaps.TileBase tile = tilemap.GetTile(new Vector3Int((int)x, (int)y, 0));
-                                if (tile is Tiles.IBlockingAwareTile)
+                                LayoutTileStrategy layoutTileStrategy = BundledTile.GetStrategyFrom<LayoutTileStrategy>(tile);
+                                if (layoutTileStrategy)
                                 {
-                                    blocks = ((Tiles.IBlockingAwareTile)tile).Blocks();
+                                    Debug.Log("Found blocking component ...");
+                                    blocks = layoutTileStrategy.Blocks;
                                 }
                                 return false;
                             });

@@ -11,6 +11,10 @@ namespace WindRose
         {
             namespace Local
             {
+                using World;
+                using World.Layers;
+                using Objects;
+
                 [RequireComponent(typeof(BoxCollider2D))]
                 [RequireComponent(typeof(Ceiling))]
                 public class LocallyTriggeredCeiling : MonoBehaviour
@@ -47,9 +51,12 @@ namespace WindRose
                     private uint height;
 
                     private Ceiling ceiling;
+                    private Map map;
 
                     private void Awake()
                     {
+                        CeilingLayer ceilingLayer = Support.Utils.Layout.RequireComponentInParent<CeilingLayer>(this);
+                        map = Support.Utils.Layout.RequireComponentInParent<Map>(ceilingLayer);
                         // VISIBLE is not allowed, since there would be no
                         //   change: the ceiling would never take off.
                         if (displayModeWhenTriggering == Ceiling.DisplayMode.VISIBLE)
@@ -74,15 +81,18 @@ namespace WindRose
 
                     private void OnTriggerEnter2D(Collider2D collider)
                     {
-                        if (triggeringObjectsSet.Contains(collider.gameObject))
+                        GameObject gameObject = collider.gameObject;
+                        Positionable positionable = gameObject.GetComponent<Positionable>();
+                        if (positionable.ParentMap == map && triggeringObjectsSet.Contains(gameObject))
                         {
-                            currentStayingTriggers.Add(collider.gameObject);
+                            currentStayingTriggers.Add(gameObject);
                         }
                     }
 
                     private void OnTriggerExit2D(Collider2D collider)
                     {
-                        currentStayingTriggers.Remove(collider.gameObject);
+                        GameObject gameObject = collider.gameObject;
+                        currentStayingTriggers.Remove(gameObject);
                     }
 
                     public void AddTrigger(GameObject trigger)

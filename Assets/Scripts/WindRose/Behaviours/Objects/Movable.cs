@@ -21,7 +21,7 @@ namespace WindRose
 
                 // These fields are the configurable features of this behavior
                 [SerializeField]
-                private Types.AnimationSet movingAnimationSet;
+                private ScriptableObjects.Animations.AnimationSet movingAnimationSet;
                 public uint speed = 2; // The speed is expressed in terms of units per second
 
                 // A runtime check to determine whether the object was moving in the previous frame

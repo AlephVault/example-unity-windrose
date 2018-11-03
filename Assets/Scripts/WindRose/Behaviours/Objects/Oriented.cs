@@ -31,7 +31,7 @@ namespace WindRose
                     public Exception(string message, System.Exception inner) : base(message, inner) { }
                 }
 
-                private Dictionary<string, Types.AnimationSet> animations = new Dictionary<string, Types.AnimationSet>();
+                private Dictionary<string, ScriptableObjects.Animations.AnimationSet> animations = new Dictionary<string, ScriptableObjects.Animations.AnimationSet>();
                 private string previousAnimationKey = "";
                 private Types.Direction previousOrientation = Types.Direction.DOWN;
 
@@ -39,7 +39,7 @@ namespace WindRose
                 private Positionable positionable;
 
                 [SerializeField]
-                private Types.AnimationSet idleAnimationSet;
+                private ScriptableObjects.Animations.AnimationSet idleAnimationSet;
 
                 public Types.Direction orientation = Types.Direction.DOWN;
 
@@ -73,7 +73,7 @@ namespace WindRose
                  * Usually, adding an animation set is done when creating custom behaviours.
                  *   Adding one will check whether the key does not exist, and fail otherwise.
                  */
-                public void AddAnimationSet(string key, Types.AnimationSet animation)
+                public void AddAnimationSet(string key, ScriptableObjects.Animations.AnimationSet animation)
                 {
                     if (animations.ContainsKey(key))
                     {
@@ -92,7 +92,7 @@ namespace WindRose
                  *   
                  * This is intentional to prevent any accident creating new animations when it was not intended.
                  */
-                public void ReplaceAnimationSet(string key, Types.AnimationSet animation)
+                public void ReplaceAnimationSet(string key, ScriptableObjects.Animations.AnimationSet animation)
                 {
                     if (animations.ContainsKey(key))
                     {

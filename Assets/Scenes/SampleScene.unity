@@ -1572,19 +1572,19 @@ Prefab:
         type: 2}
       propertyPath: defaultAnimation
       value: 
-      objectReference: {fileID: 11400000, guid: c4a5e1de229d44d49884cf3c89df0cfb,
+      objectReference: {fileID: 11400000, guid: d7f09344138424045b054d7ce087fb45,
         type: 2}
     - target: {fileID: 114113076972470672, guid: 82eef48316d2a4e45997a37868a97d21,
         type: 2}
       propertyPath: idleAnimationSet
       value: 
-      objectReference: {fileID: 11400000, guid: 472be9e212e83c34cb41e22cc92789ec,
+      objectReference: {fileID: 11400000, guid: b1a226084c51d8946b88212dd7124d48,
         type: 2}
     - target: {fileID: 114636172155759372, guid: 82eef48316d2a4e45997a37868a97d21,
         type: 2}
       propertyPath: movingAnimationSet
       value: 
-      objectReference: {fileID: 11400000, guid: 9242ac6ce1e0be545b9702964521fc82,
+      objectReference: {fileID: 11400000, guid: 9bb3dd4f0b425034b876c0eeed6cd59e,
         type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 82eef48316d2a4e45997a37868a97d21, type: 2}
@@ -6656,7 +6656,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5170786109b5314e9bd6061588694ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultAnimation: {fileID: 11400000, guid: 71a8d44a5c92b00409d1a3e2d3c87e62, type: 2}
+  defaultAnimation: {fileID: 11400000, guid: 74563102f1647d546a84ff2baac85231, type: 2}
 --- !u!212 &850159752
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -12198,7 +12198,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03942de37db743040a679af8cfa7f3ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  idleAnimationSet: {fileID: 11400000, guid: 5d8191dc0ad7ed24fade20995cec4021, type: 2}
+  idleAnimationSet: {fileID: 11400000, guid: 4a0be67b204aa164d8c3a7a14b7b00bf, type: 2}
   orientation: 3
   animationKey: 
   overriddenKeyForIdleAnimation: 
@@ -12213,7 +12213,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5170786109b5314e9bd6061588694ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultAnimation: {fileID: 11400000, guid: 6892f8ae8fa8c634a9d3a0d5515da44d, type: 2}
+  defaultAnimation: {fileID: 11400000, guid: 1c7bd45f3cd556042a0875ba7a93b55f, type: 2}
 --- !u!114 &1358881516
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12706,19 +12706,19 @@ Prefab:
         type: 2}
       propertyPath: defaultAnimation
       value: 
-      objectReference: {fileID: 11400000, guid: 4d2c798de7b3d5942807f3680fc92648,
+      objectReference: {fileID: 11400000, guid: 698c9df3444c86d439103ccdba0abbd0,
         type: 2}
     - target: {fileID: 114099831494430252, guid: 4d49ab3f52c28d44c93e06dc49b8ea0c,
         type: 2}
       propertyPath: idleAnimationSet
       value: 
-      objectReference: {fileID: 11400000, guid: 3dc6c2dd7ba1de14aad95b83e7ddbf48,
+      objectReference: {fileID: 11400000, guid: c8105046042fd5f4da3999d4129c807d,
         type: 2}
     - target: {fileID: 114907474632291964, guid: 4d49ab3f52c28d44c93e06dc49b8ea0c,
         type: 2}
       propertyPath: movingAnimationSet
       value: 
-      objectReference: {fileID: 11400000, guid: 67ec0d21aa427db4aa1698b75ad2eae0,
+      objectReference: {fileID: 11400000, guid: 6b7bba9283651844aa328d0abd64ddf6,
         type: 2}
     m_RemovedComponents:
     - {fileID: 0}
@@ -13018,7 +13018,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5170786109b5314e9bd6061588694ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultAnimation: {fileID: 11400000, guid: 1221f6b97f4d4fb4488b196867cd4603, type: 2}
+  defaultAnimation: {fileID: 11400000, guid: 68d831e0cda5c744088c9db131d0a05f, type: 2}
 --- !u!114 &1514043977
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13469,7 +13469,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03942de37db743040a679af8cfa7f3ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  idleAnimationSet: {fileID: 11400000, guid: 5d8191dc0ad7ed24fade20995cec4021, type: 2}
+  idleAnimationSet: {fileID: 11400000, guid: 4a0be67b204aa164d8c3a7a14b7b00bf, type: 2}
   orientation: 1
   animationKey: 
   overriddenKeyForIdleAnimation: 
@@ -13484,7 +13484,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5170786109b5314e9bd6061588694ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultAnimation: {fileID: 11400000, guid: 6892f8ae8fa8c634a9d3a0d5515da44d, type: 2}
+  defaultAnimation: {fileID: 11400000, guid: 7871740cf22785241a1464ad020847e9, type: 2}
 --- !u!114 &1597479048
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15292,7 +15292,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03942de37db743040a679af8cfa7f3ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  idleAnimationSet: {fileID: 11400000, guid: 4763a10f69e47c14bba0f419a9b345ea, type: 2}
+  idleAnimationSet: {fileID: 11400000, guid: 28190a460e7b6de43af1a2ce7b8afb1d, type: 2}
   orientation: 0
   animationKey: 
   overriddenKeyForIdleAnimation: 
@@ -15307,7 +15307,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5170786109b5314e9bd6061588694ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultAnimation: {fileID: 11400000, guid: 1af7c8ac2458102438b054e00cc0d8ef, type: 2}
+  defaultAnimation: {fileID: 11400000, guid: 7bff38f60622a224aa4bb199fe24106b, type: 2}
 --- !u!114 &1732828864
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17377,7 +17377,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03942de37db743040a679af8cfa7f3ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  idleAnimationSet: {fileID: 11400000, guid: 5d8191dc0ad7ed24fade20995cec4021, type: 2}
+  idleAnimationSet: {fileID: 11400000, guid: 4a0be67b204aa164d8c3a7a14b7b00bf, type: 2}
   orientation: 0
   animationKey: 
   overriddenKeyForIdleAnimation: 
@@ -17392,7 +17392,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5170786109b5314e9bd6061588694ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultAnimation: {fileID: 11400000, guid: 6892f8ae8fa8c634a9d3a0d5515da44d, type: 2}
+  defaultAnimation: {fileID: 11400000, guid: f5e31ac3a9dce8e418328c00f42c533b, type: 2}
 --- !u!114 &2061497667
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17640,7 +17640,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03942de37db743040a679af8cfa7f3ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  idleAnimationSet: {fileID: 11400000, guid: 5d8191dc0ad7ed24fade20995cec4021, type: 2}
+  idleAnimationSet: {fileID: 11400000, guid: 4a0be67b204aa164d8c3a7a14b7b00bf, type: 2}
   orientation: 2
   animationKey: 
   overriddenKeyForIdleAnimation: 
@@ -17655,7 +17655,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5170786109b5314e9bd6061588694ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultAnimation: {fileID: 11400000, guid: 6892f8ae8fa8c634a9d3a0d5515da44d, type: 2}
+  defaultAnimation: {fileID: 11400000, guid: 14837611bce841c49b91ed27953f88ef, type: 2}
 --- !u!114 &2062477406
 MonoBehaviour:
   m_ObjectHideFlags: 0

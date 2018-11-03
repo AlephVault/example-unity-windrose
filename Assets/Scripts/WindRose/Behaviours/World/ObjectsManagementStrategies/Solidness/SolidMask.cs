@@ -13,25 +13,25 @@ namespace WindRose
                 {
                     public class SolidMask
                     {
-                        public class InvalidSpatialSpecException : Exception
+                        public class InvalidSpatialSpecException : Types.Exception
                         {
                             public InvalidSpatialSpecException() { }
                             public InvalidSpatialSpecException(string message) : base(message) { }
-                            public InvalidSpatialSpecException(string message, System.Exception inner) : base(message, inner) { }
+                            public InvalidSpatialSpecException(string message, Exception inner) : base(message, inner) { }
                         }
 
-                        public class CannotDecrementException : Exception
+                        public class CannotDecrementException : Types.Exception
                         {
                             public CannotDecrementException() { }
                             public CannotDecrementException(string message) : base(message) { }
-                            public CannotDecrementException(string message, System.Exception inner) : base(message, inner) { }
+                            public CannotDecrementException(string message, Exception inner) : base(message, inner) { }
                         }
 
-                        public class CannotIncrementException : Exception
+                        public class CannotIncrementException : Types.Exception
                         {
                             public CannotIncrementException() { }
                             public CannotIncrementException(string message) : base(message) { }
-                            public CannotIncrementException(string message, System.Exception inner) : base(message, inner) { }
+                            public CannotIncrementException(string message, Exception inner) : base(message, inner) { }
                         }
 
                         public readonly uint width, height;

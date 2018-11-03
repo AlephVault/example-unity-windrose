@@ -8,10 +8,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2f8586ea41ae3bf44835e92ad2551048, type: 3}
+  m_Script: {fileID: 11500000, guid: c62fde038c240ca4b82fc755090c6753, type: 3}
   m_Name: DiabloWalking
   m_EditorClassIdentifier: 
-  up: {fileID: 11400000, guid: e35816d0f7cd2834da7116568a921280, type: 2}
-  down: {fileID: 11400000, guid: f20e89dbd849b1f4a876b5f811dc8438, type: 2}
-  left: {fileID: 11400000, guid: c47fa63be2d882448ab1bbe64f917b4c, type: 2}
-  right: {fileID: 11400000, guid: 5b6e3590c42d3654ead2766c46929232, type: 2}
+  up: {fileID: 11400000, guid: b702e7fb0f5ea4a4ab05a44940389102, type: 2}
+  down: {fileID: 11400000, guid: 8452bcb985d9aef46a71e03e81367451, type: 2}
+  left: {fileID: 11400000, guid: f367009642f7ab6458b96c7f04439364, type: 2}
+  right: {fileID: 11400000, guid: f303893c5c3a61e44bdaf6969ebbcc31, type: 2}

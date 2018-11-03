@@ -28,14 +28,14 @@ namespace WindRose
                 private SpriteRenderer spriteRenderer;
 
                 [SerializeField]
-                private Types.AnimationSpec defaultAnimation;
+                private ScriptableObjects.Animations.AnimationSpec defaultAnimation;
 
-                private Types.AnimationSpec currentAnimation;
+                private ScriptableObjects.Animations.AnimationSpec currentAnimation;
                 private float currentTime;
                 private float frameInterval;
                 private int currentAnimationIndex;
 
-                public Types.AnimationSpec CurrentAnimation
+                public ScriptableObjects.Animations.AnimationSpec CurrentAnimation
                 {
                     get { return currentAnimation; }
                     set

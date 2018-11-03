@@ -8,10 +8,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2f8586ea41ae3bf44835e92ad2551048, type: 3}
+  m_Script: {fileID: 11500000, guid: c62fde038c240ca4b82fc755090c6753, type: 3}
   m_Name: WangLiStanding
   m_EditorClassIdentifier: 
-  up: {fileID: 11400000, guid: f63aa347cbf2925429aa6fb5512fdae8, type: 2}
-  down: {fileID: 11400000, guid: 6892f8ae8fa8c634a9d3a0d5515da44d, type: 2}
-  left: {fileID: 11400000, guid: 1ac4028761502c24daecb9dc20beed40, type: 2}
-  right: {fileID: 11400000, guid: a5a9ec77314c7154da0b9f4ac0254d00, type: 2}
+  up: {fileID: 11400000, guid: 1c7bd45f3cd556042a0875ba7a93b55f, type: 2}
+  down: {fileID: 11400000, guid: f5e31ac3a9dce8e418328c00f42c533b, type: 2}
+  left: {fileID: 11400000, guid: 7871740cf22785241a1464ad020847e9, type: 2}
+  right: {fileID: 11400000, guid: 14837611bce841c49b91ed27953f88ef, type: 2}

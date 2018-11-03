@@ -49,7 +49,7 @@ class SampleCharacterSwapping : MonoBehaviour
         {
             stalkerEye.Seek(targets[currentTarget], speed, true, delegate ()
             {
-                Debug.Log("Stalking target " + currentTarget + "...");
+                //Debug//.Log("Stalking target " + currentTarget + "...");
             });
         }
     }

@@ -23,7 +23,6 @@ namespace WindRose
 
                         public bool Blocks {
                             get {
-                                Debug.Log("In Block property ...");
                                 return blocks;
                             }
                         }

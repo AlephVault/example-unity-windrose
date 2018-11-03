@@ -68,7 +68,6 @@ namespace WindRose
                                 LayoutTileStrategy layoutTileStrategy = BundledTile.GetStrategyFrom<LayoutTileStrategy>(tile);
                                 if (layoutTileStrategy)
                                 {
-                                    Debug.Log("Found blocking component ...");
                                     blocks = layoutTileStrategy.Blocks;
                                 }
                                 return false;

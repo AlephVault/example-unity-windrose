@@ -23,9 +23,6 @@ namespace WindRose
                  *   
                  * The tile has behaviour to retrieve those strategy instances,
                  *   and the instances can be edited via its editor.
-                 * 
-                 * TODO test this code! There is a chance that it is not
-                 *   polymorphic.
                  */
                 [SerializeField]
                 private TileBase sourceTile;

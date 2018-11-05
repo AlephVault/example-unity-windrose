@@ -97,6 +97,12 @@ namespace WindRose
                     // We make the Y coordinate negative, as it was (or should be) in the beginning.
                     transform.localPosition = new Vector3(finalX, finalY, transform.localPosition.z);
                 }
+
+                private void OnAttached(object[] args)
+                {
+                    // Forcing this to avoid a blink.
+                    Update();
+                }
             }
         }
     }

@@ -30,6 +30,17 @@ namespace WindRose
                 [SerializeField]
                 private Strategies.TileStrategy[] strategies;
 
+                public class TileStrategyDependencyException : Support.Utils.AssetsLayout.DependencyException
+                {
+                    public TileStrategyDependencyException(string message) : base(message) {}
+                }
+
+                void Awake()
+                {
+                    // Order / Flatten dependencies
+                    strategies = Support.Utils.AssetsLayout.FlattenDependencies<Strategies.TileStrategy, RequireTileStrategy, TileStrategyDependencyException>(strategies);
+                }
+
                 public override bool GetTileAnimationData(Vector3Int position, ITilemap tilemap, ref TileAnimationData tileAnimationData)
                 {
                     return sourceTile.GetTileAnimationData(position, tilemap, ref tileAnimationData);

@@ -84,7 +84,22 @@ namespace WindRose
 
                 private void InvokeEventCallback(Positionable senderObject, UnityMapTriggerEvent targetEvent)
                 {
-                    targetEvent.Invoke(senderObject, positionable, (int)senderObject.X - GetDeltaX(), (int)senderObject.Y - GetDeltaY());
+                    // When trying to call GetDeltaX() and GetDeltaY() an exception may occur if everything is being destroyed.
+                    // That exception occurs because the objects, maps, and strategies are being also destroyed, and now the
+                    //   object is not attached to any map (this happens frequently when Destroying/Closing the game).
+                    // So the NotAttached exception will be caugh and, if that is the case, then this call with terminate
+                    //   immediately. Others exceptions may be NullReferenceException for similar reasons.
+                    int x, y;
+                    try
+                    {
+                        x = (int)senderObject.X - GetDeltaX();
+                        y = (int)senderObject.Y - GetDeltaY();
+                    }
+                    catch(Exception) //World.ObjectsManagementStrategies.ObjectsManagementStrategyHolder.NotAttachedException
+                    {
+                        return;
+                    }
+                    targetEvent.Invoke(senderObject, positionable, x, y);
                 }
 
                 protected void CallOnMapTriggerEnter(Positionable senderObject)
@@ -241,10 +256,17 @@ namespace WindRose
 
                 protected virtual void Update()
                 {
-                    foreach (KeyValuePair<TriggerLive, MapTriggerCallbacks> item in registeredCallbacks)
+                    // This change is to avoid OutOfSync error - callbacks MAY and WILL change the inner
+                    //   dictionary (of registered callbacks) under some circumstances.
+                    foreach (TriggerLive key in new List<TriggerLive>(registeredCallbacks.Keys))
                     {
-                        CallOnMapTriggerStay(item.Key.GetComponent<Positionable>());
-                        item.Value.CheckPosition();
+                        // Perhaps due to data being changed, this condition may evaluate to false!
+                        if (registeredCallbacks.ContainsKey(key))
+                        {
+                            MapTriggerCallbacks value = registeredCallbacks[key];
+                            CallOnMapTriggerStay(key.GetComponent<Positionable>());
+                            value.CheckPosition();
+                        }
                     }
                 }
             }

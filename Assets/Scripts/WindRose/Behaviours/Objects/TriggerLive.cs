@@ -48,12 +48,17 @@ namespace WindRose
                 {
                     base.Start();
                     rigidbody2D.isKinematic = true;
-                    // collider2D.enabled = false;
+                    collider2D.enabled = false;
                 }
 
                 void OnAttached(object[] args)
                 {
+                    collider2D.enabled = true;
+                }
 
+                void OnDetached()
+                {
+                    collider2D.enabled = false;
                 }
             }
         }

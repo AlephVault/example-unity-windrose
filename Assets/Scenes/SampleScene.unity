@@ -14970,7 +14970,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1680133206}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 02b3ded512da0664fa804688254c012b, type: 3}
+  m_Script: {fileID: 11500000, guid: c8cfb056c582c8642a15cc1689860e4a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &1680133212
@@ -15222,7 +15222,6 @@ GameObject:
   - component: {fileID: 1732828871}
   - component: {fileID: 1732828870}
   - component: {fileID: 1732828869}
-  - component: {fileID: 1732828868}
   - component: {fileID: 1732828867}
   - component: {fileID: 1732828866}
   - component: {fileID: 1732828865}
@@ -15238,6 +15237,7 @@ GameObject:
   - component: {fileID: 1732828875}
   - component: {fileID: 1732828879}
   - component: {fileID: 1732828880}
+  - component: {fileID: 1732828868}
   m_Layer: 0
   m_Name: Anne
   m_TagString: Untagged
@@ -15394,7 +15394,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1732828858}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 02b3ded512da0664fa804688254c012b, type: 3}
+  m_Script: {fileID: 11500000, guid: c8cfb056c582c8642a15cc1689860e4a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!50 &1732828869

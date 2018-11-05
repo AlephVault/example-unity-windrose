@@ -62,7 +62,7 @@ namespace WindRose
                         }
                     }
                 }
-                private Dictionary<TriggerActivator, MapTriggerCallbacks> registeredCallbacks = new Dictionary<TriggerActivator, MapTriggerCallbacks>();
+                private Dictionary<TriggerLive, MapTriggerCallbacks> registeredCallbacks = new Dictionary<TriggerLive, MapTriggerCallbacks>();
 
                 protected EventDispatcher eventDispatcher;
                 protected Positionable positionable;
@@ -115,14 +115,14 @@ namespace WindRose
                 }
 
                 // Register a new sender, and add their callbacks
-                void Register(TriggerActivator sender)
+                void Register(TriggerLive sender)
                 {
                     Positionable positionable = sender.GetComponent<Positionable>();
                     registeredCallbacks[sender] = new MapTriggerCallbacks(positionable, CallOnMapTriggerWalked, positionable.X, positionable.Y);
                 }
 
                 // Gets the registered callbacks, unregisters them.
-                void UnRegister(TriggerActivator sender)
+                void UnRegister(TriggerLive sender)
                 {
                     MapTriggerCallbacks cbs = registeredCallbacks[sender];
                     registeredCallbacks.Remove(sender);
@@ -130,7 +130,7 @@ namespace WindRose
 
                 void Withdraw()
                 {
-                    foreach (KeyValuePair<TriggerActivator, MapTriggerCallbacks> item in registeredCallbacks)
+                    foreach (KeyValuePair<TriggerLive, MapTriggerCallbacks> item in registeredCallbacks)
                     {
                         try
                         {
@@ -150,13 +150,13 @@ namespace WindRose
                     collider2D.enabled = true;
                 }
 
-                void ExitAndDisconnect(TriggerActivator sender)
+                void ExitAndDisconnect(TriggerLive sender)
                 {
                     CallOnMapTriggerExit(sender.GetComponent<Positionable>());
                     UnRegister(sender);
                 }
 
-                void ConnectAndEnter(TriggerActivator sender)
+                void ConnectAndEnter(TriggerLive sender)
                 {
                     Register(sender);
                     Positionable positionable = sender.GetComponent<Positionable>();
@@ -197,7 +197,7 @@ namespace WindRose
 
                     // I will only accept TriggerActivator components whose positionables
                     //   are in the same map as this' one.
-                    TriggerActivator sender = collision.GetComponent<TriggerActivator>();
+                    TriggerLive sender = collision.GetComponent<TriggerLive>();
                     if (sender == null) return;
 
                     Positionable senderPositionable = sender.GetComponent<Positionable>();
@@ -216,7 +216,7 @@ namespace WindRose
                     // Exiting is easier. If I have a registered sender, that sender passed
                     //   all the stated conditions. So I will only check existence and
                     //   registration in order to proceed.
-                    TriggerActivator sender = collision.GetComponent<TriggerActivator>();
+                    TriggerLive sender = collision.GetComponent<TriggerLive>();
                     if (sender != null && registeredCallbacks.ContainsKey(sender))
                     {
                         ExitAndDisconnect(sender);
@@ -241,7 +241,7 @@ namespace WindRose
 
                 protected virtual void Update()
                 {
-                    foreach (KeyValuePair<TriggerActivator, MapTriggerCallbacks> item in registeredCallbacks)
+                    foreach (KeyValuePair<TriggerLive, MapTriggerCallbacks> item in registeredCallbacks)
                     {
                         CallOnMapTriggerStay(item.Key.GetComponent<Positionable>());
                         item.Value.CheckPosition();

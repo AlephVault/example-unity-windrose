@@ -8,9 +8,9 @@ namespace WindRose
         namespace Objects
         {
             [RequireComponent(typeof(Rigidbody2D))]
-            [RequireComponent(typeof(EventDispatcher))]
+            [RequireComponent(typeof(Positionable))]
             [RequireComponent(typeof(BoxCollider2D))]
-            public abstract class TriggerLive : TriggerHolder
+            public class TriggerLive : TriggerHolder
             {
                 /**
                  * This abstract trigger has only the task of being a kinematic rigidbody, which is
@@ -34,10 +34,26 @@ namespace WindRose
                     return GetComponent<BoxCollider2D>();
                 }
 
+                protected override void SetupCollider(Collider2D collider2D)
+                {
+                    BoxCollider2D boxCollider2D = (BoxCollider2D)collider2D;
+                    Positionable positionable = GetComponent<Positionable>();
+                    // collision mask will have certain width and height
+                    boxCollider2D.size = new Vector2(positionable.Width * positionable.GetCellWidth(), positionable.Height * positionable.GetCellHeight());
+                    // and starting with those dimensions, we compute the offset as >>> and vvv
+                    boxCollider2D.offset = new Vector2(boxCollider2D.size.x / 2, boxCollider2D.size.y / 2);
+                }
+
                 protected override void Start()
                 {
                     base.Start();
                     rigidbody2D.isKinematic = true;
+                    // collider2D.enabled = false;
+                }
+
+                void OnAttached(object[] args)
+                {
+
                 }
             }
         }

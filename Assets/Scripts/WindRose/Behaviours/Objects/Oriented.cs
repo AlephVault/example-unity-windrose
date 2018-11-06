@@ -114,6 +114,15 @@ namespace WindRose
                     AddAnimationSet(IDLE_ANIMATION, idleAnimationSet);
                     positionable = GetComponent<Positionable>();
                     represented = GetComponent<Represented>();
+                    EventDispatcher dispatcher = GetComponent<EventDispatcher>();
+                    dispatcher.onAttached.AddListener(delegate (World.Map map)
+                    {
+                        enabled = true;
+                    });
+                    dispatcher.onDetached.AddListener(delegate ()
+                    {
+                        enabled = false;
+                    });
                 }
 
                 void Start()

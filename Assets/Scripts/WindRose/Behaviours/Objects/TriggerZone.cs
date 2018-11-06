@@ -145,11 +145,11 @@ namespace WindRose
 
                 void Withdraw()
                 {
-                    foreach (KeyValuePair<TriggerLive, MapTriggerCallbacks> item in registeredCallbacks)
+                    foreach (TriggerLive key in new List<TriggerLive>(registeredCallbacks.Keys))
                     {
                         try
                         {
-                            ExitAndDisconnect(item.Key);
+                            ExitAndDisconnect(key);
                         }
                         catch (MissingReferenceException)
                         {

@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Events;
 
 namespace WindRose
 {
@@ -24,6 +25,7 @@ namespace WindRose
 
                 private TriggerVisionRange relatedVisionRange;
                 public TriggerVisionRange RelatedVisionRange { get { return relatedVisionRange; } }
+                public readonly UnityEvent onWatcherReady = new UnityEvent();
 
                 void Start()
                 {
@@ -38,7 +40,7 @@ namespace WindRose
                         { "visionSize", visionSize },
                         { "visionLength", visionLength }
                     });
-                    SendMessage("OnWatcherReady");
+                    onWatcherReady.Invoke();
                 }
 
                 void OnDestroy()

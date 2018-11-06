@@ -14,11 +14,13 @@ class SampleLoggingVisionRange : MonoBehaviour
 
     private InteractionLauncher interactionLauncher;
 
-    // Use this for initialization
-    void OnWatcherReady()
+    void Awake()
     {
-        Invoke("StartChatListener", 0.5f);
-        interactionLauncher = GetComponent<InteractionLauncher>();
+        GetComponent<Watcher>().onWatcherReady.AddListener(delegate ()
+        {
+            Invoke("StartChatListener", 0.5f);
+            interactionLauncher = GetComponent<InteractionLauncher>();
+        });
     }
 
     void StartChatListener()

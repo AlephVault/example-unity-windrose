@@ -27,6 +27,12 @@ namespace WindRose
                 void Awake()
                 {
                     positionable = GetComponent<Positionable>();
+                    EventDispatcher dispatcher = GetComponent<EventDispatcher>();
+                    dispatcher.onAttached.AddListener(delegate (World.Map map)
+                    {
+                        // Forcing this to avoid a blink.
+                        Update();
+                    });
                 }
 
                 // Update is called once per frame
@@ -96,12 +102,6 @@ namespace WindRose
 
                     // We make the Y coordinate negative, as it was (or should be) in the beginning.
                     transform.localPosition = new Vector3(finalX, finalY, transform.localPosition.z);
-                }
-
-                private void OnAttached(object[] args)
-                {
-                    // Forcing this to avoid a blink.
-                    Update();
                 }
             }
         }

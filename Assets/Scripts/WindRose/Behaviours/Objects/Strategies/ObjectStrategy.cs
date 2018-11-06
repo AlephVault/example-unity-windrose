@@ -21,6 +21,7 @@ namespace WindRose
                  * It is related to a counterpart type which is a subtype of map
                  *   strategy.
                  */
+                [RequireComponent(typeof(EventDispatcher))]
                 public abstract class ObjectStrategy : MonoBehaviour
                 {
                     private static Type baseCounterpartStrategyType = typeof(World.ObjectsManagementStrategies.ObjectsManagementStrategy);
@@ -37,6 +38,7 @@ namespace WindRose
                      */
                     public ObjectStrategyHolder StrategyHolder { get; private set; }
                     public Type CounterpartType { get; private set; }
+                    public EventDispatcher EventDispatcher { get; private set; }
 
                     public virtual void Awake()
                     {
@@ -47,6 +49,7 @@ namespace WindRose
                             Destroy(gameObject);
                             throw new UnsupportedTypeException(string.Format("The type returned by CounterpartType must be a subclass of {0}", baseCounterpartStrategyType.FullName));
                         }
+                        EventDispatcher = GetComponent<EventDispatcher>();
                     }
 
                     /**
@@ -59,15 +62,6 @@ namespace WindRose
                      */
                     public virtual void Initialize()
                     {
-                    }
-
-                    /**
-                     * Sends an event to the strategy holder. Even for combined strategies,
-                     *   this method will be available but triggered accordingly.
-                     */
-                    public void TriggerEvent(string targetEvent, params object[] args)
-                    {
-                        StrategyHolder.SendMessage(targetEvent, args, SendMessageOptions.DontRequireReceiver);
                     }
 
                     /**

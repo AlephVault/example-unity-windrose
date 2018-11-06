@@ -38,6 +38,10 @@ namespace WindRose
                         }
                     }
 
+                    [Serializable]
+                    public class UnityCommandReceivedEvent : UnityEvent<CommandStatus> { }
+                    public readonly UnityCommandReceivedEvent onCommandReceiver = new UnityCommandReceivedEvent();
+
                     private Misc.Command GetCommand(Collider2D collider)
                     {
                         return collider.gameObject.GetComponent<Misc.Command>();
@@ -51,7 +55,7 @@ namespace WindRose
                         {
                             if (command.sender != null && command.sender.gameObject != gameObject)
                             {
-                                SendMessage("OnCommandReceived", new CommandStatus(command, stage), SendMessageOptions.DontRequireReceiver);
+                                onCommandReceiver.Invoke(new CommandStatus(command, stage));
                             }
                         }
                     }

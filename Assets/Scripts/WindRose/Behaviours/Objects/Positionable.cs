@@ -12,6 +12,7 @@ namespace WindRose
             using World.Layers;
 
             [ExecuteInEditMode]
+            [RequireComponent(typeof(EventDispatcher))]
             [RequireComponent(typeof(Pausable))]
             public class Positionable : MonoBehaviour
             {
@@ -51,6 +52,28 @@ namespace WindRose
                 private void Awake()
                 {
                     StrategyHolder = GetComponent<Strategies.ObjectStrategyHolder>();
+                    EventDispatcher dispatcher = GetComponent<EventDispatcher>();
+                    dispatcher.onAttached.AddListener(delegate (Map newParentMap)
+                    {
+                        /*
+                         * Attaching to a map involves:
+                         * 1. The actual "parent" of the object will be a child of the RelatedMap being an ObjectsLayer.
+                         * 2. We set the parent transform of the object to such ObjectsLayer's transform.
+                         * 3. Finally we must ensure the transform.localPosition be updated accordingly (i.e. forcing a snap).
+                         */
+                        parentMap = newParentMap; 
+                        ObjectsLayer objectsLayer = parentMap.GetComponentInChildren<ObjectsLayer>();
+                        transform.parent = objectsLayer.transform;
+                        transform.localPosition = new Vector3(
+                            X * objectsLayer.GetCellWidth(),
+                            Y * objectsLayer.GetCellHeight(),
+                            0
+                        );
+                    });
+                    dispatcher.onDetached.AddListener(delegate ()
+                    {
+                        parentMap = null;
+                    });
                 }
 
                 void Start()
@@ -61,30 +84,6 @@ namespace WindRose
                 void OnDestroy()
                 {
                     Detach();
-                }
-
-                void OnAttached(object[] args)
-                {
-                    /*
-                     * Attaching to a map involves:
-                     * 1. Getting the Map in arguments.
-                     * 2. The actual "parent" of the object will be a child of the RelatedMap being an ObjectsLayer.
-                     * 3. We set the parent transform of the object to such ObjectsLayer's transform.
-                     * 4. Finally we must ensure the transform.localPosition be updated accordingly (i.e. forcing a snap).
-                     */
-                    parentMap = (Map)args[0];
-                    ObjectsLayer objectsLayer = parentMap.GetComponentInChildren<ObjectsLayer>();
-                    transform.parent = objectsLayer.transform;
-                    transform.localPosition = new Vector3(
-                        X * objectsLayer.GetCellWidth(),
-                        Y * objectsLayer.GetCellHeight(),
-                        0
-                    );
-                }
-
-                void OnDetached()
-                {
-                    parentMap = null;
                 }
 
                 public void Initialize()

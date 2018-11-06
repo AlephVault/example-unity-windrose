@@ -11,14 +11,17 @@ class SampleMeaninglessTalk : MonoBehaviour
 {
     InteractionLauncher interactionLauncher;
 
+    void Awake()
+    {
+        GetComponent<TalkReceiver>().onTalkReceived.AddListener(delegate (GameObject sender)
+        {
+            interactionLauncher.InteractionTab.RunInteraction(MeaninglessInteraction);
+        });
+    }
+
     void Start()
     {
         interactionLauncher = GetComponent<InteractionLauncher>();
-    }
-
-    void OnTalkCommandReceived(GameObject sender)
-    {
-        interactionLauncher.InteractionTab.RunInteraction(MeaninglessInteraction);
     }
 
     IEnumerator MeaninglessInteraction(InteractorsManager manager, InteractiveMessage interactiveMessage)

@@ -26,6 +26,16 @@ namespace WindRose
                 protected override void Awake()
                 {
                     base.Awake();
+                    collider2D.enabled = false;
+                    EventDispatcher dispatcher = GetComponent<EventDispatcher>();
+                    dispatcher.onAttached.AddListener(delegate (World.Map map)
+                    {
+                        collider2D.enabled = true;
+                    });
+                    dispatcher.onDetached.AddListener(delegate ()
+                    {
+                        collider2D.enabled = false;
+                    });
                     rigidbody2D = GetComponent<Rigidbody2D>();
                 }
 
@@ -48,17 +58,6 @@ namespace WindRose
                 {
                     base.Start();
                     rigidbody2D.isKinematic = true;
-                    collider2D.enabled = false;
-                }
-
-                void OnAttached(object[] args)
-                {
-                    collider2D.enabled = true;
-                }
-
-                void OnDetached()
-                {
-                    collider2D.enabled = false;
                 }
             }
         }

@@ -1,5 +1,7 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace WindRose
 {
@@ -29,17 +31,25 @@ namespace WindRose
                          */
 
                         Oriented oriented;
+
+                        [Serializable]
+                        public class UnityTalkReceivedEvent : UnityEvent<GameObject> { }
+                        public readonly UnityTalkReceivedEvent onTalkReceived = new UnityTalkReceivedEvent();
+
+                        private void Awake()
+                        {
+                            GetComponent<CommandReceiver>().onCommandReceiver.AddListener(delegate (CommandReceiver.CommandStatus status)
+                            {
+                                if (status.Stage == CommandReceiver.CommandStage.ENTER && status.Command.name == "WR:Talk")
+                                {
+                                    StartCoroutine(StartTalk(status.Command.sender));
+                                }
+                            });
+                        }
+
                         private void Start()
                         {
                             oriented = GetComponent<Oriented>();
-                        }
-
-                        void OnCommandReceived(CommandReceiver.CommandStatus status)
-                        {
-                            if (status.Stage == CommandReceiver.CommandStage.ENTER && status.Command.name == "WR:Talk")
-                            {
-                                StartCoroutine(StartTalk(status.Command.sender));
-                            }
                         }
 
                         IEnumerator StartTalk(GameObject sender)
@@ -64,7 +74,7 @@ namespace WindRose
                                 }
                                 yield return new WaitForSeconds(0f);
                             }
-                            SendMessage("OnTalkCommandReceived", sender);
+                            onTalkReceived.Invoke(sender);
                         }
                     }
                 }

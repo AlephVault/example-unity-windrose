@@ -30,8 +30,10 @@ namespace WindRose
                 public readonly UnityEvent onDetached = new UnityEvent();
                 [Serializable]
                 public class UnityMovementEvent : UnityEvent<Types.Direction> { }
+                [Serializable]
+                public class UnityOptionalMovementEvent : UnityEvent<Types.Direction?> { }
                 public readonly UnityMovementEvent onMovementStarted = new UnityMovementEvent();
-                public readonly UnityMovementEvent onMovementCancelled = new UnityMovementEvent();
+                public readonly UnityOptionalMovementEvent onMovementCancelled = new UnityOptionalMovementEvent();
                 public readonly UnityMovementEvent onMovementFinished = new UnityMovementEvent();
                 [Serializable]
                 public class UnityPropertyUpdateEvent : UnityEvent<string, object, object> { }
@@ -40,42 +42,15 @@ namespace WindRose
                 public class UnityTeleportedEvent : UnityEvent<uint, uint> { }
                 public readonly UnityTeleportedEvent onTeleported = new UnityTeleportedEvent();
 
-                void OnAttached(object[] args)
+                void OnDestroy()
                 {
-                    onAttached.Invoke((Map)args[0]);
-                }
-
-                void OnDetached()
-                {
-                    onDetached.Invoke();
-                }
-
-                void OnMovementStarted(object[] args)
-                {
-                    onMovementStarted.Invoke((Types.Direction)(args[0]));
-                }
-
-                void OnMovementCancelled(object[] args)
-                {
-                    onMovementCancelled.Invoke((Types.Direction)(args[0]));
-                }
-
-                void OnMovementFinished(object[] args)
-                {
-                    onMovementFinished.Invoke((Types.Direction)(args[0]));
-                }
-
-                void OnPropertyUpdated(object[] args)
-                {
-                    string property = (string)args[0];
-                    object oldValue = args[1];
-                    object newValue = args[2];
-                    onPropertyUpdated.Invoke(property, oldValue, newValue);
-                }
-
-                void OnTeleported(object[] args)
-                {
-                    onTeleported.Invoke((uint)(args[0]), (uint)(args[1]));
+                    onAttached.RemoveAllListeners();
+                    onDetached.RemoveAllListeners();
+                    onMovementStarted.RemoveAllListeners();
+                    onMovementCancelled.RemoveAllListeners();
+                    onMovementFinished.RemoveAllListeners();
+                    onPropertyUpdated.RemoveAllListeners();
+                    onTeleported.RemoveAllListeners();
                 }
             }
         }

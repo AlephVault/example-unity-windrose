@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using UnityEngine;
+using WindRose.Behaviours.World;
 using WindRose.Behaviours.Objects;
 using WindRose.Types;
 
@@ -29,20 +30,19 @@ class WaypointHandled : MonoBehaviour
     {
         movable = GetComponent<Movable>();
         oriented = GetComponent<Oriented>();
-    }
-
-    void OnAttached(object[] args)
-    {
-        if (waySteps.Length != 0)
+        EventDispatcher dispatcher = GetComponent<EventDispatcher>();
+        dispatcher.onAttached.AddListener(delegate (Map map)
         {
-            currentCoroutine = StartCoroutine(PerformMovement());
-        }
-    }
-
-    void OnDetached()
-    {
-        if (currentCoroutine != null) StopCoroutine(currentCoroutine);
-        currentCoroutine = null;
+            if (waySteps.Length != 0)
+            {
+                currentCoroutine = StartCoroutine(PerformMovement());
+            }
+        });
+        dispatcher.onDetached.AddListener(delegate ()
+        {
+            if (currentCoroutine != null) StopCoroutine(currentCoroutine);
+            currentCoroutine = null;
+        });
     }
 
     IEnumerator PerformMovement()

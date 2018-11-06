@@ -343,7 +343,7 @@ namespace WindRose
                         AttachedStrategy(objectStrategy, status);
 
                         // Finally, notify the client strategy.
-                        objectStrategy.TriggerEvent("OnAttached", Map);
+                        objectStrategy.EventDispatcher.onAttached.Invoke(Map);
                     }
 
                     /**
@@ -379,7 +379,7 @@ namespace WindRose
                         attachedStrategies.Remove(objectStrategy);
 
                         // Finally, notify the client strategy.
-                        objectStrategy.TriggerEvent("OnDetached", Map);
+                        objectStrategy.EventDispatcher.onDetached.Invoke();
                     }
 
                     /**
@@ -423,7 +423,7 @@ namespace WindRose
                             DoAllocateMovement(objectStrategy, status, direction, continuated, "Before");
                             status.Movement = direction;
                             DoAllocateMovement(objectStrategy, status, direction, continuated, "AfterMovementAllocation");
-                            objectStrategy.TriggerEvent("OnMovementStarted", direction);
+                            objectStrategy.EventDispatcher.onMovementStarted.Invoke(direction);
                             DoAllocateMovement(objectStrategy, status, direction, continuated, "After");
                             return true;
                         }
@@ -485,7 +485,7 @@ namespace WindRose
                             DoClearMovement(strategy, status, formerMovement, "Before");
                             status.Movement = null;
                             DoClearMovement(strategy, status, formerMovement, "AfterMovementClear");
-                            strategy.TriggerEvent("OnMovementCancelled", formerMovement);
+                            strategy.EventDispatcher.onMovementCancelled.Invoke(formerMovement);
                             DoClearMovement(strategy, status, formerMovement, "Before");
                             return true;
                         }
@@ -557,7 +557,7 @@ namespace WindRose
                             DoConfirmMovement(objectStrategy, status, formerMovement, "AfterPositionChange");
                             status.Movement = null;
                             DoConfirmMovement(objectStrategy, status, formerMovement, "AfterMovementClear");
-                            objectStrategy.TriggerEvent("OnMovementFinished", formerMovement);
+                            objectStrategy.EventDispatcher.onMovementFinished.Invoke(formerMovement);
                             DoConfirmMovement(objectStrategy, status, formerMovement, "After");
                             return true;
                         }
@@ -602,7 +602,7 @@ namespace WindRose
                         status.X = x;
                         status.Y = y;
                         DoTeleport(objectStrategy, status, x, y, "AfterPositionChange");
-                        objectStrategy.TriggerEvent("OnTeleported", x, y);
+                        objectStrategy.EventDispatcher.onTeleported.Invoke(x, y);
                         DoTeleport(objectStrategy, status, x, y, "After");
                     }
 
@@ -639,7 +639,7 @@ namespace WindRose
 
                         (GetComponent(objectStrategy.CounterpartType) as ObjectsManagementStrategy).DoProcessPropertyUpdate(mainObjectStrategy, attachedStrategies[mainObjectStrategy], property, oldValue, newValue);
 
-                        mainObjectStrategy.TriggerEvent("OnPropertyUpdated", property, oldValue, newValue);
+                        mainObjectStrategy.EventDispatcher.onPropertyUpdated.Invoke(property, oldValue, newValue);
                     }
                 }
             }

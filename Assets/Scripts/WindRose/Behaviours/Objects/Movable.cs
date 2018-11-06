@@ -48,6 +48,8 @@ namespace WindRose
 
                 public bool StartMovement(Types.Direction movement, bool queueIfMoving = true)
                 {
+                    if (positionable.ParentMap == null) return false;
+
                     if (IsMoving)
                     {
                         // The movement will not be performed now since there
@@ -66,6 +68,8 @@ namespace WindRose
 
                 public void CancelMovement()
                 {
+                    if (positionable.ParentMap == null) return;
+
                     positionable.CancelMovement();
                 }
 
@@ -94,6 +98,20 @@ namespace WindRose
                     oriented = GetComponent<Oriented>();
                     positionable = GetComponent<Positionable>();
                     oriented.AddAnimationSet(MOVE_ANIMATION, movingAnimationSet);
+                    EventDispatcher dispatcher = GetComponent<EventDispatcher>();
+                    dispatcher.onAttached.AddListener(delegate (World.Map parentMap)
+                    {
+                        // Avoid inheriting former value of origin.
+                        // If a movement is being performed, then
+                        //   just set a new value to origin.
+                        origin = transform.localPosition;
+                        wasMoving = false;
+                        enabled = true;
+                    });
+                    dispatcher.onDetached.AddListener(delegate ()
+                    {
+                        enabled = false;
+                    });
                 }
 
                 // Update is called once per frame
@@ -194,15 +212,6 @@ namespace WindRose
                     // We clean up the last commanded movement, so future frames
                     //   do not interpret this command as a must, since it expired.
                     CommandedMovement = null;
-                }
-
-                void OnAttached(object[] args)
-                {
-                    // Avoid inheriting former value of origin.
-                    // If a movement is being performed, then
-                    //   just set a new value to origin.
-                    origin = transform.localPosition;
-                    wasMoving = false;
                 }
 
                 void Pause(bool fullFreeze)

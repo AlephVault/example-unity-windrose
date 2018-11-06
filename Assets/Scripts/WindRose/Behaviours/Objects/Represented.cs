@@ -7,7 +7,6 @@ namespace WindRose
         namespace Objects
         {
             using World;
-            using World.Layers;
 
             // Requiring Snapped, instead of Positionable, allows us to
             //   have the features of position automatically updated.
@@ -57,24 +56,20 @@ namespace WindRose
                 {
                     spriteRenderer = GetComponent<SpriteRenderer>();
                     spriteRenderer.enabled = false;
+                    EventDispatcher dispatcher = GetComponent<EventDispatcher>();
+                    dispatcher.onAttached.AddListener(delegate (Map parentMap)
+                    {
+                        spriteRenderer.enabled = true;
+                    });
+                    dispatcher.onDetached.AddListener(delegate ()
+                    {
+                        spriteRenderer.enabled = false;
+                    });
                 }
 
                 void Start()
                 {
                     SetDefaultAnimation();
-                }
-
-                void OnAttached(object[] args)
-                {
-                    /*
-                     * This behaviour must only get the appropriate sorting layer.
-                     */
-                    spriteRenderer.enabled = true;
-                }
-
-                void OnDetached()
-                {
-                    spriteRenderer.enabled = false;
                 }
 
                 private void Reset()

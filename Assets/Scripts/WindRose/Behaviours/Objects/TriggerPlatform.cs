@@ -6,7 +6,7 @@ namespace WindRose
     {
         namespace Objects
         {
-            [RequireComponent(typeof(EventDispatcher))]
+            [RequireComponent(typeof(Positionable))]
             [RequireComponent(typeof(BoxCollider2D))]
             public class TriggerPlatform : TriggerZone
             {

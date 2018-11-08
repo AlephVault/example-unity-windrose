@@ -27,8 +27,7 @@ namespace WindRose
                 void Awake()
                 {
                     positionable = GetComponent<Positionable>();
-                    EventDispatcher dispatcher = GetComponent<EventDispatcher>();
-                    dispatcher.onAttached.AddListener(delegate (World.Map map)
+                    positionable.onAttached.AddListener(delegate (World.Map map)
                     {
                         // Forcing this to avoid a blink.
                         Update();

@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
+using UnityEngine.Events;
 using Support.Utils;
 
 namespace WindRose
@@ -12,7 +14,6 @@ namespace WindRose
             using World.Layers;
 
             [ExecuteInEditMode]
-            [RequireComponent(typeof(EventDispatcher))]
             [RequireComponent(typeof(Pausable))]
             public class Positionable : MonoBehaviour
             {
@@ -49,11 +50,29 @@ namespace WindRose
                 public Direction? Movement { get { return parentMap.StrategyHolder.StatusFor(StrategyHolder).Movement; } }
                 public Strategies.ObjectStrategyHolder StrategyHolder { get; private set; }
 
+                /* *********************** Events *********************** */
+                [Serializable]
+                public class UnityAttachedEvent : UnityEvent<Map> { }
+                public readonly UnityAttachedEvent onAttached = new UnityAttachedEvent();
+                public readonly UnityEvent onDetached = new UnityEvent();
+                [Serializable]
+                public class UnityMovementEvent : UnityEvent<Types.Direction> { }
+                [Serializable]
+                public class UnityOptionalMovementEvent : UnityEvent<Types.Direction?> { }
+                public readonly UnityMovementEvent onMovementStarted = new UnityMovementEvent();
+                public readonly UnityOptionalMovementEvent onMovementCancelled = new UnityOptionalMovementEvent();
+                public readonly UnityMovementEvent onMovementFinished = new UnityMovementEvent();
+                [Serializable]
+                public class UnityPropertyUpdateEvent : UnityEvent<string, object, object> { }
+                public readonly UnityPropertyUpdateEvent onPropertyUpdated = new UnityPropertyUpdateEvent();
+                [Serializable]
+                public class UnityTeleportedEvent : UnityEvent<uint, uint> { }
+                public readonly UnityTeleportedEvent onTeleported = new UnityTeleportedEvent();
+
                 private void Awake()
                 {
                     StrategyHolder = GetComponent<Strategies.ObjectStrategyHolder>();
-                    EventDispatcher dispatcher = GetComponent<EventDispatcher>();
-                    dispatcher.onAttached.AddListener(delegate (Map newParentMap)
+                    onAttached.AddListener(delegate (Map newParentMap)
                     {
                         /*
                          * Attaching to a map involves:
@@ -70,7 +89,7 @@ namespace WindRose
                             0
                         );
                     });
-                    dispatcher.onDetached.AddListener(delegate ()
+                    onDetached.AddListener(delegate ()
                     {
                         parentMap = null;
                     });
@@ -84,6 +103,13 @@ namespace WindRose
                 void OnDestroy()
                 {
                     Detach();
+                    onAttached.RemoveAllListeners();
+                    onDetached.RemoveAllListeners();
+                    onMovementStarted.RemoveAllListeners();
+                    onMovementCancelled.RemoveAllListeners();
+                    onMovementFinished.RemoveAllListeners();
+                    onPropertyUpdated.RemoveAllListeners();
+                    onTeleported.RemoveAllListeners();
                 }
 
                 public void Initialize()

@@ -31,12 +31,11 @@ namespace WindRose
                 {
                     spriteRenderer = GetComponent<SpriteRenderer>();
                     positionable = GetComponent<Positionable>();
-                    EventDispatcher dispatcher = GetComponent<EventDispatcher>();
-                    dispatcher.onAttached.AddListener(delegate (World.Map map)
+                    positionable.onAttached.AddListener(delegate (World.Map map)
                     {
                         enabled = true;
                     });
-                    dispatcher.onDetached.AddListener(delegate ()
+                    positionable.onDetached.AddListener(delegate ()
                     {
                         enabled = false;
                     });

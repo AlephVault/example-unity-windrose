@@ -8,7 +8,6 @@ namespace WindRose
         namespace Objects
         {
             [RequireComponent(typeof(Oriented))]
-            [RequireComponent(typeof(EventDispatcher))]
             public class Watcher : MonoBehaviour
             {
                 /**
@@ -29,13 +28,13 @@ namespace WindRose
 
                 void Start()
                 {
-                    EventDispatcher eventDispatcher = GetComponent<EventDispatcher>();
+                    Positionable positionable = GetComponent<Positionable>();
                     Oriented oriented = GetComponent<Oriented>();
                     GameObject aNewGameObject = new GameObject("WatcherVisionRange");
                     Support.Utils.Layout.AddComponent<BoxCollider2D>(aNewGameObject);
                     relatedVisionRange = Support.Utils.Layout.AddComponent<TriggerVisionRange>(aNewGameObject, new System.Collections.Generic.Dictionary<string, object>()
                     {
-                        { "relatedEventDispatcher", eventDispatcher },
+                        { "relatedPositionable", positionable },
                         { "direction", oriented.orientation },
                         { "visionSize", visionSize },
                         { "visionLength", visionLength }

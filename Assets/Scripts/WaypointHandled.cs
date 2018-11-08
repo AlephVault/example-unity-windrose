@@ -30,15 +30,15 @@ class WaypointHandled : MonoBehaviour
     {
         movable = GetComponent<Movable>();
         oriented = GetComponent<Oriented>();
-        EventDispatcher dispatcher = GetComponent<EventDispatcher>();
-        dispatcher.onAttached.AddListener(delegate (Map map)
+        Positionable positionable = GetComponent<Positionable>();
+        positionable.onAttached.AddListener(delegate (Map map)
         {
             if (waySteps.Length != 0)
             {
                 currentCoroutine = StartCoroutine(PerformMovement());
             }
         });
-        dispatcher.onDetached.AddListener(delegate ()
+        positionable.onDetached.AddListener(delegate ()
         {
             if (currentCoroutine != null) StopCoroutine(currentCoroutine);
             currentCoroutine = null;

@@ -17,9 +17,9 @@ namespace WindRose
                  *   required to trigger with subclasses from TriggerZone. This abstract class should
                  *   be a complement of TriggerZone.
                  * 
-                 * Live triggers are deeply tied to WindRose, since they interact with event dispatchers
-                 *   which are in turn positionables: Live triggers are live map object, which could be
-                 *   not the case for other types of colliders.
+                 * Live triggers are deeply tied to WindRose, since they interact with positionables:
+                 *   Live triggers are live map object, which could be not the case for other types
+                 *   of colliders.
                  */
 
                 private Rigidbody2D rigidbody2D;
@@ -27,12 +27,12 @@ namespace WindRose
                 {
                     base.Awake();
                     collider2D.enabled = false;
-                    EventDispatcher dispatcher = GetComponent<EventDispatcher>();
-                    dispatcher.onAttached.AddListener(delegate (World.Map map)
+                    Positionable positionable = GetComponent<Positionable>();
+                    positionable.onAttached.AddListener(delegate (World.Map map)
                     {
                         collider2D.enabled = true;
                     });
-                    dispatcher.onDetached.AddListener(delegate ()
+                    positionable.onDetached.AddListener(delegate ()
                     {
                         collider2D.enabled = false;
                     });

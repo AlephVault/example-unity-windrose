@@ -64,7 +64,6 @@ namespace WindRose
                 }
                 private Dictionary<TriggerLive, MapTriggerCallbacks> registeredCallbacks = new Dictionary<TriggerLive, MapTriggerCallbacks>();
 
-                protected EventDispatcher eventDispatcher;
                 protected Positionable positionable;
 
                 // These five events are notified against the involved Positionable components of
@@ -196,11 +195,9 @@ namespace WindRose
                 void OnDestroy()
                 {
                     Withdraw();
-                    eventDispatcher.onDetached.RemoveListener(Withdraw);
-                    eventDispatcher.onAttached.RemoveListener(Appear);
                 }
 
-                protected abstract EventDispatcher GetRelatedEventDispatcher();
+                protected abstract Positionable GetRelatedPositionable();
 
                 void OnTriggerEnter2D(Collider2D collision)
                 {
@@ -241,16 +238,17 @@ namespace WindRose
                 protected override void Awake()
                 {
                     base.Awake();
-                    eventDispatcher = GetRelatedEventDispatcher();
-                    positionable = eventDispatcher.GetComponent<Positionable>();
+                    positionable = GetRelatedPositionable();
+                    positionable.onDetached.AddListener(Withdraw);
+                    positionable.onAttached.AddListener(Appear);
                 }
 
                 protected override void Start()
                 {
                     base.Start();
                     collider2D.enabled = false;
-                    eventDispatcher.onDetached.AddListener(Withdraw);
-                    eventDispatcher.onAttached.AddListener(Appear);
+                    positionable.onDetached.AddListener(Withdraw);
+                    positionable.onAttached.AddListener(Appear);
                     if (positionable.ParentMap != null) Appear(positionable.ParentMap);
                 }
 

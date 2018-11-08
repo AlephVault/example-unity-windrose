@@ -36,9 +36,9 @@ namespace WindRose
                     return (int)positionable.Y;
                 }
 
-                protected override EventDispatcher GetRelatedEventDispatcher()
+                protected override Positionable GetRelatedPositionable()
                 {
-                    return GetComponent<EventDispatcher>();
+                    return GetComponent<Positionable>();
                 }
 
                 protected override Collider2D GetCollider2D()

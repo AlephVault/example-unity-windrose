@@ -56,12 +56,12 @@ namespace WindRose
                 {
                     spriteRenderer = GetComponent<SpriteRenderer>();
                     spriteRenderer.enabled = false;
-                    EventDispatcher dispatcher = GetComponent<EventDispatcher>();
-                    dispatcher.onAttached.AddListener(delegate (Map parentMap)
+                    Positionable positionable = GetComponent<Positionable>();
+                    positionable.onAttached.AddListener(delegate (Map parentMap)
                     {
                         spriteRenderer.enabled = true;
                     });
-                    dispatcher.onDetached.AddListener(delegate ()
+                    positionable.onDetached.AddListener(delegate ()
                     {
                         spriteRenderer.enabled = false;
                     });

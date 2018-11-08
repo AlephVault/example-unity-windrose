@@ -98,8 +98,7 @@ namespace WindRose
                     oriented = GetComponent<Oriented>();
                     positionable = GetComponent<Positionable>();
                     oriented.AddAnimationSet(MOVE_ANIMATION, movingAnimationSet);
-                    EventDispatcher dispatcher = GetComponent<EventDispatcher>();
-                    dispatcher.onAttached.AddListener(delegate (World.Map parentMap)
+                    positionable.onAttached.AddListener(delegate (World.Map parentMap)
                     {
                         // Avoid inheriting former value of origin.
                         // If a movement is being performed, then
@@ -108,7 +107,7 @@ namespace WindRose
                         wasMoving = false;
                         enabled = true;
                     });
-                    dispatcher.onDetached.AddListener(delegate ()
+                    positionable.onDetached.AddListener(delegate ()
                     {
                         enabled = false;
                     });

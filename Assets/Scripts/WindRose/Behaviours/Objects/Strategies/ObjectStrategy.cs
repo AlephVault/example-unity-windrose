@@ -21,7 +21,7 @@ namespace WindRose
                  * It is related to a counterpart type which is a subtype of map
                  *   strategy.
                  */
-                [RequireComponent(typeof(EventDispatcher))]
+                [RequireComponent(typeof(Positionable))]
                 public abstract class ObjectStrategy : MonoBehaviour
                 {
                     private static Type baseCounterpartStrategyType = typeof(World.ObjectsManagementStrategies.ObjectsManagementStrategy);
@@ -38,7 +38,7 @@ namespace WindRose
                      */
                     public ObjectStrategyHolder StrategyHolder { get; private set; }
                     public Type CounterpartType { get; private set; }
-                    public EventDispatcher EventDispatcher { get; private set; }
+                    public Positionable Positionable { get; private set; }
 
                     public virtual void Awake()
                     {
@@ -49,7 +49,7 @@ namespace WindRose
                             Destroy(gameObject);
                             throw new UnsupportedTypeException(string.Format("The type returned by CounterpartType must be a subclass of {0}", baseCounterpartStrategyType.FullName));
                         }
-                        EventDispatcher = GetComponent<EventDispatcher>();
+                        Positionable = GetComponent<Positionable>();
                     }
 
                     /**

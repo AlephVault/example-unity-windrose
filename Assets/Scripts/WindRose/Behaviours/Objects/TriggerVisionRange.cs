@@ -25,7 +25,7 @@ namespace WindRose
                 //   calculate the offsets. It is different to the Platform, in the way that the Platform
                 //   has the component by itself.
                 [SerializeField]
-                private EventDispatcher relatedEventDispatcher;
+                private Positionable relatedPositionable;
 
                 // Perhaps the related object has an Oriented component. We will make use of it.
                 private Oriented oriented;
@@ -113,9 +113,9 @@ namespace WindRose
                     return extra + (int)positionable.Y;
                 }
 
-                protected override EventDispatcher GetRelatedEventDispatcher()
+                protected override Positionable GetRelatedPositionable()
                 {
-                    return relatedEventDispatcher;
+                    return relatedPositionable;
                 }
 
                 protected override Collider2D GetCollider2D()

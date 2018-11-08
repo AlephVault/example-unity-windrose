@@ -6625,7 +6625,6 @@ GameObject:
   - component: {fileID: 850159757}
   - component: {fileID: 850159760}
   - component: {fileID: 850159761}
-  - component: {fileID: 850159762}
   m_Layer: 0
   m_Name: Hole
   m_TagString: Untagged
@@ -6804,17 +6803,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 77674a50d00b53347a95068e62190c9a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &850159762
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 850159749}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7c45601db650a2344929e2889ed911cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &863551272
@@ -7255,7 +7243,6 @@ GameObject:
   - component: {fileID: 934075501}
   - component: {fileID: 934075500}
   - component: {fileID: 934075499}
-  - component: {fileID: 934075498}
   - component: {fileID: 934075497}
   - component: {fileID: 934075496}
   - component: {fileID: 934075505}
@@ -7309,17 +7296,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   innerMarginFactor: 0.25
---- !u!114 &934075498
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 934075494}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7c45601db650a2344929e2889ed911cf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!61 &934075499
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -9258,7 +9234,6 @@ GameObject:
   - component: {fileID: 1186038017}
   - component: {fileID: 1186038016}
   - component: {fileID: 1186038014}
-  - component: {fileID: 1186038013}
   - component: {fileID: 1186038012}
   - component: {fileID: 1186038011}
   - component: {fileID: 1186038015}
@@ -9313,17 +9288,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   innerMarginFactor: 0.25
---- !u!114 &1186038013
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1186038009}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7c45601db650a2344929e2889ed911cf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!61 &1186038014
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -12165,7 +12129,6 @@ GameObject:
   - component: {fileID: 1358881513}
   - component: {fileID: 1358881521}
   - component: {fileID: 1358881520}
-  - component: {fileID: 1358881519}
   - component: {fileID: 1358881518}
   - component: {fileID: 1358881517}
   - component: {fileID: 1358881516}
@@ -12293,17 +12256,6 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
---- !u!114 &1358881519
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1358881512}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7c45601db650a2344929e2889ed911cf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &1358881520
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12993,7 +12945,6 @@ GameObject:
   - component: {fileID: 1514043985}
   - component: {fileID: 1514043982}
   - component: {fileID: 1514043981}
-  - component: {fileID: 1514043984}
   - component: {fileID: 1514043988}
   - component: {fileID: 1514043987}
   - component: {fileID: 1514043986}
@@ -13162,17 +13113,6 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 2, y: 2}
   m_EdgeRadius: 0
---- !u!114 &1514043984
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1514043974}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7c45601db650a2344929e2889ed911cf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &1514043985
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13436,7 +13376,6 @@ GameObject:
   - component: {fileID: 1597479045}
   - component: {fileID: 1597479053}
   - component: {fileID: 1597479052}
-  - component: {fileID: 1597479051}
   - component: {fileID: 1597479050}
   - component: {fileID: 1597479049}
   - component: {fileID: 1597479048}
@@ -13564,17 +13503,6 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
---- !u!114 &1597479051
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1597479044}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7c45601db650a2344929e2889ed911cf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &1597479052
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15109,17 +15037,6 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!114 &1680133221
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1680133206}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7c45601db650a2344929e2889ed911cf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1722275577
 GameObject:
   m_ObjectHideFlags: 0
@@ -15243,7 +15160,6 @@ GameObject:
   - component: {fileID: 1732828873}
   - component: {fileID: 1732828872}
   - component: {fileID: 1732828871}
-  - component: {fileID: 1732828870}
   - component: {fileID: 1732828869}
   - component: {fileID: 1732828867}
   - component: {fileID: 1732828866}
@@ -15440,17 +15356,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!114 &1732828870
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1732828858}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7c45601db650a2344929e2889ed911cf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!61 &1732828871
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -16884,17 +16789,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 77674a50d00b53347a95068e62190c9a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &1903621708
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1903621701}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7c45601db650a2344929e2889ed911cf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1904334231 stripped
 GameObject:
   m_PrefabParentObject: {fileID: 1736310973645326, guid: e588751305668984a9984005971b08ab,
@@ -17366,7 +17260,6 @@ GameObject:
   - component: {fileID: 2061497664}
   - component: {fileID: 2061497672}
   - component: {fileID: 2061497671}
-  - component: {fileID: 2061497670}
   - component: {fileID: 2061497669}
   - component: {fileID: 2061497668}
   - component: {fileID: 2061497667}
@@ -17494,17 +17387,6 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
---- !u!114 &2061497670
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 2061497663}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7c45601db650a2344929e2889ed911cf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &2061497671
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17631,7 +17513,6 @@ GameObject:
   - component: {fileID: 2062477411}
   - component: {fileID: 2062477410}
   - component: {fileID: 2062477409}
-  - component: {fileID: 2062477403}
   - component: {fileID: 2062477408}
   - component: {fileID: 2062477407}
   - component: {fileID: 2062477406}
@@ -17652,17 +17533,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &2062477403
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 2062477402}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7c45601db650a2344929e2889ed911cf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &2062477404
 MonoBehaviour:
   m_ObjectHideFlags: 0

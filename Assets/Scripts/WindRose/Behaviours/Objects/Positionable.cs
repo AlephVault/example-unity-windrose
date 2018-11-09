@@ -15,6 +15,7 @@ namespace WindRose
 
             [ExecuteInEditMode]
             [RequireComponent(typeof(Pausable))]
+            [RequireComponent(typeof(ObjectStrategyHolder))]
             public class Positionable : MonoBehaviour
             {
                 /**
@@ -48,7 +49,7 @@ namespace WindRose
                 public uint Xf { get { return parentMap.StrategyHolder.StatusFor(StrategyHolder).X + Width - 1; } }
                 public uint Yf { get { return parentMap.StrategyHolder.StatusFor(StrategyHolder).Y + Height - 1; } }
                 public Direction? Movement { get { return parentMap.StrategyHolder.StatusFor(StrategyHolder).Movement; } }
-                public Strategies.ObjectStrategyHolder StrategyHolder { get; private set; }
+                public ObjectStrategyHolder StrategyHolder { get; private set; }
 
                 /* *********************** Events *********************** */
                 [Serializable]
@@ -71,7 +72,7 @@ namespace WindRose
 
                 private void Awake()
                 {
-                    StrategyHolder = GetComponent<Strategies.ObjectStrategyHolder>();
+                    StrategyHolder = GetComponent<ObjectStrategyHolder>();
                     onAttached.AddListener(delegate (Map newParentMap)
                     {
                         /*
@@ -124,7 +125,7 @@ namespace WindRose
                     // We will make use of strategy
                     if (StrategyHolder == null)
                     {
-                        throw new Exception("A map strategy holder is required when the map initializes.");
+                        throw new Exception("An object strategy holder is required when the positionable initializes.");
                     }
                     else
                     {

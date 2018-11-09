@@ -74,7 +74,7 @@ namespace WindRose
                 public uint Height { get { return height; } }
                 public uint Width { get { return width; } }
                 public bool Initialized { get { return initialized; } }
-                public ObjectsManagementStrategies.ObjectsManagementStrategyHolder StrategyHolder { get; private set; }
+                public ObjectsManagementStrategyHolder StrategyHolder { get; private set; }
 
                 // Use this for initialization
                 private void Awake()
@@ -88,7 +88,7 @@ namespace WindRose
                     ObjectsLayer = ExpectOneLayerComponent<Layers.ObjectsLayer>(true);
                     CeilingLayer = ExpectOneLayerComponent<Layers.CeilingLayer>();
                     // Fetching strategy - needed
-                    StrategyHolder = GetComponent<ObjectsManagementStrategies.ObjectsManagementStrategyHolder>();
+                    StrategyHolder = GetComponent<ObjectsManagementStrategyHolder>();
                 }
 
                 private void Start()
@@ -96,7 +96,7 @@ namespace WindRose
                     // Initializing strategy
                     if (StrategyHolder == null)
                     {
-                        throw new Types.Exception("A map strategy holder is required when the map initializes.");
+                        throw new Types.Exception("An objects management strategy holder is required when the map initializes.");
                     }
                     else
                     {

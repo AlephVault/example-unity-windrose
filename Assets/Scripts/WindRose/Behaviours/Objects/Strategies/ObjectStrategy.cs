@@ -69,7 +69,7 @@ namespace WindRose
                      */
                     protected void PropertyWasUpdated(string property, object oldValue, object newValue)
                     {
-                        World.ObjectsManagementStrategies.ObjectsManagementStrategyHolder strategyHolder = null;
+                        World.ObjectsManagementStrategyHolder strategyHolder = null;
                         try
                         {
                             strategyHolder = StrategyHolder.Positionable.ParentMap.StrategyHolder;

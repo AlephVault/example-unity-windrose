@@ -97,7 +97,7 @@ namespace WindRose
                 /**
                  * And which tilemaps does it have.
                  */
-                public UnityEngine.Tilemaps.Tilemap[] tilemaps { get; private set; }
+                public UnityEngine.Tilemaps.Tilemap[] fetchedTilemaps { get; private set; }
 
                 /**
                  * This is the list of sorted strategy componentes here.
@@ -125,9 +125,6 @@ namespace WindRose
                         Destroy(gameObject);
                         throw new DuplicatedComponentException("Cannot add the same strategy component more than one time per component type to a strategy");
                     }
-
-                    // Initializing tilemaps.
-                    PrepareTilemaps();
                 }
 
                 /**
@@ -210,18 +207,10 @@ namespace WindRose
                  */
                 private void PrepareTilemaps()
                 {
-                    List<UnityEngine.Tilemaps.Tilemap> tilemaps = new List<UnityEngine.Tilemaps.Tilemap>();
-                    int childCount = transform.childCount;
-                    for (int index = 0; index < childCount; index++)
+                    if (fetchedTilemaps == null)
                     {
-                        GameObject go = transform.GetChild(index).gameObject;
-                        UnityEngine.Tilemaps.Tilemap tilemap = go.GetComponent<UnityEngine.Tilemaps.Tilemap>();
-                        if (tilemap != null)
-                        {
-                            tilemaps.Add(tilemap);
-                        }
+                        fetchedTilemaps = Tilemaps.ToArray();
                     }
-                    this.tilemaps = tilemaps.ToArray();
                 }
 
                 /**
@@ -240,7 +229,8 @@ namespace WindRose
                  */
                 public UnityEngine.Tilemaps.TileBase GetTile(int tilemap, int x, int y)
                 {
-                    return tilemaps[tilemap].GetTile(new Vector3Int(x, y, 0));
+                    PrepareTilemaps();
+                    return fetchedTilemaps[tilemap].GetTile(new Vector3Int(x, y, 0));
                 }
 
                 /**
@@ -248,7 +238,8 @@ namespace WindRose
                  */
                 public void SetTile(int tilemap, uint x, uint y, UnityEngine.Tilemaps.TileBase tile)
                 {
-                    tilemaps[tilemap].SetTile(new Vector3Int((int)x, (int)y, 0), tile);
+                    PrepareTilemaps();
+                    fetchedTilemaps[tilemap].SetTile(new Vector3Int((int)x, (int)y, 0), tile);
                     Strategy.ComputeCellData(x, y);
                 }
 

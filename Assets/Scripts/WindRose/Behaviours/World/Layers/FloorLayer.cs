@@ -38,10 +38,9 @@ namespace WindRose
                         }
                     }
 
-                    protected override void Awake()
+                    private void EnsureTilemaps()
                     {
-                        base.Awake();
-                        // We sort the layers accordingly - please use different sorting orders explicitly.
+                        if (tilemaps != null) return;
                         List<TempListElement> elements = new List<TempListElement>();
                         foreach (Floors.Floor floor in GetComponentsInChildren<Floors.Floor>())
                         {
@@ -51,6 +50,12 @@ namespace WindRose
                         tilemaps = (from element in elements
                                     orderby element.SortingOrder
                                     select element.Tilemap).ToArray();
+                    }
+
+                    protected override void Awake()
+                    {
+                        base.Awake();
+                        // We sort the layers accordingly - please use different sorting orders explicitly.
                     }
 
                     protected override int GetSortingOrder()
@@ -80,6 +85,7 @@ namespace WindRose
                     {
                         get
                         {
+                            EnsureTilemaps();
                             return tilemaps.AsEnumerable();
                         }
                     }

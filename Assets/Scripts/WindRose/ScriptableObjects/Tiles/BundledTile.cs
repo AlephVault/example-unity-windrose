@@ -37,8 +37,15 @@ namespace WindRose
 
                 void Awake()
                 {
-                    // Order / Flatten dependencies
-                    strategies = Support.Utils.AssetsLayout.FlattenDependencies<Strategies.TileStrategy, RequireTileStrategy, TileStrategyDependencyException>(strategies);
+                    try
+                    {
+                        // Order / Flatten dependencies
+                        strategies = Support.Utils.AssetsLayout.FlattenDependencies<Strategies.TileStrategy, RequireTileStrategy, TileStrategyDependencyException>(strategies);
+                    }
+                    catch(Exception)
+                    {
+                        Resources.UnloadAsset(this);
+                    }
                 }
 
                 public override bool GetTileAnimationData(Vector3Int position, ITilemap tilemap, ref TileAnimationData tileAnimationData)

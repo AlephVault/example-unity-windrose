@@ -7,7 +7,7 @@ namespace Support
 {
     namespace Utils
     {
-        public class AssetsLayout
+        public static class AssetsLayout
         {
             /**
              * This class can track arbitrary dependencies from a particular array of objects.

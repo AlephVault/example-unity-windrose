@@ -63,15 +63,15 @@ namespace WindRose
                         public override void ComputeCellData(uint x, uint y)
                         {
                             bool blocks = false;
-                            StrategyHolder.ForEachTilemap(delegate (UnityEngine.Tilemaps.Tilemap tilemap) {
+                            foreach(UnityEngine.Tilemaps.Tilemap tilemap in StrategyHolder.Tilemaps)
+                            {
                                 UnityEngine.Tilemaps.TileBase tile = tilemap.GetTile(new Vector3Int((int)x, (int)y, 0));
                                 LayoutTileStrategy layoutTileStrategy = BundledTile.GetStrategyFrom<LayoutTileStrategy>(tile);
                                 if (layoutTileStrategy)
                                 {
                                     blocks = layoutTileStrategy.Blocks;
                                 }
-                                return false;
-                            });
+                            }
                             blockMask.SetCell(x, y, blocks);
                         }
 

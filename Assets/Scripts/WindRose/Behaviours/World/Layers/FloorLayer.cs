@@ -65,25 +65,23 @@ namespace WindRose
                     {
                         base.Start();
                         int index = 0;
-                        ForEachTilemap(delegate (Tilemap tilemap)
+                        foreach (Tilemap tilemap in tilemaps)
                         {
                             TilemapRenderer renderer = tilemap.GetComponent<TilemapRenderer>();
                             renderer.sortingLayerID = 0;
                             renderer.sortingOrder = index++;
-                            return false;
-                        });
+                        };
                     }
 
                     /**
                      * Allows iterating over its tilemaps (perhaps to perform custom logic?).
                      */
-                    public bool ForEachTilemap(Predicate<Tilemap> callback)
+                    public IEnumerable<Tilemap> Tilemaps
                     {
-                        foreach (Tilemap tilemap in tilemaps)
+                        get
                         {
-                            if (callback(tilemap)) return true;
+                            return tilemaps.AsEnumerable();
                         }
-                        return false;
                     }
                 }
             }

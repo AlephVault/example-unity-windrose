@@ -227,9 +227,12 @@ namespace WindRose
                 /**
                  * Utility method to iterate over the map's tilemaps.
                  */
-                public bool ForEachTilemap(Predicate<UnityEngine.Tilemaps.Tilemap> callback)
+                public IEnumerable<UnityEngine.Tilemaps.Tilemap> Tilemaps
                 {
-                    return Map.FloorLayer.ForEachTilemap(callback);
+                    get
+                    {
+                        return Map.FloorLayer.Tilemaps;
+                    }
                 }
 
                 /**

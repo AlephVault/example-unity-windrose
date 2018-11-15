@@ -26,6 +26,11 @@ namespace Support
                 public DependencyException(string message) : base(message) { }
             }
 
+            public class MainComponentException : Types.Exception
+            {
+                public MainComponentException(string message) : base(message) { }
+            }
+
             public abstract class Depends : Attribute
             {
                 private Type dependency;
@@ -173,6 +178,96 @@ namespace Support
             public static T[] FlattenDependencies<T, A>(T[] componentsList, bool errorOnMissingDependency = true) where A : Depends
             {
                 return FlattenDependencies<T, A, DependencyException>(componentsList, errorOnMissingDependency);
+            }
+
+            /**
+             * Avoids duplicated instances (i.e. more than one instance of the same type) in the components list.
+             * Returns the type => component mapping being created.
+             */
+
+            public static Dictionary<Type, T> AvoidDuplicateDependencies<T, E>(T[] componentsList) where E : DependencyException
+            {
+                Dictionary<Type, T> dictionary = new Dictionary<Type, T>();
+                foreach(T component in componentsList)
+                {
+                    Type type = component.GetType();
+                    if (dictionary.ContainsKey(type))
+                    {
+                        throwException(typeof(E), "Cannot add more than one component instance per component type");
+                    }
+                    dictionary[type] = component;
+                }
+                return dictionary;
+            }
+
+            public static Dictionary<Type, T> AvoidDuplicateDependencies<T>(T[] componentsList)
+            {
+                return AvoidDuplicateDependencies<T, DependencyException>(componentsList);
+            }
+
+            /**
+             * Cross-check dependencies from one list to another list.
+             */
+
+            public static void CrossCheckDependencies<TargetType, DependencyType, A, E>(TargetType[] componentsList, DependencyType[] dependencies) where A : Depends where E : DependencyException
+            {
+                HashSet<Type> requiredDependencies = new HashSet<Type>();
+                foreach (TargetType component in componentsList)
+                {
+                    foreach (A attribute in component.GetType().GetCustomAttributes(typeof(A), true))
+                    {
+                        requiredDependencies.Add(attribute.Dependency);
+                    }
+                }
+                HashSet<Type> installed = new HashSet<Type>(from dependency in dependencies select dependency.GetType());
+                HashSet<Type> unsatisfiedDependencies = new HashSet<Type>(requiredDependencies.Except(installed));
+                if (unsatisfiedDependencies.Count > 0)
+                {
+                    if (unsatisfiedDependencies.Count == 1)
+                    {
+                        throwException(typeof(E), "Unsatisfied dependency: " + unsatisfiedDependencies.First().FullName);
+                    }
+                    else
+                    {
+                        throwException(typeof(E), "Unsatisfied dependencies: " + string.Join(",", (from unsatisfiedDependency in unsatisfiedDependencies select unsatisfiedDependency.FullName).ToArray()));
+                    }
+                }
+            }
+
+            public static void CrossCheckDependencies<TargetType, DependencyType, A>(TargetType[] componentsList, DependencyType[] dependencies) where A : Depends
+            {
+                CrossCheckDependencies<TargetType, DependencyType, A, DependencyException>(componentsList, dependencies);
+            }
+
+            /**
+             * And now the same but against a single element.
+             */
+
+            public static void CrossCheckDependencies<TargetType, DependencyType, A, E>(TargetType[] componentsList, DependencyType dependency) where A : Depends where E : DependencyException
+            {
+                CrossCheckDependencies<TargetType, DependencyType, A, E>(componentsList, new DependencyType[] { dependency });
+            }
+
+            public static void CrossCheckDependencies<TargetType, DependencyType, A>(TargetType[] componentsList, DependencyType dependency) where A : Depends
+            {
+                CrossCheckDependencies<TargetType, DependencyType, A, DependencyException>(componentsList, dependency);
+            }
+
+            /**
+             * Check in-selection element.
+             */
+
+            public static void CheckMainComponent<T, E>(T[] components, T mainComponent) where E : MainComponentException
+            {
+                if (!components.Contains(mainComponent))
+                {
+                    throwException(typeof(E), string.Format("An instance of {} must be selected as main component", typeof(T).FullName));
+                }
+            }
+
+            public static void CheckMainComponent<T>(T[] components, T mainComponent)
+            {
+                CheckMainComponent<T, MainComponentException>(components, mainComponent);
             }
         }
     }

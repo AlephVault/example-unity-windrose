@@ -123,7 +123,7 @@ namespace WindRose
                     if (sortedStrategies.Length != new HashSet<ObjectsManagementStrategy>(sortedStrategies).Count)
                     {
                         Destroy(gameObject);
-                        throw new DuplicatedComponentException("Cannot add the same strategy component more than one time per component type to a strategy");
+                        throw new DuplicatedComponentException("Cannot add more than one strategy instance per strategy type to an objects managemnt strategy holder");
                     }
                 }
 

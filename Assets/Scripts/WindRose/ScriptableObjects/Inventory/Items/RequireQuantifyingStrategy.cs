@@ -13,15 +13,15 @@ namespace WindRose
             {
                 using Support.Utils;
 
-                public class RequireDisplayStrategy : AssetsLayout.Depends
+                public class RequireQuantifyingStrategy : AssetsLayout.Depends
                 {
-                    public RequireDisplayStrategy(Type dependency) : base(dependency)
+                    public RequireQuantifyingStrategy(Type dependency) : base(dependency)
                     {
                     }
 
                     protected override Type BaseDependency()
                     {
-                        return typeof(DisplayStrategies.ItemDisplayStrategy);
+                        return typeof(QuantifyingStrategies.ItemQuantifyingStrategy);
                     }
                 }
             }

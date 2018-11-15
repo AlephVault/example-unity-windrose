@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using UnityEngine;
 
 namespace WindRose
@@ -13,72 +12,56 @@ namespace WindRose
             namespace Items
             {
                 using Support.Utils;
+                using Types.Inventory.Stacks;
+                using Types.Inventory.Stacks.QuantifyingStrategies;
+                using Types.Inventory.Stacks.RenderingStrategies;
+                using Types.Inventory.Stacks.SpatialStrategies;
+                using Types.Inventory.Stacks.UsageStrategies;
 
-                [CreateAssetMenu(fileName = "NewBundledTile", menuName = "Wind Rose/Items/Pickable Item", order = 201)]
+                [CreateAssetMenu(fileName = "NewBundledTile", menuName = "Wind Rose/Inventory/Item", order = 201)]
                 public class Item : ScriptableObject
                 {
                     /**
-                     * A pickable item has a certain bunch of item strategies
-                     *   attached, quite like the bundled tile. Those strategies
-                     *   are just bundled data and are used by other items. Quite
-                     *   like with tiles, drop/pick behaviours will react by
-                     *   default if no matching data strategies are present, and
-                     *   that depends only on each behaviour.
-                     *   
-                     * There are two types of data bundles (strategies):
-                     * - Ruling/Stacking strategies, which interact with the rules
-                     *   of the item being contained.
-                     * - Display strategies, which are only considered to fill a
-                     *   dictionary of data needed to represent.
+                     * An inventory item. Will have the following strategies:
+                     * - One spatial strategy.
+                     * - One quantifying strategy.
+                     * - Many usage strategies.
+                     * - Many rendering strategies.
                      */
 
-                    // Input stacking strategies are here
                     [SerializeField]
-                    private StackStrategies.ItemStackStrategy[] stackStrategies;
+                    private QuantifyingStrategies.ItemQuantifyingStrategy quantifyingStrategy;
 
-                    // Sorted stacking strategies are here
-                    private StackStrategies.ItemStackStrategy[] sortedStackStrategies;
-
-                    // Input display strategies are here
                     [SerializeField]
-                    private DisplayStrategies.ItemDisplayStrategy[] displayStrategies;
+                    private SpatialStrategies.ItemSpatialStrategy spatialStrategy;
 
-                    // Sorted display strategies are here
-                    private DisplayStrategies.ItemDisplayStrategy[] sortedDisplayStrategies;
+                    [SerializeField]
+                    private UsageStrategies.ItemUsageStrategy[] usageStrategies;
+                    private UsageStrategies.ItemUsageStrategy[] sortedUsageStrategies;
+                    private Dictionary<Type, UsageStrategies.ItemUsageStrategy> usageStrategiesByType;
 
-                    // Display data will be stored here
-                    private DisplayStrategies.ItemDisplayStrategy.DisplayData displayData = new DisplayStrategies.ItemDisplayStrategy.DisplayData();
-
-                    // Display data will be accessed here
-                    public IEnumerable<KeyValuePair<string, object>> GetDisplayData()
+                    [SerializeField]
+                    private UsageStrategies.ItemUsageStrategy mainUsageStrategy;
+                    public UsageStrategies.ItemUsageStrategy MainUsageStrategy
                     {
-                        return displayData.AsEnumerable();
+                        get
+                        {
+                            return mainUsageStrategy;
+                        }
                     }
 
-                    // Display strategies may require stacking strategies
-                    //   so we will also check dependencies in that way
-                    private void EnsureAllDependenciesFromStackToDisplayStrategies()
+                    [SerializeField]
+                    private RenderingStrategies.ItemRenderingStrategy[] renderingStrategies;
+                    private RenderingStrategies.ItemRenderingStrategy[] sortedRenderingStrategies;
+                    private Dictionary<Type, RenderingStrategies.ItemRenderingStrategy> renderingStrategiesByType;
+
+                    [SerializeField]
+                    private RenderingStrategies.ItemRenderingStrategy mainRenderingStrategy;
+                    public RenderingStrategies.ItemRenderingStrategy MainRenderingStrategy
                     {
-                        HashSet<Type> requiredDependencies = new HashSet<Type>();
-                        foreach(DisplayStrategies.ItemDisplayStrategy displayStrategy in displayStrategies)
+                        get
                         {
-                            foreach (RequireStackStrategy attribute in displayStrategy.GetType().GetCustomAttributes(typeof(RequireStackStrategy), true))
-                            {
-                                requiredDependencies.Add(attribute.Dependency);
-                            }
-                        }
-                        HashSet<Type> installed = new HashSet<Type>(from stackStrategy in stackStrategies select stackStrategy.GetType());
-                        HashSet<Type> unsatisfiedDependencies = new HashSet<Type>(requiredDependencies.Except(installed));
-                        if (unsatisfiedDependencies.Count > 0)
-                        {
-                            if (unsatisfiedDependencies.Count == 1)
-                            {
-                                throw new AssetsLayout.DependencyException("Unsatisfied dependency: " + unsatisfiedDependencies.First().FullName);
-                            }
-                            else
-                            {
-                                throw new AssetsLayout.DependencyException("Unsatisfied dependencies: " + string.Join(",", (from unsatisfiedDependency in unsatisfiedDependencies select unsatisfiedDependency.FullName).ToArray()));
-                            }
+                            return mainRenderingStrategy;
                         }
                     }
 
@@ -86,15 +69,17 @@ namespace WindRose
                     {
                         try
                         {
-                            // Flatten (and check!) dependencies of both types of strategies
-                            sortedStackStrategies = AssetsLayout.FlattenDependencies<StackStrategies.ItemStackStrategy, RequireStackStrategy>(stackStrategies, true);
-                            sortedDisplayStrategies = AssetsLayout.FlattenDependencies<DisplayStrategies.ItemDisplayStrategy, RequireDisplayStrategy>(displayStrategies, true);
-                            // Raise an exception if a needed stack strategy dependency, needed by any strategy among display strategies, is not present
-                            EnsureAllDependenciesFromStackToDisplayStrategies();
-                            foreach(DisplayStrategies.ItemDisplayStrategy displayStrategy in displayStrategies)
-                            {
-                                displayStrategy.PopulateDisplayData(displayData, this);
-                            }
+                            // Flatten (and check!) dependencies among all of them
+                            sortedUsageStrategies = AssetsLayout.FlattenDependencies<UsageStrategies.ItemUsageStrategy, RequireUsageStrategy>(usageStrategies, true);
+                            sortedRenderingStrategies = AssetsLayout.FlattenDependencies<RenderingStrategies.ItemRenderingStrategy, RequireRenderingStrategy>(renderingStrategies, true);
+                            // Avoid duplicate dependencies and also check interdependencies
+                            renderingStrategiesByType = AssetsLayout.AvoidDuplicateDependencies(sortedRenderingStrategies);
+                            AssetsLayout.CrossCheckDependencies<RenderingStrategies.ItemRenderingStrategy, QuantifyingStrategies.ItemQuantifyingStrategy, RequireQuantifyingStrategy>(sortedRenderingStrategies, quantifyingStrategy);
+                            usageStrategiesByType = AssetsLayout.AvoidDuplicateDependencies(usageStrategies);
+                            AssetsLayout.CrossCheckDependencies<RenderingStrategies.ItemRenderingStrategy, UsageStrategies.ItemUsageStrategy, RequireUsageStrategy>(sortedRenderingStrategies, usageStrategies);
+                            // Check both main strategies
+                            AssetsLayout.CheckMainComponent(usageStrategies, mainUsageStrategy);
+                            AssetsLayout.CheckMainComponent(renderingStrategies, mainRenderingStrategy);
                         }
                         catch(Exception)
                         {
@@ -103,28 +88,55 @@ namespace WindRose
                     }
 
                     /**
-                     * Tools to get a component strategy, as we have in BundledTiles. This will be specially useful for
-                     *   display strategies when they may require data from stack strategies
+                     * Tools to get a component strategy, as we have in BundledTiles.
                      */
 
-                    public T GetStackStrategy<T>() where T : StackStrategies.ItemStackStrategy
+                    public QuantifyingStrategies.ItemQuantifyingStrategy QuantifyingStrategy
                     {
-                        return (from strategy in stackStrategies where strategy is T select (T)strategy).FirstOrDefault();
+                        get
+                        {
+                            return quantifyingStrategy;
+                        }
                     }
 
-                    public T[] GetStackStrategies<T>() where T : StackStrategies.ItemStackStrategy
+                    public SpatialStrategies.ItemSpatialStrategy SpatialStrategy
                     {
-                        return (from strategy in stackStrategies where strategy is T select (T)strategy).ToArray();
+                        get
+                        {
+                            return spatialStrategy;
+                        }
                     }
 
-                    public T GetDisplayStrategy<T>() where T : DisplayStrategies.ItemDisplayStrategy
+                    public T GetUsageStrategy<T>() where T : UsageStrategies.ItemUsageStrategy
                     {
-                        return (from displayStrategy in displayStrategies where displayStrategy is T select (T)displayStrategy).FirstOrDefault();
+                        return usageStrategiesByType[typeof(T)] as T;
                     }
 
-                    public T[] GetDsiplayStrategies<T>() where T : DisplayStrategies.ItemDisplayStrategy
+                    public T GetRenderingStrategy<T>() where T : RenderingStrategies.ItemRenderingStrategy
                     {
-                        return (from displayStrategy in displayStrategies where displayStrategy is T select (T)displayStrategy).ToArray();
+                        return renderingStrategiesByType[typeof(T)] as T;
+                    }
+
+                    public Stack Create(Dictionary<string, object> arguments)
+                    {
+                        StackQuantifyingStrategy stackQuantifyingStrategy = quantifyingStrategy.Create(this, arguments);
+                        StackSpatialStrategy stackSpatialStrategy = spatialStrategy.Create(this, arguments);
+                        StackUsageStrategy[] stackUsageStrategies = (from strategy in sortedUsageStrategies select strategy.Create(this, arguments)).ToArray();
+                        StackRenderingStrategy[] stackRenderingStrategies = (from strategy in sortedRenderingStrategies select strategy.Create(this)).ToArray();
+                        Stack stack = new Stack(
+                            this, stackQuantifyingStrategy, stackSpatialStrategy, stackUsageStrategies, mainUsageStrategy.GetType(), stackRenderingStrategies, mainRenderingStrategy.GetType()
+                        );
+                        stackQuantifyingStrategy.Initialize(stack);
+                        stackSpatialStrategy.Initialize(stack);
+                        foreach(StackUsageStrategy strategy in stackUsageStrategies)
+                        {
+                            strategy.Initialize(stack);
+                        }
+                        foreach(StackRenderingStrategy strategy in stackRenderingStrategies)
+                        {
+                            strategy.Initialize(stack);
+                        }
+                        return stack;
                     }
                 }
             }

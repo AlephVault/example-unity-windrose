@@ -26,7 +26,7 @@ namespace Support
                 public DependencyException(string message) : base(message) { }
             }
 
-            public class MainComponentException : Types.Exception
+            public class MainComponentException : DependencyException
             {
                 public MainComponentException(string message) : base(message) { }
             }
@@ -240,9 +240,10 @@ namespace Support
             }
 
             /**
-             * And now the same but against a single element.
+             * And now the same but against a single element on either side.
              */
 
+            // Array, Item -> Array, [Item]
             public static void CrossCheckDependencies<TargetType, DependencyType, A, E>(TargetType[] componentsList, DependencyType dependency) where A : Depends where E : DependencyException
             {
                 CrossCheckDependencies<TargetType, DependencyType, A, E>(componentsList, new DependencyType[] { dependency });
@@ -251,6 +252,28 @@ namespace Support
             public static void CrossCheckDependencies<TargetType, DependencyType, A>(TargetType[] componentsList, DependencyType dependency) where A : Depends
             {
                 CrossCheckDependencies<TargetType, DependencyType, A, DependencyException>(componentsList, dependency);
+            }
+
+            // Item, Array -> [Item], Array
+            public static void CrossCheckDependencies<TargetType, DependencyType, A, E>(TargetType component, DependencyType[] dependencies) where A : Depends where E : DependencyException
+            {
+                CrossCheckDependencies<TargetType, DependencyType, A, E>(new TargetType[] { component }, dependencies);
+            }
+
+            public static void CrossCheckDependencies<TargetType, DependencyType, A>(TargetType component, DependencyType[] dependencies) where A : Depends
+            {
+                CrossCheckDependencies<TargetType, DependencyType, A, DependencyException>(component, dependencies);
+            }
+
+            // Item, Item -> [Item], [Item]
+            public static void CrossCheckDependencies<TargetType, DependencyType, A, E>(TargetType component, DependencyType dependency) where A : Depends where E : DependencyException
+            {
+                CrossCheckDependencies<TargetType, DependencyType, A, E>(new TargetType[] { component }, new DependencyType[] { dependency });
+            }
+
+            public static void CrossCheckDependencies<TargetType, DependencyType, A>(TargetType component, DependencyType dependency) where A : Depends
+            {
+                CrossCheckDependencies<TargetType, DependencyType, A, DependencyException>(component, dependency);
             }
 
             /**
@@ -268,6 +291,24 @@ namespace Support
             public static void CheckMainComponent<T>(T[] components, T mainComponent)
             {
                 CheckMainComponent<T, MainComponentException>(components, mainComponent);
+            }
+
+            /**
+             * Check presence
+             */
+
+            public static void CheckPresence<T, E>(T component, string fieldName = "") where E : DependencyException
+            {
+                if (component == null)
+                {
+                    fieldName = fieldName != "" ? fieldName : string.Format("[unspecified field of type {}] is required: it must not be null", component.GetType().Name);
+                    throwException(typeof(E), fieldName);
+                }
+            }
+
+            public static void CheckPresence<T>(T component, string fieldName = "")
+            {
+                CheckPresence<T, DependencyException>(component);
             }
         }
     }

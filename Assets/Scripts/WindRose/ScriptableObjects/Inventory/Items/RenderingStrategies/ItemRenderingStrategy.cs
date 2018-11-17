@@ -13,7 +13,7 @@ namespace WindRose
                 {
                     using Types.Inventory.Stacks.RenderingStrategies;
 
-                    public abstract class ItemRenderingStrategy : ScriptableObject
+                    public abstract class ItemRenderingStrategy : ItemStrategy<StackRenderingStrategy>
                     {
                         /**
                          * Rendering strategies are data bundles being read from the
@@ -40,8 +40,6 @@ namespace WindRose
                          * - State strategies.
                          * - Other rendering strategies.
                          */
-
-                        public abstract StackRenderingStrategy Create(Item item);
                     }
                 }
             }

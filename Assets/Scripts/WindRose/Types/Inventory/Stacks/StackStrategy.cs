@@ -25,7 +25,7 @@ namespace WindRose
                      *   reference to their creators. It will also hold a
                      *   reference to the stack it is bound to.
                      *   
-                     * It has a method to export its values, as a counterpart
+                     * It has a method to export its settings, as a counterpart
                      *   of the fact that it receives certain arguments in
                      *   its constructor. By default it returns null.
                      */
@@ -40,28 +40,22 @@ namespace WindRose
                         get; private set;
                     }
 
-                    protected object GetKey(Dictionary<string, object> arguments, string key)
-                    {
-                        string qualifiedKey = GetType().FullName + ":" + key;
-                        return (arguments.ContainsKey(qualifiedKey)) ? arguments[qualifiedKey] : arguments[key];
-                    }
-
-                    public StackStrategy(T itemStrategy, Dictionary<string, object> arguments)
+                    public StackStrategy(T itemStrategy, object argument)
                     {
                         ItemStrategy = itemStrategy;
-                        Import(arguments);
+                        Import(argument);
                     }
 
                     public void Initialize(Stack stack)
                     {
-                        Stack = stack;
+                        if (Stack == null) Stack = stack;
                     }
 
-                    public virtual void Import(Dictionary<string, object> arguments)
+                    public virtual void Import(object argument)
                     {
                     }
 
-                    public virtual Dictionary<string, object> Export()
+                    public virtual object Export()
                     {
                         return null;
                     }

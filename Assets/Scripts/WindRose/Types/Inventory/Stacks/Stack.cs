@@ -24,28 +24,18 @@ namespace WindRose
                      *   from being the reference item, it is a factory).
                      */
 
-                    private QuantifyingStrategies.StackQuantifyingStrategy quantifyingStrategy;
-                    private SpatialStrategies.StackSpatialStrategy spatialStrategy;
                     private UsageStrategies.StackUsageStrategy[] usageStrategies;
                     private Dictionary<Type, UsageStrategies.StackUsageStrategy> usageStrategiesByType;
-                    private UsageStrategies.StackUsageStrategy mainUsageStrategy;
                     public UsageStrategies.StackUsageStrategy MainUsageStrategy
                     {
-                        get
-                        {
-                            return mainUsageStrategy;
-                        }
+                        get; private set;
                     }
 
                     private RenderingStrategies.StackRenderingStrategy[] renderingStrategies;
                     private Dictionary<Type, RenderingStrategies.StackRenderingStrategy> renderingStrategiesByType;
-                    private RenderingStrategies.StackRenderingStrategy mainRenderingStrategy;
                     public RenderingStrategies.StackRenderingStrategy MainRenderingStrategy
                     {
-                        get
-                        {
-                            return mainRenderingStrategy;
-                        }
+                        get; private set;
                     }
 
                     /**
@@ -54,27 +44,22 @@ namespace WindRose
 
                     public QuantifyingStrategies.StackQuantifyingStrategy QuantifyingStrategy
                     {
-                        get
-                        {
-                            return quantifyingStrategy;
-                        }
+                        get; private set;
                     }
 
                     public SpatialStrategies.StackSpatialStrategy SpatialStrategy
                     {
-                        get
-                        {
-                            return spatialStrategy;
-                        }
+                        get; private set;
                     }
 
-                    private ScriptableObjects.Inventory.Items.Item item;
                     public ScriptableObjects.Inventory.Items.Item Item
                     {
-                        get
-                        {
-                            return item;
-                        }
+                        get; private set;
+                    }
+
+                    public DataDumpingStrategies.DataDumpingStrategy DataDumpingStrategy
+                    {
+                        get; private set;
                     }
 
                     public T GetUsageStrategy<T>() where T : UsageStrategies.StackUsageStrategy
@@ -96,50 +81,36 @@ namespace WindRose
                                  QuantifyingStrategies.StackQuantifyingStrategy quantifyingStrategy,
                                  SpatialStrategies.StackSpatialStrategy spatialStrategy,
                                  UsageStrategies.StackUsageStrategy[] usageStrategies,
-                                 Type mainUsageStrategyType,
+                                 UsageStrategies.StackUsageStrategy mainUsageStrategy,
                                  RenderingStrategies.StackRenderingStrategy[] renderingStrategies,
-                                 Type mainRenderingStrategyType)
+                                 RenderingStrategies.StackRenderingStrategy mainRenderingStrategy,
+                                 DataDumpingStrategies.DataDumpingStrategy dataDumpingStrategy)
                     {
-                        this.item = item;
-                        this.quantifyingStrategy = quantifyingStrategy;
-                        this.spatialStrategy = spatialStrategy;
+                        Item = item;
+                        QuantifyingStrategy = quantifyingStrategy;
+                        SpatialStrategy = spatialStrategy;
                         this.usageStrategies = usageStrategies;
                         this.renderingStrategies = renderingStrategies;
-                        usageStrategiesByType = new Dictionary<Type, UsageStrategies.StackUsageStrategy>();
-                        foreach(UsageStrategies.StackUsageStrategy strategy in usageStrategies)
-                        {
-                            usageStrategiesByType[strategy.GetType()] = strategy;
-                        }
-                        mainUsageStrategy = usageStrategiesByType[mainUsageStrategyType];
-                        renderingStrategiesByType = new Dictionary<Type, RenderingStrategies.StackRenderingStrategy>();
-                        foreach(RenderingStrategies.StackRenderingStrategy strategy in renderingStrategies)
-                        {
-                            renderingStrategiesByType[strategy.GetType()] = strategy;
-                        }
-                        mainRenderingStrategy = renderingStrategiesByType[mainRenderingStrategyType];
-                    }
-
-                    private void MergeInto(Dictionary<string, object> target, Dictionary<string, object> source)
-                    {
-                        foreach(string key in source.Keys)
-                        {
-                            target[key] = source[key];
-                        }
+                        MainUsageStrategy = mainUsageStrategy;
+                        MainRenderingStrategy = mainRenderingStrategy;
+                        DataDumpingStrategy = dataDumpingStrategy;
                     }
 
                     /**
                      * Export will not account for rendering strategies.
                      */
-                    public Dictionary<string, object> Export()
+                    public void Dump(object target)
                     {
-                        Dictionary<string, object> result = new Dictionary<string, object>();
-                        MergeInto(result, quantifyingStrategy.Export());
-                        MergeInto(result, spatialStrategy.Export());
-                        foreach(UsageStrategies.StackUsageStrategy strategy in usageStrategies)
+                        DataDumpingStrategy.DumpDataFor(QuantifyingStrategy, QuantifyingStrategy.Export(), target);
+                        DataDumpingStrategy.DumpDataFor(SpatialStrategy, SpatialStrategy.Export(), target);
+                        foreach(UsageStrategies.StackUsageStrategy usageStrategy in usageStrategies)
                         {
-                            MergeInto(result, strategy.Export());
+                            DataDumpingStrategy.DumpDataFor(usageStrategy, usageStrategy.Export(), target);
                         }
-                        return result;
+                        foreach(RenderingStrategies.StackRenderingStrategy renderingStrategy in renderingStrategies)
+                        {
+                            DataDumpingStrategy.DumpDataFor(renderingStrategy, renderingStrategy.Export(), target);
+                        }
                     }
                 }
             }

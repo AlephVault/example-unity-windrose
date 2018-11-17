@@ -13,7 +13,7 @@ namespace WindRose
                 {
                     using Types.Inventory.Stacks.QuantifyingStrategies;
 
-                    public abstract class ItemQuantifyingStrategy : ScriptableObject
+                    public abstract class ItemQuantifyingStrategy : ItemStrategy<StackQuantifyingStrategy>
                     {
                         /**
                          * Quantifying strategies tell us to what extent a stack of
@@ -30,8 +30,6 @@ namespace WindRose
                          * Only one quantifying strategy is allowed on an item.
                          *   Quantifying strategies will have no dependencies.
                          */
-
-                        public abstract StackQuantifyingStrategy Create(Item item, Dictionary<string, object> arguments);
                     }
                 }
             }

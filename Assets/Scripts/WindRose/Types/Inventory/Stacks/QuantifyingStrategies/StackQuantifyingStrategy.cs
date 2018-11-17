@@ -20,7 +20,7 @@ namespace WindRose
                         /**
                          * This stack strategy is related to an ItemQuantifyingStrategy.
                          */
-                        public StackQuantifyingStrategy(ItemQuantifyingStrategy itemStrategy, Dictionary<string, object> arguments) : base(itemStrategy, arguments)
+                        public StackQuantifyingStrategy(ItemQuantifyingStrategy itemStrategy, object argument) : base(itemStrategy, argument)
                         {
                         }
                     }

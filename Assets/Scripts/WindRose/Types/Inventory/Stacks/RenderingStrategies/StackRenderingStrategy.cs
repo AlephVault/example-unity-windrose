@@ -20,7 +20,7 @@ namespace WindRose
                         /**
                          * This stack strategy is related to an ItemRenderingStrategy.
                          */
-                        public StackRenderingStrategy(ItemRenderingStrategy itemStrategy, Dictionary<string, object> arguments) : base(itemStrategy, arguments)
+                        public StackRenderingStrategy(ItemRenderingStrategy itemStrategy, object argument) : base(itemStrategy, argument)
                         {
                         }
                     }

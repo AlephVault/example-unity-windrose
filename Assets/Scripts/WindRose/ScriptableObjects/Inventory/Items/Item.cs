@@ -65,6 +65,9 @@ namespace WindRose
                         }
                     }
 
+                    [SerializeField]
+                    private DataLoadingStrategies.DataLoadingStrategy dataLoadingStrategy;
+
                     private void Awake()
                     {
                         try
@@ -74,21 +77,27 @@ namespace WindRose
                             sortedRenderingStrategies = AssetsLayout.FlattenDependencies<RenderingStrategies.ItemRenderingStrategy, RequireRenderingStrategy>(renderingStrategies, true);
                             // Avoid duplicate dependencies and also check interdependencies
                             renderingStrategiesByType = AssetsLayout.AvoidDuplicateDependencies(sortedRenderingStrategies);
-                            AssetsLayout.CrossCheckDependencies<RenderingStrategies.ItemRenderingStrategy, QuantifyingStrategies.ItemQuantifyingStrategy, RequireQuantifyingStrategy>(sortedRenderingStrategies, quantifyingStrategy);
                             usageStrategiesByType = AssetsLayout.AvoidDuplicateDependencies(usageStrategies);
+                            AssetsLayout.CrossCheckDependencies<RenderingStrategies.ItemRenderingStrategy, QuantifyingStrategies.ItemQuantifyingStrategy, RequireQuantifyingStrategy>(sortedRenderingStrategies, quantifyingStrategy);
                             AssetsLayout.CrossCheckDependencies<RenderingStrategies.ItemRenderingStrategy, UsageStrategies.ItemUsageStrategy, RequireUsageStrategy>(sortedRenderingStrategies, usageStrategies);
                             // Check both main strategies
                             AssetsLayout.CheckMainComponent(usageStrategies, mainUsageStrategy);
                             AssetsLayout.CheckMainComponent(renderingStrategies, mainRenderingStrategy);
+                            // Finally: Check dependencies for the DataLoadingStrategy
+                            AssetsLayout.CheckPresence(dataLoadingStrategy, "dataLoadingStrategy");
+                            AssetsLayout.CrossCheckDependencies<DataLoadingStrategies.DataLoadingStrategy, QuantifyingStrategies.ItemQuantifyingStrategy, RequireQuantifyingStrategy>(dataLoadingStrategy, quantifyingStrategy);
+                            AssetsLayout.CrossCheckDependencies<DataLoadingStrategies.DataLoadingStrategy, SpatialStrategies.ItemSpatialStrategy, RequireSpatialStrategy>(dataLoadingStrategy, spatialStrategy);
+                            AssetsLayout.CrossCheckDependencies<DataLoadingStrategies.DataLoadingStrategy, UsageStrategies.ItemUsageStrategy, RequireQuantifyingStrategy>(dataLoadingStrategy, usageStrategies);
+                            AssetsLayout.CrossCheckDependencies<DataLoadingStrategies.DataLoadingStrategy, RenderingStrategies.ItemRenderingStrategy, RequireRenderingStrategy>(dataLoadingStrategy, renderingStrategies);
                         }
-                        catch(Exception)
+                        catch (Exception)
                         {
                             Resources.UnloadAsset(this);
                         }
                     }
 
                     /**
-                     * Tools to get a component strategy, as we have in BundledTiles.
+                     * Tools to get a component strategy.
                      */
 
                     public QuantifyingStrategies.ItemQuantifyingStrategy QuantifyingStrategy
@@ -117,15 +126,45 @@ namespace WindRose
                         return renderingStrategiesByType[typeof(T)] as T;
                     }
 
-                    public Stack Create(Dictionary<string, object> arguments)
+                    public Stack Create(object argument)
                     {
-                        StackQuantifyingStrategy stackQuantifyingStrategy = quantifyingStrategy.Create(this, arguments);
-                        StackSpatialStrategy stackSpatialStrategy = spatialStrategy.Create(this, arguments);
-                        StackUsageStrategy[] stackUsageStrategies = (from strategy in sortedUsageStrategies select strategy.Create(this, arguments)).ToArray();
-                        StackRenderingStrategy[] stackRenderingStrategies = (from strategy in sortedRenderingStrategies select strategy.Create(this)).ToArray();
+                        /*
+                         * Creating children strategies.
+                         */
+                        int index;
+                        StackQuantifyingStrategy stackQuantifyingStrategy = quantifyingStrategy.CreateStackStrategy(dataLoadingStrategy.LoadDataFor(quantifyingStrategy, argument));
+                        StackSpatialStrategy stackSpatialStrategy = spatialStrategy.CreateStackStrategy(dataLoadingStrategy.LoadDataFor(spatialStrategy, argument));
+                        StackUsageStrategy[] stackUsageStrategies = new StackUsageStrategy[sortedUsageStrategies.Length];
+                        StackUsageStrategy mainStackUsageStrategy = null;
+                        index = 0;
+                        foreach(UsageStrategies.ItemUsageStrategy usageStrategy in sortedUsageStrategies)
+                        {
+                            StackUsageStrategy stackUsageStrategy = usageStrategy.CreateStackStrategy(dataLoadingStrategy.LoadDataFor(usageStrategy, argument));
+                            stackUsageStrategies[index] = stackUsageStrategy;
+                            if (usageStrategy == mainUsageStrategy) mainStackUsageStrategy = stackUsageStrategy;
+                            index++;
+                        }
+                        StackRenderingStrategy[] stackRenderingStrategies = new StackRenderingStrategy[sortedRenderingStrategies.Length];
+                        StackRenderingStrategy mainStackRenderingStrategy = null;
+                        index = 0;
+                        foreach (RenderingStrategies.ItemRenderingStrategy renderingStrategy in sortedRenderingStrategies)
+                        {
+                            StackRenderingStrategy stackRenderingStrategy = renderingStrategy.CreateStackStrategy(dataLoadingStrategy.LoadDataFor(renderingStrategy, argument));
+                            stackRenderingStrategies[index] = stackRenderingStrategy;
+                            if (renderingStrategy == mainRenderingStrategy) mainStackRenderingStrategy = stackRenderingStrategy;
+                            index++;
+                        }
+
+                        /*
+                         * Creating the stack with the strategies.
+                         */
                         Stack stack = new Stack(
-                            this, stackQuantifyingStrategy, stackSpatialStrategy, stackUsageStrategies, mainUsageStrategy.GetType(), stackRenderingStrategies, mainRenderingStrategy.GetType()
+                            this, stackQuantifyingStrategy, stackSpatialStrategy, stackUsageStrategies, mainStackUsageStrategy, stackRenderingStrategies, mainStackRenderingStrategy, dataLoadingStrategy.CreateStackStrategy(null)
                         );
+
+                        /*
+                         * Initializing the stack strategies.
+                         */
                         stackQuantifyingStrategy.Initialize(stack);
                         stackSpatialStrategy.Initialize(stack);
                         foreach(StackUsageStrategy strategy in stackUsageStrategies)

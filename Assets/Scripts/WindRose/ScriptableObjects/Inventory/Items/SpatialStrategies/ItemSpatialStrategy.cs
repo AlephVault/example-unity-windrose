@@ -13,7 +13,7 @@ namespace WindRose
                 {
                     using Types.Inventory.Stacks.SpatialStrategies;
 
-                    public abstract class ItemSpatialStrategy : ScriptableObject
+                    public abstract class ItemSpatialStrategy : ItemStrategy<StackSpatialStrategy>
                     {
                         /**
                          * Spatial strategies are data bundles telling to which
@@ -33,8 +33,6 @@ namespace WindRose
                          * Only one spatial strategy is allowed on an item. Spatial
                          *   strategies will have no dependencies.
                          */
-
-                        public abstract StackSpatialStrategy Create(Item item, Dictionary<string, object> arguments);
                     }
                 }
             }

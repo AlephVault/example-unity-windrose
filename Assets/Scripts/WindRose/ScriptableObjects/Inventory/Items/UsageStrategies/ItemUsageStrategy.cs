@@ -13,7 +13,7 @@ namespace WindRose
                 {
                     using Types.Inventory.Stacks.UsageStrategies;
 
-                    public abstract class ItemUsageStrategy : ScriptableObject
+                    public abstract class ItemUsageStrategy : ItemStrategy<StackUsageStrategy>
                     {
                         /**
                          * Usage strategies are data bundles being accessed
@@ -33,8 +33,6 @@ namespace WindRose
                          *   each strategy in the item) and in both cases the added
                          *   strategies will depend among themselves.
                          */
-
-                        public abstract StackUsageStrategy Create(Item item, Dictionary<string, object> arguments);
                     }
                 }
             }

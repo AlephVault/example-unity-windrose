@@ -129,11 +129,12 @@ namespace WindRose
                     public Stack Create(object argument)
                     {
                         /*
-                         * Creating children strategies.
+                         * Creating children strategies. Spatial and rendering strategies need no arguments since spatial strategies
+                         *   actually depend on what an inventory determines, and rendering strategies do not have own data.
                          */
                         int index;
                         StackQuantifyingStrategy stackQuantifyingStrategy = quantifyingStrategy.CreateStackStrategy(dataLoadingStrategy.LoadDataFor(quantifyingStrategy, argument));
-                        StackSpatialStrategy stackSpatialStrategy = spatialStrategy.CreateStackStrategy(dataLoadingStrategy.LoadDataFor(spatialStrategy, argument));
+                        StackSpatialStrategy stackSpatialStrategy = spatialStrategy.CreateStackStrategy(null);
                         StackUsageStrategy[] stackUsageStrategies = new StackUsageStrategy[sortedUsageStrategies.Length];
                         StackUsageStrategy mainStackUsageStrategy = null;
                         index = 0;
@@ -149,7 +150,7 @@ namespace WindRose
                         index = 0;
                         foreach (RenderingStrategies.ItemRenderingStrategy renderingStrategy in sortedRenderingStrategies)
                         {
-                            StackRenderingStrategy stackRenderingStrategy = renderingStrategy.CreateStackStrategy(dataLoadingStrategy.LoadDataFor(renderingStrategy, argument));
+                            StackRenderingStrategy stackRenderingStrategy = renderingStrategy.CreateStackStrategy(null);
                             stackRenderingStrategies[index] = stackRenderingStrategy;
                             if (renderingStrategy == mainRenderingStrategy) mainStackRenderingStrategy = stackRenderingStrategy;
                             index++;

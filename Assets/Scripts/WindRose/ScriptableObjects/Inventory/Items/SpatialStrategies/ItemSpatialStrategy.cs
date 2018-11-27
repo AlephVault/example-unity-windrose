@@ -25,14 +25,23 @@ namespace WindRose
                          *   optimize the way they organize their bag.
                          *   
                          * Since they are data bundles, they have no particular fields.
-                         *   They will have just one method to create a compatible stack
-                         *   spatial strategy instance, which must be implemented. Logic
-                         *   should (will) be present in the stack spatial counterpart
+                         *   They will have just one method to create a standard stack
+                         *   spatial strategy instance, which will hold an arbitrary
+                         *   position that depends on the inventory that holds this stack
+                         *   or will become null while not contained in an inventory. Logic
+                         *   should (will) be present in the inventory spatial counterpart
                          *   strategy.
                          * 
                          * Only one spatial strategy is allowed on an item. Spatial
                          *   strategies will have no dependencies.
+                         * 
+                         * This class remains abstract, since data has to be added.
                          */
+
+                        public override StackSpatialStrategy CreateStackStrategy(object argument)
+                        {
+                            return new StackSpatialStrategy(this, null);
+                        }
                     }
                 }
             }

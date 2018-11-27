@@ -46,9 +46,7 @@ namespace WindRose
                          */
 
                         public abstract object LoadDataFor(QuantifyingStrategies.ItemQuantifyingStrategy strategy, object source);
-                        public abstract object LoadDataFor(SpatialStrategies.ItemSpatialStrategy strategy, object source);
                         public abstract object LoadDataFor(UsageStrategies.ItemUsageStrategy strategy, object source);
-                        public abstract object LoadDataFor(RenderingStrategies.ItemRenderingStrategy strategy, object source);
                     }
                 }
             }

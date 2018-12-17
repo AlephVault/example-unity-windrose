@@ -43,6 +43,15 @@ namespace WindRose
                         public abstract object DumpDataFor(SpatialStrategies.StackSpatialStrategy strategy, object exported, object target);
                         public abstract object DumpDataFor(UsageStrategies.StackUsageStrategy strategy, object exported, object target);
                         public abstract object DumpDataFor(RenderingStrategies.StackRenderingStrategy strategy, object exported, object target);
+
+                        /**
+                         * Clones a data dumping strategy. Useful for cloning or splitting stacks.
+                         * No arguments are needed for dumping strategies.
+                         */
+                        public DataDumpingStrategy Clone()
+                        {
+                            return ItemStrategy.CreateStackStrategy(null);
+                        }
                     }
                 }
             }

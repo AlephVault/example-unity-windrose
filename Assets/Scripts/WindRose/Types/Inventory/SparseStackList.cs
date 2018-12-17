@@ -10,11 +10,11 @@ namespace WindRose
     {
         namespace Inventory
         {
-            public class Pack
+            public class SparseStackList
             {
                 /**
-                 * A pack is just a list of stacks, managed in a special way to not
-                 *   break indices.
+                 * A sparse stack list is just a list of stacks, managed in a special
+                 *   way to not break indices.
                  * 
                  * When an element is added to the list, it will check for any null
                  *   position in the list to occupy. If any is found, it is occupied
@@ -23,27 +23,17 @@ namespace WindRose
                  * When an element is removed, it will be replaced by null.
                  */
 
-                public class PackException : Exception
+                public class Exception : Types.Exception
                 {
-                    public PackException(string message) : base(message) {}
+                    public Exception(string message) : base(message) {}
                 }
 
-                public abstract class PackHeld
+                private List<Stacks.Stack> stacks;
+
+                public SparseStackList()
                 {
-                    /**
-                     * This is the base class for stacks. By doing this, we are
-                     *   providing a Pack member that can only by changed by this
-                     *   class. 
-                     */
-
-                    public Pack Pack
-                    {
-                        get; private set;
-                    }
+                    stacks = new List<Stacks.Stack>();
                 }
-
-                [SerializeField]
-                private List<Stacks.Stack> stacks = new List<Stacks.Stack>();
 
                 public int Count
                 {
@@ -61,20 +51,13 @@ namespace WindRose
                     }
                 }
 
+                public IEnumerable<Stacks.Stack> Stacks()
+                {
+                    return stacks.AsEnumerable();
+                }
+
                 public int Add(Stacks.Stack stack)
                 {
-                    // Idempotent case - return where the stack is currently located
-                    if (stack.Pack == this)
-                    {
-                        return stacks.IndexOf(stack);
-                    }
-
-                    // On already-assigned stacks, explode
-                    if (stack.Pack != null)
-                    {
-                        throw new PackException("Stack is already added to a pack");
-                    }
-
                     // Search for the first empty place, and occupy
                     int length = stacks.Count();
                     for(int index = 0; index < length; index++)
@@ -97,7 +80,7 @@ namespace WindRose
                     int length = stacks.Count();
                     if (index >= length || index < 0)
                     {
-                        throw new PackException("Invalid index: out of bounds");
+                        throw new Exception("Invalid index: out of bounds");
                     }
 
                     // On idempotent case, we return

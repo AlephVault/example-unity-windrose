@@ -23,6 +23,17 @@ namespace WindRose
                         public StackRenderingStrategy(ItemRenderingStrategy itemStrategy, object argument) : base(itemStrategy, argument)
                         {
                         }
+
+                        public abstract void DumpRenderingData(Dictionary<string, object> target);
+
+                        /**
+                         * Clones a rendering strategy. Useful for cloning or splitting stacks.
+                         * No arguments are needed for rendering strategies.
+                         */
+                        public StackRenderingStrategy Clone()
+                        {
+                            return ItemStrategy.CreateStackStrategy(null);
+                        }
                     }
                 }
             }

@@ -51,7 +51,7 @@ namespace WindRose
                         if (Stack == null) Stack = stack;
                     }
 
-                    public virtual void Import(object argument)
+                    protected virtual void Import(object argument)
                     {
                     }
 

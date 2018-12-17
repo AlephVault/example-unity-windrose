@@ -12,7 +12,7 @@ namespace WindRose
         {
             namespace Stacks
             {
-                public class Stack : Pack.PackHeld
+                public class Stack
                 {
                     /**
                      * A stack is the only implementation of PackHeld
@@ -111,6 +111,192 @@ namespace WindRose
                         {
                             DataDumpingStrategy.DumpDataFor(renderingStrategy, renderingStrategy.Export(), target);
                         }
+                    }
+
+                    /**
+                     * All the public methods go here.
+                     */
+
+                    /**
+                     * Clones the stack almost entirely - only quantity is not included but passed externally.
+                     */
+                    private Stack Clone(QuantifyingStrategies.StackQuantifyingStrategy quantifyingStrategy)
+                    {
+                        UsageStrategies.StackUsageStrategy[] clonedUsageStrategies = new UsageStrategies.StackUsageStrategy[usageStrategies.Length];
+                        UsageStrategies.StackUsageStrategy clonedMainUsageStrategy = null;
+                        RenderingStrategies.StackRenderingStrategy[] clonedRenderingStrategies = new RenderingStrategies.StackRenderingStrategy[renderingStrategies.Length];
+                        RenderingStrategies.StackRenderingStrategy clonedMainRenderingStrategy = null;
+                        int index = 0;
+                        foreach (UsageStrategies.StackUsageStrategy strategy in usageStrategies)
+                        {
+                            clonedUsageStrategies[index] = strategy.Clone();
+                            if (MainUsageStrategy == strategy)
+                            {
+                                // We know that MainUsageStrategy will enter this condition at least once.
+                                // Otherwise, we should need to call clonedMainUsageStrategy = MainUsageStrategy.Clone()
+                                //   but outside the loop.
+                                clonedMainUsageStrategy = clonedUsageStrategies[index];
+                            }
+                            index++;
+                        }
+
+                        index = 0;
+                        foreach (RenderingStrategies.StackRenderingStrategy strategy in renderingStrategies)
+                        {
+                            clonedRenderingStrategies[index] = strategy.Clone();
+                            if (MainRenderingStrategy == strategy)
+                            {
+                                // We know that MainRenderingStrategy will enter this condition at least once.
+                                // Otherwise, we should need to call clonedMainRenderingStrategy = MainRenderingStrategy.Clone()
+                                //   but outside the loop.
+                                clonedMainRenderingStrategy = clonedRenderingStrategies[index];
+                            }
+                            index++;
+                        }
+
+                        return new Stack(Item, quantifyingStrategy, SpatialStrategy.Clone(),
+                                         clonedUsageStrategies, clonedMainUsageStrategy,
+                                         clonedRenderingStrategies, clonedMainRenderingStrategy,
+                                         DataDumpingStrategy.Clone());
+                    }
+
+                    /**
+                     * Clones the stack, entirely.
+                     */
+                    public Stack Clone()
+                    {
+                        return Clone(QuantifyingStrategy.Clone());
+                    }
+
+                    /**
+                     * Clones the stack, but with a different quantity. The stack will not be bound to any inventory.
+                     */
+                    public Stack Clone(object quantity)
+                    {
+                        return Clone(QuantifyingStrategy.Clone(quantity));
+                    }
+
+                    /**
+                     * Checks whether this stack has an allowed (in-constraints) nonzero
+                     *   quantity. Stacks not being able to satisfy this condition will not
+                     *   be added to an inventory.
+                     */
+                    public bool IsAllowedNonZeroQuantity()
+                    {
+                        return QuantifyingStrategy.HasAllowedQuantity() && !QuantifyingStrategy.IsEmpty();
+                    }
+
+                    /**
+                     * Tries to take part of the stack, defined by a quantity. It does not allow taking
+                     *   the whole stack, but just part of it.
+                     */
+                    public Stack Take(object quantity)
+                    {
+                        if (QuantifyingStrategy.ChangeQuantityBy(quantity, true, true))
+                        {
+                            return Clone(quantity);
+                        }
+                        return null;
+                    }
+
+                    /**
+                     * Tries to merge a stack into another.
+                     * 
+                     * Please consider the following notes: This method does not affect the source stack
+                     *   but instead affects the target stack. This means: without the cares of manually
+                     *   handling the source stack later, you could end with twice the expected amount
+                     *   somewhere.
+                     * 
+                     * The result of the merge may be:
+                     * 1. Denied: This may occur because the underlying item of the stacks is not the
+                     *    same in both cases, the usage strategies are not mergeable (either by their
+                     *    nature or by their circumstance), the quantity of either stacks is invalid
+                     *    (i.e. non-positive) or the quantity of the destination stack is full.
+                     * 2. Partial: The merge was successful but not with the whole quantity. This means
+                     *    that the destination stack filled up and 
+                     * 
+                     * As an output parameter, you get the quantity left on the source stack. You should
+                     *   explicitly set such value in the source stack by calling the following method:
+                     *   -> source.ChangeQuantityTo(quantityLeft)
+                     * However this will vary depending on your needs.
+                     */
+                    public enum MergeResult { Denied, Partial, Total }
+                    public MergeResult Merge(Stack source, out object quantityLeft)
+                    {
+                        // preset to null so we can leave control safely
+                        quantityLeft = null;
+
+                        // this one would tell the quantity effectively added to, and final in, the stack
+                        object quantityAdded = null;
+                        object finalQuantity = null;
+
+                        if (Item != source.Item || IsFull() || !IsAllowedNonZeroQuantity() || !source.IsAllowedNonZeroQuantity())
+                        {
+                            return MergeResult.Denied;
+                        }
+
+                        // We test saturation to know which quantities to add
+                        bool saturates = QuantifyingStrategy.WillSaturate(source.QuantifyingStrategy.Quantity, out finalQuantity, out quantityAdded, out quantityLeft);
+
+                        /*
+                         * This will happen now:
+                         * 1. The spatial strategy will not be affected.
+                         * 2. The quantifying strategy will be set to the final quantity.
+                         * 3. The rendering strategies will not be affected.
+                         * 4. The usage strategies will behave differently:
+                         */
+
+                        // Now we compute the interpolations for each usagestrategy (stacks will have them
+                        //   in the same order) by manually zipping everything.
+                        int index = 0;
+                        Action[] interpolators = new Action[usageStrategies.Length];
+                        foreach(UsageStrategies.StackUsageStrategy usageStrategy in usageStrategies)
+                        {
+                            Action interpolator = usageStrategy.Interpolate(source.usageStrategies[index], QuantifyingStrategy.Quantity, quantityAdded);
+                            if (interpolator == null)
+                            {
+                                // If at least an interpolator fails, we abort everything.
+                                return MergeResult.Denied;
+                            }
+                            interpolators[index++] = interpolator;
+                        }
+
+                        // Now we run all the interpolators.
+                        foreach(Action interpolator in interpolators)
+                        {
+                            interpolator();
+                        }
+
+                        // We reached this point because all the interpolators have been found.
+                        // If you coded the saturation method appropriately, this will work.
+                        QuantifyingStrategy.ChangeQuantityTo(finalQuantity, true);
+
+                        // We are ok with this.
+                        return saturates ? MergeResult.Partial : MergeResult.Total;
+                    }
+
+                    /**
+                     * Checks whether the quantity is full.
+                     */
+                    public bool IsFull()
+                    {
+                        return QuantifyingStrategy.IsFull();
+                    }
+
+                    /**
+                     * Changes the underlying quantity by certain amount.
+                     */
+                    public bool ChangeQuantityBy(object quantity)
+                    {
+                        return QuantifyingStrategy.ChangeQuantityBy(quantity, false, false);
+                    }
+
+                    /**
+                     * Changes the underlying quantity to certain amount.
+                     */
+                    public bool ChangeQuantityTo(object quantity)
+                    {
+                        return QuantifyingStrategy.ChangeQuantityTo(quantity, false);
                     }
                 }
             }

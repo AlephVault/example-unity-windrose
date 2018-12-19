@@ -17,7 +17,7 @@ namespace WindRose
                 {
                     using ScriptableObjects.Inventory.Items.SpatialStrategies;
 
-                    public abstract class SpatialInventoryManagementStrategy : InventoryManagementStrategy
+                    public abstract class InventorySpatialManagementStrategy : InventoryManagementStrategy
                     {
                         /**
                          * Manages the position of the elements in the inventory. One example could involve mantaining an R-tree
@@ -125,10 +125,10 @@ namespace WindRose
                              *   and will only be useful for display renderers.
                              */
                             public readonly object Position;
-                            public readonly SpatialInventoryManagementStrategy SpatialStrategy;
+                            public readonly InventorySpatialManagementStrategy SpatialStrategy;
                             private Dictionary<object, Types.Inventory.Stacks.Stack> stacks = new Dictionary<object, Types.Inventory.Stacks.Stack>();
 
-                            public SpatialContainer(SpatialInventoryManagementStrategy spatialStrategy, object position)
+                            public SpatialContainer(InventorySpatialManagementStrategy spatialStrategy, object position)
                             {
                                 SpatialStrategy = spatialStrategy;
                                 Position = position;
@@ -263,12 +263,26 @@ namespace WindRose
                             }
 
                             /**
+                             * Tries to find a first-match for the item.
+                             */
+                            public abstract object FirstMatch(Types.Inventory.Stacks.Stack stack);
+
+                            /**
                              * Puts a new (or moves an existing) stack in this container. It also sets
                              *   the position of the stack.
                              */
                             public bool Put(object position, Types.Inventory.Stacks.Stack stack)
                             {
-                                CheckValidStackPosition(position, stack);
+                                if (position == null)
+                                {
+                                    CheckValidStackPosition(position, stack);
+                                }
+                                else
+                                {
+                                    position = FirstMatch(stack);
+                                    if (position == null) return false;
+                                }
+
                                 if (!StackPositionIsAvailable(position, stack)) return false;
                                 if (stacks.ContainsValue(stack))
                                 {
@@ -354,7 +368,7 @@ namespace WindRose
                          */
                         protected abstract Type GetItemSpatialStrategyCounterpartType();
 
-                        private void Awake()
+                        protected void Awake()
                         {
                             ItemSpatialStrategyCounterpartType = GetItemSpatialStrategyCounterpartType();
                             if (!ItemSpatialStrategyCounterpartType.IsSubclassOf(typeof(ItemSpatialStrategy)))

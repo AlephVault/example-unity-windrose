@@ -35,6 +35,10 @@ namespace WindRose
                      * - Data marshalling strategy. Loosely related to particular data loading
                      *   item strategies, will serialize/inflate the items inside an inventory
                      *   instance.
+                     * - Rendering strategy: Will receive and handle events to manage stacks
+                     *   being refreshed / removed.
+                     * - Positioning strategy: Will tel which positions are allowed for the
+                     *   containers.
                      */
 
                     public InventoryManagementStrategyHolder StrategyHolder

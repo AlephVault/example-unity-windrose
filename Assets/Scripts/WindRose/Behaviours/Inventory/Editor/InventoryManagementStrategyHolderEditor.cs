@@ -26,10 +26,10 @@ namespace WindRose
                     serializedObject.Update();
 
                     InventoryManagementStrategyHolder underlyingObject = (serializedObject.targetObject as InventoryManagementStrategyHolder);
-                    UsageInventoryManagementStrategy[] strategies = underlyingObject.GetComponents<UsageInventoryManagementStrategy>();
+                    InventoryUsageManagementStrategy[] strategies = underlyingObject.GetComponents<InventoryUsageManagementStrategy>();
                     GUIContent[] strategyNames = (from strategy in strategies select new GUIContent(strategy.GetType().Name)).ToArray();
 
-                    int index = ArrayUtility.IndexOf(strategies, strategy.objectReferenceValue as UsageInventoryManagementStrategy);
+                    int index = ArrayUtility.IndexOf(strategies, strategy.objectReferenceValue as InventoryUsageManagementStrategy);
                     index = EditorGUILayout.Popup(new GUIContent("Main Usage Strategy"), index, strategyNames);
                     strategy.objectReferenceValue = index >= 0 ? strategies[index] : null;
 

@@ -12,7 +12,7 @@ namespace WindRose
             {
                 namespace QuantifyingStrategies
                 {
-                    class ItemFloatQuantifyingStrategy : ItemQuantifyingStrategy
+                    public class ItemFloatQuantifyingStrategy : ItemQuantifyingStrategy
                     {
                         /**
                          * Makes stacks by using positive float quantities.

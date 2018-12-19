@@ -14,7 +14,7 @@ namespace WindRose
             {
                 namespace QuantifyingStrategies
                 {
-                    class ItemUnstackedQuantifyingStrategy : ItemQuantifyingStrategy
+                    public class ItemUnstackedQuantifyingStrategy : ItemQuantifyingStrategy
                     {
                         /**
                          * Does not make any stack. Just one element per stack.

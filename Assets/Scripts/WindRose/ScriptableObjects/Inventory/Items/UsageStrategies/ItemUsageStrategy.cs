@@ -1,7 +1,4 @@
-﻿using UnityEngine;
-using System.Collections.Generic;
-
-namespace WindRose
+﻿namespace WindRose
 {
     namespace ScriptableObjects
     {

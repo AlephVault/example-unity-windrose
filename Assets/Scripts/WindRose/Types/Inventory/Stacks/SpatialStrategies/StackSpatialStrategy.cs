@@ -24,7 +24,7 @@ namespace WindRose
                          *   added to.
                          */
 
-                        public SpatialInventoryManagementStrategy.QualifiedStackPosition QualifiedPosition
+                        public InventorySpatialManagementStrategy.QualifiedStackPosition QualifiedPosition
                         {
                             get; private set;
                         }

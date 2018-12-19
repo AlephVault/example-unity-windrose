@@ -17,7 +17,7 @@ namespace WindRose
                     using Types.Inventory.Stacks;
                     using Types.Inventory.Stacks.UsageStrategies;
 
-                    public abstract class UsageInventoryManagementStrategy : InventoryManagementStrategy
+                    public abstract class InventoryUsageManagementStrategy : InventoryManagementStrategy
                     {
                         /**
                          * Usage strategies try consuming or using certain items. Usage strategies should have a chained

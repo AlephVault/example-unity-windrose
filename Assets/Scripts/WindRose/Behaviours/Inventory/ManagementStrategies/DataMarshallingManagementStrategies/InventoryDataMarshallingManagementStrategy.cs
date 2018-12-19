@@ -14,9 +14,7 @@ namespace WindRose
             {
                 namespace DataMarshallingManagementStrategies
                 {
-                    using Types.Inventory;
-
-                    public abstract class DataMarshallingManagementStrategy : MonoBehaviour
+                    public abstract class InventoryDataMarshallingManagementStrategy : MonoBehaviour
                     {
                         
                     }

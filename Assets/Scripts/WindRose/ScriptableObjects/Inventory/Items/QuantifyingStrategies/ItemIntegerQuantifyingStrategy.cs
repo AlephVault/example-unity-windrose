@@ -12,7 +12,7 @@ namespace WindRose
             {
                 namespace QuantifyingStrategies
                 {
-                    class ItemIntegerQuantifyingStrategy : ItemQuantifyingStrategy
+                    public class ItemIntegerQuantifyingStrategy : ItemQuantifyingStrategy
                     {
                         /**
                          * Makes stacks by using positive integer quantities.

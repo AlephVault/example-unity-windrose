@@ -15,7 +15,7 @@ namespace WindRose
                 {
                     using Types.Inventory.Stacks.SpatialStrategies;
 
-                    public class ItemSimpleSpatialStrategy : StackSpatialStrategy;
+                    public class ItemSimpleSpatialStrategy : StackSpatialStrategy
                     {
                         /**
                          * This is a simple spatial strategy that indexes

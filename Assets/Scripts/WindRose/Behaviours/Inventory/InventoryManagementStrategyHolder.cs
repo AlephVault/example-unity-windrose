@@ -278,6 +278,91 @@ namespace WindRose
                     }
                     return false;
                 }
+
+                /*********************************************************************************************
+                 *********************************************************************************************
+                 * Rendering methods.
+                 *********************************************************************************************
+                 *********************************************************************************************/
+
+                /******
+                 * These methods go straight to the listener.
+                 ******/
+
+                public bool AddListener(MonoBehaviour listener)
+                {
+                    return renderingStrategy.AddListener(listener);
+                }
+
+                public bool RemoveListener(MonoBehaviour listener)
+                {
+                    return renderingStrategy.RemoveListener(listener);
+                }
+
+                /******
+                 * Blinking methods. They are means to be used externally, since other calls make direct use
+                 *   of the rendering strategy.
+                 * 
+                 * You can choose to blink an entire inventory, a particular container, or a single stack.
+                 ******/
+
+                private void DoBlink(object containerPosition, object stackPosition, Stack stack)
+                {
+                    if (stack != null)
+                    {
+                        renderingStrategy.StackWasUpdated(containerPosition, stackPosition, stack);
+                    }
+                    else
+                    {
+                        renderingStrategy.StackWasRemoved(containerPosition, stackPosition);
+                    }
+                }
+
+                /**
+                 * Blinks a single stack on a container in the inventory.
+                 */
+                public void Blink(object containerPosition, object stackPosition)
+                {
+                    DoBlink(containerPosition, stackPosition, Find(containerPosition, stackPosition));
+                }
+
+                private void DoBlink(object containerPosition, IEnumerable<Tuple<object, Stack>> pairs)
+                {
+                    foreach (Tuple<object, Stack> pair in pairs)
+                    {
+                        DoBlink(containerPosition, pair.First, pair.Second);
+                    }
+                }
+
+                /**
+                 * Blinks all the stacks in a container inside the inventory.
+                 */
+                public void Blink(object containerPosition)
+                {
+                    IEnumerable<Tuple<object, Stack>> pairs = null;
+
+                    try
+                    {
+                        pairs = spatialStrategy.StackPairs(containerPosition);
+                    }
+                    catch(Exception)
+                    {
+                        return;
+                    }
+
+                    DoBlink(containerPosition, pairs);
+                }
+
+                /**
+                 * Blinks the whole inventory.
+                 */
+                public void Blink()
+                {
+                    foreach(object position in positioningStrategy.Positions())
+                    {
+                        Blink(position);
+                    }
+                }
             }
         }
     }

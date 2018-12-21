@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using UnityEngine;
 
 namespace WindRose
 {
@@ -19,7 +20,8 @@ namespace WindRose
                     {
                         /**
                          * Provides methods to reflect changes on the stacks being added, modified, or
-                         *   removed on certain (inventory, stack) positions.
+                         *   removed on certain (inventory, stack) positions. Those methods are invoked
+                         *   over the registered listeners.
                          * 
                          * Quite often the rendering strategies WILL depend on specific:
                          * - Positioning strategies: they deal with potentially many simultaneous inventories
@@ -36,8 +38,89 @@ namespace WindRose
                          *   data to be rendered later. It is up to the implementor to decide what to do.
                          */
 
-                        public abstract void StackWasUpdated(object containerPosition, object stackPosition, Stack stack);
-                        public abstract void StackWasRemoved(object containerPosition, object stackPosition);
+                        public class InvalidListenerException : Types.Exception
+                        {
+                            public InvalidListenerException(string message) : base(message) {}
+                        }
+
+                        private HashSet<MonoBehaviour> listeners = new HashSet<MonoBehaviour>();
+
+                        /**
+                         * Adds a listener to this rendering strategy.
+                         */
+                        public bool AddListener(MonoBehaviour listener)
+                        {
+                            if (listener == null)
+                            {
+                                throw new InvalidListenerException("Listener to add cannot be null");
+                            }
+                            if (!AllowsListener(listener))
+                            {
+                                throw new InvalidListenerException(string.Format("Listener not accepted: {}", listener));
+                            }
+
+                            if (listeners.Contains(listener))
+                            {
+                                return false;
+                            }
+
+                            listeners.Add(listener);
+                            ListenerHasBeenAdded(listener);
+                            return true;
+                        }
+
+                        /**
+                         * Removes a listener from this rendering strategy.
+                         */
+                        public bool RemoveListener(MonoBehaviour listener)
+                        {
+                            if (!listeners.Contains(listener))
+                            {
+                                return false;
+                            }
+
+                            listeners.Remove(listener);
+                            return true;
+                        }
+
+                        /**
+                         * Triggers an update: stack added/refreshed.
+                         */
+                        public void StackWasUpdated(object containerPosition, object stackPosition, Stack stack)
+                        {
+                            foreach(MonoBehaviour listener in listeners)
+                            {
+                                StackWasUpdated(listener, containerPosition, stackPosition, stack);
+                            }
+                        }
+
+                        /**
+                         * Triggers an update: stack removed.
+                         */
+                        public void StackWasRemoved(object containerPosition, object stackPosition)
+                        {
+                            foreach(MonoBehaviour listener in listeners)
+                            {
+                                StackWasRemoved(listener, containerPosition, stackPosition);
+                            }
+                        }
+
+                        /**
+                         * Tells whether a listener may be added or not.
+                         */
+                        protected abstract bool AllowsListener(MonoBehaviour listener);
+                        /**
+                         * When a listener is added, this method initializes the content of the whole inventory on the listener.
+                         */
+                        protected abstract void ListenerHasBeenAdded(MonoBehaviour listener);
+                        /**
+                         * Event handler to add/refresh a stack on the listener.
+                         */
+                        protected abstract void StackWasUpdated(MonoBehaviour listener, object containerPosition, object stackPosition, Stack stack);
+                        /**
+                         * Event handler to remove a stack from the listener.
+                         */
+                        protected abstract void StackWasRemoved(MonoBehaviour listener, object containerPosition, object stackPosition);
                     }
                 }
             }

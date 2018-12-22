@@ -18,7 +18,7 @@ namespace WindRose
                 using Types.Inventory.Stacks.SpatialStrategies;
                 using Types.Inventory.Stacks.UsageStrategies;
 
-                [CreateAssetMenu(fileName = "NewBundledTile", menuName = "Wind Rose/Inventory/Item", order = 201)]
+                [CreateAssetMenu(fileName = "NewInventoryItem", menuName = "Wind Rose/Inventory/Item", order = 201)]
                 public class Item : ScriptableObject
                 {
                     /**
@@ -27,7 +27,30 @@ namespace WindRose
                      * - One quantifying strategy.
                      * - Many usage strategies.
                      * - Many rendering strategies.
+                     * 
+                     * It will also be able to, optionally, relate to a registry.
                      */
+
+                    public bool Attached
+                    {
+                        get; private set;
+                    }
+
+                    [SerializeField]
+                    private ItemRegistry registry;
+
+                    public ItemRegistry Registry
+                    {
+                        get { return registry; }
+                    }
+
+                    [SerializeField]
+                    private uint key;
+
+                    public uint Key
+                    {
+                        get { return key; }
+                    }
 
                     [SerializeField]
                     private QuantifyingStrategies.ItemQuantifyingStrategy quantifyingStrategy;
@@ -72,6 +95,11 @@ namespace WindRose
                     {
                         try
                         {
+                            if (registry != null && key != 0)
+                            {
+                                Attached = registry.AddItem(this);
+                            }
+
                             // Flatten (and check!) dependencies among all of them
                             sortedUsageStrategies = AssetsLayout.FlattenDependencies<UsageStrategies.ItemUsageStrategy, RequireUsageStrategy>(usageStrategies, true);
                             sortedRenderingStrategies = AssetsLayout.FlattenDependencies<RenderingStrategies.ItemRenderingStrategy, RequireRenderingStrategy>(renderingStrategies, true);

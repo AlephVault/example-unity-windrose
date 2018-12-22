@@ -80,6 +80,7 @@ namespace WindRose
                             }
 
                             listeners.Remove(listener);
+                            ListenerHasBeenRemoved(listener);
                             return true;
                         }
 
@@ -113,6 +114,10 @@ namespace WindRose
                          * When a listener is added, this method initializes the content of the whole inventory on the listener.
                          */
                         protected abstract void ListenerHasBeenAdded(MonoBehaviour listener);
+                        /**
+                         * When a listener is removed, this method helps us clear the inventory display (emptying or hiding).
+                         */
+                        protected abstract void ListenerHasBeenRemoved(MonoBehaviour listener);
                         /**
                          * Event handler to add/refresh a stack on the listener.
                          */

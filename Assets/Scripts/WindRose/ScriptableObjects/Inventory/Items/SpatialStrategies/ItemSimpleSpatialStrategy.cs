@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using UnityEngine;
 
 namespace WindRose
 {
@@ -15,6 +12,7 @@ namespace WindRose
                 {
                     using Types.Inventory.Stacks.SpatialStrategies;
 
+                    [CreateAssetMenu(fileName = "NewInventoryItem", menuName = "Wind Rose/Inventory/Item Strategies/Spatial/Simple", order = 101)]
                     public class ItemSimpleSpatialStrategy : StackSpatialStrategy
                     {
                         /**

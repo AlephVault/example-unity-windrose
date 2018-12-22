@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using UnityEngine;
 using WindRose.Types.Inventory.Stacks.QuantifyingStrategies;
 
 namespace WindRose
@@ -14,6 +11,7 @@ namespace WindRose
             {
                 namespace QuantifyingStrategies
                 {
+                    [CreateAssetMenu(fileName = "NewInventoryItem", menuName = "Wind Rose/Inventory/Item Strategies/Quantifying/Unstacked", order = 101)]
                     public class ItemUnstackedQuantifyingStrategy : ItemQuantifyingStrategy
                     {
                         /**

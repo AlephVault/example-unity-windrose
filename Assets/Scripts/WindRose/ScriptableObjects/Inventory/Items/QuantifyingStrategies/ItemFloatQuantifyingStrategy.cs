@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using WindRose.Types.Inventory.Stacks.QuantifyingStrategies;
 
 namespace WindRose
@@ -12,6 +11,7 @@ namespace WindRose
             {
                 namespace QuantifyingStrategies
                 {
+                    [CreateAssetMenu(fileName = "NewInventoryItem", menuName = "Wind Rose/Inventory/Item Strategies/Quantifying/Float-Stacked", order = 101)]
                     public class ItemFloatQuantifyingStrategy : ItemQuantifyingStrategy
                     {
                         /**

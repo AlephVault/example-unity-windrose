@@ -11,7 +11,7 @@ namespace WindRose
             {
                 namespace QuantifyingStrategies
                 {
-                    [CreateAssetMenu(fileName = "NewInventoryItem", menuName = "Wind Rose/Inventory/Item Strategies/Quantifying/Integer-Stacked", order = 101)]
+                    [CreateAssetMenu(fileName = "NewInventoryItemIntegerQuantifyingStrategy", menuName = "Wind Rose/Inventory/Item Strategies/Quantifying/Integer-Stacked", order = 101)]
                     public class ItemIntegerQuantifyingStrategy : ItemQuantifyingStrategy
                     {
                         /**

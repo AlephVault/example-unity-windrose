@@ -89,7 +89,7 @@ namespace WindRose
                     }
 
                     [SerializeField]
-                    private DataLoadingStrategies.DataLoadingStrategy dataLoadingStrategy;
+                    private DataLoadingStrategies.ItemDataLoadingStrategy dataLoadingStrategy;
 
                     private void Awake()
                     {
@@ -113,10 +113,10 @@ namespace WindRose
                             AssetsLayout.CheckMainComponent(renderingStrategies, mainRenderingStrategy);
                             // Finally: Check dependencies for the DataLoadingStrategy
                             AssetsLayout.CheckPresence(dataLoadingStrategy, "dataLoadingStrategy");
-                            AssetsLayout.CrossCheckDependencies<DataLoadingStrategies.DataLoadingStrategy, QuantifyingStrategies.ItemQuantifyingStrategy, RequireQuantifyingStrategy>(dataLoadingStrategy, quantifyingStrategy);
-                            AssetsLayout.CrossCheckDependencies<DataLoadingStrategies.DataLoadingStrategy, SpatialStrategies.ItemSpatialStrategy, RequireSpatialStrategy>(dataLoadingStrategy, spatialStrategy);
-                            AssetsLayout.CrossCheckDependencies<DataLoadingStrategies.DataLoadingStrategy, UsageStrategies.ItemUsageStrategy, RequireQuantifyingStrategy>(dataLoadingStrategy, usageStrategies);
-                            AssetsLayout.CrossCheckDependencies<DataLoadingStrategies.DataLoadingStrategy, RenderingStrategies.ItemRenderingStrategy, RequireRenderingStrategy>(dataLoadingStrategy, renderingStrategies);
+                            AssetsLayout.CrossCheckDependencies<DataLoadingStrategies.ItemDataLoadingStrategy, QuantifyingStrategies.ItemQuantifyingStrategy, RequireQuantifyingStrategy>(dataLoadingStrategy, quantifyingStrategy);
+                            AssetsLayout.CrossCheckDependencies<DataLoadingStrategies.ItemDataLoadingStrategy, SpatialStrategies.ItemSpatialStrategy, RequireSpatialStrategy>(dataLoadingStrategy, spatialStrategy);
+                            AssetsLayout.CrossCheckDependencies<DataLoadingStrategies.ItemDataLoadingStrategy, UsageStrategies.ItemUsageStrategy, RequireQuantifyingStrategy>(dataLoadingStrategy, usageStrategies);
+                            AssetsLayout.CrossCheckDependencies<DataLoadingStrategies.ItemDataLoadingStrategy, RenderingStrategies.ItemRenderingStrategy, RequireRenderingStrategy>(dataLoadingStrategy, renderingStrategies);
                         }
                         catch (Exception)
                         {

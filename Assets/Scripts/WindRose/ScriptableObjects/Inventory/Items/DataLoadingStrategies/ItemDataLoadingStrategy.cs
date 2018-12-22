@@ -1,4 +1,5 @@
 ﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,7 +17,7 @@ namespace WindRose
                 {
                     using Types.Inventory.Stacks.DataDumpingStrategies;
 
-                    public abstract class DataLoadingStrategy : ItemStrategy<DataDumpingStrategy>
+                    public abstract class ItemDataLoadingStrategy : ItemStrategy<StackDataDumpingStrategy>
                     {
                         /**
                          * A data loading strategy is not a normal strategy

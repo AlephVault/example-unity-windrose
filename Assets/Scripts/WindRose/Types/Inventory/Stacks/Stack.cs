@@ -57,7 +57,7 @@ namespace WindRose
                         get; private set;
                     }
 
-                    public DataDumpingStrategies.DataDumpingStrategy DataDumpingStrategy
+                    public DataDumpingStrategies.StackDataDumpingStrategy DataDumpingStrategy
                     {
                         get; private set;
                     }
@@ -84,7 +84,7 @@ namespace WindRose
                                  UsageStrategies.StackUsageStrategy mainUsageStrategy,
                                  RenderingStrategies.StackRenderingStrategy[] renderingStrategies,
                                  RenderingStrategies.StackRenderingStrategy mainRenderingStrategy,
-                                 DataDumpingStrategies.DataDumpingStrategy dataDumpingStrategy)
+                                 DataDumpingStrategies.StackDataDumpingStrategy dataDumpingStrategy)
                     {
                         Item = item;
                         QuantifyingStrategy = quantifyingStrategy;
@@ -102,14 +102,9 @@ namespace WindRose
                     public void Dump(object target)
                     {
                         DataDumpingStrategy.DumpDataFor(QuantifyingStrategy, QuantifyingStrategy.Export(), target);
-                        DataDumpingStrategy.DumpDataFor(SpatialStrategy, SpatialStrategy.Export(), target);
                         foreach(UsageStrategies.StackUsageStrategy usageStrategy in usageStrategies)
                         {
                             DataDumpingStrategy.DumpDataFor(usageStrategy, usageStrategy.Export(), target);
-                        }
-                        foreach(RenderingStrategies.StackRenderingStrategy renderingStrategy in renderingStrategies)
-                        {
-                            DataDumpingStrategy.DumpDataFor(renderingStrategy, renderingStrategy.Export(), target);
                         }
                     }
 

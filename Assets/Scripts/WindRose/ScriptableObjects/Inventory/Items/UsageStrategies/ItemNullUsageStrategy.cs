@@ -14,7 +14,7 @@ namespace WindRose
                 {
                     using Types.Inventory.Stacks.UsageStrategies;
 
-                    [CreateAssetMenu(fileName = "NewInventoryItem", menuName = "Wind Rose/Inventory/Item Strategies/Usage/Null Usage (e.g. tokens, critical objects)", order = 101)]
+                    [CreateAssetMenu(fileName = "NewInventoryItemNullUsageStrategy", menuName = "Wind Rose/Inventory/Item Strategies/Usage/Null Usage (e.g. tokens, critical objects)", order = 101)]
                     public class ItemNullUsageStrategy : ItemUsageStrategy
                     {
                         /**

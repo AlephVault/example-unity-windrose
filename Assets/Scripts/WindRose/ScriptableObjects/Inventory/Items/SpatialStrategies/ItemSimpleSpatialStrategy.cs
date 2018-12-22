@@ -12,7 +12,7 @@ namespace WindRose
                 {
                     using Types.Inventory.Stacks.SpatialStrategies;
 
-                    [CreateAssetMenu(fileName = "NewInventoryItem", menuName = "Wind Rose/Inventory/Item Strategies/Spatial/Simple", order = 101)]
+                    [CreateAssetMenu(fileName = "NewInventoryItemSimpleSpatialStrategy", menuName = "Wind Rose/Inventory/Item Strategies/Spatial/Simple", order = 101)]
                     public class ItemSimpleSpatialStrategy : StackSpatialStrategy
                     {
                         /**

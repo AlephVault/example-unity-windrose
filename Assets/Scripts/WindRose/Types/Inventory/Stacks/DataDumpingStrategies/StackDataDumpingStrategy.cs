@@ -15,7 +15,7 @@ namespace WindRose
                 {
                     using ScriptableObjects.Inventory.Items.DataLoadingStrategies;
 
-                    public abstract class DataDumpingStrategy : StackStrategy<DataLoadingStrategy>
+                    public abstract class StackDataDumpingStrategy : StackStrategy<ItemDataLoadingStrategy>
                     {
                         /**
                          * This strategy is the counterpart of DataLoadingStrategy
@@ -35,20 +35,18 @@ namespace WindRose
 
                         // This constructor will do nothing by itself, aside for calling former constructors.
                         // Data will seldom be accessed/parsed from the `arguments` param.
-                        public DataDumpingStrategy(DataLoadingStrategy itemStrategy, object argument) : base(itemStrategy, argument)
+                        public StackDataDumpingStrategy(ItemDataLoadingStrategy itemStrategy, object argument) : base(itemStrategy, argument)
                         {
                         }
 
-                        public abstract object DumpDataFor(QuantifyingStrategies.StackQuantifyingStrategy strategy, object exported, object target);
-                        public abstract object DumpDataFor(SpatialStrategies.StackSpatialStrategy strategy, object exported, object target);
-                        public abstract object DumpDataFor(UsageStrategies.StackUsageStrategy strategy, object exported, object target);
-                        public abstract object DumpDataFor(RenderingStrategies.StackRenderingStrategy strategy, object exported, object target);
+                        public abstract void DumpDataFor(QuantifyingStrategies.StackQuantifyingStrategy strategy, object exported, object target);
+                        public abstract void DumpDataFor(UsageStrategies.StackUsageStrategy strategy, object exported, object target);
 
                         /**
                          * Clones a data dumping strategy. Useful for cloning or splitting stacks.
                          * No arguments are needed for dumping strategies.
                          */
-                        public DataDumpingStrategy Clone()
+                        public StackDataDumpingStrategy Clone()
                         {
                             return ItemStrategy.CreateStackStrategy(null);
                         }

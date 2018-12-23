@@ -85,6 +85,17 @@ namespace WindRose
                         }
 
                         /**
+                         * Triggers an update: clears everything.
+                         */
+                        public void EverythingWasCleared()
+                        {
+                            foreach (MonoBehaviour listener in listeners)
+                            {
+                                EverythingWasCleared(listener);
+                            }
+                        }
+
+                        /**
                          * Triggers an update: stack added/refreshed.
                          */
                         public void StackWasUpdated(object containerPosition, object stackPosition, Stack stack)
@@ -118,6 +129,10 @@ namespace WindRose
                          * When a listener is removed, this method helps us clear the inventory display (emptying or hiding).
                          */
                         protected abstract void ListenerHasBeenRemoved(MonoBehaviour listener);
+                        /**
+                         * Event handler to clear everything.
+                         */
+                        protected abstract void EverythingWasCleared(MonoBehaviour listener);
                         /**
                          * Event handler to add/refresh a stack on the listener.
                          */

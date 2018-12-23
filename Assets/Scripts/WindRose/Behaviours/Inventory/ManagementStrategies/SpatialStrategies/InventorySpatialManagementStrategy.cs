@@ -476,6 +476,14 @@ namespace WindRose
 
                             return result;
                         }
+
+                        /**
+                         * Clears everything.
+                         */
+                        public void Clear()
+                        {
+                            containers.Clear();
+                        }
                     }
                 }
             }

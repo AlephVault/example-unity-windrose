@@ -272,6 +272,12 @@ namespace WindRose
                     return false;
                 }
 
+                public void Clear()
+                {
+                    spatialStrategy.Clear();
+                    renderingStrategy.EverythingWasCleared();
+                }
+
                 /*********************************************************************************************
                  *********************************************************************************************
                  * Rendering methods.
@@ -355,6 +361,49 @@ namespace WindRose
                     {
                         Blink(position);
                     }
+                }
+
+                /*********************************************************************************************
+                 *********************************************************************************************
+                 * Serializing / Deserializing all the stuff.
+                 *********************************************************************************************
+                 *********************************************************************************************/
+
+                public void Import(Types.Inventory.SerializedInventory serializedInventory)
+                {
+                    Clear();
+                    foreach(KeyValuePair<object, Types.Inventory.SerializedContainer> containerPair in serializedInventory)
+                    {
+                        foreach(KeyValuePair<object, Types.Inventory.SerializedStack> stackPair in containerPair.Value)
+                        {
+                            ScriptableObjects.Inventory.Items.Item item = ScriptableObjects.Inventory.Items.ItemRegistry.GetItem(stackPair.Value.First, stackPair.Value.Second);
+                            if (item != null)
+                            {
+                                Put(containerPair.Key, stackPair.Key, item.Create(stackPair.Value.Third, stackPair.Value.Fourth));
+                            }
+                        }
+                    }
+                }
+
+                public Types.Inventory.SerializedInventory Export()
+                {
+                    Types.Inventory.SerializedInventory serializedInventory = new Types.Inventory.SerializedInventory();
+                    foreach(object containerPosition in positioningStrategy.Positions())
+                    {
+                        if (!serializedInventory.ContainsKey(containerPosition))
+                        {
+                            serializedInventory[containerPosition] = new Types.Inventory.SerializedContainer();
+                        }
+
+                        foreach(Tuple<object, Stack> stackPair in spatialStrategy.StackPairs(containerPosition))
+                        {
+                            object stackPosition = stackPair.First;
+                            Stack stack = stackPair.Second;
+                            Tuple<ScriptableObjects.Inventory.Items.Item, object, object> dumped = stack.Dump();
+                            serializedInventory[containerPosition][stackPosition] = new Types.Inventory.SerializedStack(dumped.First.Registry.Key, dumped.First.Key, dumped.Second, dumped.Third);
+                        }
+                    }
+                    return serializedInventory;
                 }
             }
         }

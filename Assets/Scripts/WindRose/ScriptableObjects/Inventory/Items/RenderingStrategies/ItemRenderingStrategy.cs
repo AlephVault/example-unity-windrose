@@ -40,6 +40,8 @@ namespace WindRose
                          * - State strategies.
                          * - Other rendering strategies.
                          */
+
+                        public abstract StackRenderingStrategy CreateStackStrategy();
                     }
                 }
             }

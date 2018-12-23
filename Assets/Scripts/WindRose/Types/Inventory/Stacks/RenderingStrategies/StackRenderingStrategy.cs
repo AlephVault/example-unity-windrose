@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace WindRose
 {
@@ -20,7 +17,7 @@ namespace WindRose
                         /**
                          * This stack strategy is related to an ItemRenderingStrategy.
                          */
-                        public StackRenderingStrategy(ItemRenderingStrategy itemStrategy, object argument) : base(itemStrategy, argument)
+                        public StackRenderingStrategy(ItemRenderingStrategy itemStrategy) : base(itemStrategy)
                         {
                         }
 
@@ -32,7 +29,7 @@ namespace WindRose
                          */
                         public StackRenderingStrategy Clone()
                         {
-                            return ItemStrategy.CreateStackStrategy(null);
+                            return ItemStrategy.CreateStackStrategy();
                         }
                     }
                 }

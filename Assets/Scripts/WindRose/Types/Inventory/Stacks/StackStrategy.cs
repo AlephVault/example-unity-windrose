@@ -40,24 +40,14 @@ namespace WindRose
                         get; private set;
                     }
 
-                    public StackStrategy(T itemStrategy, object argument)
+                    public StackStrategy(T itemStrategy)
                     {
                         ItemStrategy = itemStrategy;
-                        Import(argument);
                     }
 
                     public void Initialize(Stack stack)
                     {
                         if (Stack == null) Stack = stack;
-                    }
-
-                    protected virtual void Import(object argument)
-                    {
-                    }
-
-                    public virtual object Export()
-                    {
-                        return null;
                     }
                 }
             }

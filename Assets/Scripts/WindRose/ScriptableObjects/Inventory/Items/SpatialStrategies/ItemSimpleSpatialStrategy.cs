@@ -10,10 +10,8 @@ namespace WindRose
             {
                 namespace SpatialStrategies
                 {
-                    using Types.Inventory.Stacks.SpatialStrategies;
-
                     [CreateAssetMenu(fileName = "NewInventoryItemSimpleSpatialStrategy", menuName = "Wind Rose/Inventory/Item Strategies/Spatial/Simple", order = 101)]
-                    public class ItemSimpleSpatialStrategy : StackSpatialStrategy
+                    public class ItemSimpleSpatialStrategy : ItemSpatialStrategy
                     {
                         /**
                          * This is a simple spatial strategy that indexes
@@ -24,10 +22,6 @@ namespace WindRose
                          * This strategy needs no additional data (other
                          *   strategies may involve weight or dimensions).
                          */
-
-                        public ItemSimpleSpatialStrategy(ItemSpatialStrategy itemStrategy, object argument) : base(itemStrategy, argument)
-                        {
-                        }
                     }
                 }
             }

@@ -29,26 +29,8 @@ namespace WindRose
                             get; private set;
                         }
 
-                        public StackSpatialStrategy(ItemSpatialStrategy itemStrategy, object argument) : base(itemStrategy, argument)
+                        public StackSpatialStrategy(ItemSpatialStrategy itemStrategy) : base(itemStrategy)
                         {
-                        }
-
-                        protected override void Import(object argument)
-                        {
-                            /*
-                             * NOTES: By default, no argument will be specified to the spatial strategy.
-                             *   This is because the spatial strategy is inventory-specific, and not stack-specific.
-                             *
-                             * Inventories are responsible of setting the appropriate position and checking its type.
-                             * When a stack is created by an item, It will have this strategy as well (to be able to
-                             *   retrieve its dimensions, if appropriate), but will have no position.
-                             */
-                            QualifiedPosition = null;
-                        }
-
-                        public override object Export()
-                        {
-                            return null;
                         }
 
                         /**
@@ -57,7 +39,7 @@ namespace WindRose
                          */
                         public StackSpatialStrategy Clone()
                         {
-                            return ItemStrategy.CreateStackStrategy(null);
+                            return ItemStrategy.CreateStackStrategy();
                         }
                     }
                 }

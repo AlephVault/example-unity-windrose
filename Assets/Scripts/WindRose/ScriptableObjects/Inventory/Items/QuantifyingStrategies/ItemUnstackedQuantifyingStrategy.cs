@@ -20,9 +20,9 @@ namespace WindRose
                          *   is simply 1.
                          */
 
-                        public override StackQuantifyingStrategy CreateStackStrategy(object argument)
+                        public override StackQuantifyingStrategy CreateStackStrategy(object quantity)
                         {
-                            return new StackUnstackedQuantifyingStrategy(this, argument);
+                            return new StackUnstackedQuantifyingStrategy(this);
                         }
                     }
                 }

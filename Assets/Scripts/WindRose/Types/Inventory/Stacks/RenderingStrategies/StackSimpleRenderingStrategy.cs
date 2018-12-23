@@ -22,7 +22,7 @@ namespace WindRose
                          * From the stack, it will retrieve the quantity to be rendered (which may be int, float, or null).
                          */
 
-                        public StackSimpleRenderingStrategy(ItemRenderingStrategy itemStrategy, object argument) : base(itemStrategy, argument)
+                        public StackSimpleRenderingStrategy(ItemRenderingStrategy itemStrategy) : base(itemStrategy)
                         {
                         }
 
@@ -32,15 +32,6 @@ namespace WindRose
                             target["icon"] = strategy.Icon;
                             target["caption"] = strategy.Caption;
                             target["quantity"] = Stack.QuantifyingStrategy.Quantity;
-                        }
-
-                        /**
-                         * Clones a rendering strategy. Useful for cloning or splitting stacks.
-                         * No arguments are needed for rendering strategies.
-                         */
-                        public StackRenderingStrategy Clone()
-                        {
-                            return ItemStrategy.CreateStackStrategy(null);
                         }
                     }
                 }

@@ -57,14 +57,9 @@ namespace WindRose
                             allowedQuantityType = GetAllowedQuantityType();
                         }
 
-                        public StackQuantifyingStrategy(ItemQuantifyingStrategy itemStrategy, object argument) : base(itemStrategy, argument)
+                        public StackQuantifyingStrategy(ItemQuantifyingStrategy itemStrategy, object argument) : base(itemStrategy)
                         {
                             PrepareAllowedQuantityType();
-                        }
-
-                        protected override void Import(object argument)
-                        {
-                            // Notes: the non-stackable one will override all this to check for null instead, and assign then.
                             CheckQuantityType(argument);
                             Quantity = argument;
                         }
@@ -72,11 +67,6 @@ namespace WindRose
                         public object Quantity
                         {
                             get; protected set;
-                        }
-
-                        public override object Export()
-                        {
-                            return Quantity;
                         }
 
                         /**

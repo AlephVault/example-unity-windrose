@@ -41,9 +41,9 @@ namespace WindRose
                             get { return caption; }
                         }
 
-                        public override StackRenderingStrategy CreateStackStrategy(object argument)
+                        public override StackRenderingStrategy CreateStackStrategy()
                         {
-                            return new StackSimpleRenderingStrategy(this, argument);
+                            return new StackSimpleRenderingStrategy(this);
                         }
                     }
                 }

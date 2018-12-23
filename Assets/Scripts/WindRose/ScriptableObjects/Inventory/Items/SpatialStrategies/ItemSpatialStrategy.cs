@@ -38,9 +38,9 @@ namespace WindRose
                          * This class remains abstract, since data has to be added.
                          */
 
-                        public override StackSpatialStrategy CreateStackStrategy(object argument)
+                        public StackSpatialStrategy CreateStackStrategy()
                         {
-                            return new StackSpatialStrategy(this, null);
+                            return new StackSpatialStrategy(this);
                         }
                     }
                 }

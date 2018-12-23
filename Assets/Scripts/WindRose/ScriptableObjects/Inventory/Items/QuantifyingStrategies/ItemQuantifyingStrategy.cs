@@ -30,6 +30,8 @@ namespace WindRose
                          * Only one quantifying strategy is allowed on an item.
                          *   Quantifying strategies will have no dependencies.
                          */
+
+                        public abstract StackQuantifyingStrategy CreateStackStrategy(object quantity);
                     }
                 }
             }

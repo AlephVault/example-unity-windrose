@@ -28,9 +28,9 @@ namespace WindRose
                             get { return max; }
                         }
 
-                        public override StackQuantifyingStrategy CreateStackStrategy(object argument)
+                        public override StackQuantifyingStrategy CreateStackStrategy(object quantity)
                         {
-                            return new StackIntegerQuantifyingStrategy(this, argument);
+                            return new StackIntegerQuantifyingStrategy(this, quantity);
                         }
                     }
                 }

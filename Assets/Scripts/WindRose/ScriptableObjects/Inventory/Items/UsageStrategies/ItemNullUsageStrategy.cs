@@ -23,9 +23,9 @@ namespace WindRose
                          *   useful example is critical objects.
                          */
 
-                        public override StackUsageStrategy CreateStackStrategy(object argument)
+                        public override StackUsageStrategy CreateStackStrategy()
                         {
-                            return new StackNullUsageStrategy(this, argument);
+                            return new StackNullUsageStrategy(this);
                         }
                     }
                 }

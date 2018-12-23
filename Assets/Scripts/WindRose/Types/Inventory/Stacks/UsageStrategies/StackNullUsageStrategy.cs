@@ -18,7 +18,7 @@ namespace WindRose
                          *   will be trivial and always succeed.
                          */
 
-                        public StackNullUsageStrategy(ItemUsageStrategy itemStrategy, object argument) : base(itemStrategy, argument)
+                        public StackNullUsageStrategy(ItemUsageStrategy itemStrategy) : base(itemStrategy)
                         {
                         }
 

@@ -88,9 +88,6 @@ namespace WindRose
                         }
                     }
 
-                    [SerializeField]
-                    private DataLoadingStrategies.ItemDataLoadingStrategy dataLoadingStrategy;
-
                     private void Awake()
                     {
                         try
@@ -111,12 +108,6 @@ namespace WindRose
                             // Check both main strategies
                             AssetsLayout.CheckMainComponent(usageStrategies, mainUsageStrategy);
                             AssetsLayout.CheckMainComponent(renderingStrategies, mainRenderingStrategy);
-                            // Finally: Check dependencies for the DataLoadingStrategy
-                            AssetsLayout.CheckPresence(dataLoadingStrategy, "dataLoadingStrategy");
-                            AssetsLayout.CrossCheckDependencies<DataLoadingStrategies.ItemDataLoadingStrategy, QuantifyingStrategies.ItemQuantifyingStrategy, RequireQuantifyingStrategy>(dataLoadingStrategy, quantifyingStrategy);
-                            AssetsLayout.CrossCheckDependencies<DataLoadingStrategies.ItemDataLoadingStrategy, SpatialStrategies.ItemSpatialStrategy, RequireSpatialStrategy>(dataLoadingStrategy, spatialStrategy);
-                            AssetsLayout.CrossCheckDependencies<DataLoadingStrategies.ItemDataLoadingStrategy, UsageStrategies.ItemUsageStrategy, RequireQuantifyingStrategy>(dataLoadingStrategy, usageStrategies);
-                            AssetsLayout.CrossCheckDependencies<DataLoadingStrategies.ItemDataLoadingStrategy, RenderingStrategies.ItemRenderingStrategy, RequireRenderingStrategy>(dataLoadingStrategy, renderingStrategies);
                         }
                         catch (Exception)
                         {
@@ -154,31 +145,37 @@ namespace WindRose
                         return renderingStrategiesByType[typeof(T)] as T;
                     }
 
-                    public Stack Create(object argument)
+                    public Stack Create(object quantity, object argument)
                     {
                         /*
                          * Creating children strategies. Spatial and rendering strategies need no arguments since spatial strategies
                          *   actually depend on what an inventory determines, and rendering strategies do not have own data.
                          */
                         int index;
-                        StackQuantifyingStrategy stackQuantifyingStrategy = quantifyingStrategy.CreateStackStrategy(dataLoadingStrategy.LoadDataFor(quantifyingStrategy, argument));
-                        StackSpatialStrategy stackSpatialStrategy = spatialStrategy.CreateStackStrategy(null);
+                        StackQuantifyingStrategy stackQuantifyingStrategy = quantifyingStrategy.CreateStackStrategy(quantity);
+                        StackSpatialStrategy stackSpatialStrategy = spatialStrategy.CreateStackStrategy();
                         StackUsageStrategy[] stackUsageStrategies = new StackUsageStrategy[sortedUsageStrategies.Length];
                         StackUsageStrategy mainStackUsageStrategy = null;
                         index = 0;
                         foreach(UsageStrategies.ItemUsageStrategy usageStrategy in sortedUsageStrategies)
                         {
-                            StackUsageStrategy stackUsageStrategy = usageStrategy.CreateStackStrategy(dataLoadingStrategy.LoadDataFor(usageStrategy, argument));
+                            StackUsageStrategy stackUsageStrategy = usageStrategy.CreateStackStrategy();
                             stackUsageStrategies[index] = stackUsageStrategy;
                             if (usageStrategy == mainUsageStrategy) mainStackUsageStrategy = stackUsageStrategy;
                             index++;
                         }
+
+                        if (MainUsageStrategy != null)
+                        {
+                            mainStackUsageStrategy.Import(argument);
+                        }
+
                         StackRenderingStrategy[] stackRenderingStrategies = new StackRenderingStrategy[sortedRenderingStrategies.Length];
                         StackRenderingStrategy mainStackRenderingStrategy = null;
                         index = 0;
                         foreach (RenderingStrategies.ItemRenderingStrategy renderingStrategy in sortedRenderingStrategies)
                         {
-                            StackRenderingStrategy stackRenderingStrategy = renderingStrategy.CreateStackStrategy(null);
+                            StackRenderingStrategy stackRenderingStrategy = renderingStrategy.CreateStackStrategy();
                             stackRenderingStrategies[index] = stackRenderingStrategy;
                             if (renderingStrategy == mainRenderingStrategy) mainStackRenderingStrategy = stackRenderingStrategy;
                             index++;
@@ -188,7 +185,7 @@ namespace WindRose
                          * Creating the stack with the strategies.
                          */
                         Stack stack = new Stack(
-                            this, stackQuantifyingStrategy, stackSpatialStrategy, stackUsageStrategies, mainStackUsageStrategy, stackRenderingStrategies, mainStackRenderingStrategy, dataLoadingStrategy.CreateStackStrategy(null)
+                            this, stackQuantifyingStrategy, stackSpatialStrategy, stackUsageStrategies, mainStackUsageStrategy, stackRenderingStrategies, mainStackRenderingStrategy
                         );
 
                         /*

@@ -57,11 +57,6 @@ namespace WindRose
                         get; private set;
                     }
 
-                    public DataDumpingStrategies.StackDataDumpingStrategy DataDumpingStrategy
-                    {
-                        get; private set;
-                    }
-
                     public T GetUsageStrategy<T>() where T : UsageStrategies.StackUsageStrategy
                     {
                         return usageStrategiesByType[typeof(T)] as T;
@@ -83,8 +78,7 @@ namespace WindRose
                                  UsageStrategies.StackUsageStrategy[] usageStrategies,
                                  UsageStrategies.StackUsageStrategy mainUsageStrategy,
                                  RenderingStrategies.StackRenderingStrategy[] renderingStrategies,
-                                 RenderingStrategies.StackRenderingStrategy mainRenderingStrategy,
-                                 DataDumpingStrategies.StackDataDumpingStrategy dataDumpingStrategy)
+                                 RenderingStrategies.StackRenderingStrategy mainRenderingStrategy)
                     {
                         Item = item;
                         QuantifyingStrategy = quantifyingStrategy;
@@ -93,19 +87,14 @@ namespace WindRose
                         this.renderingStrategies = renderingStrategies;
                         MainUsageStrategy = mainUsageStrategy;
                         MainRenderingStrategy = mainRenderingStrategy;
-                        DataDumpingStrategy = dataDumpingStrategy;
                     }
 
                     /**
                      * Export will not account for rendering strategies.
                      */
-                    public void Dump(object target)
+                    public Support.Types.Tuple<ScriptableObjects.Inventory.Items.Item, object, object> Dump()
                     {
-                        DataDumpingStrategy.DumpDataFor(QuantifyingStrategy, QuantifyingStrategy.Export(), target);
-                        foreach(UsageStrategies.StackUsageStrategy usageStrategy in usageStrategies)
-                        {
-                            DataDumpingStrategy.DumpDataFor(usageStrategy, usageStrategy.Export(), target);
-                        }
+                        return new Support.Types.Tuple<ScriptableObjects.Inventory.Items.Item, object, object>(Item, QuantifyingStrategy.Quantity, MainUsageStrategy.Export());
                     }
 
                     /**
@@ -151,8 +140,7 @@ namespace WindRose
 
                         return new Stack(Item, quantifyingStrategy, SpatialStrategy.Clone(),
                                          clonedUsageStrategies, clonedMainUsageStrategy,
-                                         clonedRenderingStrategies, clonedMainRenderingStrategy,
-                                         DataDumpingStrategy.Clone());
+                                         clonedRenderingStrategies, clonedMainRenderingStrategy);
                     }
 
                     /**

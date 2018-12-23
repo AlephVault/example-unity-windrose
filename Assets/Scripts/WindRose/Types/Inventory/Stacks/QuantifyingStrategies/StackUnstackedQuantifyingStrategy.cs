@@ -16,7 +16,7 @@ namespace WindRose
                 {
                     class StackUnstackedQuantifyingStrategy : StackQuantifyingStrategy
                     {
-                        public StackUnstackedQuantifyingStrategy(ItemQuantifyingStrategy itemStrategy, object argument) : base(itemStrategy, argument)
+                        public StackUnstackedQuantifyingStrategy(ItemQuantifyingStrategy itemStrategy) : base(itemStrategy, null)
                         {
                         }
 

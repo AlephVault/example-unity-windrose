@@ -29,8 +29,6 @@ namespace WindRose
                     {
                         if (Item == null) { Item = item; }
                     }
-
-                    public abstract T CreateStackStrategy(object argument);
                 }
             }
         }

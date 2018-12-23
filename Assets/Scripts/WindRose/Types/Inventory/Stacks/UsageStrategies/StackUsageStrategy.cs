@@ -17,7 +17,7 @@ namespace WindRose
                         /**
                          * This stack strategy is related to an ItemUsageStrategy.
                          */
-                        public StackUsageStrategy(ItemUsageStrategy itemStrategy, object argument) : base(itemStrategy, argument)
+                        public StackUsageStrategy(ItemUsageStrategy itemStrategy) : base(itemStrategy)
                         {
                         }
 
@@ -26,7 +26,18 @@ namespace WindRose
                          */
                         public StackUsageStrategy Clone()
                         {
-                            return ItemStrategy.CreateStackStrategy(Export());
+                            StackUsageStrategy strategy = ItemStrategy.CreateStackStrategy();
+                            strategy.Import(Export());
+                            return strategy;
+                        }
+
+                        public virtual void Import(object source)
+                        {
+                        }
+
+                        public virtual object Export()
+                        {
+                            return null;
                         }
 
                         /**

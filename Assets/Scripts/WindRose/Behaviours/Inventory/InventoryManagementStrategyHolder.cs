@@ -58,12 +58,6 @@ namespace WindRose
                 private ManagementStrategies.UsageStrategies.InventoryUsageManagementStrategy[] sortedUsageStrategies;
 
                 /**
-                 * A data marshalling strategy will only be needed if you intend to serialize/deserialize data
-                 *   from a kind of storage or network interaction.
-                 */
-                private ManagementStrategies.DataMarshallingManagementStrategies.InventoryDataMarshallingManagementStrategy dataMarshallingStrategy;
-
-                /**
                  * This is the main usage strategy this holder will have. This one is required, and must be present
                  *   among the components.
                  */
@@ -80,7 +74,6 @@ namespace WindRose
                 {
                     positioningStrategy = GetComponent<ManagementStrategies.PositioningStrategies.InventoryPositioningManagementStrategy>();
                     spatialStrategy = GetComponent<ManagementStrategies.SpatialStrategies.InventorySpatialManagementStrategy>();
-                    dataMarshallingStrategy = GetComponent<ManagementStrategies.DataMarshallingManagementStrategies.InventoryDataMarshallingManagementStrategy>();
                     ManagementStrategies.UsageStrategies.InventoryUsageManagementStrategy[] usageStrategies = GetComponents<ManagementStrategies.UsageStrategies.InventoryUsageManagementStrategy>();
                     sortedUsageStrategies = (from component in Support.Utils.Layout.SortByDependencies(usageStrategies) select (component as ManagementStrategies.UsageStrategies.InventoryUsageManagementStrategy)).ToArray();
                     if (mainUsageStrategy == null || !(new HashSet<ManagementStrategies.UsageStrategies.InventoryUsageManagementStrategy>().Contains(mainUsageStrategy)))

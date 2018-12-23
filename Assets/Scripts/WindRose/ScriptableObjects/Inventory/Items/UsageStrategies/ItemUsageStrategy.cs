@@ -30,6 +30,8 @@
                          *   each strategy in the item) and in both cases the added
                          *   strategies will depend among themselves.
                          */
+
+                        public abstract StackUsageStrategy CreateStackStrategy();
                     }
                 }
             }

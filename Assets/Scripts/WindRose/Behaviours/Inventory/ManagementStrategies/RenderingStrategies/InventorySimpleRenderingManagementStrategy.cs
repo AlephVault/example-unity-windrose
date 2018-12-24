@@ -38,6 +38,7 @@ namespace WindRose
                             void Connected(InventoryManagementStrategyHolder holder, int maxSize);
                             void RefreshStack(object containerPosition, object stackPosition, Sprite icon, string caption, object quantity);
                             void RemoveStack(object containerPosition, object stackPosition);
+                            void Clear();
                             void Disconnected();
                         }
 
@@ -66,6 +67,11 @@ namespace WindRose
                         protected override void StackWasRemoved(MonoBehaviour listener, object containerPosition, object stackPosition)
                         {
                             ((ISimpleInventoryRenderer)listener).RemoveStack(containerPosition, stackPosition);
+                        }
+
+                        protected override void EverythingWasCleared(MonoBehaviour listener)
+                        {
+                            ((ISimpleInventoryRenderer)listener).Clear();
                         }
                     }
                 }

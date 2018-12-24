@@ -11,7 +11,7 @@ namespace WindRose
         {
             using Types;
             using World;
-            using World.Layers;
+            using World.Layers.Objects;
 
             [ExecuteInEditMode]
             [RequireComponent(typeof(Pausable))]

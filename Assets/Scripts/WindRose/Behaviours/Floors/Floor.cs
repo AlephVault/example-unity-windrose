@@ -27,7 +27,7 @@ namespace WindRose
                 {
                     try
                     {
-                        Support.Utils.Layout.RequireComponentInParent<World.Layers.FloorLayer>(this);
+                        Support.Utils.Layout.RequireComponentInParent<World.Layers.Floor.FloorLayer>(this);
                     }
                     catch(Types.Exception)
                     {

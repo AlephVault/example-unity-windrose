@@ -64,10 +64,10 @@ namespace WindRose
                 [SerializeField]
                 private Vector3 cellSize = Vector3.one;
 
-                public Layers.FloorLayer FloorLayer { get; private set; }
-                public Layers.DropLayer DropLayer { get; private set; }
-                public Layers.ObjectsLayer ObjectsLayer { get; private set; }
-                public Layers.CeilingLayer CeilingLayer { get; private set; }
+                public Layers.Floor.FloorLayer FloorLayer { get; private set; }
+                public Layers.Drop.DropLayer DropLayer { get; private set; }
+                public Layers.Objects.ObjectsLayer ObjectsLayer { get; private set; }
+                public Layers.Ceiling.CeilingLayer CeilingLayer { get; private set; }
 
                 private bool initialized = false;
 
@@ -83,10 +83,10 @@ namespace WindRose
                     width = Values.Clamp(1, width, 100);
                     height = Values.Clamp(1, height, 100);
                     // Requiring the layers - at most one of each them may exist per map
-                    FloorLayer = ExpectOneLayerComponent<Layers.FloorLayer>(true);
-                    DropLayer = ExpectOneLayerComponent<Layers.DropLayer>();
-                    ObjectsLayer = ExpectOneLayerComponent<Layers.ObjectsLayer>(true);
-                    CeilingLayer = ExpectOneLayerComponent<Layers.CeilingLayer>();
+                    FloorLayer = ExpectOneLayerComponent<Layers.Floor.FloorLayer>(true);
+                    DropLayer = ExpectOneLayerComponent<Layers.Drop.DropLayer>();
+                    ObjectsLayer = ExpectOneLayerComponent<Layers.Objects.ObjectsLayer>(true);
+                    CeilingLayer = ExpectOneLayerComponent<Layers.Ceiling.CeilingLayer>();
                     // Fetching strategy - needed
                     StrategyHolder = GetComponent<ObjectsManagementStrategyHolder>();
                 }

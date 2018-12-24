@@ -11,12 +11,15 @@ namespace WindRose
         {
             namespace Layers
             {
-                [RequireComponent(typeof(Grid))]
-                public class CeilingLayer : MapLayer
+                namespace Ceiling
                 {
-                    protected override int GetSortingOrder()
+                    [RequireComponent(typeof(Grid))]
+                    public class CeilingLayer : MapLayer
                     {
-                        return 30;
+                        protected override int GetSortingOrder()
+                        {
+                            return 30;
+                        }
                     }
                 }
             }

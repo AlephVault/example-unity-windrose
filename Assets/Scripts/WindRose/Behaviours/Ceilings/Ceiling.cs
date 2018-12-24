@@ -10,7 +10,7 @@ namespace WindRose
     {
         namespace Ceilings
         {
-            using World.Layers;
+            using World.Layers.Ceiling;
 
             [RequireComponent(typeof(Tilemap))]
             [RequireComponent(typeof(TilemapRenderer))]

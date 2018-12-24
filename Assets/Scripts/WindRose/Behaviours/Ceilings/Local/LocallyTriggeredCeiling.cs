@@ -12,7 +12,7 @@ namespace WindRose
             namespace Local
             {
                 using World;
-                using World.Layers;
+                using World.Layers.Ceiling;
                 using Objects;
 
                 [RequireComponent(typeof(BoxCollider2D))]

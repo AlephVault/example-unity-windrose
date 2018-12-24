@@ -259,6 +259,28 @@ namespace WindRose
                     }
 
                     /**
+                     * Tells whether this stack equals the other stack. This will be checked
+                     *   in terms of the usage strategies, and not in terms of quantity or
+                     *   (spatial) position.
+                     */
+                    public bool Equals(Stack otherStack)
+                    {
+                        if (Item == otherStack.Item)
+                        {
+                            int index = 0;
+                            foreach(UsageStrategies.StackUsageStrategy usageStrategy in usageStrategies)
+                            {
+                                if (!usageStrategy.Equals(otherStack.usageStrategies[index++]))
+                                {
+                                    return false;
+                                }
+                            }
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    /**
                      * Checks whether the quantity is full.
                      */
                     public bool IsFull()

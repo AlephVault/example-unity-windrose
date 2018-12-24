@@ -51,8 +51,20 @@ namespace WindRose
                          * 
                          * The return value is an action (an empty procedure) that, when executed, will apply all the changes. You
                          *   must not execute the changes directly, but return a delegate(){} that performs them.
+                         * 
+                         * THIS METHOD COMES WITH A DEFAULT IMPLEMENTATION: if the current strategy equals the other strategy, then
+                         *   we return an empty delegate. Otherwise we return null.
                          */
-                        public abstract Action Interpolate(StackUsageStrategy otherStrategy, object currentQuantity, object addedQuantity);
+                        public virtual Action Interpolate(StackUsageStrategy otherStrategy, object currentQuantity, object addedQuantity)
+                        {
+                            return (Equals(otherStrategy)) ? delegate (){} : (Action)null;
+                        }
+
+                        /**
+                         * This function tells whether this strategy matches perfectly (field by field) to the same strategy from a
+                         *   different stack. You must implement this one.
+                         */
+                        public abstract bool Equals(StackUsageStrategy otherStrategy);
                     }
                 }
             }

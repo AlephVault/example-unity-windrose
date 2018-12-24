@@ -22,9 +22,10 @@ namespace WindRose
                         {
                         }
 
-                        public override Action Interpolate(StackUsageStrategy otherStrategy, object currentQuantity, object addedQuantity)
+                        public override bool Equals(StackUsageStrategy otherStrategy)
                         {
-                            return delegate () {};
+                            // Yes: an exact class check!
+                            return otherStrategy.GetType() == typeof(StackNullUsageStrategy);
                         }
                     }
                 }

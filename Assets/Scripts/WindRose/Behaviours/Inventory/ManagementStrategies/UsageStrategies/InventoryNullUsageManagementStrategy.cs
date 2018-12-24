@@ -21,6 +21,8 @@ namespace WindRose
                     {
                         /**
                          * This strategy does nothing when using a stack (which also has a null strategy there).
+                         * 
+                         * Said this, the null strategy may accept ANY main item-strategy.
                          */
 
                         protected override IEnumerator DoUse(Types.Inventory.Stacks.Stack stack, object argument)
@@ -30,7 +32,7 @@ namespace WindRose
 
                         public override bool Accepts(StackUsageStrategy strategy)
                         {
-                            return strategy.GetType() == typeof(StackNullUsageStrategy);
+                            return true;
                         }
                     }
                 }

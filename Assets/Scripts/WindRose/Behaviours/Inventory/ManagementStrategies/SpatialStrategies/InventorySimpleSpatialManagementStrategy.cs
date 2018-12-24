@@ -15,14 +15,15 @@ namespace WindRose
                     using ScriptableObjects.Inventory.Items.SpatialStrategies;
                     using Types.Inventory.Stacks;
 
-                    public class InventorySimpleSpatialManagementStrategy : InventorySpatialManagementStrategy
+                    public abstract class InventorySimpleSpatialManagementStrategy : InventorySpatialManagementStrategy
                     {
                         /**
                          * This spatial strategy involves an inventory with indexed positions like
-                         *   Baldur's Gate characters' bags.
+                         *   Baldur's Gate characters' bags. There will be two subclasses here:
+                         *   Finite and infinite containers.
                          */
 
-                        public class SimpleSpatialContainer : SpatialContainer
+                        public abstract class SimpleSpatialContainer : SpatialContainer
                         {
                             // Flags to occupy the respective positions
                             private List<bool> elements = new List<bool>();
@@ -121,40 +122,20 @@ namespace WindRose
 
                                 int index = (int)position;
                                 InventorySimpleSpatialManagementStrategy simpleSpatialStrategy = (InventorySimpleSpatialManagementStrategy)SpatialStrategy;
-                                if (index < 0 || simpleSpatialStrategy.Size > 0 && index >= simpleSpatialStrategy.Size)
+                                if (index < 0 || !ValidateStackPositionAgainstUpperBound(index))
                                 {
                                     return StackPositionValidity.OutOfBounds;
                                 }
 
                                 return StackPositionValidity.Valid;
                             }
-                        }
 
-                        [SerializeField]
-                        private int size = 0;
-
-                        public int Size
-                        {
-                            get { return size; }
-                        }
-
-                        protected void Awake()
-                        {
-                            base.Awake();
-                            if (size < 0)
-                            {
-                                size = 0;
-                            }
+                            protected abstract bool ValidateStackPositionAgainstUpperBound(int index);
                         }
 
                         protected override Type GetItemSpatialStrategyCounterpartType()
                         {
                             return typeof(ItemSimpleSpatialStrategy);
-                        }
-
-                        protected override SpatialContainer InitializeContainer(object position)
-                        {
-                            return new SimpleSpatialContainer(this, position);
                         }
                     }
                 }

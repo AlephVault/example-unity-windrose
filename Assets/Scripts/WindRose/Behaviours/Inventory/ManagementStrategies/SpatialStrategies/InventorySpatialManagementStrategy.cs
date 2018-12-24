@@ -272,7 +272,8 @@ namespace WindRose
                             }
 
                             /**
-                             * Tries to find a first-match for the item.
+                             * Tries to find a first-match for the item. It must return null IF
+                             *   AND ONLY IF the inventory is full (i.e. no position is available).
                              */
                             public abstract object FirstMatch(Stack stack);
 
@@ -280,10 +281,15 @@ namespace WindRose
                              * Puts a new (or moves an existing) stack in this container. It also sets
                              *   the position of the stack. We already know the itemStrategy will be
                              *   compatible with this strategy at this point.
+                             * 
+                             * Will return false if:
+                             * - Position was given and is not available.
+                             * - Position was not given and could not get a first-matched position
+                             *     because the inventory is "full" for the given item.
                              */
                             public bool Put(object position, ItemSpatialStrategy itemStrategy, Stack stack)
                             {
-                                if (position == null)
+                                if (position != null)
                                 {
                                     CheckValidStackPosition(position, stack);
                                 }

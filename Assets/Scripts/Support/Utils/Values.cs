@@ -39,6 +39,11 @@ namespace Support
                 return Min<T>(Max<T>(min.Value, value), max.Value);
             }
 
+            public static bool In<T>(T? min, T value, T? max) where T : struct
+            {
+                return (min == null || Comparer<T>.Default.Compare(min.Value, value) <= 0) && (max == null || Comparer<T>.Default.Compare(value, max.Value) <= 0);
+            }
+
             public static Dictionary<K, V> merge<K, V>(Dictionary<K, V> left, Dictionary<K, V> right, bool inplace = true, DictionaryMergePicker<K, V> picker = null)
             {
                 if (picker == null)

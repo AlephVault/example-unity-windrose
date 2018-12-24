@@ -84,24 +84,6 @@ namespace WindRose
                     renderingStrategy = GetComponent<ManagementStrategies.RenderingStrategies.InventoryRenderingManagementStrategy>();
                 }
 
-                private void CheckStackAcceptance(Stack stack)
-                {
-                    if (!stack.QuantifyingStrategy.HasAllowedQuantity())
-                    {
-                        throw new StackRejectedException(StackRejectedException.RejectionReason.InvalidQuantity);
-                    }
-
-                    if (!stack.Item.SpatialStrategy.GetType().IsSubclassOf(spatialStrategy.ItemSpatialStrategyCounterpartType))
-                    {
-                        throw new StackRejectedException(StackRejectedException.RejectionReason.IncompatibleSpatialStrategy);
-                    }
-
-                    if (!stack.MainUsageStrategy.GetType().IsSubclassOf(mainUsageStrategy.StackUsageStrategyCounterpartType))
-                    {
-                        throw new StackRejectedException(StackRejectedException.RejectionReason.IncompatibleUsageStrategy);
-                    }
-                }
-
                 /*********************************************************************************************
                  *********************************************************************************************
                  * Inventory methods.
@@ -147,6 +129,17 @@ namespace WindRose
                 public bool Put(object containerPosition, object stackPosition, Stack stack)
                 {
                     positioningStrategy.CheckPosition(containerPosition);
+
+                    if (!stack.QuantifyingStrategy.HasAllowedQuantity())
+                    {
+                        throw new StackRejectedException(StackRejectedException.RejectionReason.InvalidQuantity);
+                    }
+
+                    if (!stack.MainUsageStrategy.GetType().IsSubclassOf(mainUsageStrategy.StackUsageStrategyCounterpartType))
+                    {
+                        throw new StackRejectedException(StackRejectedException.RejectionReason.IncompatibleUsageStrategy);
+                    }
+
                     bool result = spatialStrategy.Put(containerPosition, stackPosition, stack);
                     if (result)
                     {

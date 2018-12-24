@@ -11,9 +11,7 @@ namespace WindRose
             {
                 namespace SpatialStrategies
                 {
-                    using Types.Inventory.Stacks.SpatialStrategies;
-
-                    public abstract class ItemSpatialStrategy : ItemStrategy<StackSpatialStrategy>
+                    public abstract class ItemSpatialStrategy : ItemStrategy<object>
                     {
                         /**
                          * Spatial strategies are data bundles telling to which
@@ -24,23 +22,18 @@ namespace WindRose
                          *   being a bidimensional matrix. The player is compelled to
                          *   optimize the way they organize their bag.
                          *   
-                         * Since they are data bundles, they have no particular fields.
-                         *   They will have just one method to create a standard stack
-                         *   spatial strategy instance, which will hold an arbitrary
-                         *   position that depends on the inventory that holds this stack
-                         *   or will become null while not contained in an inventory. Logic
-                         *   should (will) be present in the inventory spatial counterpart
-                         *   strategy.
-                         * 
-                         * Only one spatial strategy is allowed on an item. Spatial
-                         *   strategies will have no dependencies.
+                         * This class will have no behaviour, but just data. There is
+                         *   no need to hold a counterpart Stack Spatial Strategy
+                         *   since all the behaviour will exist on the inventory
+                         *   strategy, and the stack will have no need to know
+                         *   anything additional.
                          * 
                          * This class remains abstract, since data has to be added.
                          */
 
-                        public StackSpatialStrategy CreateStackStrategy()
+                        public object CreateStackStrategy()
                         {
-                            return new StackSpatialStrategy(this);
+                            return null;
                         }
                     }
                 }

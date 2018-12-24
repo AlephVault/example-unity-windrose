@@ -15,7 +15,6 @@ namespace WindRose
                 using Types.Inventory.Stacks;
                 using Types.Inventory.Stacks.QuantifyingStrategies;
                 using Types.Inventory.Stacks.RenderingStrategies;
-                using Types.Inventory.Stacks.SpatialStrategies;
                 using Types.Inventory.Stacks.UsageStrategies;
 
                 [CreateAssetMenu(fileName = "NewInventoryItem", menuName = "Wind Rose/Inventory/Item", order = 201)]
@@ -56,7 +55,8 @@ namespace WindRose
                     private QuantifyingStrategies.ItemQuantifyingStrategy quantifyingStrategy;
 
                     [SerializeField]
-                    private SpatialStrategies.ItemSpatialStrategy spatialStrategy;
+                    private SpatialStrategies.ItemSpatialStrategy[] spatialStrategies;
+                    private Dictionary<Type, SpatialStrategies.ItemSpatialStrategy> spatialStrategiesByType;
 
                     [SerializeField]
                     private UsageStrategies.ItemUsageStrategy[] usageStrategies;
@@ -103,6 +103,7 @@ namespace WindRose
                             // Avoid duplicate dependencies and also check interdependencies
                             renderingStrategiesByType = AssetsLayout.AvoidDuplicateDependencies(sortedRenderingStrategies);
                             usageStrategiesByType = AssetsLayout.AvoidDuplicateDependencies(usageStrategies);
+                            spatialStrategiesByType = AssetsLayout.AvoidDuplicateDependencies(spatialStrategies);
                             AssetsLayout.CrossCheckDependencies<RenderingStrategies.ItemRenderingStrategy, QuantifyingStrategies.ItemQuantifyingStrategy, RequireQuantifyingStrategy>(sortedRenderingStrategies, quantifyingStrategy);
                             AssetsLayout.CrossCheckDependencies<RenderingStrategies.ItemRenderingStrategy, UsageStrategies.ItemUsageStrategy, RequireUsageStrategy>(sortedRenderingStrategies, usageStrategies);
                             // Check both main strategies
@@ -119,30 +120,40 @@ namespace WindRose
                      * Tools to get a component strategy.
                      */
 
-                    public QuantifyingStrategies.ItemQuantifyingStrategy QuantifyingStrategy
+                    public T GetSpatialStrategy<T>() where T : SpatialStrategies.ItemSpatialStrategy
                     {
-                        get
-                        {
-                            return quantifyingStrategy;
-                        }
+                        return GetSpatialStrategy(typeof(T)) as T;
                     }
 
-                    public SpatialStrategies.ItemSpatialStrategy SpatialStrategy
+                    public SpatialStrategies.ItemSpatialStrategy GetSpatialStrategy(Type type)
                     {
-                        get
-                        {
-                            return spatialStrategy;
-                        }
+                        SpatialStrategies.ItemSpatialStrategy spatialStrategy;
+                        spatialStrategiesByType.TryGetValue(type, out spatialStrategy);
+                        return spatialStrategy;
                     }
 
                     public T GetUsageStrategy<T>() where T : UsageStrategies.ItemUsageStrategy
                     {
-                        return usageStrategiesByType[typeof(T)] as T;
+                        return GetUsageStrategy(typeof(T)) as T;
+                    }
+
+                    public UsageStrategies.ItemUsageStrategy GetUsageStrategy(Type type)
+                    {
+                        UsageStrategies.ItemUsageStrategy usageStrategy;
+                        usageStrategiesByType.TryGetValue(type, out usageStrategy);
+                        return usageStrategy;
                     }
 
                     public T GetRenderingStrategy<T>() where T : RenderingStrategies.ItemRenderingStrategy
                     {
-                        return renderingStrategiesByType[typeof(T)] as T;
+                        return GetRenderingStrategy(typeof(T)) as T;
+                    }
+
+                    public RenderingStrategies.ItemRenderingStrategy GetRenderingStrategy(Type type)
+                    {
+                        RenderingStrategies.ItemRenderingStrategy renderingStrategy;
+                        renderingStrategiesByType.TryGetValue(type, out renderingStrategy);
+                        return renderingStrategy;
                     }
 
                     public Stack Create(object quantity, object argument)
@@ -153,7 +164,7 @@ namespace WindRose
                          */
                         int index;
                         StackQuantifyingStrategy stackQuantifyingStrategy = quantifyingStrategy.CreateStackStrategy(quantity);
-                        StackSpatialStrategy stackSpatialStrategy = spatialStrategy.CreateStackStrategy();
+                        // StackSpatialStrategy stackSpatialStrategy = spatialStrategy.CreateStackStrategy();
                         StackUsageStrategy[] stackUsageStrategies = new StackUsageStrategy[sortedUsageStrategies.Length];
                         StackUsageStrategy mainStackUsageStrategy = null;
                         index = 0;
@@ -185,14 +196,13 @@ namespace WindRose
                          * Creating the stack with the strategies.
                          */
                         Stack stack = new Stack(
-                            this, stackQuantifyingStrategy, stackSpatialStrategy, stackUsageStrategies, mainStackUsageStrategy, stackRenderingStrategies, mainStackRenderingStrategy
+                            this, stackQuantifyingStrategy, stackUsageStrategies, mainStackUsageStrategy, stackRenderingStrategies, mainStackRenderingStrategy
                         );
 
                         /*
                          * Initializing the stack strategies.
                          */
                         stackQuantifyingStrategy.Initialize(stack);
-                        stackSpatialStrategy.Initialize(stack);
                         foreach(StackUsageStrategy strategy in stackUsageStrategies)
                         {
                             strategy.Initialize(stack);

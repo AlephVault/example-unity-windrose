@@ -15,6 +15,8 @@ namespace WindRose
             {
                 namespace SpatialStrategies
                 {
+                    using Types.Inventory.Stacks;
+                    using ScriptableObjects.Inventory.Items;
                     using ScriptableObjects.Inventory.Items.SpatialStrategies;
 
                     public abstract class InventorySpatialManagementStrategy : InventoryManagementStrategy
@@ -40,25 +42,32 @@ namespace WindRose
                          */
 
                         /**
-                         * This class just keeps track of the position value and its container.
+                         * This class just keeps track of the position value and its container, for a specific item strategy.
+                         * The latter is just illustrative: It is a way to say: "I am at position X in container Y, but referring
+                         *   to the spatial strategy Z I have among my strategies."
                          */
-                        public class QualifiedStackPosition : Support.Types.Tuple<object, SpatialContainer>
+                        public class QualifiedStackPosition : Support.Types.Tuple<object, ItemSpatialStrategy, SpatialContainer>
                         {
-                            public QualifiedStackPosition(object position, SpatialContainer container) : base(position, container)
+                            public QualifiedStackPosition(object position, ItemSpatialStrategy itemStrategy, SpatialContainer container) : base(position, itemStrategy, container)
                             {
                             }
                         }
 
-                        private static PropertyInfo positionProperty = typeof(Types.Inventory.Stacks.SpatialStrategies.StackSpatialStrategy).GetProperty("Position", BindingFlags.Instance | BindingFlags.Public);
+                        private static PropertyInfo positionProperty = typeof(Stack).GetProperty("Position", BindingFlags.Instance | BindingFlags.Public);
 
-                        private static void SetPosition(Types.Inventory.Stacks.SpatialStrategies.StackSpatialStrategy strategy, QualifiedStackPosition position)
+                        private static void SetPosition(Stack stack, QualifiedStackPosition position)
                         {
-                            positionProperty.SetValue(strategy, position, null);
+                            positionProperty.SetValue(stack, position, null);
                         }
 
-                        public class InvalidItemSpatialStrategyCounterparyType : Types.Exception
+                        public class InvalidItemSpatialStrategyCounterpartType : Types.Exception
                         {
-                            public InvalidItemSpatialStrategyCounterparyType(string message) : base(message) { }
+                            public InvalidItemSpatialStrategyCounterpartType(string message) : base(message) { }
+                        }
+
+                        public class MissingExpectedItemSpatialStrategyCounterpartType : Types.Exception
+                        {
+                            public MissingExpectedItemSpatialStrategyCounterpartType(string message) : base(message) { }
                         }
 
                         public class SpatialContainerDoesNotExist : Types.Exception
@@ -126,7 +135,7 @@ namespace WindRose
                              */
                             public readonly object Position;
                             public readonly InventorySpatialManagementStrategy SpatialStrategy;
-                            private Dictionary<object, Types.Inventory.Stacks.Stack> stacks = new Dictionary<object, Types.Inventory.Stacks.Stack>();
+                            private Dictionary<object, Stack> stacks = new Dictionary<object, Stack>();
 
                             public SpatialContainer(InventorySpatialManagementStrategy spatialStrategy, object position)
                             {
@@ -141,7 +150,7 @@ namespace WindRose
                              *   to the Search semantic. Mutating semantics will require the stack, so it will not
                              *   be null there.
                              */
-                            protected abstract StackPositionValidity ValidateStackPosition(object position, Types.Inventory.Stacks.Stack stack);
+                            protected abstract StackPositionValidity ValidateStackPosition(object position, Stack stack);
                             /**
                              * This method has to behave as follows:
                              * - Considering whether the stack is added, or not, to this container.
@@ -149,7 +158,7 @@ namespace WindRose
                              *     in this case, the stack is one being MOVED, not added.
                              * - The position was already validated beforehand.
                              */
-                            protected abstract bool StackPositionIsAvailable(object position, Types.Inventory.Stacks.Stack stack);
+                            protected abstract bool StackPositionIsAvailable(object position, Stack stack);
                             /**
                              * This function is used to map a position against a stack index. To this point, the
                              *   position is considered valid and authorized, and the stack was added to (or MOVED
@@ -158,13 +167,13 @@ namespace WindRose
                              * 
                              * This function should not trigger any exception or veto operation.
                              */
-                            protected abstract void Occupy(object position, Types.Inventory.Stacks.Stack stack);
+                            protected abstract void Occupy(object position, Stack stack);
                             /**
                              * This function is used to release an existing position. You are guaranteed that the
                              *   given stack is the one being released from this inventory. You must get its
                              *   dimensions and combine them with the position to perform your calculations.
                              */
-                            protected abstract void Release(object position, Types.Inventory.Stacks.Stack stack);
+                            protected abstract void Release(object position, Stack stack);
                             /**
                              * This function is to get the contents of a particular position. The return value of
                              *   this method is the actual/registered position of a Stack, or null. Example:
@@ -189,7 +198,7 @@ namespace WindRose
                              */
                             protected abstract IEnumerable<object> Positions();
 
-                            private void CheckValidStackPosition(object position, Types.Inventory.Stacks.Stack stack)
+                            private void CheckValidStackPosition(object position, Stack stack)
                             {
                                 StackPositionValidity validity = ValidateStackPosition(position, stack);
                                 if (validity != StackPositionValidity.Valid)
@@ -198,7 +207,7 @@ namespace WindRose
                                 }
                             }
 
-                            private void CheckStackDoesNotBelong(Types.Inventory.Stacks.Stack stack)
+                            private void CheckStackDoesNotBelong(Stack stack)
                             {
                                 if (stacks.ContainsValue(stack))
                                 {
@@ -213,15 +222,15 @@ namespace WindRose
                             /**
                              * Enumerates all the position/stack pairs.
                              */
-                            public IEnumerable<Support.Types.Tuple<object, Types.Inventory.Stacks.Stack>> StackPairs()
+                            public IEnumerable<Support.Types.Tuple<object, Stack>> StackPairs()
                             {
-                                return from position in Positions() select new Support.Types.Tuple<object, Types.Inventory.Stacks.Stack>(position, stacks[position]);
+                                return from position in Positions() select new Support.Types.Tuple<object, Stack>(position, stacks[position]);
                             }
 
                             /**
                              * Finds a stack by checking certain position.
                              */
-                            public Types.Inventory.Stacks.Stack Find(object position)
+                            public Stack Find(object position)
                             {
                                 object canonicalPosition = Search(position);
                                 return canonicalPosition == null ? null : stacks[canonicalPosition];
@@ -230,7 +239,7 @@ namespace WindRose
                             /**
                              * Finds all stacks satisfying a predicate on its position and the stack.
                              */
-                            public IEnumerable<Types.Inventory.Stacks.Stack> FindAll(Func<Support.Types.Tuple<object, Types.Inventory.Stacks.Stack>, bool> predicate)
+                            public IEnumerable<Stack> FindAll(Func<Support.Types.Tuple<object, Stack>, bool> predicate)
                             {
                                 return from pair in StackPairs().Where(predicate) select pair.Second;
                             }
@@ -238,9 +247,9 @@ namespace WindRose
                             /**
                              * Finds all stacks having a particular item.
                              */
-                            public IEnumerable<Types.Inventory.Stacks.Stack> FindAll(ScriptableObjects.Inventory.Items.Item item)
+                            public IEnumerable<Stack> FindAll(Item item)
                             {
-                                return FindAll(delegate (Support.Types.Tuple<object, Types.Inventory.Stacks.Stack> pair)
+                                return FindAll(delegate (Support.Types.Tuple<object, Stack> pair)
                                 {
                                     return pair.Second.Item == item;
                                 });
@@ -249,7 +258,7 @@ namespace WindRose
                             /**
                              * Finds a stack satisfying a predicate on its position and the stack.
                              */
-                            public Types.Inventory.Stacks.Stack FindOne(Func<Support.Types.Tuple<object, Types.Inventory.Stacks.Stack>, bool> predicate)
+                            public Stack FindOne(Func<Support.Types.Tuple<object, Stack>, bool> predicate)
                             {
                                 return FindAll(predicate).FirstOrDefault();
                             }
@@ -257,7 +266,7 @@ namespace WindRose
                             /**
                              * Finds a stack having a particular item.
                              */
-                            public Types.Inventory.Stacks.Stack FindOne(ScriptableObjects.Inventory.Items.Item item)
+                            public Stack FindOne(Item item)
                             {
                                 return FindAll(item).FirstOrDefault();
                             }
@@ -265,13 +274,14 @@ namespace WindRose
                             /**
                              * Tries to find a first-match for the item.
                              */
-                            public abstract object FirstMatch(Types.Inventory.Stacks.Stack stack);
+                            public abstract object FirstMatch(Stack stack);
 
                             /**
                              * Puts a new (or moves an existing) stack in this container. It also sets
-                             *   the position of the stack.
+                             *   the position of the stack. We already know the itemStrategy will be
+                             *   compatible with this strategy at this point.
                              */
-                            public bool Put(object position, Types.Inventory.Stacks.Stack stack)
+                            public bool Put(object position, ItemSpatialStrategy itemStrategy, Stack stack)
                             {
                                 if (position == null)
                                 {
@@ -286,12 +296,12 @@ namespace WindRose
                                 if (!StackPositionIsAvailable(position, stack)) return false;
                                 if (stacks.ContainsValue(stack))
                                 {
-                                    Release(stack.SpatialStrategy.QualifiedPosition.First, stack);
-                                    stacks.Remove(stack.SpatialStrategy.QualifiedPosition.First);
+                                    Release(stack.QualifiedPosition.First, stack);
+                                    stacks.Remove(stack.QualifiedPosition.First);
                                 }
                                 Occupy(position, stack);
                                 stacks[position] = stack;
-                                SetPosition(stack.SpatialStrategy, new QualifiedStackPosition(position, this));
+                                SetPosition(stack, new QualifiedStackPosition(position, itemStrategy, this));
                                 return true;
                             }
 
@@ -299,12 +309,12 @@ namespace WindRose
                              * Removes a stack from this container. It also cleans up the position of
                              *   the stack.
                              */
-                            public bool Remove(Types.Inventory.Stacks.Stack stack)
+                            public bool Remove(Stack stack)
                             {
                                 if (!stacks.ContainsValue(stack)) return false;
-                                Release(stack.SpatialStrategy.QualifiedPosition.First, stack);
-                                stacks.Remove(stack.SpatialStrategy.QualifiedPosition.First);
-                                SetPosition(stack.SpatialStrategy, null);
+                                Release(stack.QualifiedPosition.First, stack);
+                                stacks.Remove(stack.QualifiedPosition.First);
+                                SetPosition(stack, null);
                                 return true;
                             }
 
@@ -368,12 +378,26 @@ namespace WindRose
                          */
                         protected abstract Type GetItemSpatialStrategyCounterpartType();
 
+                        /**
+                         * Gets the appropriate item spatial strategy, based on the counterpart type.
+                         * RAISES AN EXCEPTION if no appropriate strategy is found.
+                         */
+                        private ItemSpatialStrategy GetItemSpatialStrategyCounterpart(Stack stack)
+                        {
+                            ItemSpatialStrategy spatialStrategy = stack.Item.GetSpatialStrategy(GetItemSpatialStrategyCounterpartType());
+                            if (spatialStrategy == null)
+                            {
+                                throw new MissingExpectedItemSpatialStrategyCounterpartType(string.Format("The stack did not contain an item spatial strategy of type {} in its underlying item", ItemSpatialStrategyCounterpartType.FullName));
+                            }
+                            return spatialStrategy;
+                        }
+
                         protected void Awake()
                         {
                             ItemSpatialStrategyCounterpartType = GetItemSpatialStrategyCounterpartType();
                             if (!ItemSpatialStrategyCounterpartType.IsSubclassOf(typeof(ItemSpatialStrategy)))
                             {
-                                throw new InvalidItemSpatialStrategyCounterparyType(string.Format("The type returned by GetItemSpatialStrategyCounterpartType must be a subclass of {0}", typeof(ItemSpatialStrategy).FullName));
+                                throw new InvalidItemSpatialStrategyCounterpartType(string.Format("The type returned by GetItemSpatialStrategyCounterpartType must be a subclass of {}", typeof(ItemSpatialStrategy).FullName));
                             }
                         }
 
@@ -384,7 +408,7 @@ namespace WindRose
                         /**
                          * Enumerates all the position/stack pairs for the container in a given position.
                          */
-                        public IEnumerable<Support.Types.Tuple<object, Types.Inventory.Stacks.Stack>> StackPairs(object containerPosition)
+                        public IEnumerable<Support.Types.Tuple<object, Stack>> StackPairs(object containerPosition)
                         {
                             return GetContainer(containerPosition, IfAbsent.Raise).StackPairs();
                         }
@@ -392,7 +416,7 @@ namespace WindRose
                         /**
                          * Finds a stack by checking certain stack position for the container in a given position.
                          */
-                        public Types.Inventory.Stacks.Stack Find(object containerPosition, object stackPosition)
+                        public Stack Find(object containerPosition, object stackPosition)
                         {
                             return GetContainer(containerPosition, IfAbsent.Raise).Find(stackPosition);
                         }
@@ -400,7 +424,7 @@ namespace WindRose
                         /**
                          * Finds all stacks satisfying a predicate on its position and the stack for the container in a given position.
                          */
-                        public IEnumerable<Types.Inventory.Stacks.Stack> FindAll(object containerPosition, Func<Support.Types.Tuple<object, Types.Inventory.Stacks.Stack>, bool> predicate)
+                        public IEnumerable<Stack> FindAll(object containerPosition, Func<Support.Types.Tuple<object, Stack>, bool> predicate)
                         {
                             return GetContainer(containerPosition, IfAbsent.Raise).FindAll(predicate);
                         }
@@ -408,7 +432,7 @@ namespace WindRose
                         /**
                          * Finds all stacks having a particular item.
                          */
-                        public IEnumerable<Types.Inventory.Stacks.Stack> FindAll(object containerPosition, ScriptableObjects.Inventory.Items.Item item)
+                        public IEnumerable<Stack> FindAll(object containerPosition, Item item)
                         {
                             return GetContainer(containerPosition, IfAbsent.Raise).FindAll(item);
                         }
@@ -416,7 +440,7 @@ namespace WindRose
                         /**
                          * Finds a stack satisfying a predicate on its position and the stack.
                          */
-                        public Types.Inventory.Stacks.Stack FindOne(object containerPosition, Func<Support.Types.Tuple<object, Types.Inventory.Stacks.Stack>, bool> predicate)
+                        public Stack FindOne(object containerPosition, Func<Support.Types.Tuple<object, Stack>, bool> predicate)
                         {
                             return GetContainer(containerPosition, IfAbsent.Raise).FindOne(predicate);
                         }
@@ -424,7 +448,7 @@ namespace WindRose
                         /**
                          * Finds a stack having a particular item.
                          */
-                        public Types.Inventory.Stacks.Stack FindOne(object containerPosition, ScriptableObjects.Inventory.Items.Item item)
+                        public Stack FindOne(object containerPosition, Item item)
                         {
                             return GetContainer(containerPosition, IfAbsent.Raise).FindOne(item);
                         }
@@ -432,13 +456,13 @@ namespace WindRose
                         /**
                          * Puts a stack inside a specific container.
                          */
-                        public bool Put(object containerPosition, object stackPosition, Types.Inventory.Stacks.Stack stack)
+                        public bool Put(object containerPosition, object stackPosition, Stack stack)
                         {
                             SpatialContainer container = GetContainer(containerPosition, IfAbsent.Init);
                             bool couldAdd = false;
                             try
                             {
-                                couldAdd = container.Put(stackPosition, stack);
+                                couldAdd = container.Put(stackPosition, GetItemSpatialStrategyCounterpart(stack) ,stack);
                                 return couldAdd;
                             }
                             finally
@@ -461,7 +485,7 @@ namespace WindRose
                                 return false;
                             }
 
-                            Types.Inventory.Stacks.Stack stack = container.Find(stackPosition);
+                            Stack stack = container.Find(stackPosition);
                             if (stack == null)
                             {
                                 return false;

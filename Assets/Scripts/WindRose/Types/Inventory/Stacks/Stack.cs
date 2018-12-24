@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+using WindRose.Behaviours.Inventory.ManagementStrategies.SpatialStrategies;
 
 namespace WindRose
 {
@@ -47,7 +48,7 @@ namespace WindRose
                         get; private set;
                     }
 
-                    public SpatialStrategies.StackSpatialStrategy SpatialStrategy
+                    public InventorySpatialManagementStrategy.QualifiedStackPosition QualifiedPosition
                     {
                         get; private set;
                     }
@@ -74,7 +75,6 @@ namespace WindRose
 
                     public Stack(ScriptableObjects.Inventory.Items.Item item,
                                  QuantifyingStrategies.StackQuantifyingStrategy quantifyingStrategy,
-                                 SpatialStrategies.StackSpatialStrategy spatialStrategy,
                                  UsageStrategies.StackUsageStrategy[] usageStrategies,
                                  UsageStrategies.StackUsageStrategy mainUsageStrategy,
                                  RenderingStrategies.StackRenderingStrategy[] renderingStrategies,
@@ -82,7 +82,6 @@ namespace WindRose
                     {
                         Item = item;
                         QuantifyingStrategy = quantifyingStrategy;
-                        SpatialStrategy = spatialStrategy;
                         this.usageStrategies = usageStrategies;
                         this.renderingStrategies = renderingStrategies;
                         MainUsageStrategy = mainUsageStrategy;
@@ -138,7 +137,7 @@ namespace WindRose
                             index++;
                         }
 
-                        return new Stack(Item, quantifyingStrategy, SpatialStrategy.Clone(),
+                        return new Stack(Item, quantifyingStrategy,
                                          clonedUsageStrategies, clonedMainUsageStrategy,
                                          clonedRenderingStrategies, clonedMainRenderingStrategy);
                     }

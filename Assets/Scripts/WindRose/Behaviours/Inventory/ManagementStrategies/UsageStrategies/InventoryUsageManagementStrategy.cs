@@ -124,7 +124,7 @@ namespace WindRose
 
                             try
                             {
-                                if (stack.SpatialStrategy.QualifiedPosition.Second.SpatialStrategy.GetComponent<InventoryManagementStrategyHolder>() != StrategyHolder)
+                                if (stack.QualifiedPosition.Third.SpatialStrategy.GetComponent<InventoryManagementStrategyHolder>() != StrategyHolder)
                                 {
                                     throw new UsageException("The stack being used is not managed by this inventory");
                                 }

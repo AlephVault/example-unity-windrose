@@ -16,7 +16,7 @@ namespace WindRose
                 public class ItemEditor : Editor
                 {
                     SerializedProperty quantifyingStrategy;
-                    SerializedProperty spatialStrategy;
+                    SerializedProperty spatialStrategies;
                     SerializedProperty usageStrategies;
                     SerializedProperty renderingStrategies;
                     SerializedProperty mainUsageStrategy;
@@ -25,7 +25,7 @@ namespace WindRose
                     protected virtual void OnEnable()
                     {
                         quantifyingStrategy = serializedObject.FindProperty("quantifyingStrategy");
-                        spatialStrategy = serializedObject.FindProperty("spatialStrategy");
+                        spatialStrategies = serializedObject.FindProperty("spatialStrategies");
                         usageStrategies = serializedObject.FindProperty("usageStrategies");
                         renderingStrategies = serializedObject.FindProperty("renderingStrategies");
                         mainUsageStrategy = serializedObject.FindProperty("mainUsageStrategy");
@@ -55,12 +55,11 @@ namespace WindRose
                         serializedObject.Update();
 
                         EditorGUILayout.PropertyField(quantifyingStrategy);
-                        EditorGUILayout.PropertyField(spatialStrategy);
+                        EditorGUILayout.PropertyField(spatialStrategies);
                         EditorGUILayout.PropertyField(usageStrategies);
                         mainUsageStrategy.objectReferenceValue = RelatedPopup("Main Usage Strategy", usageStrategies, mainUsageStrategy);
                         EditorGUILayout.PropertyField(renderingStrategies);
                         mainRenderingStrategy.objectReferenceValue = RelatedPopup("Main Rendering Strategy", renderingStrategies, mainRenderingStrategy);
-
                         serializedObject.ApplyModifiedProperties();
                     }
                 }

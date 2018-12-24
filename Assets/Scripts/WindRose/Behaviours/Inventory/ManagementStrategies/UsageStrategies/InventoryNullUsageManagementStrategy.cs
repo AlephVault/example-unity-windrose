@@ -28,9 +28,9 @@ namespace WindRose
                             yield break;
                         }
 
-                        protected override Type GetStackUsageStrategyCounterpartType()
+                        public override bool Accepts(StackUsageStrategy strategy)
                         {
-                            return typeof(StackNullUsageStrategy);
+                            return strategy.GetType() == typeof(StackNullUsageStrategy);
                         }
                     }
                 }

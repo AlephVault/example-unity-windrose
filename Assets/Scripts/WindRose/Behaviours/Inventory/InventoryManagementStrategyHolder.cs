@@ -128,17 +128,17 @@ namespace WindRose
 
                 public bool Put(object containerPosition, object stackPosition, Stack stack)
                 {
-                    positioningStrategy.CheckPosition(containerPosition);
-
                     if (!stack.QuantifyingStrategy.HasAllowedQuantity())
                     {
                         throw new StackRejectedException(StackRejectedException.RejectionReason.InvalidQuantity);
                     }
 
-                    if (!stack.MainUsageStrategy.GetType().IsSubclassOf(mainUsageStrategy.StackUsageStrategyCounterpartType))
+                    if (!mainUsageStrategy.Accepts(stack.MainUsageStrategy))
                     {
                         throw new StackRejectedException(StackRejectedException.RejectionReason.IncompatibleUsageStrategy);
                     }
+
+                    positioningStrategy.CheckPosition(containerPosition);
 
                     bool result = spatialStrategy.Put(containerPosition, stackPosition, stack);
                     if (result)

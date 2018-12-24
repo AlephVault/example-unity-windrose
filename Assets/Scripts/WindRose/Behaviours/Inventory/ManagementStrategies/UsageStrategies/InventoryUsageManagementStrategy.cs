@@ -44,21 +44,13 @@ namespace WindRose
                          * Compatibility-related stuff.
                          */
 
-                        public Type StackUsageStrategyCounterpartType {
-                            get; private set;
-                        }
-
-                        protected abstract Type GetStackUsageStrategyCounterpartType();
-
-                        protected override void Awake()
-                        {
-                            base.Awake();
-                            StackUsageStrategyCounterpartType = GetStackUsageStrategyCounterpartType();
-                            if (!StackUsageStrategyCounterpartType.IsSubclassOf(typeof(StackUsageStrategy)))
-                            {
-                                throw new InvalidStackUsageStrategyCounterparyType(string.Format("The type returned by GetStackUsageStrategyCounterpartType must be a subclass of {0}", typeof(StackUsageStrategy).FullName));
-                            }
-                        }
+                        /**
+                         * Tells whether a stack usage strategy is accepted by this class, or not.
+                         * Usually, the check would by type-to-type, but there are cases where dummy
+                         *   inventory usage strategies would accept any strategy, but make no use
+                         *   of them (these would be like "agnostic" usage strategies).
+                         */
+                        public abstract bool Accepts(StackUsageStrategy strategy);
 
                         /**
                          * Usage-related methods.

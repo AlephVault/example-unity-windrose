@@ -35,6 +35,13 @@ namespace WindRose
                                 quantityLeft = 0;
                                 return false;
                             }
+                            else if (maxQuantity == 0)
+                            {
+                                finalQuantity = currentQuantity + quantityToAdd;
+                                quantityAdded = quantityToAdd;
+                                quantityLeft = 0;
+                                return false;
+                            }
                             else
                             {
                                 int potentialQuantity = currentQuantity + quantityToAdd;

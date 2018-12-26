@@ -28,6 +28,11 @@ namespace WindRose
                             get { return max; }
                         }
 
+                        private void Awake()
+                        {
+                            max = Support.Utils.Values.Max(0f, max);
+                        }
+
                         public override StackQuantifyingStrategy CreateStackStrategy(object quantity)
                         {
                             return new StackFloatQuantifyingStrategy(this, quantity);

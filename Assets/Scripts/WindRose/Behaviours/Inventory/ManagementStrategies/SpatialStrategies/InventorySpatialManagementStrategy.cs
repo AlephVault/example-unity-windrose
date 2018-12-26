@@ -256,6 +256,17 @@ namespace WindRose
                             }
 
                             /**
+                             * Finds all stacks exactly matching an external stack.
+                             */
+                            public IEnumerable<Stack> FindAll(Stack stack)
+                            {
+                                return FindAll(delegate (Support.Types.Tuple<object, Stack> pair)
+                                {
+                                    return pair.Second.Equals(stack);
+                                });
+                            }
+
+                            /**
                              * Finds a stack satisfying a predicate on its position and the stack.
                              */
                             public Stack FindOne(Func<Support.Types.Tuple<object, Stack>, bool> predicate)
@@ -269,6 +280,14 @@ namespace WindRose
                             public Stack FindOne(Item item)
                             {
                                 return FindAll(item).FirstOrDefault();
+                            }
+
+                            /**
+                             * Finds a stack exactly matching an external stack.
+                             */
+                            public Stack FindOne(Stack stack)
+                            {
+                                return FindAll(stack).FirstOrDefault();
                             }
 
                             /**
@@ -287,8 +306,10 @@ namespace WindRose
                              * - Position was not given and could not get a first-matched position
                              *     because the inventory is "full" for the given item.
                              */
-                            public bool Put(object position, ItemSpatialStrategy itemStrategy, Stack stack)
+                            public bool Put(object position, ItemSpatialStrategy itemStrategy, Stack stack, out object finalPosition)
                             {
+                                finalPosition = null;
+
                                 if (position != null)
                                 {
                                     CheckValidStackPosition(position, stack);
@@ -308,6 +329,7 @@ namespace WindRose
                                 Occupy(position, stack);
                                 stacks[position] = stack;
                                 SetPosition(stack, new QualifiedStackPosition(position, itemStrategy, this));
+                                finalPosition = position;
                                 return true;
                             }
 
@@ -444,6 +466,14 @@ namespace WindRose
                         }
 
                         /**
+                         * Finds all stacks exactly matching an external stack.
+                         */
+                        public IEnumerable<Stack> FindAll(object containerPosition, Stack stack)
+                        {
+                            return GetContainer(containerPosition, IfAbsent.Raise).FindAll(stack);
+                        }
+
+                        /**
                          * Finds a stack satisfying a predicate on its position and the stack.
                          */
                         public Stack FindOne(object containerPosition, Func<Support.Types.Tuple<object, Stack>, bool> predicate)
@@ -460,15 +490,23 @@ namespace WindRose
                         }
 
                         /**
+                         * Finds a stack exactly matching an external stack.
+                         */
+                        public Stack FindOne(object containerPosition, Stack stack)
+                        {
+                            return GetContainer(containerPosition, IfAbsent.Raise).FindOne(stack);
+                        }
+
+                        /**
                          * Puts a stack inside a specific container.
                          */
-                        public bool Put(object containerPosition, object stackPosition, Stack stack)
+                        public bool Put(object containerPosition, object stackPosition, Stack stack, out object finalStackPosition)
                         {
                             SpatialContainer container = GetContainer(containerPosition, IfAbsent.Init);
                             bool couldAdd = false;
                             try
                             {
-                                couldAdd = container.Put(stackPosition, GetItemSpatialStrategyCounterpart(stack) ,stack);
+                                couldAdd = container.Put(stackPosition, GetItemSpatialStrategyCounterpart(stack), stack, out finalStackPosition);
                                 return couldAdd;
                             }
                             finally

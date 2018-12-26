@@ -17,7 +17,7 @@ namespace WindRose
                         {
                         }
 
-                        public override bool WillSaturate(object quantity, out object finalQuantity, out object quantityAdded, out object quantityLeft)
+                        public override bool WillOverflow(object quantity, out object finalQuantity, out object quantityAdded, out object quantityLeft)
                         {
                             CheckQuantityType(quantity);
                             float quantityToAdd = ((float)quantity);

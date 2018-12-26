@@ -96,7 +96,7 @@ namespace WindRose
                          * - The quantity that whould not be added (between 0 and quantity, as well).
                          * - The final quantity (it could be understood as the minimum between the max capacity and quantity+object)
                          */
-                        public abstract bool WillSaturate(object quantity, out object finalQuantity, out object quantityAdded, out object quantityLeft);
+                        public abstract bool WillOverflow(object quantity, out object finalQuantity, out object quantityAdded, out object quantityLeft);
 
                         /**
                          * Performs a saturation on the quantity: quantity is set to the maximum, if any.

@@ -218,7 +218,7 @@ namespace WindRose
                         }
 
                         // We test saturation to know which quantities to add
-                        bool saturates = QuantifyingStrategy.WillSaturate(source.QuantifyingStrategy.Quantity, out finalQuantity, out quantityAdded, out quantityLeft);
+                        bool saturates = QuantifyingStrategy.WillOverflow(source.QuantifyingStrategy.Quantity, out finalQuantity, out quantityAdded, out quantityLeft);
 
                         /*
                          * This will happen now:
@@ -280,6 +280,14 @@ namespace WindRose
                     }
 
                     /**
+                     * Gets the underlying quantity.
+                     */
+                    public object Quantity
+                    {
+                        get { return QuantifyingStrategy; }
+                    }
+
+                    /**
                      * Checks whether the quantity is full.
                      */
                     public bool IsFull()
@@ -293,6 +301,23 @@ namespace WindRose
                     public bool ChangeQuantityBy(object quantity)
                     {
                         return QuantifyingStrategy.ChangeQuantityBy(quantity, false, false);
+                    }
+
+                    /**
+                     * Determines whether adding a quantity would overflow over its maximum.
+                     * Obtains also how, and which, are the final quantities: added, left, final.
+                     */
+                    public bool WillOverflow(object quantity, out object finalQuantity, out object quantityAdded, out object quantityLeft)
+                    {
+                        return QuantifyingStrategy.WillOverflow(quantity, out finalQuantity, out quantityAdded, out quantityLeft);
+                    }
+
+                    /**
+                     * Saturates a stack.
+                     */
+                    public bool Saturate()
+                    {
+                        return QuantifyingStrategy.Saturate();
                     }
 
                     /**

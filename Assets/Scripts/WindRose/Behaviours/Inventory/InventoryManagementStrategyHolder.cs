@@ -70,6 +70,12 @@ namespace WindRose
                  */
                 private ManagementStrategies.RenderingStrategies.InventoryRenderingManagementStrategy renderingStrategy;
 
+                /**
+                 * Default setting to apply when calling PUT with a null position. 
+                 */
+                [SerializeField]
+                private bool optimalPutOnNullPosition = true;
+
                 private void Awake()
                 {
                     positioningStrategy = GetComponent<ManagementStrategies.PositioningStrategies.InventoryPositioningManagementStrategy>();
@@ -126,7 +132,7 @@ namespace WindRose
                     return spatialStrategy.FindOne(containerPosition, item);
                 }
 
-                public bool Put(object containerPosition, object stackPosition, Stack stack)
+                public bool Put(object containerPosition, object stackPosition, Stack stack, out object finalStackPosition, bool? optimalPutOnNullPosition = null)
                 {
                     if (!stack.QuantifyingStrategy.HasAllowedQuantity())
                     {
@@ -140,12 +146,123 @@ namespace WindRose
 
                     positioningStrategy.CheckPosition(containerPosition);
 
-                    bool result = spatialStrategy.Put(containerPosition, stackPosition, stack);
-                    if (result)
+                    // The actual logic starts here.
+
+                    // We will determine the optimal put setting from the instance if it is not present as
+                    //   argument.
+                    if (optimalPutOnNullPosition == null)
                     {
-                        renderingStrategy.StackWasUpdated(containerPosition, stackPosition, stack);
+                        optimalPutOnNullPosition = this.optimalPutOnNullPosition;
                     }
-                    return result;
+
+                    // Two logics we will consider here:
+                    // 1. When position is not specified, and optimal put is true.
+                    // 2. When position is specified, or optimal put is false. In both cases, the stack will
+                    //      simply be put in a certain position, with no redistribution (this one is the case
+                    //      we are having right now).
+                    if (stackPosition == null && optimalPutOnNullPosition == true)
+                    {
+                        // This list is to queue stacks that will saturate on optimal put for cases when position
+                        //   is not chosen by the user, and optimal put is chosen/preset.
+                        List<Stack> stacksToSaturate = new List<Stack>();
+
+                        // This stack is the last stack that would receive quantity. In this case, this stack
+                        //   does not overflow (i.e. the quantity left is 0).
+                        Stack unsaturatedLastStack = null;
+
+                        // The condition was chosen because a fixed position would instead put the stack there.
+                        // But since the position was chosen to be determined by the engine, we have a unique
+                        //   opportunity to also redistribute the stack to optimize its occupancy.
+
+                        // We will track the current quantity to add/saturate here.
+                        object currentQuantity = stack.Quantity;
+
+                        // And we will iterate computing saturations here. Stacks to saturate will be
+                        //   queued in the list above.
+                        foreach (Stack matchedStack in spatialStrategy.FindAll(containerPosition, stack))
+                        {
+                            object quantityAdded;
+                            object quanityLeft;
+                            object finalQuantity;
+                            bool wouldSaturate = matchedStack.WillOverflow(currentQuantity, out finalQuantity, out quantityAdded, out quanityLeft);
+                            if (wouldSaturate)
+                            {
+                                currentQuantity = quanityLeft;
+                                stacksToSaturate.Add(matchedStack);
+                            }
+                            else
+                            {
+                                unsaturatedLastStack = matchedStack;
+                                break;
+                            }
+                        }
+
+                        // Now we have two cases here:
+                        // 1. no unsaturated stack is present.
+                        // 2. an unsaturated stack is present.
+                        if (unsaturatedLastStack != null)
+                        {
+                            // Saturate the pending ones, and add amount to the last
+                            foreach(Stack queuedStack in stacksToSaturate)
+                            {
+                                queuedStack.Saturate();
+                            }
+                            unsaturatedLastStack.ChangeQuantityBy(currentQuantity);
+
+                            // Render everything
+                            foreach (Stack queuedStack in stacksToSaturate)
+                            {
+                                renderingStrategy.StackWasUpdated(containerPosition, queuedStack.QualifiedPosition.First, queuedStack);
+                            }
+                            renderingStrategy.StackWasUpdated(containerPosition, unsaturatedLastStack.QualifiedPosition.First, unsaturatedLastStack);
+
+                            // The stack was put, but not on a new position: instead, it filled other stacks and it should be
+                            //   considered destroyed.
+                            finalStackPosition = null;
+
+                            // Still we return true because the operation was successful.
+                            return true;
+                        }
+                        else
+                        {
+                            // Before saturating stacks, we try putting a clone of the current stack with the remaining quantity.
+                            // If we can do that, then saturate all the other stacks and proceed.
+                            Stack stackWithRemainder = stack.Clone(currentQuantity);
+                            bool wasPut = spatialStrategy.Put(containerPosition, null, stackWithRemainder, out finalStackPosition);
+                            if (wasPut)
+                            {
+                                // Saturate the pending ones
+                                foreach (Stack queuedStack in stacksToSaturate)
+                                {
+                                    queuedStack.Saturate();
+                                }
+
+                                // Render everything
+                                foreach (Stack queuedStack in stacksToSaturate)
+                                {
+                                    renderingStrategy.StackWasUpdated(containerPosition, queuedStack.QualifiedPosition.First, queuedStack);
+                                }
+                                renderingStrategy.StackWasUpdated(containerPosition, stackWithRemainder.QualifiedPosition.First, stackWithRemainder);
+                                return true;
+                            }
+                            else
+                            {
+                                // Nothing happened here.
+                                finalStackPosition = null;
+                                return false;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // Regular way to proceed here.
+                        bool result = spatialStrategy.Put(containerPosition, stackPosition, stack, out finalStackPosition);
+                        if (result)
+                        {
+                            renderingStrategy.StackWasUpdated(containerPosition, stackPosition, stack);
+                        }
+                        return result;
+                    }
                 }
 
                 public bool Remove(object containerPosition, object stackPosition)
@@ -219,13 +336,13 @@ namespace WindRose
                 }
 
                 public bool Split(object sourceContainerPosition, object sourceStackPosition, object quantity,
-                                  object newStackContainerPosition, object newStackPosition)
+                                  object newStackContainerPosition, object newStackPosition, out object finalNewStackPosition)
                 {
                     Stack found = Find(sourceContainerPosition, sourceStackPosition);
                     if (found != null)
                     {
                         Stack newStack = found.Take(quantity);
-                        if (!Put(newStackContainerPosition, newStackPosition, newStack))
+                        if (!Put(newStackContainerPosition, newStackPosition, newStack, out finalNewStackPosition))
                         {
                             // Could not put the new stack - refund its quantity.
                             found.ChangeQuantityBy(quantity);
@@ -238,6 +355,7 @@ namespace WindRose
                             return true;
                         }
                     }
+                    finalNewStackPosition = null;
                     return false;
                 }
 
@@ -372,7 +490,8 @@ namespace WindRose
                             ScriptableObjects.Inventory.Items.Item item = ScriptableObjects.Inventory.Items.ItemRegistry.GetItem(stackPair.Value.First, stackPair.Value.Second);
                             if (item != null)
                             {
-                                Put(containerPair.Key, stackPair.Key, item.Create(stackPair.Value.Third, stackPair.Value.Fourth));
+                                object finalStackPosition;
+                                Put(containerPair.Key, stackPair.Key, item.Create(stackPair.Value.Third, stackPair.Value.Fourth), out finalStackPosition);
                             }
                         }
                     }

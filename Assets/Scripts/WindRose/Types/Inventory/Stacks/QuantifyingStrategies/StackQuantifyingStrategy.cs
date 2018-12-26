@@ -99,6 +99,12 @@ namespace WindRose
                         public abstract bool WillSaturate(object quantity, out object finalQuantity, out object quantityAdded, out object quantityLeft);
 
                         /**
+                         * Performs a saturation on the quantity: quantity is set to the maximum, if any.
+                         * If the stack is not capped, this function returns false.
+                         */
+                        public abstract bool Saturate();
+
+                        /**
                          * These methods involve checking/changing the quantity of a stack quantifying strategy.
                          */
 

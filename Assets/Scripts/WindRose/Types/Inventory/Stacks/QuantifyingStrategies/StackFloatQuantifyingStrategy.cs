@@ -59,6 +59,20 @@ namespace WindRose
                             }
                         }
 
+                        public override bool Saturate()
+                        {
+                            float maxQuantity = ((ItemFloatQuantifyingStrategy)ItemStrategy).Max;
+                            if (maxQuantity == 0)
+                            {
+                                return false;
+                            }
+                            else
+                            {
+                                Quantity = maxQuantity;
+                                return true;
+                            }
+                        }
+
                         protected override Type GetAllowedQuantityType()
                         {
                             return typeof(float);

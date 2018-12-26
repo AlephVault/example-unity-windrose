@@ -29,6 +29,12 @@ namespace WindRose
                             return true;
                         }
 
+                        public override bool Saturate()
+                        {
+                            // Nothing has to be done here, except telling that the stack is now saturated.
+                            return true;
+                        }
+
                         protected override Type GetAllowedQuantityType()
                         {
                             // Type is not used here

@@ -49,7 +49,7 @@ namespace WindRose
 
                         protected override void ListenerHasBeenAdded(MonoBehaviour listener)
                         {
-                            ((ISimpleInventoryRenderer)listener).Connected(StrategyHolder, spatialStrategy.Size);
+                            ((ISimpleInventoryRenderer)listener).Connected(StrategyHolder, spatialStrategy.GetSize());
                         }
 
                         protected override void ListenerHasBeenRemoved(MonoBehaviour listener)

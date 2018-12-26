@@ -35,14 +35,14 @@ namespace WindRose
                             /**
                              * Finds the first empty position to put the element in.
                              */
-                            public override object FirstMatch(Stack stack)
+                            public override object FirstFree(Stack stack)
                             {
                                 for(int index = 0; index < elements.Count; index++)
                                 {
                                     if (!elements[index]) return index;
                                 }
 
-                                int size = ((InventorySimpleSpatialManagementStrategy)SpatialStrategy).Size;
+                                int size = ((InventorySimpleSpatialManagementStrategy)SpatialStrategy).GetSize();
                                 if (size == 0 || elements.Count < size)
                                 {
                                     // Return the count as the new position to add the new element.
@@ -132,6 +132,11 @@ namespace WindRose
 
                             protected abstract bool ValidateStackPositionAgainstUpperBound(int index);
                         }
+
+                        /**
+                         * Get the max size. 0 means "infinite".
+                         */
+                        public abstract int GetSize();
 
                         protected override Type GetItemSpatialStrategyCounterpartType()
                         {

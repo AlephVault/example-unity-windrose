@@ -43,9 +43,9 @@ namespace WindRose
                         protected void Awake()
                         {
                             base.Awake();
-                            if (size < 0)
+                            if (size <= 0)
                             {
-                                size = 0;
+                                size = 1;
                             }
                         }
 
@@ -57,6 +57,11 @@ namespace WindRose
                         protected override SpatialContainer InitializeContainer(object position)
                         {
                             return new SimpleFiniteSpatialContainer(this, position);
+                        }
+
+                        public override int GetSize()
+                        {
+                            return Size;
                         }
                     }
                 }

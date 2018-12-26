@@ -275,7 +275,7 @@ namespace WindRose
                              * Tries to find a first-match for the item. It must return null IF
                              *   AND ONLY IF the inventory is full (i.e. no position is available).
                              */
-                            public abstract object FirstMatch(Stack stack);
+                            public abstract object FirstFree(Stack stack);
 
                             /**
                              * Puts a new (or moves an existing) stack in this container. It also sets
@@ -295,7 +295,7 @@ namespace WindRose
                                 }
                                 else
                                 {
-                                    position = FirstMatch(stack);
+                                    position = FirstFree(stack);
                                     if (position == null) return false;
                                 }
 

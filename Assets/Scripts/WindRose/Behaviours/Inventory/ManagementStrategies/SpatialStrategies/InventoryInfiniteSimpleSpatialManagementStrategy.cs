@@ -41,6 +41,11 @@ namespace WindRose
                         {
                             return new SimpleInfiniteSpatialContainer(this, position);
                         }
+
+                        public override int GetSize()
+                        {
+                            return 0;
+                        }
                     }
                 }
             }

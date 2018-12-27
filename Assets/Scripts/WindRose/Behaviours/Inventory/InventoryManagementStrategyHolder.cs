@@ -82,7 +82,7 @@ namespace WindRose
                     spatialStrategy = GetComponent<ManagementStrategies.SpatialStrategies.InventorySpatialManagementStrategy>();
                     ManagementStrategies.UsageStrategies.InventoryUsageManagementStrategy[] usageStrategies = GetComponents<ManagementStrategies.UsageStrategies.InventoryUsageManagementStrategy>();
                     sortedUsageStrategies = (from component in Support.Utils.Layout.SortByDependencies(usageStrategies) select (component as ManagementStrategies.UsageStrategies.InventoryUsageManagementStrategy)).ToArray();
-                    if (mainUsageStrategy == null || !(new HashSet<ManagementStrategies.UsageStrategies.InventoryUsageManagementStrategy>().Contains(mainUsageStrategy)))
+                    if (mainUsageStrategy == null || !(new HashSet<ManagementStrategies.UsageStrategies.InventoryUsageManagementStrategy>(sortedUsageStrategies).Contains(mainUsageStrategy)))
                     {
                         Destroy(gameObject);
                         throw new InvalidStrategyComponentException("The selected strategy component must be non-null and present among the current pack manager's components");

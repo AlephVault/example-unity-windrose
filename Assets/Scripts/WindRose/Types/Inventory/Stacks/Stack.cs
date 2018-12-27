@@ -284,7 +284,7 @@ namespace WindRose
                      */
                     public object Quantity
                     {
-                        get { return QuantifyingStrategy; }
+                        get { return QuantifyingStrategy.Quantity; }
                     }
 
                     /**

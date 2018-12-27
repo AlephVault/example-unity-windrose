@@ -196,7 +196,7 @@ namespace WindRose
                              *   position being iterated should be valid. This means: stack[position] must not
                              *   fail by absence.
                              */
-                            protected abstract IEnumerable<object> Positions();
+                            protected abstract IEnumerable<object> Positions(bool reverse);
 
                             private void CheckValidStackPosition(object position, Stack stack)
                             {
@@ -222,9 +222,9 @@ namespace WindRose
                             /**
                              * Enumerates all the position/stack pairs.
                              */
-                            public IEnumerable<Support.Types.Tuple<object, Stack>> StackPairs()
+                            public IEnumerable<Support.Types.Tuple<object, Stack>> StackPairs(bool reverse)
                             {
-                                return from position in Positions() select new Support.Types.Tuple<object, Stack>(position, stacks[position]);
+                                return from position in Positions(reverse) select new Support.Types.Tuple<object, Stack>(position, stacks[position]);
                             }
 
                             /**
@@ -238,56 +238,78 @@ namespace WindRose
 
                             /**
                              * Finds all stacks satisfying a predicate on its position and the stack.
+                             * It may reverse the order of enumeration.
                              */
-                            public IEnumerable<Stack> FindAll(Func<Support.Types.Tuple<object, Stack>, bool> predicate)
+                            public IEnumerable<Stack> FindAll(Func<Support.Types.Tuple<object, Stack>, bool> predicate, bool reverse)
                             {
-                                return from pair in StackPairs().Where(predicate) select pair.Second;
+                                return from pair in StackPairs(reverse).Where(predicate) select pair.Second;
                             }
 
                             /**
                              * Finds all stacks having a particular item.
+                             * It may reverse the order of enumeration.
                              */
-                            public IEnumerable<Stack> FindAll(Item item)
+                            public IEnumerable<Stack> FindAll(Item item, bool reverse)
                             {
                                 return FindAll(delegate (Support.Types.Tuple<object, Stack> pair)
                                 {
                                     return pair.Second.Item == item;
-                                });
+                                }, reverse);
+                            }
+
+                            /**
+                             * Gets the first stack.
+                             */
+                            public Stack First()
+                            {
+                                return (from pair in StackPairs(false) select pair.Second).FirstOrDefault();
+                            }
+
+                            /**
+                             * Gets the last stack.
+                             */
+                            public Stack Last()
+                            {
+                                return (from pair in StackPairs(true) select pair.Second).FirstOrDefault();
                             }
 
                             /**
                              * Finds all stacks exactly matching an external stack.
+                             * It may reverse the order of enumeration.
                              */
-                            public IEnumerable<Stack> FindAll(Stack stack)
+                            public IEnumerable<Stack> FindAll(Stack stack, bool reverse)
                             {
                                 return FindAll(delegate (Support.Types.Tuple<object, Stack> pair)
                                 {
                                     return pair.Second.Equals(stack);
-                                });
+                                }, reverse);
                             }
 
                             /**
                              * Finds a stack satisfying a predicate on its position and the stack.
+                             * It may reverse the order of enumeration to find the first one.
                              */
-                            public Stack FindOne(Func<Support.Types.Tuple<object, Stack>, bool> predicate)
+                            public Stack FindOne(Func<Support.Types.Tuple<object, Stack>, bool> predicate, bool reverse)
                             {
-                                return FindAll(predicate).FirstOrDefault();
+                                return FindAll(predicate, reverse).FirstOrDefault();
                             }
 
                             /**
                              * Finds a stack having a particular item.
+                             * It may reverse the order of enumeration to find the first one.
                              */
-                            public Stack FindOne(Item item)
+                            public Stack FindOne(Item item, bool reverse)
                             {
-                                return FindAll(item).FirstOrDefault();
+                                return FindAll(item, reverse).FirstOrDefault();
                             }
 
                             /**
                              * Finds a stack exactly matching an external stack.
-                             */
-                            public Stack FindOne(Stack stack)
+                              * It may reverse the order of enumeration to find the first one.
+                            */
+                            public Stack FindOne(Stack stack, bool reverse)
                             {
-                                return FindAll(stack).FirstOrDefault();
+                                return FindAll(stack, reverse).FirstOrDefault();
                             }
 
                             /**
@@ -436,9 +458,9 @@ namespace WindRose
                         /**
                          * Enumerates all the position/stack pairs for the container in a given position.
                          */
-                        public IEnumerable<Support.Types.Tuple<object, Stack>> StackPairs(object containerPosition)
+                        public IEnumerable<Support.Types.Tuple<object, Stack>> StackPairs(object containerPosition, bool reverse)
                         {
-                            return GetContainer(containerPosition, IfAbsent.Raise).StackPairs();
+                            return GetContainer(containerPosition, IfAbsent.Raise).StackPairs(reverse);
                         }
 
                         /**
@@ -452,49 +474,65 @@ namespace WindRose
                         /**
                          * Finds all stacks satisfying a predicate on its position and the stack for the container in a given position.
                          */
-                        public IEnumerable<Stack> FindAll(object containerPosition, Func<Support.Types.Tuple<object, Stack>, bool> predicate)
+                        public IEnumerable<Stack> FindAll(object containerPosition, Func<Support.Types.Tuple<object, Stack>, bool> predicate, bool reverse)
                         {
-                            return GetContainer(containerPosition, IfAbsent.Raise).FindAll(predicate);
+                            return GetContainer(containerPosition, IfAbsent.Raise).FindAll(predicate, reverse);
                         }
 
                         /**
                          * Finds all stacks having a particular item.
                          */
-                        public IEnumerable<Stack> FindAll(object containerPosition, Item item)
+                        public IEnumerable<Stack> FindAll(object containerPosition, Item item, bool reverse)
                         {
-                            return GetContainer(containerPosition, IfAbsent.Raise).FindAll(item);
+                            return GetContainer(containerPosition, IfAbsent.Raise).FindAll(item, reverse);
+                        }
+
+                        /**
+                         * Gets the first stack.
+                         */
+                        public Stack First(object containerPosition)
+                        {
+                            return GetContainer(containerPosition, IfAbsent.Raise).First();
+                        }
+
+                        /**
+                         * Gets the last stack.
+                         */
+                        public Stack Last(object containerPosition)
+                        {
+                            return GetContainer(containerPosition, IfAbsent.Raise).Last();
                         }
 
                         /**
                          * Finds all stacks exactly matching an external stack.
                          */
-                        public IEnumerable<Stack> FindAll(object containerPosition, Stack stack)
+                        public IEnumerable<Stack> FindAll(object containerPosition, Stack stack, bool reverse)
                         {
-                            return GetContainer(containerPosition, IfAbsent.Raise).FindAll(stack);
+                            return GetContainer(containerPosition, IfAbsent.Raise).FindAll(stack, reverse);
                         }
 
                         /**
                          * Finds a stack satisfying a predicate on its position and the stack.
                          */
-                        public Stack FindOne(object containerPosition, Func<Support.Types.Tuple<object, Stack>, bool> predicate)
+                        public Stack FindOne(object containerPosition, Func<Support.Types.Tuple<object, Stack>, bool> predicate, bool reverse)
                         {
-                            return GetContainer(containerPosition, IfAbsent.Raise).FindOne(predicate);
+                            return GetContainer(containerPosition, IfAbsent.Raise).FindOne(predicate, reverse);
                         }
 
                         /**
                          * Finds a stack having a particular item.
                          */
-                        public Stack FindOne(object containerPosition, Item item)
+                        public Stack FindOne(object containerPosition, Item item, bool reverse)
                         {
-                            return GetContainer(containerPosition, IfAbsent.Raise).FindOne(item);
+                            return GetContainer(containerPosition, IfAbsent.Raise).FindOne(item, reverse);
                         }
 
                         /**
                          * Finds a stack exactly matching an external stack.
                          */
-                        public Stack FindOne(object containerPosition, Stack stack)
+                        public Stack FindOne(object containerPosition, Stack stack, bool reverse)
                         {
-                            return GetContainer(containerPosition, IfAbsent.Raise).FindOne(stack);
+                            return GetContainer(containerPosition, IfAbsent.Raise).FindOne(stack, reverse);
                         }
 
                         /**

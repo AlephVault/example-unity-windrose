@@ -96,10 +96,10 @@ namespace WindRose
                  *********************************************************************************************
                  *********************************************************************************************/
 
-                public IEnumerable<Tuple<object, Stack>> StackPairs(object containerPosition)
+                public IEnumerable<Tuple<object, Stack>> StackPairs(object containerPosition, bool reverse = false)
                 {
                     positioningStrategy.CheckPosition(containerPosition);
-                    return spatialStrategy.StackPairs(containerPosition);
+                    return spatialStrategy.StackPairs(containerPosition, reverse);
                 }
 
                 public Stack Find(object containerPosition, object stackPosition)
@@ -108,28 +108,40 @@ namespace WindRose
                     return spatialStrategy.Find(containerPosition, stackPosition);
                 }
 
-                public IEnumerable<Stack> FindAll(object containerPosition, Func<Tuple<object, Stack>, bool> predicate)
+                public IEnumerable<Stack> FindAll(object containerPosition, Func<Tuple<object, Stack>, bool> predicate, bool reverse = false)
                 {
                     positioningStrategy.CheckPosition(containerPosition);
-                    return spatialStrategy.FindAll(containerPosition, predicate);
+                    return spatialStrategy.FindAll(containerPosition, predicate, reverse);
                 }
 
-                public IEnumerable<Stack> FindAll(object containerPosition, ScriptableObjects.Inventory.Items.Item item)
+                public IEnumerable<Stack> FindAll(object containerPosition, ScriptableObjects.Inventory.Items.Item item, bool reverse = false)
                 {
                     positioningStrategy.CheckPosition(containerPosition);
-                    return spatialStrategy.FindAll(containerPosition, item);
+                    return spatialStrategy.FindAll(containerPosition, item, reverse);
                 }
 
-                public Stack FindOne(object containerPosition, Func<Tuple<object, Stack>, bool> predicate)
+                public Stack First(object containerPosition)
                 {
                     positioningStrategy.CheckPosition(containerPosition);
-                    return spatialStrategy.FindOne(containerPosition, predicate);
+                    return spatialStrategy.First(containerPosition);
                 }
 
-                public Stack FindOne(object containerPosition, ScriptableObjects.Inventory.Items.Item item)
+                public Stack Last(object containerPosition)
                 {
                     positioningStrategy.CheckPosition(containerPosition);
-                    return spatialStrategy.FindOne(containerPosition, item);
+                    return spatialStrategy.Last(containerPosition);
+                }
+
+                public Stack FindOne(object containerPosition, Func<Tuple<object, Stack>, bool> predicate, bool reverse = false)
+                {
+                    positioningStrategy.CheckPosition(containerPosition);
+                    return spatialStrategy.FindOne(containerPosition, predicate, reverse);
+                }
+
+                public Stack FindOne(object containerPosition, ScriptableObjects.Inventory.Items.Item item, bool reverse = false)
+                {
+                    positioningStrategy.CheckPosition(containerPosition);
+                    return spatialStrategy.FindOne(containerPosition, item, reverse);
                 }
 
                 public bool Put(object containerPosition, object stackPosition, Stack stack, out object finalStackPosition, bool? optimalPutOnNullPosition = null)
@@ -179,7 +191,7 @@ namespace WindRose
 
                         // And we will iterate computing saturations here. Stacks to saturate will be
                         //   queued in the list above.
-                        foreach (Stack matchedStack in spatialStrategy.FindAll(containerPosition, stack))
+                        foreach (Stack matchedStack in spatialStrategy.FindAll(containerPosition, stack, false))
                         {
                             object quantityAdded;
                             object quanityLeft;
@@ -453,7 +465,7 @@ namespace WindRose
 
                     try
                     {
-                        pairs = spatialStrategy.StackPairs(containerPosition);
+                        pairs = spatialStrategy.StackPairs(containerPosition, false);
                     }
                     catch(Exception)
                     {
@@ -507,7 +519,7 @@ namespace WindRose
                             serializedInventory[containerPosition] = new Types.Inventory.SerializedContainer();
                         }
 
-                        foreach(Tuple<object, Stack> stackPair in spatialStrategy.StackPairs(containerPosition))
+                        foreach(Tuple<object, Stack> stackPair in spatialStrategy.StackPairs(containerPosition, false))
                         {
                             object stackPosition = stackPair.First;
                             Stack stack = stackPair.Second;

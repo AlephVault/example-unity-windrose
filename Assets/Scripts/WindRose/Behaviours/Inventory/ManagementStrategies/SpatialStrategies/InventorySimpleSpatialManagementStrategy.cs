@@ -68,11 +68,21 @@ namespace WindRose
                             /**
                              * Enumerates the positions being occupied.
                              */
-                            protected override IEnumerable<object> Positions()
+                            protected override IEnumerable<object> Positions(bool reverse)
                             {
-                                for(int index = 0; index < elements.Count; index++)
+                                if (!reverse)
                                 {
-                                    if (elements[index]) yield return index;
+                                    for (int index = 0; index < elements.Count; index++)
+                                    {
+                                        if (elements[index]) yield return index;
+                                    }
+                                }
+                                else
+                                {
+                                    for (int index = elements.Count - 1; index >= 0; index--)
+                                    {
+                                        if (elements[index]) yield return index;
+                                    }
                                 }
                             }
 

@@ -170,10 +170,14 @@ namespace WindRose
                         index = 0;
                         foreach(UsageStrategies.ItemUsageStrategy usageStrategy in sortedUsageStrategies)
                         {
-                            StackUsageStrategy stackUsageStrategy = usageStrategy.CreateStackStrategy();
-                            stackUsageStrategies[index] = stackUsageStrategy;
-                            if (usageStrategy == mainUsageStrategy) mainStackUsageStrategy = stackUsageStrategy;
-                            index++;
+                            // Perhaps by misconfiguration there are null slots here
+                            if (usageStrategy != null)
+                            {
+                                StackUsageStrategy stackUsageStrategy = usageStrategy.CreateStackStrategy();
+                                stackUsageStrategies[index] = stackUsageStrategy;
+                                if (usageStrategy == mainUsageStrategy) mainStackUsageStrategy = stackUsageStrategy;
+                                index++;
+                            }
                         }
 
                         if (MainUsageStrategy != null)
@@ -186,10 +190,14 @@ namespace WindRose
                         index = 0;
                         foreach (RenderingStrategies.ItemRenderingStrategy renderingStrategy in sortedRenderingStrategies)
                         {
-                            StackRenderingStrategy stackRenderingStrategy = renderingStrategy.CreateStackStrategy();
-                            stackRenderingStrategies[index] = stackRenderingStrategy;
-                            if (renderingStrategy == mainRenderingStrategy) mainStackRenderingStrategy = stackRenderingStrategy;
-                            index++;
+                            // Perhaps by misconfiguration there are null slos here
+                            if (renderingStrategy != null)
+                            {
+                                StackRenderingStrategy stackRenderingStrategy = renderingStrategy.CreateStackStrategy();
+                                stackRenderingStrategies[index] = stackRenderingStrategy;
+                                if (renderingStrategy == mainRenderingStrategy) mainStackRenderingStrategy = stackRenderingStrategy;
+                                index++;
+                            }
                         }
 
                         /*

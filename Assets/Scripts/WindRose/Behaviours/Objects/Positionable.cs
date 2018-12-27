@@ -36,7 +36,6 @@ namespace WindRose
                 /* *********************** Additional data *********************** */
 
                 private Map parentMap = null;
-                private bool paused = false;
                 private bool initialized = false;
 
                 /* *********************** Public properties *********************** */
@@ -50,6 +49,7 @@ namespace WindRose
                 public uint Yf { get { return parentMap.StrategyHolder.StatusFor(StrategyHolder).Y + Height - 1; } }
                 public Direction? Movement { get { return parentMap.StrategyHolder.StatusFor(StrategyHolder).Movement; } }
                 public ObjectStrategyHolder StrategyHolder { get; private set; }
+                public bool Paused { get; private set; }
 
                 /* *********************** Events *********************** */
                 [Serializable]
@@ -170,22 +170,22 @@ namespace WindRose
 
                 public void Teleport(uint x, uint y)
                 {
-                    if (parentMap != null && !paused) parentMap.StrategyHolder.Teleport(StrategyHolder, x, y);
+                    if (parentMap != null && !Paused) parentMap.StrategyHolder.Teleport(StrategyHolder, x, y);
                 }
 
                 public bool StartMovement(Direction movementDirection, bool continuated = false)
                 {
-                    return parentMap != null && !paused && parentMap.StrategyHolder.MovementStart(StrategyHolder, movementDirection, continuated);
+                    return parentMap != null && !Paused && parentMap.StrategyHolder.MovementStart(StrategyHolder, movementDirection, continuated);
                 }
 
                 public bool FinishMovement()
                 {
-                    return parentMap != null && !paused && parentMap.StrategyHolder.MovementFinish(StrategyHolder);
+                    return parentMap != null && !Paused && parentMap.StrategyHolder.MovementFinish(StrategyHolder);
                 }
 
                 public bool CancelMovement()
                 {
-                    return parentMap != null && !paused && parentMap.StrategyHolder.MovementCancel(StrategyHolder);
+                    return parentMap != null && !Paused && parentMap.StrategyHolder.MovementCancel(StrategyHolder);
                 }
 
                 public float GetCellWidth()
@@ -200,12 +200,12 @@ namespace WindRose
 
                 void Pause(bool fullFreeze)
                 {
-                    paused = true;
+                    Paused = true;
                 }
 
                 void Resume()
                 {
-                    paused = false;
+                    Paused = false;
                 }
             }
         }

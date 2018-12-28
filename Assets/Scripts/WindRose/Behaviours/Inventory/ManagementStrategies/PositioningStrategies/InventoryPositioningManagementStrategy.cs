@@ -39,7 +39,7 @@ namespace WindRose
                         {
                             if (!IsValid(position))
                             {
-                                throw new InvalidPositionException(string.Format("Invalid inventory position: {}", position));
+                                throw new InvalidPositionException(string.Format("Invalid inventory position: {0}", position));
                             }
                         }
                     }

@@ -86,6 +86,19 @@ namespace WindRose
                         this.renderingStrategies = renderingStrategies;
                         MainUsageStrategy = mainUsageStrategy;
                         MainRenderingStrategy = mainRenderingStrategy;
+
+                        /*
+                         * Initializing the stack strategies.
+                         */
+                        quantifyingStrategy.Initialize(this);
+                        foreach (UsageStrategies.StackUsageStrategy strategy in usageStrategies)
+                        {
+                            strategy.Initialize(this);
+                        }
+                        foreach (RenderingStrategies.StackRenderingStrategy strategy in renderingStrategies)
+                        {
+                            strategy.Initialize(this);
+                        }
                     }
 
                     /**

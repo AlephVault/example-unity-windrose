@@ -56,7 +56,7 @@ namespace WindRose
                             }
                             if (!AllowsListener(listener))
                             {
-                                throw new InvalidListenerException(string.Format("Listener not accepted: {}", listener));
+                                throw new InvalidListenerException(string.Format("Listener not accepted: {0}", listener));
                             }
 
                             if (listeners.Contains(listener))

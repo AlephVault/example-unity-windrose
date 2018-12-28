@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEditor;
 
 namespace WindRose
 {
@@ -37,7 +38,6 @@ namespace WindRose
 
                     [SerializeField]
                     private ItemRegistry registry;
-
                     public ItemRegistry Registry
                     {
                         get { return registry; }
@@ -45,7 +45,6 @@ namespace WindRose
 
                     [SerializeField]
                     private uint key;
-
                     public uint Key
                     {
                         get { return key; }
@@ -53,6 +52,10 @@ namespace WindRose
 
                     [SerializeField]
                     private QuantifyingStrategies.ItemQuantifyingStrategy quantifyingStrategy;
+                    public QuantifyingStrategies.ItemQuantifyingStrategy QuantifyingStrategy
+                    {
+                        get { return quantifyingStrategy; }
+                    }
 
                     [SerializeField]
                     private SpatialStrategies.ItemSpatialStrategy[] spatialStrategies;
@@ -88,12 +91,13 @@ namespace WindRose
                         }
                     }
 
-                    private void Awake()
+                    private void OnEnable()
                     {
                         try
                         {
                             if (registry != null && key != 0)
                             {
+                                registry.Init();
                                 Attached = registry.AddItem(this);
                             }
 
@@ -110,9 +114,9 @@ namespace WindRose
                             AssetsLayout.CheckMainComponent(usageStrategies, mainUsageStrategy);
                             AssetsLayout.CheckMainComponent(renderingStrategies, mainRenderingStrategy);
                         }
-                        catch (Exception)
+                        catch (Exception exc)
                         {
-                            Resources.UnloadAsset(this);
+                            Debug.Log(string.Format("Item::OnEnable() threw: {0}", exc));
                         }
                     }
 
@@ -207,18 +211,6 @@ namespace WindRose
                             this, stackQuantifyingStrategy, stackUsageStrategies, mainStackUsageStrategy, stackRenderingStrategies, mainStackRenderingStrategy
                         );
 
-                        /*
-                         * Initializing the stack strategies.
-                         */
-                        stackQuantifyingStrategy.Initialize(stack);
-                        foreach(StackUsageStrategy strategy in stackUsageStrategies)
-                        {
-                            strategy.Initialize(stack);
-                        }
-                        foreach(StackRenderingStrategy strategy in stackRenderingStrategies)
-                        {
-                            strategy.Initialize(stack);
-                        }
                         return stack;
                     }
                 }

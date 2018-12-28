@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using UnityEngine;
 
 namespace WindRose
 {
@@ -41,9 +42,9 @@ namespace WindRose
 
                         protected virtual void CheckQuantityType(object quantity)
                         {
-                            if (!quantity.GetType().IsSubclassOf(allowedQuantityType))
+                            if (!Support.Utils.Classes.IsSameOrSubclassOf(quantity.GetType(), allowedQuantityType))
                             {
-                                throw new InvalidQuantityType(string.Format("Given quantity's type for stack quantifying strategy must be an instance of {}", allowedQuantityType.FullName));
+                                throw new InvalidQuantityType(string.Format("Given quantity's type for stack quantifying strategy must be an instance of {0}", allowedQuantityType.FullName));
                             }
                         }
 

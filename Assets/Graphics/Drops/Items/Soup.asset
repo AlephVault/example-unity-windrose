@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7c2dfe6a56068748859ced81fe521f3, type: 3}
+  m_Name: Soup
+  m_EditorClassIdentifier: 
+  registry: {fileID: 0}
+  key: 0
+  quantifyingStrategy: {fileID: 11400000, guid: 24752914236655848b6fb1b469ad7dce,
+    type: 2}
+  spatialStrategies:
+  - {fileID: 11400000, guid: 75f39304aecd7a24ba9250810d0e6c15, type: 2}
+  usageStrategies:
+  - {fileID: 11400000, guid: bf4125f907ccf7b4b82e88fc28cfd927, type: 2}
+  mainUsageStrategy: {fileID: 11400000, guid: bf4125f907ccf7b4b82e88fc28cfd927, type: 2}
+  renderingStrategies:
+  - {fileID: 11400000, guid: 4062817df283a104ab802ab688bddb67, type: 2}
+  mainRenderingStrategy: {fileID: 11400000, guid: 4062817df283a104ab802ab688bddb67,
+    type: 2}

@@ -79,7 +79,7 @@ namespace WindRose
                         get { return key; }
                     }
 
-                    private void Awake()
+                    public void Init()
                     {
                         if (key != "" && !registries.ContainsKey(key))
                         {

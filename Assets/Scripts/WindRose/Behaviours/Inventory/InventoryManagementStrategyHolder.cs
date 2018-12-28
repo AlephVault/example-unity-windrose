@@ -33,7 +33,7 @@ namespace WindRose
 
                     public readonly RejectionReason Reason;
 
-                    public StackRejectedException(RejectionReason reason) : base(string.Format("The stack cannot be accepted into this inventory. Reason: {}", reason))
+                    public StackRejectedException(RejectionReason reason) : base(string.Format("The stack cannot be accepted into this inventory. Reason: {0}", reason))
                     {
                         Reason = reason;
                     }
@@ -189,9 +189,20 @@ namespace WindRose
                         // We will track the current quantity to add/saturate here.
                         object currentQuantity = stack.Quantity;
 
+                        IEnumerable<Stack> matchedStacks;
+                        try
+                        {
+                            // catch, with empty, the case of missing container.
+                            matchedStacks = spatialStrategy.FindAll(containerPosition, stack, false);
+                        }
+                        catch(Exception)
+                        {
+                            matchedStacks = new List<Stack>();
+                        }
+
                         // And we will iterate computing saturations here. Stacks to saturate will be
                         //   queued in the list above.
-                        foreach (Stack matchedStack in spatialStrategy.FindAll(containerPosition, stack, false))
+                        foreach (Stack matchedStack in matchedStacks)
                         {
                             object quantityAdded;
                             object quanityLeft;

@@ -284,7 +284,7 @@ namespace Support
             {
                 if (!components.Contains(mainComponent))
                 {
-                    throwException(typeof(E), string.Format("An instance of {} must be selected as main component", typeof(T).FullName));
+                    throwException(typeof(E), string.Format("An instance of {0} must be selected as main component", typeof(T).FullName));
                 }
             }
 
@@ -301,7 +301,7 @@ namespace Support
             {
                 if (component == null)
                 {
-                    fieldName = fieldName != "" ? fieldName : string.Format("[unspecified field of type {}] is required: it must not be null", component.GetType().Name);
+                    fieldName = fieldName != "" ? fieldName : string.Format("[unspecified field of type {0}] is required: it must not be null", component.GetType().Name);
                     throwException(typeof(E), fieldName);
                 }
             }

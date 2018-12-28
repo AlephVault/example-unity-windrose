@@ -12,16 +12,17 @@ namespace WindRose
             using Support.Types;
 
             [RequireComponent(typeof(SortingGroup))]
-            [RequireComponent(typeof(SpriteRenderer))]
             public class SimpleDropContainerRenderer : MonoBehaviour
             {
                 /**
                  * This is a primary behaviour for the drop containers. Simple drop containers are
                  *   related to the DropLayer.
                  *   
-                 * First of all, this component will require AT LEAST ONE SPRITE RENDERER. It is better
+                 * First of all, this component will require AT LEAST ONE SPRITE RENDERER*. It is better
                  *   if there are more than one, but at least ONE renderer is needed. Also, a sorting
                  *   group will also be required: it will help us ordering the attached renderers.
+                 * 
+                 * (* this will imply several children with sprite renderers)
                  * 
                  * Renderers will be ordered in an array. Say we have N renderers:
                  *   [0][1]...[N-1]
@@ -52,34 +53,47 @@ namespace WindRose
                     elements = new SortedDictionary<int, Tuple<Sprite, string, object>>();
                     // Gets all the renderers and assigns them
                     //   a different sorting order
-                    renderers = GetComponents<SpriteRenderer>();
+                    renderers = GetComponentsInChildren<SpriteRenderer>();
                     int order = 0;
+                    Debug.Log(string.Format("Initializing SDC Renderer with {0} renderers ...", renderers.Length));
                     foreach(SpriteRenderer renderer in renderers)
                     {
                         renderer.sortingLayerID = 0;
                         renderer.sortingOrder = order++;
+                        renderer.transform.localPosition = Vector3.zero;
                     }
+                }
+
+                private void DebugContentToRefresh()
+                {
+                    Debug.Log("Contents: " + string.Join(",", (from element in elements select string.Format("{0} -> ({1}: {2})", element.Key, element.Value.Second, element.Value.Third)).ToArray()));
                 }
 
                 private void Refresh()
                 {
-                    int currentSize = elements.Count;
-                    int maxSize = renderers.Length;
+                    DebugContentToRefresh();
+                    List<string> debugElements = new List<string>();
 
-                    if (currentSize > maxSize)
+                    int currentSize = elements.Count;
+                    int renderingSlots = renderers.Length;
+
+                    if (currentSize > renderingSlots)
                     {
+                        debugElements.Add(string.Format("background image"));
                         renderers[0].sprite = backgroundBulkImage;
-                        int baseElementIndex = currentSize - maxSize - 1;
-                        for(int index = 1; index < maxSize; index++)
+                        int baseElementIndex = currentSize - renderingSlots;
+                        for(int index = 1; index < renderingSlots; index++)
                         {
+                            debugElements.Add(string.Format("{0} -> {1}", index, elements[index + baseElementIndex].Second));
                             renderers[index].sprite = elements[index + baseElementIndex].First;
                             renderers[index].enabled = true;
                         }
                     }
-                    else if (currentSize == maxSize)
+                    else if (currentSize == renderingSlots)
                     {
-                        for (int index = 0; index < maxSize; index++)
+                        for (int index = 0; index < renderingSlots; index++)
                         {
+                            debugElements.Add(string.Format("{0} -> {1}", index, elements[index].Second));
                             renderers[index].sprite = elements[index].First;
                             renderers[index].enabled = true;
                         }
@@ -88,15 +102,17 @@ namespace WindRose
                     {
                         for (int index = 0; index < currentSize; index++)
                         {
+                            debugElements.Add(string.Format("{0} -> {1}", index, elements[index].Second));
                             renderers[index].sprite = elements[index].First;
                             renderers[index].enabled = true;
                         }
-                        for(int index = currentSize; index < maxSize; index++)
+                        for(int index = currentSize; index < renderingSlots; index++)
                         {
-                            renderers[index].sprite = elements[index].First;
                             renderers[index].enabled = false;
                         }
                     }
+
+                    Debug.Log("Rendered contents: " + string.Join(",", debugElements.ToArray()));
                 }
 
                 public IEnumerable<KeyValuePair<int, Tuple<Sprite, string, object>>> Elements()

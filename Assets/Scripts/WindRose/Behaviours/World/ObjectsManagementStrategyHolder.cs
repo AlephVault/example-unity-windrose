@@ -318,7 +318,7 @@ namespace WindRose
                     RequireNotAttached(objectStrategy);
 
                     // Do we accept or reject the strategy being attached? (no per-strategy-component call is needed here)
-                    if (objectStrategy.GetType().IsSubclassOf(Strategy.CounterpartType))
+                    if (!Support.Utils.Classes.IsSameOrSubclassOf(objectStrategy.GetType(), Strategy.CounterpartType))
                     {
                         throw new StrategyNowAllowedException("This strategy is not allowed on this map because is not a valid counterpart of the current map strategy.");
                     }

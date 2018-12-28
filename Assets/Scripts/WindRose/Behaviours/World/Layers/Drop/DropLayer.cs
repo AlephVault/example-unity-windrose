@@ -53,6 +53,11 @@ namespace WindRose
                             dropContainers = new SimpleDropContainerRenderer[Map.Width, Map.Height];
                         }
 
+                        private void Start()
+                        {
+                            inventoryHolder.AddListener(this);
+                        }
+
                         /**
                          * This is a prefab you have to set. See more details in the `SimpleDropContainer` class.
                          */
@@ -100,7 +105,7 @@ namespace WindRose
                             {
                                 container = Instantiate(containerPrefab.gameObject, transform).GetComponent<SimpleDropContainerRenderer>();
                                 dropContainers[position.x, position.y] = container;
-                                container.transform.position = new Vector3(position.x, position.y);
+                                container.transform.localPosition = new Vector3(position.x, position.y);
                             }
                             return container;
                         }
@@ -121,7 +126,7 @@ namespace WindRose
                             // Adds a stack to a container (creates the container if absent).
                             Vector2Int containerVector = (Vector2Int)containerPosition;
                             int stackIndex = (int)stackPosition;
-                            SimpleDropContainerRenderer container = getContainerFor(containerVector, false);
+                            SimpleDropContainerRenderer container = getContainerFor(containerVector, true);
                             container.RefreshWithPutting(stackIndex, icon, caption, quantity);
                         }
 

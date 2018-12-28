@@ -53,7 +53,7 @@ namespace WindRose
                             }
                         }
 
-                        private static PropertyInfo positionProperty = typeof(Stack).GetProperty("Position", BindingFlags.Instance | BindingFlags.Public);
+                        private static PropertyInfo positionProperty = typeof(Stack).GetProperty("QualifiedPosition");
 
                         private static void SetPosition(Stack stack, QualifiedStackPosition position)
                         {
@@ -74,7 +74,7 @@ namespace WindRose
                         {
                             public readonly object Position;
 
-                            public SpatialContainerDoesNotExist(object position) : base(string.Format("No spatial container at position: {}", position))
+                            public SpatialContainerDoesNotExist(object position) : base(string.Format("No spatial container at position: {0}", position))
                             {
                                 Position = position;
                             }
@@ -203,7 +203,7 @@ namespace WindRose
                                 StackPositionValidity validity = ValidateStackPosition(position, stack);
                                 if (validity != StackPositionValidity.Valid)
                                 {
-                                    throw new InvalidPositionException(string.Format("Invalid position: {}", validity), validity);
+                                    throw new InvalidPositionException(string.Format("Invalid position: {0}", validity), validity);
                                 }
                             }
 
@@ -437,7 +437,7 @@ namespace WindRose
                             ItemSpatialStrategy spatialStrategy = stack.Item.GetSpatialStrategy(GetItemSpatialStrategyCounterpartType());
                             if (spatialStrategy == null)
                             {
-                                throw new MissingExpectedItemSpatialStrategyCounterpartType(string.Format("The stack did not contain an item spatial strategy of type {} in its underlying item", ItemSpatialStrategyCounterpartType.FullName));
+                                throw new MissingExpectedItemSpatialStrategyCounterpartType(string.Format("The stack did not contain an item spatial strategy of type {0} in its underlying item", ItemSpatialStrategyCounterpartType.FullName));
                             }
                             return spatialStrategy;
                         }
@@ -445,9 +445,9 @@ namespace WindRose
                         protected void Awake()
                         {
                             ItemSpatialStrategyCounterpartType = GetItemSpatialStrategyCounterpartType();
-                            if (!ItemSpatialStrategyCounterpartType.IsSubclassOf(typeof(ItemSpatialStrategy)))
+                            if (!Support.Utils.Classes.IsSameOrSubclassOf(ItemSpatialStrategyCounterpartType, typeof(ItemSpatialStrategy)))
                             {
-                                throw new InvalidItemSpatialStrategyCounterpartType(string.Format("The type returned by GetItemSpatialStrategyCounterpartType must be a subclass of {}", typeof(ItemSpatialStrategy).FullName));
+                                throw new InvalidItemSpatialStrategyCounterpartType(string.Format("The type returned by GetItemSpatialStrategyCounterpartType must be a subclass of {0}", typeof(ItemSpatialStrategy).FullName));
                             }
                         }
 

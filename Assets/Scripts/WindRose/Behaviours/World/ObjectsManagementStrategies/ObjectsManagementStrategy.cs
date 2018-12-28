@@ -42,7 +42,7 @@ namespace WindRose
                     {
                         StrategyHolder = GetComponent<ObjectsManagementStrategyHolder>();
                         CounterpartType = GetCounterpartType();
-                        if (CounterpartType == null || !CounterpartType.IsSubclassOf(baseCounterpartStrategyType))
+                        if (CounterpartType == null || !Support.Utils.Classes.IsSameOrSubclassOf(CounterpartType, baseCounterpartStrategyType))
                         {
                             Destroy(gameObject);
                             throw new UnsupportedTypeException(string.Format("The type returned by CounterpartType must be a subclass of {0}", baseCounterpartStrategyType.FullName));

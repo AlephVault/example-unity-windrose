@@ -1949,6 +1949,7 @@ GameObject:
   - component: {fileID: 643930795}
   - component: {fileID: 643930794}
   - component: {fileID: 643930793}
+  - component: {fileID: 643930801}
   m_Layer: 0
   m_Name: DropLayer
   m_TagString: Untagged
@@ -2060,6 +2061,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mainUsageStrategy: {fileID: 643930793}
   optimalPutOnNullPosition: 1
+--- !u!114 &643930801
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 643930791}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b0719e8c84275142b5cd9232aefcbb3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  chances:
+  - {fileID: 11400000, guid: e3c0c4178795fcd4c902942b15a28727, type: 2}
+  - {fileID: 11400000, guid: 4752cd4fd9dae6a409501010f293f66e, type: 2}
+  - {fileID: 11400000, guid: 6e0536301bb39c140be9c0cf5fd6faeb, type: 2}
+  key: 113
 --- !u!1 &661389403
 GameObject:
   m_ObjectHideFlags: 0
@@ -12591,6 +12608,7 @@ GameObject:
   - component: {fileID: 1367747096}
   - component: {fileID: 1367747095}
   - component: {fileID: 1367747094}
+  - component: {fileID: 1367747102}
   m_Layer: 0
   m_Name: DropLayer
   m_TagString: Untagged
@@ -12702,6 +12720,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mainUsageStrategy: {fileID: 1367747094}
   optimalPutOnNullPosition: 1
+--- !u!114 &1367747102
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1367747092}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b0719e8c84275142b5cd9232aefcbb3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  chances:
+  - {fileID: 11400000, guid: e3c0c4178795fcd4c902942b15a28727, type: 2}
+  - {fileID: 11400000, guid: 4752cd4fd9dae6a409501010f293f66e, type: 2}
+  - {fileID: 11400000, guid: 6e0536301bb39c140be9c0cf5fd6faeb, type: 2}
+  key: 119
 --- !u!1001 &1389828613
 Prefab:
   m_ObjectHideFlags: 0
@@ -15293,21 +15327,6 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!114 &1680133221
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1680133206}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2b0719e8c84275142b5cd9232aefcbb3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  chances:
-  - {fileID: 11400000, guid: e3c0c4178795fcd4c902942b15a28727, type: 2}
-  - {fileID: 11400000, guid: 4752cd4fd9dae6a409501010f293f66e, type: 2}
-  - {fileID: 11400000, guid: 6e0536301bb39c140be9c0cf5fd6faeb, type: 2}
 --- !u!1 &1722275577
 GameObject:
   m_ObjectHideFlags: 0

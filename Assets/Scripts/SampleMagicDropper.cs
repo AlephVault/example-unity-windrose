@@ -2,42 +2,31 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using WindRose.Types.Inventory.Stacks;
-using WindRose.Behaviours.Objects;
 using WindRose.Behaviours.World.Layers.Drop;
 using WindRose.ScriptableObjects.Inventory.Items;
 using WindRose.ScriptableObjects.Inventory.Items.QuantifyingStrategies;
 
-[RequireComponent(typeof(Positionable))]
+[RequireComponent(typeof(DropLayer))]
 public class SampleMagicDropper : MonoBehaviour {
-    private Positionable positionable;
+    private DropLayer dropLayer;
     private bool allowedToAct = true;
     private System.Random random = new System.Random();
 
     [SerializeField]
     private List<Item> chances = new List<Item>();
 
+    [SerializeField]
+    private KeyCode key;
+
     void Start()
     {
-        positionable = GetComponent<Positionable>();
+        dropLayer = GetComponent<DropLayer>();
     }
 
     void Update () {
-        if (!positionable.Paused && positionable.ParentMap != null && allowedToAct)
+        if (Input.GetKey(key))
         {
-            DropLayer dropLayer = positionable.ParentMap.DropLayer;
-            if (dropLayer)
-            {
-                if (Input.GetKey(KeyCode.D))
-                {
-                    dropARandomObject(dropLayer);
-                    
-                }
-                else if (Input.GetKey(KeyCode.A))
-                {
-                    undropTopObject(dropLayer);
-                }
-            }
+            dropARandomObject(dropLayer);
         }
     }
 
@@ -72,18 +61,9 @@ public class SampleMagicDropper : MonoBehaviour {
             {
                 stack = item.Create(25, null);
             }
-            Vector2Int containerPosition = new Vector2Int((int)positionable.X, (int)positionable.Y);
+            Vector2Int containerPosition = new Vector2Int(random.Next(0, (int)dropLayer.Map.Width), random.Next(0, (int)dropLayer.Map.Height));
             object finalStackPosition;
             bool pushed = dropLayer.Push(containerPosition, stack, out finalStackPosition);
-        });
-    }
-
-    void undropTopObject(DropLayer dropLayer)
-    {
-        Throttled(delegate ()
-        {
-            Vector2Int containerPosition = new Vector2Int((int)positionable.X, (int)positionable.Y);
-            WindRose.Types.Inventory.Stacks.Stack stack = dropLayer.Pop(containerPosition);
         });
     }
 }

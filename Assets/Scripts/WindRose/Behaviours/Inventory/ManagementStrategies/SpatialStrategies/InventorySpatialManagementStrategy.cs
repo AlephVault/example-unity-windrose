@@ -435,13 +435,12 @@ namespace WindRose
                          */
                         private Dictionary<object, SpatialContainer> containers = new Dictionary<object, SpatialContainer>();
 
-                        private enum IfAbsent { Init, Null, Raise };
+                        private enum IfAbsent { Init, Null };
                     
                         /**
                          * Gets a container by position. The position will NOT be validated.
                          * Depending on the second parameter, when no stack container is at
                          *   the given position we will:
-                         *   - Raise: Raise an error.
                          *   - Null: Return null.
                          *   - Init: Initialize a new container in that position and return it.
                          */
@@ -458,8 +457,6 @@ namespace WindRose
                                 {
                                     case IfAbsent.Null:
                                         return nullSpatialContainer;
-                                    case IfAbsent.Raise:
-                                        throw new SpatialContainerDoesNotExist(position);
                                     default:
                                         // Init
                                         container = InitializeContainer(position);
@@ -610,12 +607,8 @@ namespace WindRose
                         public bool Remove(object containerPosition, object stackPosition)
                         {
                             SpatialContainer container = GetContainer(containerPosition, IfAbsent.Null);
-                            if (container == null)
-                            {
-                                return false;
-                            }
 
-                            Stack stack = container.Find(stackPosition);
+                            Stack stack = GetContainer(containerPosition, IfAbsent.Null).Find(stackPosition);
                             if (stack == null)
                             {
                                 return false;

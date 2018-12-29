@@ -75,10 +75,6 @@ public class SampleMagicDropper : MonoBehaviour {
             Vector2Int containerPosition = new Vector2Int((int)positionable.X, (int)positionable.Y);
             object finalStackPosition;
             bool pushed = dropLayer.Push(containerPosition, stack, out finalStackPosition);
-            if (pushed)
-            {
-                Debug.Log(string.Format("Could push at {0} with a final position of {1}", containerPosition, finalStackPosition));
-            }
         });
     }
 
@@ -86,7 +82,8 @@ public class SampleMagicDropper : MonoBehaviour {
     {
         Throttled(delegate ()
         {
-
+            Vector2Int containerPosition = new Vector2Int((int)positionable.X, (int)positionable.Y);
+            WindRose.Types.Inventory.Stacks.Stack stack = dropLayer.Pop(containerPosition);
         });
     }
 }

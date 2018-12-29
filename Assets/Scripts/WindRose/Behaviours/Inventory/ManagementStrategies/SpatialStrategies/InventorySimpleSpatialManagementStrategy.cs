@@ -91,7 +91,7 @@ namespace WindRose
                                 // We will assume the position exists. We clear it.
                                 elements[(int)position] = false;
                                 // Also, we trim the elements.
-                                while(!elements[elements.Count-1])
+                                while(elements.Count > 0 && !elements[elements.Count-1])
                                 {
                                     elements.RemoveAt(elements.Count - 1);
                                 }

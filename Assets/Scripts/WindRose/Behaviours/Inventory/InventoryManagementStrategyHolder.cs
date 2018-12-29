@@ -189,16 +189,7 @@ namespace WindRose
                         // We will track the current quantity to add/saturate here.
                         object currentQuantity = stack.Quantity;
 
-                        IEnumerable<Stack> matchedStacks;
-                        try
-                        {
-                            // catch, with empty, the case of missing container.
-                            matchedStacks = spatialStrategy.FindAll(containerPosition, stack, false);
-                        }
-                        catch(Exception)
-                        {
-                            matchedStacks = new List<Stack>();
-                        }
+                        IEnumerable<Stack> matchedStacks = spatialStrategy.FindAll(containerPosition, stack, false);
 
                         // And we will iterate computing saturations here. Stacks to saturate will be
                         //   queued in the list above.

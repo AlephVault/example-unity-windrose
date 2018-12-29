@@ -374,6 +374,54 @@ namespace WindRose
                             public int Count { get { return stacks.Count; } }
                         }
 
+                        public class NullSpatialContainer : SpatialContainer
+                        {
+                            /**
+                             * Implements an always-empty container that fails to everything.
+                             *   This will act as a null spatial container, in order to not
+                             *   just return `null` and check it but, instead, act transparently.
+                             */
+
+                            public NullSpatialContainer() : base(null, null)
+                            {
+                            }
+
+                            public override object FirstFree(Stack stack)
+                            {
+                                return null;
+                            }
+
+                            protected override void Occupy(object position, Stack stack)
+                            {
+                            }
+
+                            protected override IEnumerable<object> Positions(bool reverse)
+                            {
+                                yield break;
+                            }
+
+                            protected override void Release(object position, Stack stack)
+                            {
+                            }
+
+                            protected override object Search(object position)
+                            {
+                                return null;
+                            }
+
+                            protected override bool StackPositionIsAvailable(object position, Stack stack)
+                            {
+                                return false;
+                            }
+
+                            protected override StackPositionValidity ValidateStackPosition(object position, Stack stack)
+                            {
+                                return StackPositionValidity.OutOfBounds;
+                            }
+                        }
+
+                        private static NullSpatialContainer nullSpatialContainer = new NullSpatialContainer();
+
                         public Type ItemSpatialStrategyCounterpartType { get; private set; }
 
                         /**
@@ -409,7 +457,7 @@ namespace WindRose
                                 switch(ifAbsent)
                                 {
                                     case IfAbsent.Null:
-                                        return null;
+                                        return nullSpatialContainer;
                                     case IfAbsent.Raise:
                                         throw new SpatialContainerDoesNotExist(position);
                                     default:
@@ -460,7 +508,7 @@ namespace WindRose
                          */
                         public IEnumerable<Support.Types.Tuple<object, Stack>> StackPairs(object containerPosition, bool reverse)
                         {
-                            return GetContainer(containerPosition, IfAbsent.Raise).StackPairs(reverse);
+                            return GetContainer(containerPosition, IfAbsent.Null).StackPairs(reverse);
                         }
 
                         /**
@@ -468,7 +516,7 @@ namespace WindRose
                          */
                         public Stack Find(object containerPosition, object stackPosition)
                         {
-                            return GetContainer(containerPosition, IfAbsent.Raise).Find(stackPosition);
+                            return GetContainer(containerPosition, IfAbsent.Null).Find(stackPosition);
                         }
 
                         /**
@@ -476,7 +524,7 @@ namespace WindRose
                          */
                         public IEnumerable<Stack> FindAll(object containerPosition, Func<Support.Types.Tuple<object, Stack>, bool> predicate, bool reverse)
                         {
-                            return GetContainer(containerPosition, IfAbsent.Raise).FindAll(predicate, reverse);
+                            return GetContainer(containerPosition, IfAbsent.Null).FindAll(predicate, reverse);
                         }
 
                         /**
@@ -484,7 +532,7 @@ namespace WindRose
                          */
                         public IEnumerable<Stack> FindAll(object containerPosition, Item item, bool reverse)
                         {
-                            return GetContainer(containerPosition, IfAbsent.Raise).FindAll(item, reverse);
+                            return GetContainer(containerPosition, IfAbsent.Null).FindAll(item, reverse);
                         }
 
                         /**
@@ -492,7 +540,7 @@ namespace WindRose
                          */
                         public Stack First(object containerPosition)
                         {
-                            return GetContainer(containerPosition, IfAbsent.Raise).First();
+                            return GetContainer(containerPosition, IfAbsent.Null).First();
                         }
 
                         /**
@@ -500,7 +548,7 @@ namespace WindRose
                          */
                         public Stack Last(object containerPosition)
                         {
-                            return GetContainer(containerPosition, IfAbsent.Raise).Last();
+                            return GetContainer(containerPosition, IfAbsent.Null).Last();
                         }
 
                         /**
@@ -508,7 +556,7 @@ namespace WindRose
                          */
                         public IEnumerable<Stack> FindAll(object containerPosition, Stack stack, bool reverse)
                         {
-                            return GetContainer(containerPosition, IfAbsent.Raise).FindAll(stack, reverse);
+                            return GetContainer(containerPosition, IfAbsent.Null).FindAll(stack, reverse);
                         }
 
                         /**
@@ -516,7 +564,7 @@ namespace WindRose
                          */
                         public Stack FindOne(object containerPosition, Func<Support.Types.Tuple<object, Stack>, bool> predicate, bool reverse)
                         {
-                            return GetContainer(containerPosition, IfAbsent.Raise).FindOne(predicate, reverse);
+                            return GetContainer(containerPosition, IfAbsent.Null).FindOne(predicate, reverse);
                         }
 
                         /**
@@ -524,7 +572,7 @@ namespace WindRose
                          */
                         public Stack FindOne(object containerPosition, Item item, bool reverse)
                         {
-                            return GetContainer(containerPosition, IfAbsent.Raise).FindOne(item, reverse);
+                            return GetContainer(containerPosition, IfAbsent.Null).FindOne(item, reverse);
                         }
 
                         /**
@@ -532,7 +580,7 @@ namespace WindRose
                          */
                         public Stack FindOne(object containerPosition, Stack stack, bool reverse)
                         {
-                            return GetContainer(containerPosition, IfAbsent.Raise).FindOne(stack, reverse);
+                            return GetContainer(containerPosition, IfAbsent.Null).FindOne(stack, reverse);
                         }
 
                         /**

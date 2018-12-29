@@ -75,7 +75,7 @@ namespace WindRose
 
                         public Stack Pop(Vector2Int containerPosition)
                         {
-                            Stack stack = inventoryHolder.First(containerPosition);
+                            Stack stack = inventoryHolder.Last(containerPosition);
                             if (stack != null)
                             {
                                 inventoryHolder.Remove(containerPosition, stack.QualifiedPosition.First);

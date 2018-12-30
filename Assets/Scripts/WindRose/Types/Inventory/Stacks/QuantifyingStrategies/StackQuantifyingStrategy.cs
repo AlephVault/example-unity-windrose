@@ -35,27 +35,30 @@ namespace WindRose
                          * Compatibility stuff for quantity types.
                          */
 
-                        private Type allowedQuantityType;
+                        public Type AllowedQuantityType
+                        {
+                            get; private set;
+                        }
 
                         // Notes: the expected type for non-stackable will be: object.
                         protected abstract Type GetAllowedQuantityType();
 
                         protected virtual void CheckQuantityType(object quantity)
                         {
-                            if (!Support.Utils.Classes.IsSameOrSubclassOf(quantity.GetType(), allowedQuantityType))
+                            if (!Support.Utils.Classes.IsSameOrSubclassOf(quantity.GetType(), AllowedQuantityType))
                             {
-                                throw new InvalidQuantityType(string.Format("Given quantity's type for stack quantifying strategy must be an instance of {0}", allowedQuantityType.FullName));
+                                throw new InvalidQuantityType(string.Format("Given quantity's type for stack quantifying strategy must be an instance of {0}", AllowedQuantityType.FullName));
                             }
                         }
 
                         private void PrepareAllowedQuantityType()
                         {
-                            if (allowedQuantityType != null)
+                            if (AllowedQuantityType != null)
                             {
                                 return;
                             }
 
-                            allowedQuantityType = GetAllowedQuantityType();
+                            AllowedQuantityType = GetAllowedQuantityType();
                         }
 
                         public StackQuantifyingStrategy(ItemQuantifyingStrategy itemStrategy, object argument) : base(itemStrategy)

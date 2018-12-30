@@ -33,45 +33,45 @@ namespace WindRose
                             spatialStrategy = GetComponent<SpatialStrategies.InventorySimpleSpatialManagementStrategy>();
                         }
 
-                        public interface ISimpleInventoryRenderer
+                        public abstract class SimpleInventoryRenderer : MonoBehaviour
                         {
-                            void Connected(InventoryManagementStrategyHolder holder, int maxSize);
-                            void RefreshStack(object containerPosition, object stackPosition, Sprite icon, string caption, object quantity);
-                            void RemoveStack(object containerPosition, object stackPosition);
-                            void Clear();
-                            void Disconnected();
+                            public abstract void Connected(InventoryManagementStrategyHolder holder, int maxSize);
+                            public abstract void RefreshStack(object containerPosition, object stackPosition, Sprite icon, string caption, object quantity);
+                            public abstract void RemoveStack(object containerPosition, object stackPosition);
+                            public abstract void Clear();
+                            public abstract void Disconnected();
                         }
 
                         protected override bool AllowsListener(MonoBehaviour listener)
                         {
-                            return listener is ISimpleInventoryRenderer;
+                            return listener is SimpleInventoryRenderer;
                         }
 
                         protected override void ListenerHasBeenAdded(MonoBehaviour listener)
                         {
-                            ((ISimpleInventoryRenderer)listener).Connected(StrategyHolder, spatialStrategy.GetSize());
+                            ((SimpleInventoryRenderer)listener).Connected(StrategyHolder, spatialStrategy.GetSize());
                         }
 
                         protected override void ListenerHasBeenRemoved(MonoBehaviour listener)
                         {
-                            ((ISimpleInventoryRenderer)listener).Disconnected();
+                            ((SimpleInventoryRenderer)listener).Disconnected();
                         }
 
                         protected override void StackWasUpdated(MonoBehaviour listener, object containerPosition, object stackPosition, Stack stack)
                         {
                             Dictionary<string, object> target = new Dictionary<string, object>();
                             stack.MainRenderingStrategy.DumpRenderingData(target);
-                            ((ISimpleInventoryRenderer)listener).RefreshStack(containerPosition, stackPosition, (Sprite)target["icon"], (string)target["caption"], target["quantity"]);
+                            ((SimpleInventoryRenderer)listener).RefreshStack(containerPosition, stackPosition, (Sprite)target["icon"], (string)target["caption"], target["quantity"]);
                         }
 
                         protected override void StackWasRemoved(MonoBehaviour listener, object containerPosition, object stackPosition)
                         {
-                            ((ISimpleInventoryRenderer)listener).RemoveStack(containerPosition, stackPosition);
+                            ((SimpleInventoryRenderer)listener).RemoveStack(containerPosition, stackPosition);
                         }
 
                         protected override void EverythingWasCleared(MonoBehaviour listener)
                         {
-                            ((ISimpleInventoryRenderer)listener).Clear();
+                            ((SimpleInventoryRenderer)listener).Clear();
                         }
                     }
                 }

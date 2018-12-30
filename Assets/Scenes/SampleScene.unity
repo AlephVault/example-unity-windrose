@@ -1950,6 +1950,7 @@ GameObject:
   - component: {fileID: 643930794}
   - component: {fileID: 643930793}
   - component: {fileID: 643930801}
+  - component: {fileID: 643930802}
   m_Layer: 0
   m_Name: DropLayer
   m_TagString: Untagged
@@ -1992,8 +1993,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 32cf9f6fd8c87204a903a4e2965baa41, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  containerPrefab: {fileID: 114194054388298026, guid: 5bb5ea9e828fb454cb1fde3f215aeb02,
-    type: 2}
 --- !u!114 &643930795
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2077,6 +2076,19 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 4752cd4fd9dae6a409501010f293f66e, type: 2}
   - {fileID: 11400000, guid: 6e0536301bb39c140be9c0cf5fd6faeb, type: 2}
   key: 113
+--- !u!114 &643930802
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 643930791}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b4e132055c6b8994d847201ae148c9ec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  containerPrefab: {fileID: 114194054388298026, guid: 5bb5ea9e828fb454cb1fde3f215aeb02,
+    type: 2}
 --- !u!1 &661389403
 GameObject:
   m_ObjectHideFlags: 0
@@ -12609,6 +12621,7 @@ GameObject:
   - component: {fileID: 1367747095}
   - component: {fileID: 1367747094}
   - component: {fileID: 1367747102}
+  - component: {fileID: 1367747103}
   m_Layer: 0
   m_Name: DropLayer
   m_TagString: Untagged
@@ -12651,8 +12664,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 32cf9f6fd8c87204a903a4e2965baa41, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  containerPrefab: {fileID: 114194054388298026, guid: 5bb5ea9e828fb454cb1fde3f215aeb02,
-    type: 2}
 --- !u!114 &1367747096
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12736,6 +12747,19 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 4752cd4fd9dae6a409501010f293f66e, type: 2}
   - {fileID: 11400000, guid: 6e0536301bb39c140be9c0cf5fd6faeb, type: 2}
   key: 119
+--- !u!114 &1367747103
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1367747092}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b4e132055c6b8994d847201ae148c9ec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  containerPrefab: {fileID: 114194054388298026, guid: 5bb5ea9e828fb454cb1fde3f215aeb02,
+    type: 2}
 --- !u!1001 &1389828613
 Prefab:
   m_ObjectHideFlags: 0

@@ -53,7 +53,7 @@ namespace WindRose
 
                         private void Start()
                         {
-                            AddListener(GetComponent<DropLayerInventoryRenderer>());
+                            inventoryHolder.AddListener(GetComponent<DropLayerInventoryRenderer>());
                         }
 
                         /************************************************************
@@ -194,15 +194,7 @@ namespace WindRose
                             return inventoryHolder.Export();
                         }
 
-                        public bool AddListener(MonoBehaviour listener)
-                        {
-                            return inventoryHolder.AddListener(listener);
-                        }
-
-                        public bool RemoveListener(MonoBehaviour listener)
-                        {
-                            return inventoryHolder.RemoveListener(listener);
-                        }
+                        // Add/Remove listener have little meaning here.
                     }
                 }
             }

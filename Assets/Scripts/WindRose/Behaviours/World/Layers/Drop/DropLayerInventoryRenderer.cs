@@ -20,6 +20,13 @@ namespace WindRose
                     [RequireComponent(typeof(DropLayer))]
                     public class DropLayerInventoryRenderer : InventorySimpleRenderingManagementStrategy.SimpleInventoryRenderer
                     {
+                        /**
+                         * This is the renderer for a drop layer. It is directly connected to the drop layer,
+                         *   will be its one and only renderer, and will create/destroy related drop items
+                         *   (they are just a reflection of the underlying stack and don't have interaction
+                         *   on their own).
+                         */
+
                         private SimpleDropContainerRenderer[,] dropContainers;
                         // We are completely sure we have a PositioningStrategy in the underlying object
                         private InventoryMapSizedPositioningManagementStrategy positioningStrategy;

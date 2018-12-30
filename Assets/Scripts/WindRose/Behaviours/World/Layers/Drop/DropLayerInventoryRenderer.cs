@@ -21,7 +21,7 @@ namespace WindRose
                     public class DropLayerInventoryRenderer : InventorySimpleRenderingManagementStrategy.SimpleInventoryRenderer
                     {
                         private SimpleDropContainerRenderer[,] dropContainers;
-                        private InventoryManagementStrategyHolder inventoryHolder;
+                        // We are completely sure we have a PositioningStrategy in the underlying object
                         private InventoryMapSizedPositioningManagementStrategy positioningStrategy;
 
                         /**
@@ -33,7 +33,6 @@ namespace WindRose
                         private void Awake()
                         {
                             positioningStrategy = GetComponent<InventoryMapSizedPositioningManagementStrategy>();
-                            inventoryHolder = GetComponent<InventoryManagementStrategyHolder>();
                         }
 
                         private void Start()

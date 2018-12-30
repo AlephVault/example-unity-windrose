@@ -144,6 +144,107 @@ namespace WindRose
                     return spatialStrategy.FindOne(containerPosition, item, reverse);
                 }
 
+                /**
+                 * This method will perfirm an optimal put: filling existing matching stacks before adding this new stack to
+                 *   the inventory.
+                 */
+                private bool OptimalPut(object containerPosition, object stackPosition, Stack stack, out object finalStackPosition)
+                {
+
+                    // This list is to queue stacks that will saturate on optimal put for cases when position
+                    //   is not chosen by the user, and optimal put is chosen/preset.
+                    List<Stack> stacksToSaturate = new List<Stack>();
+
+                    // This stack is the last stack that would receive quantity. In this case, this stack
+                    //   does not overflow (i.e. the quantity left is 0).
+                    Stack unsaturatedLastStack = null;
+
+                    // The condition was chosen because a fixed position would instead put the stack there.
+                    // But since the position was chosen to be determined by the engine, we have a unique
+                    //   opportunity to also redistribute the stack to optimize its occupancy.
+
+                    // We will track the current quantity to add/saturate here.
+                    object currentQuantity = stack.Quantity;
+
+                    IEnumerable<Stack> matchedStacks = spatialStrategy.FindAll(containerPosition, stack, false);
+
+                    // And we will iterate computing saturations here. Stacks to saturate will be
+                    //   queued in the list above.
+                    foreach (Stack matchedStack in matchedStacks)
+                    {
+                        object quantityAdded;
+                        object quanityLeft;
+                        object finalQuantity;
+                        bool wouldSaturate = matchedStack.WillOverflow(currentQuantity, out finalQuantity, out quantityAdded, out quanityLeft);
+                        if (wouldSaturate)
+                        {
+                            currentQuantity = quanityLeft;
+                            stacksToSaturate.Add(matchedStack);
+                        }
+                        else
+                        {
+                            unsaturatedLastStack = matchedStack;
+                            break;
+                        }
+                    }
+
+                    // Now we have two cases here:
+                    // 1. no unsaturated stack is present.
+                    // 2. an unsaturated stack is present.
+                    if (unsaturatedLastStack != null)
+                    {
+                        // Saturate the pending ones, and add amount to the last
+                        foreach (Stack queuedStack in stacksToSaturate)
+                        {
+                            queuedStack.Saturate();
+                        }
+                        unsaturatedLastStack.ChangeQuantityBy(currentQuantity);
+
+                        // Render everything
+                        foreach (Stack queuedStack in stacksToSaturate)
+                        {
+                            renderingStrategy.StackWasUpdated(containerPosition, queuedStack.QualifiedPosition.First, queuedStack);
+                        }
+                        renderingStrategy.StackWasUpdated(containerPosition, unsaturatedLastStack.QualifiedPosition.First, unsaturatedLastStack);
+
+                        // The stack was put, but not on a new position: instead, it filled other stacks and it should be
+                        //   considered destroyed.
+                        finalStackPosition = null;
+
+                        // Still we return true because the operation was successful.
+                        return true;
+                    }
+                    else
+                    {
+                        // Before saturating stacks, we try putting a clone of the current stack with the remaining quantity.
+                        // If we can do that, then saturate all the other stacks and proceed.
+                        Stack stackWithRemainder = stack.Clone(currentQuantity);
+                        bool wasPut = spatialStrategy.Put(containerPosition, null, stackWithRemainder, out finalStackPosition);
+                        if (wasPut)
+                        {
+                            // Saturate the pending ones
+                            foreach (Stack queuedStack in stacksToSaturate)
+                            {
+                                queuedStack.Saturate();
+                            }
+
+                            // Render everything
+                            foreach (Stack queuedStack in stacksToSaturate)
+                            {
+                                renderingStrategy.StackWasUpdated(containerPosition, queuedStack.QualifiedPosition.First, queuedStack);
+                            }
+                            renderingStrategy.StackWasUpdated(containerPosition, stackWithRemainder.QualifiedPosition.First, stackWithRemainder);
+                            return true;
+                        }
+                        else
+                        {
+                            // Nothing happened here.
+                            finalStackPosition = null;
+                            return false;
+                        }
+                    }
+                }
+
                 public bool Put(object containerPosition, object stackPosition, Stack stack, out object finalStackPosition, bool? optimalPutOnNullPosition = null)
                 {
                     if (!stack.QuantifyingStrategy.HasAllowedQuantity())
@@ -174,98 +275,7 @@ namespace WindRose
                     //      we are having right now).
                     if (stackPosition == null && optimalPutOnNullPosition == true)
                     {
-                        // This list is to queue stacks that will saturate on optimal put for cases when position
-                        //   is not chosen by the user, and optimal put is chosen/preset.
-                        List<Stack> stacksToSaturate = new List<Stack>();
-
-                        // This stack is the last stack that would receive quantity. In this case, this stack
-                        //   does not overflow (i.e. the quantity left is 0).
-                        Stack unsaturatedLastStack = null;
-
-                        // The condition was chosen because a fixed position would instead put the stack there.
-                        // But since the position was chosen to be determined by the engine, we have a unique
-                        //   opportunity to also redistribute the stack to optimize its occupancy.
-
-                        // We will track the current quantity to add/saturate here.
-                        object currentQuantity = stack.Quantity;
-
-                        IEnumerable<Stack> matchedStacks = spatialStrategy.FindAll(containerPosition, stack, false);
-
-                        // And we will iterate computing saturations here. Stacks to saturate will be
-                        //   queued in the list above.
-                        foreach (Stack matchedStack in matchedStacks)
-                        {
-                            object quantityAdded;
-                            object quanityLeft;
-                            object finalQuantity;
-                            bool wouldSaturate = matchedStack.WillOverflow(currentQuantity, out finalQuantity, out quantityAdded, out quanityLeft);
-                            if (wouldSaturate)
-                            {
-                                currentQuantity = quanityLeft;
-                                stacksToSaturate.Add(matchedStack);
-                            }
-                            else
-                            {
-                                unsaturatedLastStack = matchedStack;
-                                break;
-                            }
-                        }
-
-                        // Now we have two cases here:
-                        // 1. no unsaturated stack is present.
-                        // 2. an unsaturated stack is present.
-                        if (unsaturatedLastStack != null)
-                        {
-                            // Saturate the pending ones, and add amount to the last
-                            foreach(Stack queuedStack in stacksToSaturate)
-                            {
-                                queuedStack.Saturate();
-                            }
-                            unsaturatedLastStack.ChangeQuantityBy(currentQuantity);
-
-                            // Render everything
-                            foreach (Stack queuedStack in stacksToSaturate)
-                            {
-                                renderingStrategy.StackWasUpdated(containerPosition, queuedStack.QualifiedPosition.First, queuedStack);
-                            }
-                            renderingStrategy.StackWasUpdated(containerPosition, unsaturatedLastStack.QualifiedPosition.First, unsaturatedLastStack);
-
-                            // The stack was put, but not on a new position: instead, it filled other stacks and it should be
-                            //   considered destroyed.
-                            finalStackPosition = null;
-
-                            // Still we return true because the operation was successful.
-                            return true;
-                        }
-                        else
-                        {
-                            // Before saturating stacks, we try putting a clone of the current stack with the remaining quantity.
-                            // If we can do that, then saturate all the other stacks and proceed.
-                            Stack stackWithRemainder = stack.Clone(currentQuantity);
-                            bool wasPut = spatialStrategy.Put(containerPosition, null, stackWithRemainder, out finalStackPosition);
-                            if (wasPut)
-                            {
-                                // Saturate the pending ones
-                                foreach (Stack queuedStack in stacksToSaturate)
-                                {
-                                    queuedStack.Saturate();
-                                }
-
-                                // Render everything
-                                foreach (Stack queuedStack in stacksToSaturate)
-                                {
-                                    renderingStrategy.StackWasUpdated(containerPosition, queuedStack.QualifiedPosition.First, queuedStack);
-                                }
-                                renderingStrategy.StackWasUpdated(containerPosition, stackWithRemainder.QualifiedPosition.First, stackWithRemainder);
-                                return true;
-                            }
-                            else
-                            {
-                                // Nothing happened here.
-                                finalStackPosition = null;
-                                return false;
-                            }
-                        }
+                        return OptimalPut(containerPosition, stackPosition, stack, out finalStackPosition);
                     }
                     else
                     {

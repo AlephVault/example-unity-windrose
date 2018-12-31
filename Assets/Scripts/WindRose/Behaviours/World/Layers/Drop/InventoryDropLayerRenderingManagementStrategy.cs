@@ -17,8 +17,7 @@ namespace WindRose
             {
                 namespace Drop
                 {
-                    [RequireComponent(typeof(DropLayer))]
-                    public class DropLayerInventoryRenderer : InventorySimpleRenderingManagementStrategy.SimpleInventoryRenderer
+                    public class InventoryDropLayerRenderingManagementStrategy : InventorySimpleRenderingManagementStrategy
                     {
                         /**
                          * This is the renderer for a drop layer. It is directly connected to the drop layer,
@@ -44,18 +43,16 @@ namespace WindRose
 
                         private void Start()
                         {
-                            Map map = GetComponent<DropLayer>().Map;
-                            dropContainers = new SimpleDropContainerRenderer[map.Width, map.Height];
-                        }
-
-                        public override void Connected(InventoryManagementStrategyHolder holder, int maxSize)
-                        {
-                            // Nothing happens here in particular.
-                        }
-
-                        public override void Disconnected()
-                        {
-                            Clear();
+                            try
+                            {
+                                Map map = GetComponent<DropLayer>().Map;
+                                dropContainers = new SimpleDropContainerRenderer[map.Width, map.Height];
+                            }
+                            catch (NullReferenceException)
+                            {
+                                Debug.Log("This rendering strategy must be bound to an object being also a DropLayer");
+                                Destroy(gameObject);
+                            }
                         }
 
                         private SimpleDropContainerRenderer getContainerFor(Vector2Int position, bool createIfMissing = true)
@@ -82,7 +79,7 @@ namespace WindRose
                             }
                         }
 
-                        public override void RefreshStack(object containerPosition, object stackPosition, Sprite icon, string caption, object quantity)
+                        protected override void StackWasUpdated(object containerPosition, int stackPosition, Sprite icon, string caption, object quantity)
                         {
                             // Adds a stack to a container (creates the container if absent).
                             Vector2Int containerVector = (Vector2Int)containerPosition;
@@ -91,7 +88,7 @@ namespace WindRose
                             container.RefreshWithPutting(stackIndex, icon, caption, quantity);
                         }
 
-                        public override void RemoveStack(object containerPosition, object stackPosition)
+                        protected override void StackWasRemoved(object containerPosition, int stackPosition)
                         {
                             // Removes a stack from a container (if the container exists).
                             // Removes the container if empty.
@@ -109,7 +106,7 @@ namespace WindRose
                             }
                         }
 
-                        public override void Clear()
+                        public override void EverythingWasCleared()
                         {
                             // Destroys all the containers.
                             foreach (object position in positioningStrategy.Positions())

@@ -15,16 +15,15 @@ namespace WindRose
                 {
                     using Types.Inventory.Stacks;
                     using Inventory;
-                    using Inventory.ManagementStrategies.RenderingStrategies;
                     using Inventory.ManagementStrategies.SpatialStrategies;
                     using Support.Types;
                     using System.Linq;
+                    using Inventory.ManagementStrategies.RenderingStrategies;
 
                     [RequireComponent(typeof(InventoryMapSizedPositioningManagementStrategy))]
-                    [RequireComponent(typeof(InventorySimpleRenderingManagementStrategy))]
                     [RequireComponent(typeof(InventoryInfiniteSimpleSpatialManagementStrategy))]
                     [RequireComponent(typeof(InventoryManagementStrategyHolder))]
-                    [RequireComponent(typeof(DropLayerInventoryRenderer))]
+                    [RequireComponent(typeof(InventoryDropLayerRenderingManagementStrategy))]
                     public class DropLayer : MapLayer
                     {
                         /**
@@ -39,6 +38,7 @@ namespace WindRose
                          */
 
                         private InventoryManagementStrategyHolder inventoryHolder;
+                        private InventoryDropLayerRenderingManagementStrategy renderingStrategy;
 
                         protected override int GetSortingOrder()
                         {
@@ -49,11 +49,7 @@ namespace WindRose
                         {
                             base.Awake();
                             inventoryHolder = GetComponent<InventoryManagementStrategyHolder>();
-                        }
-
-                        private void Start()
-                        {
-                            inventoryHolder.AddListener(GetComponent<DropLayerInventoryRenderer>());
+                            renderingStrategy = GetComponent<InventoryDropLayerRenderingManagementStrategy>();
                         }
 
                         /************************************************************

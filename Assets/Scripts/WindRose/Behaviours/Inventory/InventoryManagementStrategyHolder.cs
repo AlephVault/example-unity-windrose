@@ -420,20 +420,6 @@ namespace WindRose
                  *********************************************************************************************/
 
                 /******
-                 * These methods go straight to the listener.
-                 ******/
-
-                public bool AddListener(MonoBehaviour listener)
-                {
-                    return renderingStrategy.AddListener(listener);
-                }
-
-                public bool RemoveListener(MonoBehaviour listener)
-                {
-                    return renderingStrategy.RemoveListener(listener);
-                }
-
-                /******
                  * Blinking methods. They are means to be used externally, since other calls make direct use
                  *   of the rendering strategy.
                  * 

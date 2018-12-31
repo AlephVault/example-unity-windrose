@@ -20,8 +20,7 @@ namespace WindRose
                     {
                         /**
                          * Provides methods to reflect changes on the stacks being added, modified, or
-                         *   removed on certain (inventory, stack) positions. Those methods are invoked
-                         *   over the registered listeners.
+                         *   removed on certain (inventory, stack) positions.
                          * 
                          * Quite often the rendering strategies WILL depend on specific:
                          * - Positioning strategies: they deal with potentially many simultaneous inventories
@@ -38,109 +37,20 @@ namespace WindRose
                          *   data to be rendered later. It is up to the implementor to decide what to do.
                          */
 
-                        public class InvalidListenerException : Types.Exception
-                        {
-                            public InvalidListenerException(string message) : base(message) {}
-                        }
-
-                        private HashSet<MonoBehaviour> listeners = new HashSet<MonoBehaviour>();
-
-                        /**
-                         * Adds a listener to this rendering strategy.
-                         */
-                        public bool AddListener(MonoBehaviour listener)
-                        {
-                            if (listener == null)
-                            {
-                                throw new InvalidListenerException("Listener to add cannot be null");
-                            }
-                            if (!AllowsListener(listener))
-                            {
-                                throw new InvalidListenerException(string.Format("Listener not accepted: {0}", listener));
-                            }
-
-                            if (listeners.Contains(listener))
-                            {
-                                return false;
-                            }
-
-                            listeners.Add(listener);
-                            ListenerHasBeenAdded(listener);
-                            return true;
-                        }
-
-                        /**
-                         * Removes a listener from this rendering strategy.
-                         */
-                        public bool RemoveListener(MonoBehaviour listener)
-                        {
-                            if (!listeners.Contains(listener))
-                            {
-                                return false;
-                            }
-
-                            listeners.Remove(listener);
-                            ListenerHasBeenRemoved(listener);
-                            return true;
-                        }
-
                         /**
                          * Triggers an update: clears everything.
                          */
-                        public void EverythingWasCleared()
-                        {
-                            foreach (MonoBehaviour listener in listeners)
-                            {
-                                EverythingWasCleared(listener);
-                            }
-                        }
+                        public abstract void EverythingWasCleared();
 
                         /**
                          * Triggers an update: stack added/refreshed.
                          */
-                        public void StackWasUpdated(object containerPosition, object stackPosition, Stack stack)
-                        {
-                            foreach(MonoBehaviour listener in listeners)
-                            {
-                                StackWasUpdated(listener, containerPosition, stackPosition, stack);
-                            }
-                        }
+                        public abstract void StackWasUpdated(object containerPosition, object stackPosition, Stack stack);
 
                         /**
                          * Triggers an update: stack removed.
                          */
-                        public void StackWasRemoved(object containerPosition, object stackPosition)
-                        {
-                            foreach(MonoBehaviour listener in listeners)
-                            {
-                                StackWasRemoved(listener, containerPosition, stackPosition);
-                            }
-                        }
-
-                        /**
-                         * Tells whether a listener may be added or not.
-                         */
-                        protected abstract bool AllowsListener(MonoBehaviour listener);
-                        /**
-                         * When a listener is added, this method initializes the content of the whole inventory on the listener.
-                         */
-                        protected abstract void ListenerHasBeenAdded(MonoBehaviour listener);
-                        /**
-                         * When a listener is removed, this method helps us clear the inventory display (emptying or hiding).
-                         */
-                        protected abstract void ListenerHasBeenRemoved(MonoBehaviour listener);
-                        /**
-                         * Event handler to clear everything.
-                         */
-                        protected abstract void EverythingWasCleared(MonoBehaviour listener);
-                        /**
-                         * Event handler to add/refresh a stack on the listener.
-                         */
-                        protected abstract void StackWasUpdated(MonoBehaviour listener, object containerPosition, object stackPosition, Stack stack);
-                        /**
-                         * Event handler to remove a stack from the listener.
-                         */
-                        protected abstract void StackWasRemoved(MonoBehaviour listener, object containerPosition, object stackPosition);
+                        public abstract void StackWasRemoved(object containerPosition, object stackPosition);
                     }
                 }
             }

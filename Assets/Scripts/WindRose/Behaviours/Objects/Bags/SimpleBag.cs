@@ -16,6 +16,7 @@ namespace WindRose
                 using System;
                 using System.Linq;
                 using Support.Types;
+                using World.Layers.Drop;
 
                 [RequireComponent(typeof(Positionable))]
                 [RequireComponent(typeof(InventorySinglePositioningManagementStrategy))]
@@ -37,6 +38,7 @@ namespace WindRose
                      */
 
                     private InventoryManagementStrategyHolder inventoryHolder;
+                    private Positionable positionable;
 
                     /**
                      * Awake/Start pre-register the renderers (if they are set).
@@ -45,6 +47,7 @@ namespace WindRose
                     void Awake()
                     {
                         inventoryHolder = GetComponent<InventoryManagementStrategyHolder>();
+                        positionable = GetComponent<Positionable>();
                     }
 
                     /**
@@ -56,9 +59,9 @@ namespace WindRose
                         return from tuple in inventoryHolder.StackPairs(null, reverse) select new Tuple<int, Stack>((int)tuple.First, tuple.Second);
                     }
 
-                    public Stack Find(int stackPosition)
+                    public Stack Find(int position)
                     {
-                        return inventoryHolder.Find(null, stackPosition);
+                        return inventoryHolder.Find(null, position);
                     }
 
                     public IEnumerable<Stack> FindAll(Func<Tuple<int, Stack>, bool> predicate, bool reverse = false)
@@ -91,49 +94,49 @@ namespace WindRose
                         return inventoryHolder.FindOne(null, item, reverse);
                     }
 
-                    public bool Put(int stackPosition, Stack stack, int? finalStackPosition, bool? optimalPutOnNullPosition = null)
+                    public bool Put(int? position, Stack stack, out int? finalPosition, bool? optimalPutOnNullPosition = null)
                     {
-                        object finalOStackPosition;
-                        bool result = inventoryHolder.Put(null, stackPosition, stack, out finalOStackPosition, optimalPutOnNullPosition);
-                        finalStackPosition = finalOStackPosition == null ? null : (int?)finalOStackPosition;
+                        object finalOPosition;
+                        bool result = inventoryHolder.Put(null, position, stack, out finalOPosition, optimalPutOnNullPosition);
+                        finalPosition = finalOPosition == null ? null : (int?)finalOPosition;
                         return result;
                     }
 
-                    public bool Remove(int stackPosition)
+                    public bool Remove(int position)
                     {
-                        return inventoryHolder.Remove(null, stackPosition);
+                        return inventoryHolder.Remove(null, position);
                     }
 
-                    public bool Merge(int? destinationStackPosition, int sourceStackPosition)
+                    public bool Merge(int? destinationPosition, int sourcePosition)
                     {
-                        return inventoryHolder.Merge(null, destinationStackPosition, sourceStackPosition);
+                        return inventoryHolder.Merge(null, destinationPosition, sourcePosition);
                     }
 
                     // The other version of `Merge` has little use here.
 
-                    public Stack Take(int stackPosition, object quantity)
+                    public Stack Take(int position, object quantity)
                     {
-                        return inventoryHolder.Take(null, stackPosition, quantity);
+                        return inventoryHolder.Take(null, position, quantity);
                     }
 
-                    public bool Split(int sourceStackPosition, object quantity,
-                                      int newStackPosition, int? finalNewStackPosition)
+                    public bool Split(int sourcePosition, object quantity,
+                                      int newPosition, int? finalNewPosition)
                     {
-                        object finalNewOStackPosition;
-                        bool result = inventoryHolder.Split(null, sourceStackPosition, quantity,
-                                                            null, newStackPosition, out finalNewOStackPosition);
-                        finalNewStackPosition = finalNewOStackPosition == null ? null : (int?)finalNewOStackPosition;
+                        object finalNewOPosition;
+                        bool result = inventoryHolder.Split(null, sourcePosition, quantity,
+                                                            null, newPosition, out finalNewOPosition);
+                        finalNewPosition = finalNewOPosition == null ? null : (int?)finalNewOPosition;
                         return result;
                     }
 
-                    public bool Use(int sourceStackPosition)
+                    public bool Use(int sourcePosition)
                     {
-                        return inventoryHolder.Use(null, sourceStackPosition);
+                        return inventoryHolder.Use(null, sourcePosition);
                     }
 
-                    public bool Use(int sourceStackPosition, object argument)
+                    public bool Use(int sourcePosition, object argument)
                     {
-                        return inventoryHolder.Use(null, sourceStackPosition, argument);
+                        return inventoryHolder.Use(null, sourcePosition, argument);
                     }
 
                     public void Clear()
@@ -146,9 +149,9 @@ namespace WindRose
                         inventoryHolder.Blink(null);
                     }
 
-                    public void Blink(int stackPosition)
+                    public void Blink(int position)
                     {
-                        inventoryHolder.Blink(null, stackPosition);
+                        inventoryHolder.Blink(null, position);
                     }
 
                     public void Import(Types.Inventory.SerializedInventory serializedInventory)
@@ -162,6 +165,64 @@ namespace WindRose
                     }
 
                     // TODO Add/Remove listener will be different here!
+
+                    /**
+                     * These are convenience methods to interact, in particular, with a drop layer.
+                     */
+                    
+                    private DropLayer GetDropLayer()
+                    {
+                        if (positionable.ParentMap == null)
+                        {
+                            return null;
+                        }
+
+                        return positionable.ParentMap.DropLayer;
+                    }
+
+                    public bool Drop(int position)
+                    {
+                        DropLayer dropLayer = GetDropLayer();
+                        if (dropLayer == null)
+                        {
+                            return false;
+                        }
+
+                        Stack found = Find(position);
+                        if (found != null)
+                        {
+                            Remove(position);
+                            object finalStackPosition;
+                            return dropLayer.Push(new Vector2Int((int)positionable.X, (int)positionable.Y), found, out finalStackPosition);
+                        }
+
+                        return false;
+                    }
+
+                    public bool Pick(bool? optimalPick = null)
+                    {
+                        DropLayer dropLayer = GetDropLayer();
+                        if (dropLayer == null)
+                        {
+                            return false;
+                        }
+
+                        Vector2Int containerPosition = new Vector2Int((int)positionable.X, (int)positionable.Y);
+                        Stack found = dropLayer.Last(containerPosition);
+                        if (found != null)
+                        {
+                            int? finalPosition;
+                            bool result = Put(null, found.Clone(), out finalPosition, optimalPick);
+                            if (result)
+                            {
+                                dropLayer.Remove(containerPosition, (int)found.QualifiedPosition.First);
+                            }
+
+                            return result;
+                        }
+
+                        return false;
+                    }
                 }
             }
         }

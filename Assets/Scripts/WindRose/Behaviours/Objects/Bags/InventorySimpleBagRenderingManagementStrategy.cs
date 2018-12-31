@@ -24,6 +24,7 @@ namespace WindRose
                      */
                     public abstract class SimpleBagInventorySubRenderer : MonoBehaviour
                     {
+                        // The rendering strategy currently bound to
                         private InventorySimpleBagRenderingManagementStrategy parentRenderer;
 
                         public abstract void Clear();
@@ -82,7 +83,18 @@ namespace WindRose
                     {
                         foreach(SimpleBagInventorySubRenderer subRenderer in subRenderers)
                         {
-                            AddSubRenderer(subRenderer);
+                            if (subRenderer == null) continue;
+                            subRenderersSet.Add(subRenderer);
+                            subRenderer.Connected(this);
+                        }
+                    }
+
+                    void OnDestroy()
+                    {
+                        foreach (SimpleBagInventorySubRenderer subRenderer in subRenderersSet)
+                        {
+                            subRenderersSet.Remove(subRenderer);
+                            subRenderer.Disconnected();
                         }
                     }
 
@@ -110,12 +122,12 @@ namespace WindRose
 
                     public bool RemoveSubRenderer(SimpleBagInventorySubRenderer subRenderer)
                     {
-                        if (!subRenderers.Contains(subRenderer))
+                        if (!subRenderersSet.Contains(subRenderer))
                         {
                             return false;
                         }
 
-                        subRenderers.Remove(subRenderer);
+                        subRenderersSet.Remove(subRenderer);
                         subRenderer.Disconnected();
                         return true;
                     }
@@ -126,7 +138,7 @@ namespace WindRose
 
                     public override void EverythingWasCleared()
                     {
-                        foreach(SimpleBagInventorySubRenderer subRenderer in subRenderers)
+                        foreach(SimpleBagInventorySubRenderer subRenderer in subRenderersSet)
                         {
                             subRenderer.Clear();
                         }
@@ -134,7 +146,7 @@ namespace WindRose
 
                     protected override void StackWasUpdated(object containerPosition, int stackPosition, Sprite icon, string caption, object quantity)
                     {
-                        foreach (SimpleBagInventorySubRenderer subRenderer in subRenderers)
+                        foreach (SimpleBagInventorySubRenderer subRenderer in subRenderersSet)
                         {
                             subRenderer.RefreshStack(stackPosition, icon, caption, quantity);
                         }
@@ -142,7 +154,7 @@ namespace WindRose
 
                     protected override void StackWasRemoved(object containerPosition, int stackPosition)
                     {
-                        foreach (SimpleBagInventorySubRenderer subRenderer in subRenderers)
+                        foreach (SimpleBagInventorySubRenderer subRenderer in subRenderersSet)
                         {
                             subRenderer.RemoveStack(stackPosition);
                         }

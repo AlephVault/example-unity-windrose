@@ -130,7 +130,7 @@ namespace WindRose
                         public bool ChangeQuantityTo(object quantity, bool disallowEmpty)
                         {
                             CheckQuantityType(quantity);
-                            if (IsAllowedQuantity(quantity) && !(disallowEmpty || IsEmptyQuantity(quantity)))
+                            if (IsAllowedQuantity(quantity) && !(disallowEmpty && IsEmptyQuantity(quantity)))
                             {
                                 Quantity = quantity;
                                 return true;

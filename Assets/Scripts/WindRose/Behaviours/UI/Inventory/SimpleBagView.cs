@@ -48,7 +48,7 @@ namespace WindRose
                         public NoSimpleBagViewItemException(string message) : base(message) {}
                     }
 
-                    private SimpleBagViewItem[] items;
+                    protected SimpleBagViewItem[] items;
 
                     private void Awake()
                     {
@@ -91,6 +91,8 @@ namespace WindRose
                     {
                         items[slot].Set(position, icon, caption, quantity);
                     }
+
+                    // Remember: RefreshExtra() is a method that can be overriden.
                 }
             }
         }

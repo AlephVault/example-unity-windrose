@@ -55,7 +55,7 @@ public class SampleMagicDropper : MonoBehaviour {
             WindRose.Types.Inventory.Stacks.Stack stack;
             if (item.QuantifyingStrategy is ItemUnstackedQuantifyingStrategy)
             {
-                stack = item.Create(null, null);
+                stack = item.Create(true, null);
             }
             else
             {

@@ -22,62 +22,72 @@ namespace WindRose
 
                         public override bool WillOverflow(object quantity, out object finalQuantity, out object quantityAdded, out object quantityLeft)
                         {
-                            // This call always saturates!
-                            finalQuantity = Quantity;
-                            quantityAdded = null;
-                            quantityLeft = quantity;
-                            return true;
+                            // If the current quantity and the new quantity are both true
+                            //   then it saturates. If the new quantity is false, no saturation
+                            //   occurs.
+                            //
+                            // Otherwise, we just add the quantity, leave no quantity, and
+                            //   never saturate.
+                            if ((bool)Quantity)
+                            {
+                                finalQuantity = Quantity;
+                                quantityAdded = false;
+                                // The remainder quantity... is the input quantity.
+                                quantityLeft = quantity;
+                                return (bool)quantity;
+                            }
+                            else
+                            {
+                                finalQuantity = quantity;
+                                quantityAdded = quantity;
+                                quantityLeft = false;
+                                return false;
+                            }
                         }
 
                         public override bool Saturate()
                         {
-                            // Nothing has to be done here, except telling that the stack is now saturated.
+                            Quantity = true;
                             return true;
                         }
 
                         protected override Type GetAllowedQuantityType()
                         {
-                            // Type is not used here
-                            return null;
-                        }
-
-                        protected override void CheckQuantityType(object quantity)
-                        {
-                            if (quantity != null)
-                            {
-                                throw new InvalidQuantityType("Given quantity must be null");
-                            }
+                            // Type is bool: we'd use a flag to tell whether
+                            //   the stack is empty (false) or full (true).
+                            return typeof(bool);
                         }
 
                         protected override bool IsAllowedQuantity(object quantity)
                         {
-                            return quantity == null;
+                            // Since the quantity is bool (the type was validated
+                            //   beforehand), we need no further checks.
+                            return true;
                         }
 
                         protected override bool IsEmptyQuantity(object quantity)
                         {
-                            // This will only be allowed for null quantity
-                            return false;
+                            // `false` is the empty quantity.
+                            return (bool)quantity == false;
                         }
 
                         protected override bool IsFullQuantity(object quantity)
                         {
-                            // This will only be allowed for null quantity
-                            return true;
+                            // `true` is the full quantity.
+                            return (bool)quantity == true;
                         }
 
                         protected override object QuantityAdd(object quantity, object delta)
                         {
-                            // This will only account for null quantity.
-                            // Quantity will be null by default, and delta will be ignored here.
-                            return null;
+                            // Adding is done with the OR operator.
+                            return (bool)quantity || (bool)delta;
                         }
 
                         protected override object QuantitySub(object quantity, object delta)
                         {
-                            // This will only account for null quantity.
-                            // Quantity will be null by default, and delta will be ignored here.
-                            return null;
+                            // Subtracting is done as follows: if delta is true, the result is false.
+                            // Otherwise, the result is the given input quantity.
+                            return (bool)quantity && !(bool)delta;
                         }
                     }
                 }

@@ -193,6 +193,7 @@ namespace WindRose
                         {
                             Remove(position);
                             object finalStackPosition;
+                            // This call will NEVER fail: drop layers have infinite length.
                             return dropLayer.Push(new Vector2Int((int)positionable.X, (int)positionable.Y), found, out finalStackPosition);
                         }
 

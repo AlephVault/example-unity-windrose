@@ -203,11 +203,12 @@ namespace WindRose
                         return false;
                     }
 
-                    public bool Pick(bool? optimalPick = null)
+                    public bool Pick(out int? finalPosition, bool? optimalPick = null)
                     {
                         DropLayer dropLayer = GetDropLayer();
                         if (dropLayer == null)
                         {
+                            finalPosition = null;
                             return false;
                         }
 
@@ -215,7 +216,6 @@ namespace WindRose
                         Stack found = dropLayer.Last(containerPosition);
                         if (found != null)
                         {
-                            int? finalPosition;
                             bool result = Put(null, found.Clone(), out finalPosition, optimalPick);
                             if (result)
                             {
@@ -225,6 +225,7 @@ namespace WindRose
                             return result;
                         }
 
+                        finalPosition = null;
                         return false;
                     }
                 }

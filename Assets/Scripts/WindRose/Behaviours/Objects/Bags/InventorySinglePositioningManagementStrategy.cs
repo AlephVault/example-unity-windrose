@@ -18,12 +18,12 @@ namespace WindRose
 
                     public override bool IsValid(object position)
                     {
-                        return position == null;
+                        return position == Position.Instance;
                     }
 
                     public override IEnumerable<object> Positions()
                     {
-                        yield return null;
+                        yield return Position.Instance;
                     }
                 }
             }

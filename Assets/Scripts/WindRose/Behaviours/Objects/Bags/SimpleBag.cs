@@ -56,87 +56,87 @@ namespace WindRose
 
                     public IEnumerable<Tuple<int, Stack>> StackPairs(bool reverse = false)
                     {
-                        return from tuple in inventoryHolder.StackPairs(null, reverse) select new Tuple<int, Stack>((int)tuple.First, tuple.Second);
+                        return from tuple in inventoryHolder.StackPairs(Position.Instance, reverse) select new Tuple<int, Stack>((int)tuple.First, tuple.Second);
                     }
 
                     public Stack Find(int position)
                     {
-                        return inventoryHolder.Find(null, position);
+                        return inventoryHolder.Find(Position.Instance, position);
                     }
 
                     public IEnumerable<Stack> FindAll(Func<Tuple<int, Stack>, bool> predicate, bool reverse = false)
                     {
-                        return inventoryHolder.FindAll(null, delegate (Tuple<object, Stack> tuple) { return predicate(new Tuple<int, Stack>((int)tuple.First, tuple.Second)); }, reverse);
+                        return inventoryHolder.FindAll(Position.Instance, delegate (Tuple<object, Stack> tuple) { return predicate(new Tuple<int, Stack>((int)tuple.First, tuple.Second)); }, reverse);
                     }
 
                     public IEnumerable<Stack> FindAll(ScriptableObjects.Inventory.Items.Item item, bool reverse = false)
                     {
-                        return inventoryHolder.FindAll(null, item, reverse);
+                        return inventoryHolder.FindAll(Position.Instance, item, reverse);
                     }
 
                     public Stack First()
                     {
-                        return inventoryHolder.First(null);
+                        return inventoryHolder.First(Position.Instance);
                     }
 
                     public Stack Last()
                     {
-                        return inventoryHolder.Last(null);
+                        return inventoryHolder.Last(Position.Instance);
                     }
 
                     public Stack FindOne(Func<Tuple<int, Stack>, bool> predicate, bool reverse = false)
                     {
-                        return inventoryHolder.FindOne(null, delegate (Tuple<object, Stack> tuple) { return predicate(new Tuple<int, Stack>((int)tuple.First, tuple.Second)); }, reverse);
+                        return inventoryHolder.FindOne(Position.Instance, delegate (Tuple<object, Stack> tuple) { return predicate(new Tuple<int, Stack>((int)tuple.First, tuple.Second)); }, reverse);
                     }
 
                     public Stack FindOne(ScriptableObjects.Inventory.Items.Item item, bool reverse = false)
                     {
-                        return inventoryHolder.FindOne(null, item, reverse);
+                        return inventoryHolder.FindOne(Position.Instance, item, reverse);
                     }
 
                     public bool Put(int? position, Stack stack, out int? finalPosition, bool? optimalPutOnNullPosition = null)
                     {
                         object finalOPosition;
-                        bool result = inventoryHolder.Put(null, position, stack, out finalOPosition, optimalPutOnNullPosition);
+                        bool result = inventoryHolder.Put(Position.Instance, position, stack, out finalOPosition, optimalPutOnNullPosition);
                         finalPosition = finalOPosition == null ? null : (int?)finalOPosition;
                         return result;
                     }
 
                     public bool Remove(int position)
                     {
-                        return inventoryHolder.Remove(null, position);
+                        return inventoryHolder.Remove(Position.Instance, position);
                     }
 
                     public bool Merge(int? destinationPosition, int sourcePosition)
                     {
-                        return inventoryHolder.Merge(null, destinationPosition, sourcePosition);
+                        return inventoryHolder.Merge(Position.Instance, destinationPosition, sourcePosition);
                     }
 
                     // The other version of `Merge` has little use here.
 
                     public Stack Take(int position, object quantity, bool disallowEmpty)
                     {
-                        return inventoryHolder.Take(null, position, quantity, disallowEmpty);
+                        return inventoryHolder.Take(Position.Instance, position, quantity, disallowEmpty);
                     }
 
                     public bool Split(int sourcePosition, object quantity,
                                       int newPosition, int? finalNewPosition)
                     {
                         object finalNewOPosition;
-                        bool result = inventoryHolder.Split(null, sourcePosition, quantity,
-                                                            null, newPosition, out finalNewOPosition);
+                        bool result = inventoryHolder.Split(Position.Instance, sourcePosition, quantity,
+                                                            Position.Instance, newPosition, out finalNewOPosition);
                         finalNewPosition = finalNewOPosition == null ? null : (int?)finalNewOPosition;
                         return result;
                     }
 
                     public bool Use(int sourcePosition)
                     {
-                        return inventoryHolder.Use(null, sourcePosition);
+                        return inventoryHolder.Use(Position.Instance, sourcePosition);
                     }
 
                     public bool Use(int sourcePosition, object argument)
                     {
-                        return inventoryHolder.Use(null, sourcePosition, argument);
+                        return inventoryHolder.Use(Position.Instance, sourcePosition, argument);
                     }
 
                     public void Clear()
@@ -146,12 +146,12 @@ namespace WindRose
 
                     public void Blink()
                     {
-                        inventoryHolder.Blink(null);
+                        inventoryHolder.Blink(Position.Instance);
                     }
 
                     public void Blink(int position)
                     {
-                        inventoryHolder.Blink(null, position);
+                        inventoryHolder.Blink(Position.Instance, position);
                     }
 
                     public void Import(Types.Inventory.SerializedInventory serializedInventory)

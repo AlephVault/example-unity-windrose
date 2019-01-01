@@ -344,16 +344,24 @@ namespace WindRose
                     return false;
                 }
 
-                public Stack Take(object containerPosition, object stackPosition, object quantity)
+                public Stack Take(object containerPosition, object stackPosition, object quantity, bool disallowEmpty)
                 {
                     positioningStrategy.CheckPosition(containerPosition);
                     Stack found = Find(containerPosition, stackPosition);
                     if (found != null)
                     {
-                        Stack result = found.Take(quantity);
+                        Stack result = found.Take(quantity, disallowEmpty);
                         if (result != null)
                         {
-                            renderingStrategy.StackWasUpdated(containerPosition, stackPosition, found);
+                            if (result.IsEmpty())
+                            {
+                                spatialStrategy.Remove(containerPosition, stackPosition);
+                                renderingStrategy.StackWasRemoved(containerPosition, stackPosition);
+                            }
+                            else
+                            {
+                                renderingStrategy.StackWasUpdated(containerPosition, stackPosition, found);
+                            }
                         }
                     }
                     return null;
@@ -365,7 +373,7 @@ namespace WindRose
                     Stack found = Find(sourceContainerPosition, sourceStackPosition);
                     if (found != null)
                     {
-                        Stack newStack = found.Take(quantity);
+                        Stack newStack = found.Take(quantity, true);
                         if (!Put(newStackContainerPosition, newStackPosition, newStack, out finalNewStackPosition))
                         {
                             // Could not put the new stack - refund its quantity.

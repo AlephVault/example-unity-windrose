@@ -114,9 +114,9 @@ namespace WindRose
 
                     // The other version of `Merge` has little use here.
 
-                    public Stack Take(int position, object quantity)
+                    public Stack Take(int position, object quantity, bool disallowEmpty)
                     {
-                        return inventoryHolder.Take(null, position, quantity);
+                        return inventoryHolder.Take(null, position, quantity, disallowEmpty);
                     }
 
                     public bool Split(int sourcePosition, object quantity,
@@ -180,7 +180,7 @@ namespace WindRose
                         return positionable.ParentMap.DropLayer;
                     }
 
-                    public bool Drop(int position)
+                    public bool Drop(int position, object quantity = null)
                     {
                         DropLayer dropLayer = GetDropLayer();
                         if (dropLayer == null)
@@ -191,10 +191,13 @@ namespace WindRose
                         Stack found = Find(position);
                         if (found != null)
                         {
-                            Remove(position);
-                            object finalStackPosition;
-                            // This call will NEVER fail: drop layers have infinite length.
-                            return dropLayer.Push(new Vector2Int((int)positionable.X, (int)positionable.Y), found, out finalStackPosition);
+                            Stack taken = Take(position, quantity, false);
+                            if (taken != null)
+                            {
+                                object finalStackPosition;
+                                // This call will NEVER fail: drop layers have infinite length.
+                                return dropLayer.Push(new Vector2Int((int)positionable.X, (int)positionable.Y), taken, out finalStackPosition);
+                            }
                         }
 
                         return false;

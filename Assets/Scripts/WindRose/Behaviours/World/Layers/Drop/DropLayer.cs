@@ -135,9 +135,9 @@ namespace WindRose
 
                         // The other version of `Merge` has little use here.
 
-                        public Stack Take(Vector2Int containerPosition, int stackPosition, object quantity)
+                        public Stack Take(Vector2Int containerPosition, int stackPosition, object quantity, bool disallowEmpty)
                         {
-                            return inventoryHolder.Take(containerPosition, stackPosition, quantity);
+                            return inventoryHolder.Take(containerPosition, stackPosition, quantity, disallowEmpty);
                         }
 
                         public bool Split(Vector2Int sourceContainerPosition, int sourceStackPosition, object quantity,

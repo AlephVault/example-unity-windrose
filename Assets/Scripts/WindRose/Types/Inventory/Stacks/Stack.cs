@@ -185,9 +185,9 @@ namespace WindRose
                      * Tries to take part of the stack, defined by a quantity. It does not allow taking
                      *   the whole stack, but just part of it.
                      */
-                    public Stack Take(object quantity)
+                    public Stack Take(object quantity, bool disallowEmpty)
                     {
-                        if (QuantifyingStrategy.ChangeQuantityBy(quantity, true, true))
+                        if (QuantifyingStrategy.ChangeQuantityBy(quantity, true, disallowEmpty))
                         {
                             return Clone(quantity);
                         }
@@ -306,6 +306,14 @@ namespace WindRose
                     public bool IsFull()
                     {
                         return QuantifyingStrategy.IsFull();
+                    }
+
+                    /**
+                     * Checks whether the quantity is empty.
+                     */
+                    public bool IsEmpty()
+                    {
+                        return QuantifyingStrategy.IsEmpty();
                     }
 
                     /**

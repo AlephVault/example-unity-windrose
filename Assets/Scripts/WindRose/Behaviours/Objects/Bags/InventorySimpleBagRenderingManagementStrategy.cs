@@ -16,6 +16,7 @@ namespace WindRose
         {
             namespace Bags
             {
+                [RequireComponent(typeof(SimpleBag))]
                 public class InventorySimpleBagRenderingManagementStrategy : InventorySimpleRenderingManagementStrategy
                 {
                     /**
@@ -40,7 +41,7 @@ namespace WindRose
                          *   another renderer, the former renderer will disconnect from
                          *   this object.
                          */
-                        private InventorySimpleBagRenderingManagementStrategy parentRenderer;
+                        private InventorySimpleBagRenderingManagementStrategy sourceRenderer;
 
                         /**
                          * To make this work, the sub-renderers will need to know the data to
@@ -58,6 +59,10 @@ namespace WindRose
                          *   The page value will determine an offset of: N*PageSize elements.
                          * - There is a protected method if you want to change the paging later.
                          */
+                        public SimpleBag SourceSimpleBag
+                        {
+                            get { return sourceRenderer != null ? sourceRenderer.SimpleBag : null; }
+                        }
                         public uint PageSize { get; protected set; }
                         public uint Page { get; protected set; }
                         public bool Paginates { get { return PageSize > 0; } }
@@ -164,11 +169,11 @@ namespace WindRose
                          */
                         public virtual void Connected(InventorySimpleBagRenderingManagementStrategy sbRenderer)
                         {
-                            if (parentRenderer != null)
+                            if (sourceRenderer != null)
                             {
-                                parentRenderer.RemoveSubRenderer(this);
+                                sourceRenderer.RemoveSubRenderer(this);
                             }
-                            parentRenderer = sbRenderer;
+                            sourceRenderer = sbRenderer;
                         }
 
                         /**
@@ -179,7 +184,7 @@ namespace WindRose
                          */
                         public virtual void Disconnected()
                         {
-                            parentRenderer = null;
+                            sourceRenderer = null;
                             Clear();
                         }
 
@@ -338,6 +343,11 @@ namespace WindRose
                     private List<SimpleBagInventorySubRenderer> subRenderers = new List<SimpleBagInventorySubRenderer>();
                     private HashSet<SimpleBagInventorySubRenderer> subRenderersSet = new HashSet<SimpleBagInventorySubRenderer>();
 
+                    public SimpleBag SimpleBag
+                    {
+                        get; private set;
+                    }
+
                     /**
                      * This class will account for max size, since it will be related to a Simple Spatial
                      *   Strategy that could either be finite (size > 0) or infinite (size == 0). However,
@@ -352,6 +362,7 @@ namespace WindRose
                     void Awake()
                     {
                         MaxSize = spatialStrategy.GetSize();
+                        SimpleBag = GetComponent<SimpleBag>();
                     }
 
                     void Start()

@@ -28,8 +28,9 @@ namespace WindRose
 
                         protected SpatialStrategies.InventorySimpleSpatialManagementStrategy spatialStrategy;
 
-                        private void Awake()
+                        protected override void Awake()
                         {
+                            base.Awake();
                             spatialStrategy = GetComponent<SpatialStrategies.InventorySimpleSpatialManagementStrategy>();
                         }
 

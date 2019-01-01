@@ -47,7 +47,7 @@ namespace WindRose
                          * To make this work, the sub-renderers will need to know the data to
                          *   render.
                          */
-                        private SortedDictionary<int, Tuple<Sprite, string, object>> elements;
+                        protected SortedDictionary<int, Tuple<Sprite, string, object>> elements;
 
                         /**
                          * Paging will imply two properties: PageSize and Page. Both properties
@@ -67,6 +67,16 @@ namespace WindRose
                         public uint Page { get; protected set; }
                         public bool Paginates { get { return PageSize > 0; } }
                         public uint Offset { get { return PageSize * Page; } }
+                        /**
+                         * Calculates the maximum allowed page to display.
+                         * It will be 0 for infinite, but may be nonzero for regular paging.
+                         */
+                        public uint MaxPage()
+                        {
+                            if (PageSize == 0) return 0;
+
+                            return (uint)elements.Last().Key / PageSize;
+                        }
                         protected void ChangePageSize(uint newPageSize)
                         {
                             if (PageSize == newPageSize) return;
@@ -174,6 +184,16 @@ namespace WindRose
                                 sourceRenderer.RemoveSubRenderer(this);
                             }
                             sourceRenderer = sbRenderer;
+
+                            // After a renderer was connected, clean and refresh everything inside.
+                            Clear();
+                            IEnumerable<Tuple<int, Types.Inventory.Stacks.Stack>> pairs = sourceRenderer.SimpleBag.StackPairs();
+                            foreach(Tuple<int, Types.Inventory.Stacks.Stack> pair in pairs)
+                            {
+                                Dictionary<string, object> target = new Dictionary<string, object>();
+                                pair.Second.MainRenderingStrategy.DumpRenderingData(target);
+                                UpdateStack(pair.First, (Sprite)target["icon"], (string)target["caption"], target["quantity"]);
+                            }
                         }
 
                         /**
@@ -228,17 +248,6 @@ namespace WindRose
                             elements.Remove(position);
                             int slot = SlotFor(position);
                             if (slot != -1) ClearStack(slot);
-                        }
-
-                        /**
-                         * Calculates the maximum allowed page to display.
-                         * It will be 0 for infinite, but may be nonzero for regular paging.
-                         */
-                        private uint MaxPage()
-                        {
-                            if (PageSize == 0) return 0;
-
-                            return (uint)elements.Last().Key / PageSize;
                         }
 
                         /**

@@ -92,7 +92,7 @@ namespace WindRose
                         items[slot].Set(position, icon, caption, quantity);
                     }
 
-                    // Remember: RefreshExtra() is a method that can be overriden.
+                    // Remember: AfterRefresh() is a method that can be overriden.
                 }
             }
         }

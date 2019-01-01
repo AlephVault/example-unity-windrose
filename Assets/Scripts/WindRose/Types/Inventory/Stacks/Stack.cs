@@ -184,9 +184,19 @@ namespace WindRose
                     /**
                      * Tries to take part of the stack, defined by a quantity. It does not allow taking
                      *   the whole stack, but just part of it.
+                     * 
+                     * If quantity is null, the entire stack will be taken.
                      */
                     public Stack Take(object quantity, bool disallowEmpty)
                     {
+                        if (quantity == null)
+                        {
+                            // We are taking all the quantity.
+                            // BUT if disallowEmpty is null, we just leave.
+                            if (disallowEmpty) return null;
+                            quantity = Quantity;
+                        }
+
                         if (QuantifyingStrategy.ChangeQuantityBy(quantity, true, disallowEmpty))
                         {
                             return Clone(quantity);

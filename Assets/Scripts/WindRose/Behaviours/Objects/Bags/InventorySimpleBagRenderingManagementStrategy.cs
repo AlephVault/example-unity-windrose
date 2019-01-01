@@ -74,9 +74,19 @@ namespace WindRose
                         public uint MaxPage()
                         {
                             if (PageSize == 0) return 0;
-
+                            if (elements.Count == 0) return 0;
                             return (uint)elements.Last().Key / PageSize;
                         }
+                        /**
+                         * Calculates the page on which you'll find a particular position.
+                         */
+                        public uint PageFor(int position)
+                        {
+                            return PageSize == 0 ? 0 : (uint)position / PageSize;
+                        }
+                        /**
+                         * Changes the page size and updates the page accordingly.
+                         */
                         protected void ChangePageSize(uint newPageSize)
                         {
                             if (PageSize == newPageSize) return;
@@ -128,7 +138,7 @@ namespace WindRose
                             {
                                 uint offset = Offset;
                                 uint limit = offset + PageSize;
-                                for(int slot = 0; slot <= PageSize; slot++)
+                                for(int slot = 0; slot < PageSize; slot++)
                                 {
                                     /**
                                      * Slot and key will differ - exactly by the amount of `offset`.
@@ -147,7 +157,7 @@ namespace WindRose
                                     }
                                 }
                             }
-                            RefreshExtra();
+                            AfterRefresh();
                         }
 
                         /**
@@ -169,7 +179,7 @@ namespace WindRose
                         /**
                          * Sets more data you'd like (e.g. page number).
                          */
-                        protected virtual void RefreshExtra() {}
+                        protected virtual void AfterRefresh() {}
 
                         /**
                          * This callback tells what happens when this sub-renderer is connected to a management
@@ -186,7 +196,14 @@ namespace WindRose
                             sourceRenderer = sbRenderer;
 
                             // After a renderer was connected, clean and refresh everything inside.
-                            elements.Clear();
+                            if (elements != null)
+                            {
+                                elements.Clear();
+                            }
+                            else
+                            {
+                                elements = new SortedDictionary<int, Tuple<Sprite, string, object>>();
+                            }
                             IEnumerable<Tuple<int, Types.Inventory.Stacks.Stack>> pairs = sourceRenderer.SimpleBag.StackPairs();
                             foreach(Tuple<int, Types.Inventory.Stacks.Stack> pair in pairs)
                             {
@@ -215,7 +232,7 @@ namespace WindRose
                          * Otherwise, returns a number between 0 and (PageSize - 1), or returns the
                          *   input position as the slot if PageSize = 0;
                          */
-                        private int SlotFor(int position)
+                        protected int SlotFor(int position)
                         {
                             if (PageSize == 0)
                             {
@@ -238,7 +255,11 @@ namespace WindRose
                         {
                             elements[position] = new Tuple<Sprite, string, object>(icon, caption, quantity);
                             int slot = SlotFor(position);
-                            if (slot != -1) SetStack(slot, position, icon, caption, quantity);
+                            if (slot != -1)
+                            {
+                                SetStack(slot, position, icon, caption, quantity);
+                                AfterRefresh();
+                            }
                         }
 
                         /**
@@ -248,7 +269,11 @@ namespace WindRose
                         {
                             elements.Remove(position);
                             int slot = SlotFor(position);
-                            if (slot != -1) ClearStack(slot);
+                            if (slot != -1)
+                            {
+                                ClearStack(slot);
+                                AfterRefresh();
+                            }
                         }
 
                         /**
@@ -369,8 +394,9 @@ namespace WindRose
                         get; private set;
                     }
 
-                    void Awake()
+                    protected override void Awake()
                     {
+                        base.Awake();
                         MaxSize = spatialStrategy.GetSize();
                         SimpleBag = GetComponent<SimpleBag>();
                     }
@@ -387,9 +413,10 @@ namespace WindRose
 
                     void OnDestroy()
                     {
-                        foreach (SimpleBagInventorySubRenderer subRenderer in subRenderersSet)
+                        HashSet<SimpleBagInventorySubRenderer> cloned = new HashSet<SimpleBagInventorySubRenderer>(subRenderersSet);
+                        subRenderersSet.Clear();
+                        foreach (SimpleBagInventorySubRenderer subRenderer in cloned)
                         {
-                            subRenderersSet.Remove(subRenderer);
                             subRenderer.Disconnected();
                         }
                     }

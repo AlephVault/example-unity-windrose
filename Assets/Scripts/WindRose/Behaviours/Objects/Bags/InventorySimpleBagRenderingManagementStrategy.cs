@@ -186,14 +186,15 @@ namespace WindRose
                             sourceRenderer = sbRenderer;
 
                             // After a renderer was connected, clean and refresh everything inside.
-                            Clear();
+                            elements.Clear();
                             IEnumerable<Tuple<int, Types.Inventory.Stacks.Stack>> pairs = sourceRenderer.SimpleBag.StackPairs();
                             foreach(Tuple<int, Types.Inventory.Stacks.Stack> pair in pairs)
                             {
                                 Dictionary<string, object> target = new Dictionary<string, object>();
                                 pair.Second.MainRenderingStrategy.DumpRenderingData(target);
-                                UpdateStack(pair.First, (Sprite)target["icon"], (string)target["caption"], target["quantity"]);
+                                elements.Add(pair.First, new Tuple<Sprite, string, object>((Sprite)target["icon"], (string)target["caption"], target["quantity"]));
                             }
+                            Refresh();
                         }
 
                         /**

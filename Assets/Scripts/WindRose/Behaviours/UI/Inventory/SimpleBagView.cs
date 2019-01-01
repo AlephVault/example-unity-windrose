@@ -50,7 +50,7 @@ namespace WindRose
 
                     protected SimpleBagViewItem[] items;
 
-                    private void Awake()
+                    protected virtual void Awake()
                     {
                         /**
                          * Get the slots from the children elements. Require at least one children.

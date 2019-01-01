@@ -26,7 +26,7 @@ public class SampleMagicDropper : MonoBehaviour {
     void Update () {
         if (Input.GetKey(key))
         {
-            dropARandomObject(dropLayer);
+            DropARandomObject(dropLayer);
         }
     }
 
@@ -46,7 +46,7 @@ public class SampleMagicDropper : MonoBehaviour {
         }
     }
 
-    void dropARandomObject(DropLayer dropLayer)
+    void DropARandomObject(DropLayer dropLayer)
     {
         Throttled(delegate ()
         {

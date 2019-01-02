@@ -64,27 +64,34 @@ namespace WindRose
                     }
                 }
 
-                private void DebugContentToRefresh()
-                {
-                    Debug.Log("Contents: " + string.Join(",", (from element in elements select string.Format("{0} -> ({1}: {2})", element.Key, element.Value.Second, element.Value.Third)).ToArray()));
-                }
+                /**
+                 * Uncomment this code to debug
+                 * PLEASE DON'T DELETE THIS FUNCTION FOREVER.
+                 * private void DebugContentToRefresh()
+                 * {
+                 *     Debug.Log("Contents: " + string.Join(",", (from element in elements select string.Format("{0} -> ({1}: {2})", element.Key, element.Value.Second, element.Value.Third)).ToArray()));
+                 * }
+                 */
 
                 private void Refresh()
                 {
-                    DebugContentToRefresh();
-                    List<string> debugElements = new List<string>();
+                    // Uncomment theses lines to debug.
+                    // DebugContentToRefresh();
+                    // List<string> debugElements = new List<string>();
 
                     int currentSize = elements.Count;
                     int renderingSlots = renderers.Length;
 
                     if (currentSize > renderingSlots)
                     {
-                        debugElements.Add(string.Format("background image"));
+                        // Uncomment this line to debug.
+                        // debugElements.Add(string.Format("background image"));
                         renderers[0].sprite = backgroundBulkImage;
                         int baseElementIndex = currentSize - renderingSlots;
                         for(int index = 1; index < renderingSlots; index++)
                         {
-                            debugElements.Add(string.Format("{0} -> {1}", index, elements[index + baseElementIndex].Second));
+                            // Uncomment this line to debug.
+                            // debugElements.Add(string.Format("{0} -> {1}", index, elements[index + baseElementIndex].Second));
                             renderers[index].sprite = elements[index + baseElementIndex].First;
                             renderers[index].enabled = true;
                         }
@@ -93,7 +100,8 @@ namespace WindRose
                     {
                         for (int index = 0; index < renderingSlots; index++)
                         {
-                            debugElements.Add(string.Format("{0} -> {1}", index, elements[index].Second));
+                            // Uncomment this line to debug.
+                            // debugElements.Add(string.Format("{0} -> {1}", index, elements[index].Second));
                             renderers[index].sprite = elements[index].First;
                             renderers[index].enabled = true;
                         }
@@ -102,7 +110,8 @@ namespace WindRose
                     {
                         for (int index = 0; index < currentSize; index++)
                         {
-                            debugElements.Add(string.Format("{0} -> {1}", index, elements[index].Second));
+                            // Uncomment this line to debug.
+                            // debugElements.Add(string.Format("{0} -> {1}", index, elements[index].Second));
                             renderers[index].sprite = elements[index].First;
                             renderers[index].enabled = true;
                         }
@@ -112,7 +121,8 @@ namespace WindRose
                         }
                     }
 
-                    Debug.Log("Rendered contents: " + string.Join(",", debugElements.ToArray()));
+                    // Uncomment this line to debug.
+                    // Debug.Log("Rendered contents: " + string.Join(",", debugElements.ToArray()));
                 }
 
                 public IEnumerable<KeyValuePair<int, Tuple<Sprite, string, object>>> Elements()

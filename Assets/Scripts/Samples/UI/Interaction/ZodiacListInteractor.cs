@@ -5,7 +5,7 @@ using System.Text;
 
 class ZodiacListInteractor : TextOptionListInteractor
 {
-    protected void Start()
+    protected override void Start()
     {
         base.Start();
         Items = new List<TextOption>(new[] {

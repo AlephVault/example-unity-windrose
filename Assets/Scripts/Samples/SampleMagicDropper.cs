@@ -11,7 +11,6 @@ using WindRose.ScriptableObjects.Inventory.Items.QuantifyingStrategies;
 [RequireComponent(typeof(Throttler))]
 public class SampleMagicDropper : MonoBehaviour {
     private DropLayer dropLayer;
-    private bool allowedToAct = true;
     private System.Random random = new System.Random();
 
     [SerializeField]
@@ -64,7 +63,7 @@ public class SampleMagicDropper : MonoBehaviour {
         }
         Vector2Int containerPosition = new Vector2Int(random.Next(minX, maxX), random.Next(minY, maxY));
         object finalStackPosition;
-        bool pushed = dropLayer.Push(containerPosition, stack, out finalStackPosition);
+        dropLayer.Push(containerPosition, stack, out finalStackPosition);
     }
 
     void DropARandomObject(DropLayer dropLayer)

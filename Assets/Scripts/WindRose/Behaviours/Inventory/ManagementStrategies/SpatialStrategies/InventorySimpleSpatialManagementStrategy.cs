@@ -131,7 +131,6 @@ namespace WindRose
                                 if (!(position is int)) return StackPositionValidity.InvalidType;
 
                                 int index = (int)position;
-                                InventorySimpleSpatialManagementStrategy simpleSpatialStrategy = (InventorySimpleSpatialManagementStrategy)SpatialStrategy;
                                 if (index < 0 || !ValidateStackPositionAgainstUpperBound(index))
                                 {
                                     return StackPositionValidity.OutOfBounds;

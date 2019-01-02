@@ -5,7 +5,7 @@ using System.Text;
 
 class CharacterClassListInteractor : TextOptionListInteractor
 {
-    protected void Start()
+    protected override void Start()
     {
         base.Start();
         Items = new List<TextOption>(new[] {

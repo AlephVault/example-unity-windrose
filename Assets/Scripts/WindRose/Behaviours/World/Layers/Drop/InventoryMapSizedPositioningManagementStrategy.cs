@@ -23,8 +23,9 @@ namespace WindRose
                         private uint width;
                         private uint height;
 
-                        private void Awake()
+                        protected override void Awake()
                         {
+                            base.Awake();
                             Map map = Layout.RequireComponentInParent<Map>(this);
                             width = map.Width;
                             height = map.Height;

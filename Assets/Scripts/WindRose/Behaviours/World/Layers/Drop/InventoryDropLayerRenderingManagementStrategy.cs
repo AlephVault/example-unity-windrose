@@ -36,8 +36,9 @@ namespace WindRose
                         [SerializeField]
                         private SimpleDropContainerRenderer containerPrefab;
 
-                        private void Awake()
+                        protected override void Awake()
                         {
+                            base.Awake();
                             positioningStrategy = GetComponent<InventoryMapSizedPositioningManagementStrategy>();
                         }
 

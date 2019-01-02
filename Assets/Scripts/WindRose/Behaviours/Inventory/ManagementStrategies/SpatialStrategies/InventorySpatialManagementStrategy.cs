@@ -487,8 +487,9 @@ namespace WindRose
                             return spatialStrategy;
                         }
 
-                        protected void Awake()
+                        protected override void Awake()
                         {
+                            base.Awake();
                             ItemSpatialStrategyCounterpartType = GetItemSpatialStrategyCounterpartType();
                             if (!Support.Utils.Classes.IsSameOrSubclassOf(ItemSpatialStrategyCounterpartType, typeof(ItemSpatialStrategy)))
                             {

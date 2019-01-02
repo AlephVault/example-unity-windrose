@@ -87,16 +87,21 @@ namespace WindRose
                         MainUsageStrategy = mainUsageStrategy;
                         MainRenderingStrategy = mainRenderingStrategy;
 
+                        usageStrategiesByType = new Dictionary<Type, UsageStrategies.StackUsageStrategy>();
+                        renderingStrategiesByType = new Dictionary<Type, RenderingStrategies.StackRenderingStrategy>();
+
                         /*
                          * Initializing the stack strategies.
                          */
                         quantifyingStrategy.Initialize(this);
                         foreach (UsageStrategies.StackUsageStrategy strategy in usageStrategies)
                         {
+                            usageStrategiesByType[strategy.GetType()] = strategy;
                             strategy.Initialize(this);
                         }
                         foreach (RenderingStrategies.StackRenderingStrategy strategy in renderingStrategies)
                         {
+                            renderingStrategiesByType[strategy.GetType()] = strategy;
                             strategy.Initialize(this);
                         }
                     }

@@ -643,7 +643,7 @@ namespace GabTab
                  *      it empty.
                  * 4. A standard behaviour for standard navigation buttons.
                  */
-                protected void Start()
+                protected virtual void Start()
                 {
                     if (itemDisplays.Length < 1)
                     {

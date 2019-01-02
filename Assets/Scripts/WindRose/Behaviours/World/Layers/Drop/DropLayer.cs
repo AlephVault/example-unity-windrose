@@ -38,18 +38,16 @@ namespace WindRose
                          */
 
                         private InventoryManagementStrategyHolder inventoryHolder;
-                        private InventoryDropLayerRenderingManagementStrategy renderingStrategy;
 
                         protected override int GetSortingOrder()
                         {
                             return 10;
                         }
 
-                        private void Awake()
+                        protected override void Awake()
                         {
                             base.Awake();
                             inventoryHolder = GetComponent<InventoryManagementStrategyHolder>();
-                            renderingStrategy = GetComponent<InventoryDropLayerRenderingManagementStrategy>();
                         }
 
                         /************************************************************

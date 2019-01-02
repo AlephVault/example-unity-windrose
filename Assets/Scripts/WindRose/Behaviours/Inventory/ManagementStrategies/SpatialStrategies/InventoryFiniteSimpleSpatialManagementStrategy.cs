@@ -40,7 +40,7 @@ namespace WindRose
                             get { return size; }
                         }
 
-                        protected void Awake()
+                        protected override void Awake()
                         {
                             base.Awake();
                             if (size <= 0)

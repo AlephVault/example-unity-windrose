@@ -130,8 +130,9 @@ public class SampleSimpleBagView : SimpleBagView {
     {
         if (selectedItem != null)
         {
-            SourceSimpleBag.Drop(selectedItem.Value);
+            int position = selectedItem.Value;
             Unselect();
+            SourceSimpleBag.Drop(position);
             AfterRefresh();
         }
     }
@@ -139,7 +140,7 @@ public class SampleSimpleBagView : SimpleBagView {
     void Pick()
     {
         int? finalPosition;
-        bool result = SourceSimpleBag.Pick(out finalPosition);
+        SourceSimpleBag.Pick(out finalPosition);
         if (finalPosition != null && selectedItem == null)
         {
             Select(finalPosition.Value);

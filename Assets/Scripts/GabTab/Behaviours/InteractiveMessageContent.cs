@@ -44,14 +44,7 @@ namespace GabTab
             [SerializeField]
             private float quickDelayAfterMessage = 0.05f;
 
-            private UnityEngine.UI.Text textComponent;
-            private bool textBeingSent = false;
             public bool QuickTextMovement = false;
-
-            void Awake()
-            {
-                textComponent = GetComponent<UnityEngine.UI.Text>();
-            }
 
             public Types.WaitForQuickOrSlowSeconds CharacterWaiterCoroutine()
             {

@@ -353,7 +353,7 @@ namespace WindRose
                         Stack result = found.Take(quantity, disallowEmpty);
                         if (result != null)
                         {
-                            if (result.IsEmpty())
+                            if (found.IsEmpty())
                             {
                                 spatialStrategy.Remove(containerPosition, stackPosition);
                                 renderingStrategy.StackWasRemoved(containerPosition, stackPosition);
@@ -363,6 +363,7 @@ namespace WindRose
                                 renderingStrategy.StackWasUpdated(containerPosition, stackPosition, found);
                             }
                         }
+                        return result;
                     }
                     return null;
                 }

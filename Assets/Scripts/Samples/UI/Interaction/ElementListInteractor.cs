@@ -6,7 +6,7 @@ using GabTab.Behaviours;
 
 class ElementListInteractor : TextOptionListInteractor
 {
-    protected void Start()
+    protected override void Start()
     {
         base.Start();
         Items = new List<TextOption>(new[] {

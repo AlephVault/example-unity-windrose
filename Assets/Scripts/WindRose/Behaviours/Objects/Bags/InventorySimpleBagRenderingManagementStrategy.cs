@@ -137,7 +137,6 @@ namespace WindRose
                             else
                             {
                                 uint offset = Offset;
-                                uint limit = offset + PageSize;
                                 for(int slot = 0; slot < PageSize; slot++)
                                 {
                                     /**

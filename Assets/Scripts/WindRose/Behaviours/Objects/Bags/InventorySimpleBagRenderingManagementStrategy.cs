@@ -240,7 +240,7 @@ namespace WindRose
                             }
 
                             int offset = (int)Offset;
-                            if (offset <= position && position <= offset + PageSize)
+                            if (offset <= position && position < offset + PageSize)
                             {
                                 return position - offset;
                             }

@@ -89,6 +89,7 @@ namespace WindRose
                      */
                     protected override void SetStack(int slot, int position, Sprite icon, string caption, object quantity)
                     {
+                        Debug.Log(string.Format("Setting slot {0} to position {1}, icon {2}, caption '{3}' and quantity {4}", slot, position, icon, caption, quantity));
                         items[slot].Set(position, icon, caption, quantity);
                     }
 

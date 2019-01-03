@@ -67,7 +67,7 @@ namespace WindRose
                     });
                 }
 
-                void Start()
+                public void DoStart()
                 {
                     SetDefaultAnimation();
                 }
@@ -90,19 +90,9 @@ namespace WindRose
                     return CurrentAnimation.Sprites[currentAnimationIndex];
                 }
 
-                void Update()
+                public void DoUpdate()
                 {
                     spriteRenderer.sprite = Thick();
-                }
-
-                void Pause(bool fullFreeze)
-                {
-                    enabled = !fullFreeze;
-                }
-
-                void Resume()
-                {
-                    enabled = true;
                 }
             }
         }

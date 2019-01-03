@@ -124,13 +124,13 @@ namespace WindRose
                     });
                 }
 
-                void Start()
+                public void DoStart()
                 {
                     SetCurrentAnimation();
                 }
 
                 // Update is called once per frame
-                void Update()
+                public void DoUpdate()
                 {
                     // If the object is being moved, we assign the movement direction as the current orientation
                     if (positionable.Movement != null && positionable.Movement != orientation)
@@ -146,16 +146,6 @@ namespace WindRose
 
                     previousOrientation = orientation;
                     previousAnimationKey = animationKey;
-                }
-
-                void Pause(bool fullFreeze)
-                {
-                    enabled = false;
-                }
-
-                void Resume()
-                {
-                    enabled = true;
                 }
             }
         }

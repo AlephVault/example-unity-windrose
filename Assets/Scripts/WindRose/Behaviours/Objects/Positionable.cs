@@ -50,8 +50,10 @@ namespace WindRose
                 public Direction? Movement { get { return parentMap.StrategyHolder.StatusFor(StrategyHolder).Movement; } }
                 public ObjectStrategyHolder StrategyHolder { get; private set; }
                 public bool Paused { get; private set; }
+                public bool AnimationsPaused { get; private set; }
 
                 /* *********************** Events *********************** */
+
                 [Serializable]
                 public class UnityAttachedEvent : UnityEvent<Map> { }
                 public readonly UnityAttachedEvent onAttached = new UnityAttachedEvent();
@@ -69,6 +71,13 @@ namespace WindRose
                 [Serializable]
                 public class UnityTeleportedEvent : UnityEvent<uint, uint> { }
                 public readonly UnityTeleportedEvent onTeleported = new UnityTeleportedEvent();
+
+                // These callbacks are run when this positionable starts.
+                private Action startCallbacks = delegate() {};
+                // These callbacks are run when this positionable updates and is not paused.
+                private Action updateCallbacks = delegate () { };
+                // These callbacks are run when this positionable updates and animations are not paused.
+                private Action updateAnimationCallbacks = delegate () { };
 
                 private void Awake()
                 {
@@ -94,16 +103,64 @@ namespace WindRose
                     {
                         parentMap = null;
                     });
+
+                    // Get related components that need to run in a particular order
+                    Oriented oriented = GetComponent<Oriented>();
+                    Movable movable = GetComponent<Movable>();
+                    Snapped snapped = GetComponent<Snapped>();
+                    Sorted sorted = GetComponent<Sorted>();
+                    Represented represented = GetComponent<Represented>();
+
+                    // Add them to start, update, and animationUpdate callbacks
+                    if (oriented != null)
+                    {
+                        startCallbacks += oriented.DoStart;
+                        updateCallbacks += oriented.DoUpdate;
+                    }
+                    if (movable != null)
+                    {
+                        updateCallbacks += movable.DoUpdate;
+                    }
+                    if (snapped != null)
+                    {
+                        updateCallbacks += snapped.DoUpdate;
+                    }
+                    if (sorted != null)
+                    {
+                        updateCallbacks += sorted.DoUpdate;
+                    }
+                    if (represented != null)
+                    {
+                        startCallbacks += represented.DoStart;
+                        updateAnimationCallbacks += represented.DoUpdate;
+                    }
                 }
 
                 void Start()
                 {
                     Initialize();
+                    // Run the start on other components.
+                    startCallbacks();
+                }
+
+                void Update()
+                {
+                    // Run the update on other components.
+                    // Catch the null reference exception for when it is destroyed.
+                    try
+                    {
+                        if (!Paused) updateCallbacks();
+                        if (!AnimationsPaused) updateAnimationCallbacks();
+                    }
+                    catch (NullReferenceException) {}
                 }
 
                 void OnDestroy()
                 {
                     Detach();
+                    startCallbacks = delegate () {};
+                    updateCallbacks = delegate () {};
+                    updateAnimationCallbacks = delegate () {};
                     onAttached.RemoveAllListeners();
                     onDetached.RemoveAllListeners();
                     onMovementStarted.RemoveAllListeners();
@@ -201,11 +258,13 @@ namespace WindRose
                 void Pause(bool fullFreeze)
                 {
                     Paused = true;
+                    AnimationsPaused = fullFreeze;
                 }
 
                 void Resume()
                 {
                     Paused = false;
+                    AnimationsPaused = false;
                 }
             }
         }

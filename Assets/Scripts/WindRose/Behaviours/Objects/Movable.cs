@@ -114,7 +114,7 @@ namespace WindRose
                 }
 
                 // Update is called once per frame
-                void Update()
+                public void DoUpdate()
                 {
                     if (positionable.ParentMap == null) return;
 
@@ -211,16 +211,6 @@ namespace WindRose
                     // We clean up the last commanded movement, so future frames
                     //   do not interpret this command as a must, since it expired.
                     CommandedMovement = null;
-                }
-
-                void Pause(bool fullFreeze)
-                {
-                    enabled = false;
-                }
-
-                void Resume()
-                {
-                    enabled = true;
                 }
             }
         }

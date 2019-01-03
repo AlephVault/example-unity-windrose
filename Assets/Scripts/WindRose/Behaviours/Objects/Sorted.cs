@@ -41,7 +41,7 @@ namespace WindRose
                     });
                 }
 
-                void Update()
+                public void DoUpdate()
                 {
                     // We order the sprite
                     uint h = positionable.ParentMap.Height;
@@ -49,16 +49,6 @@ namespace WindRose
                     int sortingOffset = (int)(w * h) * ((int)(subLayer));
                     spriteRenderer.sortingLayerID = 0;
                     spriteRenderer.sortingOrder = sortingOffset + (int)((h - 1 - positionable.Yf) * w + positionable.Xf);
-                }
-
-                void Pause(bool fullFreeze)
-                {
-                    enabled = false;
-                }
-
-                void Resume()
-                {
-                    enabled = true;
                 }
             }
         }

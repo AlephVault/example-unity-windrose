@@ -30,12 +30,12 @@ namespace WindRose
                     positionable.onAttached.AddListener(delegate (World.Map map)
                     {
                         // Forcing this to avoid a blink.
-                        Update();
+                        DoUpdate();
                     });
                 }
 
                 // Update is called once per frame
-                void Update()
+                public void DoUpdate()
                 {
                     // Run this code only if this object is attached to a map
                     if (positionable.ParentMap == null) return;

@@ -9,49 +9,111 @@ namespace GabTab
     namespace Behaviours
     {
         /**
-         * This component handles the message being displayed to the user. It requires two components
+         *  It requires two components
          *   in the same object, and one component in a child. The components go like this:
-         *   1. Image (in object): Is the background of the message.
-         *      Recommended settings:
-         *        > Image Type: Slice
-         *          > Fill Center: True
-         *   2. Mask (in object): Is used to clip the content of the message, which will grow very long.
-         *      Recommended settings:
-         *        > Show Mask Graphic: True (otherwise the background image in the Image component
-         *          will not be seen)
          *   3. This component has also recommended settings since it inherits from ScrollRect:
          *      > Viewport: None
          *      > Horizontal Scrollbar: None
          *      > Vertical Scrollbar: None
          *   4. InteractiveMessageContent (in child). It is already documented.
-         * 
-         * This behaviour exposes a method to execute its magic: PromptMessages(Prompt[] msgs) that
-         *   returns a Coroutine. This method should not be used on its own, but as part of the implementation
-         *   of an Interactor's Input() and RunInteraction() methods, since those methods belong to the
-         *   main interaction's lifecycle.
-         * 
-         * For more information, see PromptMessages method in this class, and the relevant methods in the
-         *   Interactor class.
-         * 
-         * A public property is exposed: QuickTextMovement. This serves to accelerate text display. You can
-         *   safely set or clear this flag, but the ideal behaviour is that you set or clear this flag
-         *   depending on whether a button is pressed or not (however it is a matter of taste).
          */
+        /// <summary>
+        ///   This component handles the message being displayed to the user. It is intended to be a child of
+        ///     an <see cref="InteractiveInterface"> component.
+        /// </summary>
+        /// <remarks>
+        ///   <para>
+        ///     This class provides features to display text in an animated fashion instead of suddenly the entire
+        ///       bulk. An example is provided in <see cref="InteractiveInterface"/>.
+        ///   </para>
+        ///   <para>
+        ///     Pay special attention to <see cref="PromptMessages(Prompt[])"/> since it is the most interesting
+        ///       method of this class, aside from the inner classes <see cref="PromptBuilder"/> and
+        ///       <see cref="Prompt"/>. 
+        ///   </para>
+        ///   <para>
+        ///     This component should:
+        ///     <list type="bullet">
+        ///       <item>
+        ///         <description>
+        ///           Configure its <see cref="Image"/> dependency appropriately:
+        ///           <list type="bullet">
+        ///             <item>
+        ///               <term>Image Type</term>
+        ///               <description>
+        ///                 Slice
+        ///                 <list type="bullet">
+        ///                   <item>
+        ///                     <term>Fill Center</term>
+        ///                     <description>Set it to <c>true</c></description>
+        ///                   </item>
+        ///                 </list>
+        ///               </description>
+        ///             </item>
+        ///           </list>
+        ///         </description>
+        ///       </item>
+        ///       <item>
+        ///         <description>
+        ///           Configure its <see cref="Mask"/> dependency appropriately. Since the mask
+        ///             is used to clip the text content while it scrolls, it will be needed
+        ///             here as well and appropriately configure:
+        ///           <list type="bullet">
+        ///             <item>
+        ///               <term>Show Mask Graphic</term>
+        ///               <description>
+        ///                 Set it to <c>true</c> or the background image for the text content
+        ///                 will not appear.
+        ///               </description>
+        ///             </item>
+        ///           </list> 
+        ///         </description>
+        ///       </item>
+        ///       <item>
+        ///         <description>
+        ///           Configure this component, unless you want a different behaviour, like this:
+        ///           <list type="bullet">
+        ///             <item>
+        ///               <term>Viewport</term>
+        ///               <description>None.</description>
+        ///             </item>
+        ///             <item>
+        ///               <term>Vertical scrollbar</term>
+        ///               <description>None.</description>
+        ///             </item>
+        ///             <item>
+        ///               <term>Horizontal scrollbar</term>
+        ///               <description>None.</description>
+        ///             </item>
+        ///             <item>
+        ///               <term>Message Content</term>
+        ///               <description>A valid <see cref="messageContent"/> instance. Usually among its direct children.</description>
+        ///             </item>
+        ///           </list>
+        ///         </description>
+        ///       </item>
+        ///     </list>
+        ///   </para>
+        /// </remarks>
         [RequireComponent(typeof(Mask))]
         [RequireComponent(typeof(Image))]
         public class InteractiveMessage : ScrollRect
         {
-            /**
-             * A message-displaying instruction to run in the display.
-             */
+            /// <summary>
+            ///   This class is the base for any prompt type from the <see cref="InteractiveMessage"/> to the user.
+            /// </summary>
+            /// <seealso cref="NewlinePrompt"/>
+            /// <seealso cref="ClearPrompt"/>
+            /// <seealso cref="MessagePrompt"/>
+            /// <seealso cref="WaiterPrompt"/>
             public abstract class Prompt
             {
                 public abstract IEnumerator ToDisplay(InteractiveMessageContent content, StringBuilder builder, char? lastChar = null);
             }
 
-            /**
-             * This instruction sends a newline to the display.
-             */
+            /// <summary>
+            ///   This prompt adds a newline to the message display. Created via <see cref="PromptBuilder.NewlinePrompt(bool)"/>.
+            /// </summary>
             public class NewlinePrompt : Prompt
             {
                 public readonly bool OnlyIfSignificant;
@@ -71,9 +133,9 @@ namespace GabTab
                 }
             }
 
-            /**
-             * This instruction clears the display.
-             */
+            /// <summary>
+            ///   This prompt clears the display. Created via <see cref="PromptBuilder.Clear"/>.
+            /// </summary>
             public class ClearPrompt : Prompt
             {
                 public override IEnumerator ToDisplay(InteractiveMessageContent content, StringBuilder builder, char? lastChar = null)
@@ -84,9 +146,9 @@ namespace GabTab
                 }
             }
 
-            /**
-             * This instruction sends text to the display.
-             */
+            /// <summary>
+            ///   This prompt sends a string message, letter by letter, to the message display. Created via <see cref="PromptBuilder.Write(string)"/>. 
+            /// </summary>
             public class MessagePrompt : Prompt
             {
                 public readonly string Message;
@@ -107,11 +169,9 @@ namespace GabTab
                 }
             }
 
-            /**
-             * This instruction waits a specific time in the display before doing more stuff there.
-             * The slow time will be specified, and the quick time calculated by dividing it on 10,
-             *   or will be taken, as default, from the content settings.
-             */
+            /// <summary>
+            ///   This class just waits some time before doing anything else with the display. Created via <see cref="PromptBuilder.Wait(float?)"/>.
+            /// </summary>
             public class WaiterPrompt : Prompt
             {
                 public readonly float? SecondsToWait;
@@ -126,38 +186,68 @@ namespace GabTab
                 }
             }
 
-            /**
-             * You can chain many calls like this:
-             *   Prompt[] all = PromptBuilder.Clear().Write("Hello world.").Write("How are you?").Newline().Write("Have a nice day").End();
-             */
+            /// <summary>
+            ///   A prompt builder lets you build an array of <see cref="Prompt"/> elements to be passed to <see cref="Interactors.Interactor.RunInteraction(InteractiveMessage, Prompt[])"/>. 
+            /// </summary>
+            /// <remarks>
+            ///   It starts containing an empty array and then you can call the methods of this class
+            ///     to add elements to the array following a fluent or chained pattern. To obtain the
+            ///     final array you simply call <see cref="End"/> method when done adding stuff. 
+            /// </remarks>
             public class PromptBuilder
             {
                 private System.Collections.Generic.List<Prompt> list = new System.Collections.Generic.List<Prompt>();
 
+                /// <summary>
+                ///   Creates a prompt that produces a timeout.
+                /// </summary>
+                /// <param name="seconds">Amount of seconds to wait. If absent, will be taken according to <see cref="InteractiveMessageContent"/></param>
+                /// <returns>The same <see cref="PromptBuilder"/> instance.</returns>
                 public PromptBuilder Wait(float? seconds = null)
                 {
                     list.Add(new WaiterPrompt(seconds));
                     return this;
                 }
 
+                /// <summary>
+                ///   Creates a prompt that sends a string to the display.
+                /// </summary>
+                /// <param name="message">The message to display letter by letter.</param>
+                /// <returns>The same <see cref="PromptBuilder"/> instance.</returns>
                 public PromptBuilder Write(string message)
                 {
                     list.Add(new MessagePrompt(message));
                     return this;
                 }
 
+                /// <summary>
+                ///   Creates a prompt that puts a newline on the display. If the argument is true, it only puts the newline if there was not a former newline at the
+                ///     end of the current content.
+                /// </summary>
+                /// <param name="onlyIfSignificant">
+                ///   Wether only add the newline if the displayed string did not have a newline at the end, or put the newline anyway.
+                /// </param>
+                /// <returns>The same <see cref="PromptBuilder"/> instance.</returns>
                 public PromptBuilder NewlinePrompt(bool onlyIfSignificant)
                 {
                     list.Add(new NewlinePrompt(onlyIfSignificant));
                     return this;
                 }
 
+                /// <summary>
+                ///   Creates a prompt that clears the display.
+                /// </summary>
+                /// <returns>The same <see cref="PromptBuilder"/> instance.</returns>
                 public PromptBuilder Clear()
                 {
                     list.Add(new ClearPrompt());
                     return this;
                 }
 
+                /// <summary>
+                ///   Returns the list of created prompts.
+                /// </summary>
+                /// <returns>An array of <see cref="Prompt"/> objects, ready to pass as second argument to <see cref="Interactors.Interactor.RunInteraction(InteractiveMessage, Prompt[])"/>.</returns>
                 public Prompt[] End()
                 {
                     return list.ToArray();
@@ -166,17 +256,16 @@ namespace GabTab
 
             private RectTransform me;
 
-            /**
-             * A big part of the magic is delegated to this component, which actually performs the
-             *   display operation for each message.
-             */
+            /// <summary>
+            ///   You must set this reference to a valid, non-null, <see cref="InteractiveMessageContent"/> component.
+            /// </summary>
             [SerializeField]
             private InteractiveMessageContent messageContent;
 
-            /**
-             * This property was described above. The actual implementation is in the underlying
-             *   InteractiveMessageContent object.
-             */
+            /// <summary>
+            ///   By setting this to <c>true</c> the prompted text will appear faster. See <see cref="InteractiveMessageContent"/>
+            ///     for more details on that topic. However, you can manage this public member AS and WHEN you like.
+            /// </summary>
             public bool QuickTextMovement
             {
                 get { return messageContent.QuickTextMovement; }
@@ -204,11 +293,12 @@ namespace GabTab
                 content.sizeDelta = new Vector2(itsWidth, content.sizeDelta.y);
             }
 
-            /**
-             * Starts a coroutine iterating over the messages and delegating the display behaviour to the
-             *   message content. As stated above, this method is public but should only be invoked from
-             *   inner methods of Interactor class and subclasses.
-             */
+            /// <summary>
+            ///   Taking an array of <see cref="Prompt"/>, it executes them sequentially: one
+            ///     prompt will not run until previous prompts have runned.
+            /// </summary>
+            /// <param name="prompt">The list of <see cref="Prompt"/> objects to execute.</param>
+            /// <returns>The just-started coroutine.</returns>
             public Coroutine PromptMessages(Prompt[] prompt)
             {
                 return StartCoroutine(MessagesPrompter(prompt));

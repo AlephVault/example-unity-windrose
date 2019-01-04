@@ -7,45 +7,117 @@ namespace GabTab
 {
     namespace Behaviours
     {
-        /**
-         * This behavior is the one that fills the message to show to the user. It needs two components
-         *   to works properly:
-         *   1. A text component. Indeed, this is the element that will show the text to the user.
-         *      Recommended settings:
-         *      > Paragraph
-         *        > Alignment: Left and Top
-         *        > Horizontal Overflow: Wrap
-         *        > Vertical Overflow: Overflow
-         *      > Character:
-         *        > Line Spacing: 1
-         *   2. A content size fitter component. This component is used to scroll the text.
-         *      Recommended settings:
-         *      > Horizontal Fit: Unconstrained
-         *      > Vertical Fit: Preferred Size
-         * 
-         * This component provides the behaviour to the parent(s) component(s) to start a text message.
-         * The text message will be filled at different speeds (you can configure a slow and a quick speed).
-         * You can also change (at runtime) whether the text should be filled using the quick or slow
-         *   speed (this is useful if, e.g., having a button that accelerates the text filling).
-         */
+        /// <summary>
+        ///   This component reflects the settings of text speed and explicit wait speed.
+        /// </summary>
+        /// <remarks>
+        ///   <para>
+        ///     It also provides methods used by <see cref="InteractiveMessage"/> to yield
+        ///       timing coroutines to perform the dirty job for us. Such coroutines are
+        ///       started in terms of this object's configuration.
+        ///   </para>
+        ///   <para>
+        ///     You should configure this object's components as well. Recommended settings are:
+        ///     <list type="bullet">
+        ///       <item>
+        ///         <term>Text</term>
+        ///         <description>
+        ///           This component will ultimately display the text. The recommended settings are:
+        ///           <list type="bullet">
+        ///             <item>
+        ///               <term>Paragraph</term>
+        ///               <description>
+        ///                 <list type="bullet">
+        ///                   <item>
+        ///                     <term>Alignment</term>
+        ///                     <description>Left and Top</description>
+        ///                   </item>
+        ///                   <item>
+        ///                     <term>Horizontal Overflow</term>
+        ///                     <description>Wrap</description>
+        ///                   </item>
+        ///                   <item>
+        ///                     <term>Vertical Overflow</term>
+        ///                     <description>Overflow</description>
+        ///                   </item>
+        ///                 </list> 
+        ///               </description>
+        ///             </item>
+        ///             <item>
+        ///               <term>Character</term>
+        ///               <description>
+        ///                 <list type="bullet">
+        ///                   <item>
+        ///                     <term>Line Spacing</term>
+        ///                     <description>1</description>
+        ///                   </item>
+        ///                 </list>
+        ///               </description>
+        ///             </item>
+        ///           </list>
+        ///         </description>
+        ///       </item>
+        ///       <item>
+        ///         <term>Content Size Fitter</term>
+        ///         <description>
+        ///           This component is used to scroll appropriately. Recommended:
+        ///           <list type="bullet">
+        ///             <item>
+        ///               <term>Horizontal Fit</term>
+        ///               <description>Unconstrained</description>
+        ///             </item>
+        ///             <item>
+        ///               <term>Vertical Fit</term>
+        ///               <description>Preferred Size</description>
+        ///             </item>
+        ///           </list> 
+        ///         </description>
+        ///       </item>
+        ///     </list> 
+        ///   </para>
+        /// </remarks>
         [RequireComponent(typeof(UnityEngine.UI.Text))]
         [RequireComponent(typeof(UnityEngine.UI.ContentSizeFitter))]
         public class InteractiveMessageContent : MonoBehaviour
         {
+            /// <summary>
+            ///   Tells the amount of seconds (usually fraction of) to wait
+            ///     between each letter being displayed for slow speed.
+            /// </summary>
             [SerializeField]
             private float slowTimeBetweenLetters = 0.05f;
 
+            /// <summary>
+            ///   Tells the amount of seconds (usually fraction of) to wait
+            ///     between each letter being displayed for quick speed.
+            /// </summary>
             [SerializeField]
             private float quickTimeBetweenLetters = 0.005f;
 
+            /// <summary>
+            ///   Tells the amount of seconds (usually fraction of) to wait
+            ///     on each wait being issued for slow speed.
+            /// </summary>
             [SerializeField]
             private float slowDelayAfterMessage = 0.5f;
 
+            /// <summary>
+            ///   Tells the amount of seconds (usually fraction of) to wait
+            ///     on each wait being issued for quick speed.
+            /// </summary>
             [SerializeField]
             private float quickDelayAfterMessage = 0.05f;
 
+            /// <summary>
+            ///   Tells whether text must be displayed, and waits should be
+            ///     performed, at quick speed or slow speed.
+            /// </summary>
             public bool QuickTextMovement = false;
 
+            /// <summary>
+            ///   This coroutine waits using character-sized time.
+            /// </summary>
+            /// <returns>A coroutine to start and wait.</returns>
             public Types.WaitForQuickOrSlowSeconds CharacterWaiterCoroutine()
             {
                 return new Types.WaitForQuickOrSlowSeconds(
@@ -55,6 +127,14 @@ namespace GabTab
                 );
             }
 
+            /// <summary>
+            ///   This coroutine waits using an explicit time, which is usually
+            ///     bigger than character wait times.
+            /// </summary>
+            /// <param name="seconds">
+            ///   If you specify this, it will wait such amount on slow speed (and such amount divided by 10 on quick speed) instead of the setup wait times.
+            /// </param>
+            /// <returns>A coroutine to start and wait.</returns>
             public Types.WaitForQuickOrSlowSeconds ExplicitWaiterCoroutine(float? seconds = null)
             {
                 if (seconds == null)

@@ -2,6 +2,9 @@
 {
     namespace Types
     {
+        /// <summary>
+        ///   Base exception for the GabTab features.
+        /// </summary>
         public class Exception : Support.Types.Exception
         {
             public Exception() {}

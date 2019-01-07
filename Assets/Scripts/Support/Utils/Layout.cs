@@ -8,8 +8,14 @@ namespace Support
 {
     namespace Utils
     {
-        public class Layout
+        /// <summary>
+        ///   This class acts as a namespace to holds several methods for components. Please refer to its methods.
+        /// </summary>
+        public static class Layout
         {
+            /// <summary>
+            ///   Exception to be raised when an object requires a parent but it has none.
+            /// </summary>
             public class MissingParentException : Types.Exception
             {
                 public MissingParentException() { }
@@ -17,6 +23,10 @@ namespace Support
                 public MissingParentException(string message, Exception inner) : base(message, inner) { }
             }
 
+            /// <summary>
+            ///   Exception to be raised when an object requires a certain component in its parent
+            ///     but its parent has no such component.
+            /// </summary>
             public class MissingComponentInParentException : Types.Exception
             {
                 public MissingComponentInParentException() { }
@@ -24,6 +34,10 @@ namespace Support
                 public MissingComponentInParentException(string message, Exception inner) : base(message, inner) { }
             }
 
+            /// <summary>
+            ///   Exception to be raised when an object requires a certain component(s) on its
+            ///     children, but the children do not have the required component(s).
+            /// </summary>
             public class MissingComponentInChildrenException : Types.Exception
             {
                 public MissingComponentInChildrenException() { }
@@ -31,6 +45,9 @@ namespace Support
                 public MissingComponentInChildrenException(string message, Exception inner) : base(message, inner) { }
             }
 
+            /// <summary>
+            ///   Exception to be raised when a field to be serialized is not found.
+            /// </summary>
             public class UnserializableFieldException : Types.Exception
             {
                 public UnserializableFieldException() { }
@@ -38,6 +55,11 @@ namespace Support
                 public UnserializableFieldException(string message, System.Exception inner) : base(message, inner) { }
             }
 
+            /// <summary>
+            ///   Exception to be raised when there is a circular dependency among components
+            ///     and so they cannot be sorted by dependencies (usually: to know how to invoke
+            ///     certain method(s) from them in an appropriately sorted order).
+            /// </summary>
             public class CircularDependencyUnsupportedException : Types.Exception
             {
                 public CircularDependencyUnsupportedException() { }
@@ -45,11 +67,27 @@ namespace Support
                 public CircularDependencyUnsupportedException(string message, System.Exception inner) : base(message, inner) { }
             }
 
+            /// <summary>
+            ///   Requires a certain component in the parent of this behaviour's game object.
+            /// </summary>
+            /// <typeparam name="T">The type of component to require. It must be a subclass of <see cref="Component"/>.</typeparam>
+            /// <param name="script">The behaviour. You will usually pass <c>this</c> here.</param>
+            /// <returns>The found component, casted as type <typeparamref name="T"/>.</returns>
+            /// <exception cref="MissingParentException" />
+            /// <exception cref="MissingComponentInParentException" />
             public static T RequireComponentInParent<T>(MonoBehaviour script) where T : Component
             {
                 return RequireComponentInParent<T>(script.gameObject);
             }
 
+            /// <summary>
+            ///   Requires a certain component in the parent of this game object.
+            /// </summary>
+            /// <typeparam name="T">The type of component to require. It must be a subclass of <see cref="Component"/>.</typeparam>
+            /// <param name="current">The object. You will usually pass <c>this.gameObject</c> here.</param>
+            /// <returns>The found component, casted as type <typeparamref name="T"/>.</returns>
+            /// <exception cref="MissingParentException" />
+            /// <exception cref="MissingComponentInParentException" />
             public static T RequireComponentInParent<T>(GameObject current) where T : Component
             {
                 try
@@ -72,11 +110,25 @@ namespace Support
                 }
             }
 
+            /// <summary>
+            ///   Requires a certain component among the children (or descendants) of this behaviour's game object.
+            /// </summary>
+            /// <typeparam name="T">The type of component to require. It must be a subclass of <see cref="Component"/>.</typeparam>
+            /// <param name="script">The behaviour. You will usually pass <c>this</c> here.</param>
+            /// <returns>The found component, casted as type <typeparamref name="T"/>.</returns>
+            /// <exception cref="MissingComponentInChildrenException" />
             public static T RequireComponentInChildren<T>(MonoBehaviour current) where T : Component
             {
                 return RequireComponentInChildren<T>(current.gameObject);
             }
 
+            /// <summary>
+            ///   Requires a certain component among the children (or descendants) of this game object.
+            /// </summary>
+            /// <typeparam name="T">The type of component to require. It must be a subclass of <see cref="Component"/>.</typeparam>
+            /// <param name="current">The object. You will usually pass <c>this.gameObject</c> here.</param>
+            /// <returns>The found component, casted as type <typeparamref name="T"/>.</returns>
+            /// <exception cref="MissingComponentInChildrenException" />
             public static T RequireComponentInChildren<T>(GameObject current) where T : Component
             {
                 T[] components = current.GetComponentsInChildren<T>(true);
@@ -90,11 +142,29 @@ namespace Support
                 }
             }
 
-            public static T[] RequireComponentsInChildren<T>(MonoBehaviour current, uint howMany, bool includeInactive = true) where T : Component
+            /// <summary>
+            ///   Requires at least N copies of a certain component among the children (or descendants) of this behaviour's game object.
+            /// </summary>
+            /// <typeparam name="T">The type of component to require. It must be a subclass of <see cref="Component"/>.</typeparam>
+            /// <param name="script">The behaviour. You will usually pass <c>this</c> here.</param>
+            /// <param name="howMany">The minimum amount of components to retrieve. It is an error if there are less than that.</param>
+            /// <param name="includeInactive">This argument has the same meaning as in <see cref="Component.GetComponentsInChildren(Type, bool)"/>.</param>
+            /// <returns>The found components, casted as type <typeparamref name="T"/>.</returns>
+            /// <exception cref="MissingComponentInChildrenException" />
+            public static T[] RequireComponentsInChildren<T>(MonoBehaviour script, uint howMany, bool includeInactive = true) where T : Component
             {
-                return RequireComponentsInChildren<T>(current.gameObject, howMany, includeInactive);
+                return RequireComponentsInChildren<T>(script.gameObject, howMany, includeInactive);
             }
 
+            /// <summary>
+            ///   Requires at least N copies of a certain component among the children (or descendants) of this game object.
+            /// </summary>
+            /// <typeparam name="T">The type of component to require. It must be a subclass of <see cref="Component"/>.</typeparam>
+            /// <param name="current">The object. You will usually pass <c>this.gameObject</c> here.</param>
+            /// <param name="howMany">The minimum amount of components to retrieve. It is an error if there are less than that.</param>
+            /// <param name="includeInactive">This argument has the same meaning as in <see cref="Component.GetComponentsInChildren(Type, bool)"/>.</param>
+            /// <returns>The found components, casted as type <typeparamref name="T"/>.</returns>
+            /// <exception cref="MissingComponentInChildrenException" />
             public static T[] RequireComponentsInChildren<T>(GameObject current, uint howMany, bool includeInactive = true) where T : Component
             {
                 T[] components = current.GetComponentsInChildren<T>(includeInactive);
@@ -110,6 +180,18 @@ namespace Support
                 }
             }
 
+            /// <summary>
+            ///   Adds a component to the game object. It also initializes its properties (specially for those marked with <see cref="SerializeField"/>).
+            /// </summary>
+            /// <remarks>
+            ///   <para>When this method completes its execution, <c>Awake()</c> and <c>Start()</c> will be invoked accordingly.</para>
+            ///   <para>Please note! This feature uses reflection! It will be slow. Use it with caution!</para>
+            /// </remarks>
+            /// <typeparam name="T">The type of component to add.</typeparam>
+            /// <param name="gameObject">The object to which add the component.</param>
+            /// <param name="data">An arbitrary map of string => object properties to initialize.</param>
+            /// <returns>The newly added component.</returns>
+            /// <exception cref="UnserializableFieldException" />
             public static T AddComponent<T>(GameObject gameObject, Dictionary<string, object> data = null) where T : Component
             {
                 if (data == null)
@@ -126,6 +208,15 @@ namespace Support
                 }
             }
 
+            /// <summary>
+            ///   Sets, in bulk, a lot of properties on certain component or asset.
+            /// </summary>
+            /// <remarks>
+            ///   <para>Please note! This feature uses reflection! It will be slow. Use it with caution!</para>
+            /// </remarks>
+            /// <param name="target">The component on which the properties will be set.</param>
+            /// <param name="data">The source of the properties to set.</param>
+            /// <exception cref="UnserializableFieldException" />
             public static void SetObjectFieldValues(UnityEngine.Object target, Dictionary<string, object> data)
             {
                 Type targetType = target.GetType();
@@ -144,25 +235,40 @@ namespace Support
                 }
             }
 
-            /**
-             * Gets a set of all the types this component depends on.
-             */
+            /// <summary>
+            ///   Gets all the dependencies of the object's type, considering its <see cref="RequireComponent"/> tags.
+            /// </summary>
+            /// <remarks>
+            ///   This considers component 1, 2, and 3 in each <see cref="RequireComponent"/> tag, and excludes <c>null</c>.
+            /// </remarks>
+            /// <param name="component">The component to query its dependencies.</param>
+            /// <returns>A set of dependencies.</returns>
             public static HashSet<Type> GetDependencies(Component component)
             {
                 return GetDependencies(component.GetType());
             }
 
-            /**
-             * Gets a set of all the types the given component type depends on.
-             */
+            /// <summary>
+            ///   Gets all the dependencies of the given type param, considering its <see cref="RequireComponent"/> tags.
+            /// </summary>
+            /// <remarks>
+            ///   This considers component 1, 2, and 3 in each <see cref="RequireComponent"/> tag, and excludes <c>null</c>.
+            /// </remarks>
+            /// <typeparam name="C">The component type to query its dependencies.</typeparam>
+            /// <returns>A set of dependencies.</returns>
             public static HashSet<Type> GetDependencies<C>() where C : Component
             {
                 return GetDependencies(typeof(C));
             }
 
-            /**
-             * Private implementation to get the component dependencies.
-             */
+            /// <summary>
+            ///   Gets all the dependencies of the given type argument, considering its <see cref="RequireComponent"/> tags.
+            /// </summary>
+            /// <remarks>
+            ///   This considers component 1, 2, and 3 in each <see cref="RequireComponent"/> tag, and excludes <c>null</c>.
+            /// </remarks>
+            /// <param name="C">The component type to query its dependencies.</typeparam>
+            /// <returns>A set of dependencies.</returns>
             private static HashSet<Type> GetDependencies(Type componentType)
             {
                 IEnumerable<RequireComponent> attributes = (from attribute in componentType.GetCustomAttributes(typeof(RequireComponent), false) select (attribute as RequireComponent));
@@ -177,11 +283,13 @@ namespace Support
                 return types;
             }
 
-            /**
-             * Flattens the dependencies of the components. The criteria of dependencies will
-             *   only account for types among the components, and not other potential types
-             *   they could depend on.
-             */
+            /// <summary>
+            ///   Sorts a list of components according to how much do they depend on each other. The less-dependent can be found at start.
+            /// </summary>
+            /// <remarks>An exception will be raised if there are circular dependencies here.</remarks>
+            /// <param name="components">The components to sort by their dependencies.</param>
+            /// <exception cref="CircularDependencyUnsupportedException" />
+            /// <returns>An array of components (appropriately sorted from less-dependent to more-dependent).</returns>
             public static Component[] SortByDependencies(Component[] components)
             {
                 HashSet<Type> consideredComponentTypes = new HashSet<Type>(from component in components select component.GetType());

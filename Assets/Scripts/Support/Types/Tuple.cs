@@ -5,6 +5,11 @@ using System.Text;
 
 namespace Support.Types
 {
+    /// <summary>
+    ///   A tuple with two elements.
+    /// </summary>
+    /// <typeparam name="A">No considerations here.</typeparam>
+    /// <typeparam name="B">No considerations here.</typeparam>
     public class Tuple<A, B>
     {
         public readonly A First;
@@ -17,6 +22,12 @@ namespace Support.Types
         }
     }
 
+    /// <summary>
+    ///   A tuple with three elements.
+    /// </summary>
+    /// <typeparam name="A">No considerations here.</typeparam>
+    /// <typeparam name="B">No considerations here.</typeparam>
+    /// <typeparam name="C">No considerations here.</typeparam>
     public class Tuple<A, B, C> : Tuple<A, B>
     {
         public readonly C Third;
@@ -27,6 +38,13 @@ namespace Support.Types
         }
     }
 
+    /// <summary>
+    ///   A tuple with four elements.
+    /// </summary>
+    /// <typeparam name="A">No considerations here.</typeparam>
+    /// <typeparam name="B">No considerations here.</typeparam>
+    /// <typeparam name="C">No considerations here.</typeparam>
+    /// <typeparam name="D">No considerations here.</typeparam>
     public class Tuple<A, B, C, D> : Tuple<A, B, C>
     {
         public readonly D Fourth;

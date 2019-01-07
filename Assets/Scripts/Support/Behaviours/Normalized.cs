@@ -8,11 +8,13 @@ namespace Support
 {
     namespace Behaviours
     {
+        /// <summary>
+        ///   This behaviour just ensures the local position of its transform is 0,
+        ///     its local scale is 1, and its local rotation is the identity (i.e. no
+        ///     further rotation).
+        /// </summary>
         class Normalized : MonoBehaviour
         {
-            /**
-             * This behaviour resets the transform to avoid surprises.
-             */
             private void Awake()
             {
                 transform.localPosition = Vector3.zero;

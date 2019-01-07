@@ -6,6 +6,12 @@ namespace Support
 {
     namespace Types
     {
+        /// <summary>
+        ///   This is a regular dictionary but also provides means for its serialization and deserializaation into
+        ///     the Inspector.
+        /// </summary>
+        /// <typeparam name="TKey">The key. You may want to pay attention to its <c>GetHashCode()</c> method.</typeparam>
+        /// <typeparam name="TValue">The value. No considerations here.</typeparam>
         public class SerializableDictionary<TKey, TValue> : Dictionary<TKey, TValue>, ISerializationCallbackReceiver
         {
             [SerializeField]

@@ -2,6 +2,9 @@
 {
     namespace Types
     {
+        /// <summary>
+        ///   Base class for exceptions in this package.
+        /// </summary>
         public class Exception : System.Exception
         {
             public Exception() { }

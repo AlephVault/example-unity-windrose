@@ -7,6 +7,9 @@ namespace Support
 {
     namespace Utils
     {
+        /// <summary>
+        ///   This class acts as a namespace to holds several methods for assets. Please refer to its methods.
+        /// </summary>
         public static class AssetsLayout
         {
             /**
@@ -20,17 +23,28 @@ namespace Support
              * 3. An exception class, being by default the exception defined in this class, and
              *      mandatory being subclass of such exception type.
              */
-
+            
+            /// <summary>
+            ///   Exception to be raised on dependency errors.
+            /// </summary>
             public class DependencyException : Types.Exception
             {
                 public DependencyException(string message) : base(message) { }
             }
 
+            /// <summary>
+            ///   Exception to be raised when the specified main component is not present among
+            ///     the given list of components.
+            /// </summary>
             public class MainComponentException : DependencyException
             {
                 public MainComponentException(string message) : base(message) { }
             }
 
+            /// <summary>
+            ///   This is an attribute to be used like <see cref="UnityEngine.RequireComponent"/> by any
+            ///     kind of objects. Most likely, this will only be used by Unity's ScriptableObject classes.
+            /// </summary>
             public abstract class Depends : Attribute
             {
                 private Type dependency;
@@ -58,11 +72,6 @@ namespace Support
                 throw (Exception)Activator.CreateInstance(type, new object[] { message });
             }
 
-            /**
-             * Gets all the dependencies from an object, by inspecting a particular attribute being present
-             *   on the object's class.
-             */
-
             private static HashSet<Type> GetDependencies(Type attributeType, Type type, Type exceptionType)
             {
                 return new HashSet<Type>(
@@ -70,11 +79,24 @@ namespace Support
                 );
             }
 
+            /// <summary>
+            ///   Gets the dependencies of a given type, according to a given attribute type, and raising a particular exception on dependency error.
+            /// </summary>
+            /// <typeparam name="A">The attribute type. A subclass of <see cref="Depends"/>.</typeparam>
+            /// <typeparam name="E">The exception type. A subclass of <see cref="DependencyException"/>.</typeparam>
+            /// <typeparam name="T">The type being queried.</typeparam>
+            /// <returns>A set of types that are dependencies of the queried type.</returns>
             public static HashSet<Type> GetDependencies<A, E, T>() where A : Depends where E : DependencyException
             {
                 return GetDependencies(typeof(A), typeof(T), typeof(E));
             }
 
+            /// <summary>
+            ///   Gets the dependencies of a given type, according to a given attribute type, and raising a <c>DependencyException</c> exception on dependency error.
+            /// </summary>
+            /// <typeparam name="A">The attribute type. A subclass of <see cref="Depends"/>.</typeparam>
+            /// <typeparam name="T">The type being queried.</typeparam>
+            /// <returns>A set of types that are dependencies of the queried type.</returns>
             public static HashSet<Type> GetDependencies<A, T>() where A : Depends
             {
                 return GetDependencies(typeof(A), typeof(T), typeof(DependencyException));
@@ -88,6 +110,13 @@ namespace Support
                 }
             }
 
+            /// <summary>
+            ///   Gets the dependencies of a given type, according to a given attribute type, and raising a particular exception on dependency error.
+            /// </summary>
+            /// <typeparam name="A">The attribute type. A subclass of <see cref="Depends"/>.</typeparam>
+            /// <typeparam name="E">The exception type. A subclass of <see cref="DependencyException"/>.</typeparam>
+            /// <param name="type">The type being queried.</param>
+            /// <returns>A set of types that are dependencies of the queried type.</returns>
             public static HashSet<Type> GetDependencies<A, E>(Type type) where A : Attribute where E : DependencyException
             {
                 Type attributeType = typeof(A);
@@ -96,6 +125,12 @@ namespace Support
                 return GetDependencies(attributeType, type, exceptionType);
             }
 
+            /// <summary>
+            ///   Gets the dependencies of a given type, according to a given attribute type, and raising a <c>DependencyException</c> exception on dependency error.
+            /// </summary>
+            /// <typeparam name="A">The attribute type. A subclass of <see cref="Depends"/>.</typeparam>
+            /// <param name="type">The type being queried.</param>
+            /// <returns>A set of types that are dependencies of the queried type.</returns>
             public static HashSet<Type> GetDependencies<A>(Type type) where A : Attribute
             {
                 Type attributeType = typeof(A);
@@ -104,22 +139,38 @@ namespace Support
                 return GetDependencies(attributeType, type, exceptionType);
             }
 
+            /// <summary>
+            ///   Gets the dependencies of a given component's type, according to a given attribute type, and raising a particular exception on dependency error.
+            /// </summary>
+            /// <typeparam name="A">The attribute type. A subclass of <see cref="Depends"/>.</typeparam>
+            /// <typeparam name="E">The exception type. A subclass of <see cref="DependencyException"/>.</typeparam>
+            /// <param name="component">The component whose type is being queried.</param>
+            /// <returns>A set of types that are dependencies of the queried type.</returns>
             public static HashSet<Type> GetDependencies<A, E>(object component) where A : Attribute where E : DependencyException
             {
                 return GetDependencies<A, E>(component.GetType());
             }
 
+            /// <summary>
+            ///   Gets the dependencies of a given component's type, according to a given attribute type, and raising a <c>DependencyException</c> exception on dependency error.
+            /// </summary>
+            /// <typeparam name="A">The attribute type. A subclass of <see cref="Depends"/>.</typeparam>
+            /// <param name="component">The component whose type is being queried.</param>
+            /// <returns>A set of types that are dependencies of the queried type.</returns>
             public static HashSet<Type> GetDependencies<A>(object component) where A : Attribute
             {
                 return GetDependencies<A, DependencyException>(component.GetType());
             }
 
-            /**
-             * Flattens / sorts the dependencies of an object['s type] or a type. The criterion will imply that
-             *   the first element will not depend on anything, while the last element will be of the most dependent
-             *   type among all.
-             */
-
+            /// <summary>
+            ///   Flattens/sorts the components by dependencies. It may throw an error if some dependencies are unmet among these components.
+            /// </summary>
+            /// <typeparam name="T">The (common ancestor) type of components to pass.</typeparam>
+            /// <typeparam name="A">The attribute to consider when fetching dependencies. A subclass of <see cref="Depends"/>.</typeparam>
+            /// <typeparam name="E">The exception to raise on error. A subclass of <see cref="DependencyException"/>.</typeparam>
+            /// <param name="components">The components to sort.</param>
+            /// <param name="errorOnMissingDependency">If <c>true</c>, all the components' dependencies have to be present among them, or an error will be raised.</param>
+            /// <returns>The sorted components list.</returns>
             public static T[] FlattenDependencies<T, A, E>(T[] components, bool errorOnMissingDependency = true) where A : Depends where E : DependencyException
             {
                 HashSet<Type> consideredComponentTypes = new HashSet<Type>(from component in components select component.GetType());
@@ -175,16 +226,28 @@ namespace Support
                 return endComponentsList.ToArray();
             }
 
+            /// <summary>
+            ///   Flattens/sorts the components by dependencies. It may throw a DependencyException error if some dependencies are unmet among these components.
+            /// </summary>
+            /// <typeparam name="T">The (common ancestor) type of components to pass.</typeparam>
+            /// <typeparam name="A">The attribute to consider when fetching dependencies. A subclass of <see cref="Depends"/>.</typeparam>
+            /// <param name="components">The components to sort.</param>
+            /// <param name="errorOnMissingDependency">If <c>true</c>, all the components' dependencies have to be present among them, or an error will be raised.</param>
+            /// <returns>The sorted components list.</returns>
             public static T[] FlattenDependencies<T, A>(T[] componentsList, bool errorOnMissingDependency = true) where A : Depends
             {
                 return FlattenDependencies<T, A, DependencyException>(componentsList, errorOnMissingDependency);
             }
 
-            /**
-             * Avoids duplicated instances (i.e. more than one instance of the same type) in the components list.
-             * Returns the type => component mapping being created.
-             */
-
+            /// <summary>
+            ///   Avoids duplicate dependencies among components. This ensures that there are no two or more components
+            ///     of the same type in a components list (quite like the Inspector ensures that regarding game objects
+            ///     and their components. A particular exception will be raised on duplicates.
+            /// </summary>
+            /// <typeparam name="T">The (common ancestor) type of components to pass.</typeparam>
+            /// <typeparam name="E">The exception to raise on error. A subclass of <see cref="DependencyException"/>.</typeparam>
+            /// <param name="componentsList">The components to check.</param>
+            /// <returns>The dictionary of components by their types.</returns>
             public static Dictionary<Type, T> AvoidDuplicateDependencies<T, E>(T[] componentsList) where E : DependencyException
             {
                 Dictionary<Type, T> dictionary = new Dictionary<Type, T>();
@@ -200,15 +263,29 @@ namespace Support
                 return dictionary;
             }
 
+            /// <summary>
+            ///   Avoids duplicate dependencies among components. This ensures that there are no two or more components
+            ///     of the same type in a components list (quite like the Inspector ensures that regarding game objects
+            ///     and their components. A <see cref="DependencyException"/> exception will be raised on duplicates.
+            /// </summary>
+            /// <typeparam name="T">The (common ancestor) type of components to pass.</typeparam>
+            /// <param name="componentsList">The components to check.</param>
+            /// <returns>The dictionary of components by their types.</returns>
             public static Dictionary<Type, T> AvoidDuplicateDependencies<T>(T[] componentsList)
             {
                 return AvoidDuplicateDependencies<T, DependencyException>(componentsList);
             }
 
-            /**
-             * Cross-check dependencies from one list to another list.
-             */
-
+            /// <summary>
+            ///   Checks that all the components in a list have their dependencies satisfied by the components in the second list. If there are unsatisfied dependencies,
+            ///     a particular exception will be raised.
+            /// </summary>
+            /// <typeparam name="TargetType">The type with the dependent components.</typeparam>
+            /// <typeparam name="DependencyType">The type with the dependency components.</typeparam>
+            /// <typeparam name="A">The attribute type to consider. A subclass of <see cref="Depends"/>.</typeparam>
+            /// <typeparam name="E">The exception to raise. A subclass of <see cref="DependencyException"/>.</typeparam>
+            /// <param name="componentsList">The main components that have dependencies.</param>
+            /// <param name="dependencies">The components that satisfy those dependencies.</param>
             public static void CrossCheckDependencies<TargetType, DependencyType, A, E>(TargetType[] componentsList, DependencyType[] dependencies) where A : Depends where E : DependencyException
             {
                 HashSet<Type> requiredDependencies = new HashSet<Type>();
@@ -234,52 +311,115 @@ namespace Support
                 }
             }
 
+            /// <summary>
+            ///   Checks that all the components in a list have their dependencies satisfied by the components in the second list. If there are unsatisfied dependencies,
+            ///     a <see cref="DependencyException" /> exception will be raised.
+            /// </summary>
+            /// <typeparam name="TargetType">The type with the dependent components.</typeparam>
+            /// <typeparam name="DependencyType">The type with the dependency components.</typeparam>
+            /// <typeparam name="A">The attribute type to consider. A subclass of <see cref="Depends"/>.</typeparam>
+            /// <param name="componentsList">The main components that have dependencies.</param>
+            /// <param name="dependencies">The components that satisfy those dependencies.</param>
             public static void CrossCheckDependencies<TargetType, DependencyType, A>(TargetType[] componentsList, DependencyType[] dependencies) where A : Depends
             {
                 CrossCheckDependencies<TargetType, DependencyType, A, DependencyException>(componentsList, dependencies);
             }
 
-            /**
-             * And now the same but against a single element on either side.
-             */
-
-            // Array, Item -> Array, [Item]
+            /// <summary>
+            ///   Checks that all the components in a list have their dependencies satisfied by the component in the second argument. If there are unsatisfied dependencies,
+            ///     a particular exception will be raised.
+            /// </summary>
+            /// <typeparam name="TargetType">The type with the dependent components.</typeparam>
+            /// <typeparam name="DependencyType">The type with the dependency components.</typeparam>
+            /// <typeparam name="A">The attribute type to consider. A subclass of <see cref="Depends"/>.</typeparam>
+            /// <typeparam name="E">The exception to raise. A subclass of <see cref="DependencyException"/>.</typeparam>
+            /// <param name="componentsList">The main components that have dependencies.</param>
+            /// <param name="dependency">The component that satisfy those dependencies.</param>
             public static void CrossCheckDependencies<TargetType, DependencyType, A, E>(TargetType[] componentsList, DependencyType dependency) where A : Depends where E : DependencyException
             {
                 CrossCheckDependencies<TargetType, DependencyType, A, E>(componentsList, new DependencyType[] { dependency });
             }
 
+            /// <summary>
+            ///   Checks that all the components in a list have their dependencies satisfied by the component in the second argument. If there are unsatisfied dependencies,
+            ///     a <see cref="DependencyException"/> exception will be raised.
+            /// </summary>
+            /// <typeparam name="TargetType">The type with the dependent components.</typeparam>
+            /// <typeparam name="DependencyType">The type with the dependency components.</typeparam>
+            /// <typeparam name="A">The attribute type to consider. A subclass of <see cref="Depends"/>.</typeparam>
+            /// <param name="componentsList">The main components that have dependencies.</param>
+            /// <param name="dependency">The component that satisfy those dependencies.</param>
             public static void CrossCheckDependencies<TargetType, DependencyType, A>(TargetType[] componentsList, DependencyType dependency) where A : Depends
             {
                 CrossCheckDependencies<TargetType, DependencyType, A, DependencyException>(componentsList, dependency);
             }
 
-            // Item, Array -> [Item], Array
+            /// <summary>
+            ///   Checks that the component in the first argument have its dependencies satisfied by the components in the second list. If there are unsatisfied dependencies,
+            ///     a particular exception will be raised.
+            /// </summary>
+            /// <typeparam name="TargetType">The type with the dependent components.</typeparam>
+            /// <typeparam name="DependencyType">The type with the dependency components.</typeparam>
+            /// <typeparam name="A">The attribute type to consider. A subclass of <see cref="Depends"/>.</typeparam>
+            /// <typeparam name="E">The exception to raise. A subclass of <see cref="DependencyException"/>.</typeparam>
+            /// <param name="component">The main components that have dependencies.</param>
+            /// <param name="dependencies">The component that satisfy those dependencies.</param>
             public static void CrossCheckDependencies<TargetType, DependencyType, A, E>(TargetType component, DependencyType[] dependencies) where A : Depends where E : DependencyException
             {
                 CrossCheckDependencies<TargetType, DependencyType, A, E>(new TargetType[] { component }, dependencies);
             }
 
+            /// <summary>
+            ///   Checks that the component in the first argument have its dependencies satisfied by the components in the second list. If there are unsatisfied dependencies,
+            ///     a <see cref="DependencyException"/> exception will be raised.
+            /// </summary>
+            /// <typeparam name="TargetType">The type with the dependent components.</typeparam>
+            /// <typeparam name="DependencyType">The type with the dependency components.</typeparam>
+            /// <typeparam name="A">The attribute type to consider. A subclass of <see cref="Depends"/>.</typeparam>
+            /// <param name="component">The main components that have dependencies.</param>
+            /// <param name="dependencies">The component that satisfy those dependencies.</param>
             public static void CrossCheckDependencies<TargetType, DependencyType, A>(TargetType component, DependencyType[] dependencies) where A : Depends
             {
                 CrossCheckDependencies<TargetType, DependencyType, A, DependencyException>(component, dependencies);
             }
 
-            // Item, Item -> [Item], [Item]
+            /// <summary>
+            ///   Checks that the component in the first argument have its dependencies satisfied by the component in the second argument. If there are unsatisfied dependencies,
+            ///     a particular exception will be raised.
+            /// </summary>
+            /// <typeparam name="TargetType">The type with the dependent components.</typeparam>
+            /// <typeparam name="DependencyType">The type with the dependency components.</typeparam>
+            /// <typeparam name="A">The attribute type to consider. A subclass of <see cref="Depends"/>.</typeparam>
+            /// <typeparam name="E">The exception to raise. A subclass of <see cref="DependencyException"/>.</typeparam>
+            /// <param name="component">The main components that have dependencies.</param>
+            /// <param name="dependency">The component that satisfy those dependencies.</param>
             public static void CrossCheckDependencies<TargetType, DependencyType, A, E>(TargetType component, DependencyType dependency) where A : Depends where E : DependencyException
             {
                 CrossCheckDependencies<TargetType, DependencyType, A, E>(new TargetType[] { component }, new DependencyType[] { dependency });
             }
 
+            /// <summary>
+            ///   Checks that the component in the first argument have its dependencies satisfied by the component in the second argument. If there are unsatisfied dependencies,
+            ///     a <see cref="DependencyException"/> exception will be raised.
+            /// </summary>
+            /// <typeparam name="TargetType">The type with the dependent components.</typeparam>
+            /// <typeparam name="DependencyType">The type with the dependency components.</typeparam>
+            /// <typeparam name="A">The attribute type to consider. A subclass of <see cref="Depends"/>.</typeparam>
+            /// <param name="component">The main components that have dependencies.</param>
+            /// <param name="dependency">The component that satisfy those dependencies.</param>
             public static void CrossCheckDependencies<TargetType, DependencyType, A>(TargetType component, DependencyType dependency) where A : Depends
             {
                 CrossCheckDependencies<TargetType, DependencyType, A, DependencyException>(component, dependency);
             }
 
-            /**
-             * Check in-selection element.
-             */
-
+            /// <summary>
+            ///   Checks that a certain component instance is contained among a specified components list. A particular exception will be
+            ///     raised if the component is not in the list.
+            /// </summary>
+            /// <typeparam name="T">The components (common ancestor) type.</typeparam>
+            /// <typeparam name="E">The exception type. A subclass of <see cref="DependencyException"/>.</typeparam>
+            /// <param name="components">The list of components to search in.</param>
+            /// <param name="mainComponent">The component to search.</param>
             public static void CheckMainComponent<T, E>(T[] components, T mainComponent) where E : MainComponentException
             {
                 if (!components.Contains(mainComponent))
@@ -288,15 +428,26 @@ namespace Support
                 }
             }
 
+            /// <summary>
+            ///   Checks that a certain component instance is contained among a specified components list. A <see cref="DependencyException"/>
+            ///     exception will be raised if the component is not in the list.
+            /// </summary>
+            /// <typeparam name="T">The components (common ancestor) type.</typeparam>
+            /// <param name="components">The list of components to search in.</param>
+            /// <param name="mainComponent">The component to search.</param>
             public static void CheckMainComponent<T>(T[] components, T mainComponent)
             {
                 CheckMainComponent<T, MainComponentException>(components, mainComponent);
             }
 
-            /**
-             * Check presence
-             */
-
+            /// <summary>
+            ///   Checks that a certain value is not null. This involves checking the requirement of a field
+            ///     being present. If not, a particular exception will be raised.
+            /// </summary>
+            /// <typeparam name="T">The component type to check against null.</typeparam>
+            /// <typeparam name="E">The exception type. A subclass of <see cref="DependencyException"/>.</typeparam>
+            /// <param name="component">The component to check against null.</param>
+            /// <param name="fieldName">The field name. Just for informative purposes.</param>
             public static void CheckPresence<T, E>(T component, string fieldName = "") where E : DependencyException
             {
                 if (component == null)
@@ -306,6 +457,13 @@ namespace Support
                 }
             }
 
+            /// <summary>
+            ///   Checks that a certain value is not null. This involves checking the requirement of a field
+            ///     being present. If not, a <see cref="DependencyException"/> exception will be raised.
+            /// </summary>
+            /// <typeparam name="T">The component type to check against null.</typeparam>
+            /// <param name="component">The component to check against null.</param>
+            /// <param name="fieldName">The field name. Just for informative purposes.</param>
             public static void CheckPresence<T>(T component, string fieldName = "")
             {
                 CheckPresence<T, DependencyException>(component);

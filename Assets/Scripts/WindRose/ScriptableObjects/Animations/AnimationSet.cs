@@ -34,11 +34,11 @@ namespace WindRose
                     AnimationSpec instanceLeft = ScriptableObject.CreateInstance<AnimationSpec>();
                     AnimationSpec instanceRight = ScriptableObject.CreateInstance<AnimationSpec>();
                     Layout.SetObjectFieldValues(instance, new Dictionary<string, object>() {
-                    { "up", instanceUp },
-                    { "down", instanceDown },
-                    { "left", instanceLeft },
-                    { "right", instanceRight },
-                });
+                        { "up", instanceUp },
+                        { "down", instanceDown },
+                        { "left", instanceLeft },
+                        { "right", instanceRight },
+                    });
                     string path = AssetDatabase.GetAssetPath(Selection.activeObject);
                     if (path == "")
                     {

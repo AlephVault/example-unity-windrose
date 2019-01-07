@@ -7,6 +7,14 @@ namespace Support
 {
     namespace Types
     {
+        /// <summary>
+        ///   This is not a regular set, but instead one that also keeps track
+        ///     of the order the elements where inserted in.
+        /// </summary>
+        /// <remarks>
+        ///   Methods are not documented here. Consider them being analogous to the ones in both Set and List classes.
+        /// </remarks>
+        /// <typeparam name="T">Arbitrary type of your choice. You may want to pay attention to its <c>GetHashCode()</c> method.</typeparam>
         public class OrderedSet<T> : ICollection<T>
         {
             private readonly IDictionary<T, LinkedListNode<T>> m_Dictionary;

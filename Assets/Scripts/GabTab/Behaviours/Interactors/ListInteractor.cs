@@ -10,6 +10,32 @@ namespace GabTab
     {
         namespace Interactors
         {
+            /// <summary>
+            ///   <para>
+            ///     Paging type implies the pagination technique used by the ListIterator. We can illustrate the differences by considering the following example:
+            ///   </para>
+            ///   
+            ///   <para>
+            ///     You have 13 elements, 3 displays, and you are after 3 moves to NEXT page (displaying items 9 10 and 11), and you go NEXT one more time.
+            ///   </para>
+            ///   
+            ///   <para>
+            ///     <list type="bullet">
+            ///       <item>
+            ///         <term>Snapped</term>
+            ///         <description>You will get <c>items[12] nothing nothing</c> rendered, and you can't move further.</description>
+            ///       </item>
+            ///       <item>
+            ///         <term>Looping</term>
+            ///         <description>You will get <c>items[12] items[0] items[1]</c> rendered, and you can still move further: next page being rendered will involve items 2, 3, and 4.</description>
+            ///       </item>
+            ///       <item>
+            ///         <term>Clamped</term>
+            ///         <description>You will get <c>items[10] items[11] items[12]</c> rendered, and you can't move further. If you move back from there, you will render elements 7, 8, and 9 instead of the original 9, 10, and 11. After two more back movements you will render elements 1, 2, and 3. One more back will leave you at elements 0, 1, and 2.</description>
+            ///       </item>
+            ///     </list> 
+            ///   </para>
+            /// </summary>
             public enum PagingType
             {
                 SNAPPED = 0,
@@ -17,6 +43,10 @@ namespace GabTab
                 LOOPONG = 2
             }
 
+            /// <summary>
+            ///   An enumeration telling whether an object is unselected (NO), selected (YES) or
+            ///     selected and also active (YES_ACTIVE).
+            /// </summary>
             public enum SelectionStatus
             {
                 NO, YES, YES_ACTIVE
@@ -39,6 +69,15 @@ namespace GabTab
              *        placeholders for the standard navigation buttons. The same applies for cancel
              *        and continue buttons.
              */
+            /// <summary>
+            ///   This input is a highly customizable list selector input. It will map list models
+            ///     and selection values to their view in the UI and prompt the user for their
+            ///     choice(s).
+            /// </summary>
+            /// <typeparam name="ListItem">The type acting as data model for sources</typeparam>
+            /// <remarks>
+            ///   This interactor is an abstract class. You must implement a subclass appropriately.
+            /// </remarks>
             [RequireComponent(typeof(Image))]
             public abstract class ListInteractor<ListItem> : Interactor
             {
@@ -56,42 +95,38 @@ namespace GabTab
                  *****************************************************************************************
                  *****************************************************************************************/
 
-                /**
-                 * In the editor, we will set the items in this arrays to be:
-                 * 1. Children/Descendants of the GameObject having this behaviour.
-                 *    This is not required, but recommended. Even better if these
-                 *      GameObject instances have a Button component attached (and
-                 *      preferrably, with no visual transition between states).
-                 *    By having a Button component, those objects become selectable
-                 *      by default. Otherwise, the user must provide additional
-                 *      behaviour or a way to make them react to being clicked.
-                 * 2. Instances of the same prefab.
-                 *    It is recommended that each item comes from the same prefab
-                 *      so their aesthetics will be always the same.
-                 * 3. At least one item must be specified! Otherwise an error will
-                 *      be raised. Yes: we need at least one item to display.
-                 */
+                /// <summary>
+                ///   Edit this variable in the Inspector to tell which objects will reflect the items
+                ///     acting as displays of in-page choice items.
+                /// </summary>
+                /// <remarks>
+                ///   <para>
+                ///     At least one element must be set here, or an error will raise.
+                ///   </para>
+                ///   <para>
+                ///     It is recommended that all items are instances of the same prefab.
+                ///   </para>
+                ///   <para>
+                ///     It is recommended that all items are UI elements and, in particular, button
+                ///       elements. Otherwise, you'll have to ensure another way they are selected
+                ///       (toggled).
+                ///   </para>
+                /// </remarks>
                 [SerializeField]
                 GameObject[] itemDisplays;
 
-                /**
-                 * Whether the item rendering will be circular (e.g. if rendering 5 items starting from item
-                 *   28th out of 30, the next items will be 20th, 30th, 1st and 2nd), paginated, or paginated
-                 *   and clamped.
-                 * 
-                 * The difference between either is that if your page size (which will be determined by the
-                 *   amount of elements in `itemDisplays`) is not a divider of the length of the list to pick
-                 *   the data from, there will be (P-R) empty elements, where R is the remainder of the
-                 *   division, in the "paginated" case, while in the "clamped" case, no empty elements will
-                 *   be shown, but the offset will be clamped to the last P elements of the list.
-                 */
+                /// <summary>
+                ///   The paging type. You can edit this member in the Inspector to customize your list.
+                ///     See <see cref="PagingType"/> for an explanation. 
+                /// </summary>
                 [SerializeField]
                 private PagingType pagingType = PagingType.SNAPPED;
 
-                /**
-                 * Whether multiple elements can be selected or not. Despite your choice here,
-                 *   selecting items is mandatory for the "Continue" button to be enabled.
-                 */
+                /// <summary>
+                ///   Edit this member in the Inspector to control whether your listing allows multiple
+                ///     selection or not. If multiple selection, remember that automatic selection &
+                ///     commit of selected item is not available and will produce an error.
+                /// </summary>
                 [SerializeField]
                 private bool multiSelect;
 
@@ -119,17 +154,25 @@ namespace GabTab
                  * If this button is not set and multiSelect is false, when an item is selected (and is allowed)
                  *   it will count automatically as the final result and the interaction will end. 
                  */
+
+                /// <summary>
+                ///   <para>
+                ///     Edit this member in the Inspector to tell which <b>Button</b> will work as a continue
+                ///       button (thus terminating the interaction and choosing one or more elements).
+                ///   </para>
+                ///   <para>
+                ///     This button will be disabled as long as there are no elements selected.
+                ///   </para>
+                /// </summary>
                 [SerializeField]
                 private Button continueButton;
 
-                /**
-                 * If a "Cancel" button is specified, the user can click such button and avoid selecting stuff.
-                 * The flow will continue with no item being selected.
-                 * 
-                 * If a "Cancel" button is not specified, a null or empty list is specified (or all the items
-                 *   in the list cannot be selected [do not pass validation]) when "Input" is called, an
-                 *   exception will be thrown. For your good fortune, always provide a "Cancel" button.
-                 */
+                /// <summary>
+                ///   <para>
+                ///     Edit this member in the Inspector to tell which <b>Button</b> will work as a cancel
+                ///       button (thus cancelling the interaction with no elements).
+                ///   </para>
+                /// </summary>
                 [SerializeField]
                 private Button cancelButton;
 
@@ -141,34 +184,68 @@ namespace GabTab
                  * 
                  ****************************************************************************************/
 
-                /**
-                 * If a "Next" button is specified, it will gain calling Move(1) on click.
-                 * Also, it will be disabled when it cannot move like that.
-                 */
+                /// <summary>
+                ///   <para>
+                ///     Edit this member in the Inspector to tell which <b>Button</b> will work as a "move
+                ///       to next item" button.
+                ///   </para>
+                ///   <para>
+                ///     If a button is specified, it will gain calling Move(1) on click.
+                ///     Also, it will be disabled when it cannot move like that.
+                ///   </para>
+                /// </summary>
                 [SerializeField]
                 private Button nextButton;
 
-                /**
-                 * This is an analogous of the former, but calling Move(-1) instead.
-                 */
+                /// <summary>
+                ///   <para>
+                ///     Edit this member in the Inspector to tell which <b>Button</b> will work as a "move
+                ///       to prev item" button.
+                ///   </para>
+                ///   <para>
+                ///     If a button is specified, it will gain calling Move(-1) on click.
+                ///     Also, it will be disabled when it cannot move like that.
+                ///   </para>
+                /// </summary>
                 [SerializeField]
                 private Button prevButton;
 
-                /**
-                 * This is analogous of the former, but calling MovePages(1) instead.
-                 */
+                /// <summary>
+                ///   <para>
+                ///     Edit this member in the Inspector to tell which <b>Button</b> will work as a "move
+                ///       to next page" button.
+                ///   </para>
+                ///   <para>
+                ///     If a button is specified, it will gain calling MovePage(1) on click.
+                ///     Also, it will be disabled when it cannot move like that.
+                ///   </para>
+                /// </summary>
                 [SerializeField]
                 private Button nextPageButton;
 
-                /**
-                 * This is an analogous of the former, but calling MovePages(-1) instead.
-                 */
+                /// <summary>
+                ///   <para>
+                ///     Edit this member in the Inspector to tell which <b>Button</b> will work as a "move
+                ///       to prev page" button.
+                ///   </para>
+                ///   <para>
+                ///     If a button is specified, it will gain calling MovePage(-1) on click.
+                ///     Also, it will be disabled when it cannot move like that.
+                ///   </para>
+                /// </summary>
                 [SerializeField]
                 private Button prevPageButton;
 
-                /**
-                 * This is an analogous of the former, but calling Rewind() instead.
-                 */
+                /// <summary>
+                ///   <para>
+                ///     Edit this member in the Inspector to tell which <b>Button</b> will work as a "rewind"
+                ///       button.
+                ///   </para>
+                ///   <para>
+                ///     If a button is specified, it will gain calling Rewind() on click.
+                ///     Also, it will be disabled when it cannot move like that.
+                ///   </para>
+                /// </summary>
                 [SerializeField]
                 private Button rewindButton;
 
@@ -232,9 +309,10 @@ namespace GabTab
                  */
                 private Support.Types.OrderedSet<ListItem> selectedItems = new Support.Types.OrderedSet<ListItem>();
 
-                /**
-                 * Get/Set the selected items from an array. The last one will be considered active.
-                 */
+                /// <summary>
+                ///   Gets/sets the items being selected. When you set this property, the last element in
+                ///     the list you assign will be considered the "active" one.
+                /// </summary>
                 public ListItem[] SelectedItems
                 {
                     get
@@ -306,11 +384,9 @@ namespace GabTab
                     Rewind();
                 }
 
-                /**
-                 * This protected method resets the navigation position to the
-                 *   start.
-                 * Derived classes should make use of this method.
-                 */
+                /// <summary>
+                ///   Sets the widget to a page starting with the item 0.
+                /// </summary>
                 protected void Rewind()
                 {
                     if (items == null) return;
@@ -318,13 +394,14 @@ namespace GabTab
                     RenderItems();
                 }
 
-                /**
-                 * This protected method advances/rollbacks the position by N items.
-                 * Derived classes should make use of this method.
-                 * 
-                 * This method has no effect if the master list is not bigger than the
-                 *   displays array.
-                 */
+                /// <summary>
+                ///   Moves the renderer by N items. See <see cref="PagingType"/>
+                ///     to get details of the behaviour here.
+                /// </summary>
+                /// <remarks>
+                ///   By default invoked by Next/Prev buttons.
+                /// </remarks>
+                /// <param name="numItems">The said N value, which could be positive or negative.</param>
                 protected void Move(int numItems)
                 {
                     if (items == null) return;
@@ -351,13 +428,14 @@ namespace GabTab
                     RenderItems();
                 }
 
-                /**
-                 * This protected method advances/rollbacks the position by N pages.
-                 * Derived classes should make use of this method.
-                 * 
-                 * This method has no effect if the master list is not bigger than the
-                 *   displays array.
-                 */
+                /// <summary>
+                ///   Moves the renderer by N pages. See <see cref="PagingType"/>
+                ///     to get details of the behaviour here.
+                /// </summary>
+                /// <remarks>
+                ///   By default invoked by Next Page / Prev Page buttons.
+                /// </remarks>
+                /// <param name="numItems">The said N value, which could be positive or negative.</param>
                 protected void MovePages(int numItems)
                 {
                     if (items == null) return;
@@ -385,9 +463,15 @@ namespace GabTab
                     RenderItems();
                 }
 
-                /**
-                 * This protected method selects one item by its index.
-                 */
+                /// <summary>
+                ///   Selects one element, clearing others if single-select list is chosen.
+                /// </summary>
+                /// <remarks>
+                ///   By default assigned to item's button components' click handlers when single-select listing is
+                ///     chosen as configuration and no continue button is present.
+                /// </remarks>
+                /// <param name="index">Index to select.</param>
+                /// <param name="relative">Whether the index is relative to the current position or not (true, by default, for the buttons).</param>
                 protected void SelectOne(int index, bool relative = false)
                 {
                     if (items == null) return;
@@ -398,9 +482,11 @@ namespace GabTab
                     RenderItems();
                 }
 
-                /**
-                 * This protected method unselects one item by its index.
-                 */
+                /// <summary>
+                ///   Unselects one element.
+                /// </summary>
+                /// <param name="index">Index to unselect.</param>
+                /// <param name="relative">Whether the index is relative to the current position or not (true, by default, for the buttons).</param>
                 protected void UnselectOne(int index, bool relative = false)
                 {
                     if (items == null) return;
@@ -410,9 +496,16 @@ namespace GabTab
                     RenderItems();
                 }
 
-                /**
-                 * This protected method toggles one item by its index.
-                 */
+                /// <summary>
+                ///   Selects one element (clearing others if single-select list is chosen) if not selected,
+                ///     or unselects one element, if it is selected.
+                /// </summary>
+                /// <remarks>
+                ///   By default assigned to item's button components' click handlers when multi-select listing is
+                ///     chosen as configuration or the continue button is pressed.
+                /// </remarks>
+                /// <param name="index">Index to toggle.</param>
+                /// <param name="relative">Whether the index is relative to the current position or not (true, by default, for the buttons).</param>
                 protected void ToggleOne(int index, bool relative = false)
                 {
                     if (items == null) return;
@@ -431,9 +524,12 @@ namespace GabTab
                     RenderItems();
                 }
 
-                /**
-                 * This protected method selects all items.
-                 */
+                /// <summary>
+                ///   Selects all elements, if multi-select list is chosen.
+                /// </summary>
+                /// <remarks>
+                ///   It leave silently on single-select lists.
+                /// </remarks>
                 protected void SelectAll()
                 {
                     if (items == null) return;
@@ -446,9 +542,9 @@ namespace GabTab
                     RenderItems();
                 }
 
-                /**
-                 * This protected method unselects all items.
-                 */
+                /// <summary>
+                ///   Unselects all elements.
+                /// </summary>
                 protected void UnselectAll()
                 {
                     if (items == null) return;
@@ -457,17 +553,17 @@ namespace GabTab
                     RenderItems();
                 }
 
-                /**
-                 * Utility method to check whether Rewind() will have effect or not.
-                 */
+                /// <summary>
+                ///   Tells whether this list's renderer can move to position 0.
+                /// </summary>
                 protected bool CanRewind()
                 {
                     return items != null;
                 }
 
-                /**
-                 * Utility method to check whether `Move(numItems)` will have effect or not.
-                 */
+                /// <summary>
+                ///   Tells whether this list's renderer can move a certain offset of elements.
+                /// </summary>
                 protected bool CanMove(int numItems)
                 {
                     if (items == null) return false;
@@ -483,9 +579,9 @@ namespace GabTab
                     }
                 }
 
-                /**
-                 * Utility method to check whether MovePages(x) will have effect or not.
-                 */
+                /// <summary>
+                ///   Tells whether this list's renderer can move a certain offset of pages.
+                /// </summary>
                 protected bool CanMovePages(int numPages)
                 {
                     if (items == null) return false;
@@ -512,11 +608,7 @@ namespace GabTab
                  *****************************************************************************************
                  *****************************************************************************************
                  *****************************************************************************************
-                 * Core implementation of this component.
-                 * 
-                 * TO-DO
-                 * 
-                 * Will interact like this:
+                 * Core implementation of this component. Interacts like this:
                  * 
                  * do
                  *   1. yield wait until a result if available
@@ -530,14 +622,24 @@ namespace GabTab
                  *****************************************************************************************
                  *****************************************************************************************/
 
-                /**
-                 * Executes the interaction by looping like this:
-                 * 1. Expect a result of selected items.
-                 * 2. Expect all of them be valid elements. Otherwise, messages will be reported to
-                 *      the console (interactive message). Perhaps even providing heading and trailing
-                 *      messages for the overall errors.
-                 * 3. Keep valid items.
-                 */
+                /// <summary>
+                ///   <para>
+                ///     The main loop here interacts with the list and the paging buttons, rendering them
+                ///       appropriately considering which page or offset this UI is located at.
+                ///   </para>
+                ///   <para>
+                ///     Depending on the configuration, it will allow selecting one or more items and, after
+                ///       the continue button was clicked (or upon its absence and being a single-select
+                ///       list, an element was chosen), you can retrieve the selected items via
+                ///       <see cref="SelectedItems"/> property. If the interaction was cancelled, you will
+                ///       get an empty array in that property.
+                ///   </para>
+                /// </summary>
+                /// <param name="interactiveMessage">
+                ///   An instance of <see cref="InteractiveInterface"/>, first referenced by the instance of
+                ///     <see cref="InteractiveInterface"/> that ultimately triggered this interaction. 
+                /// </param>
+                /// <returns>An enumerator to be run inside a coroutine.</returns>
                 protected override IEnumerator Input(InteractiveMessage message)
                 {
                     if (cancelButton == null && !AtLeastOneSelectableItem())
@@ -582,13 +684,16 @@ namespace GabTab
                     return items.Where((ListItem item) => ItemIsSelectable(item)).Any();
                 }
 
-                /**
-                 * Validates items being selected. By default, this implies validating every item separately. The user can freely
-                 *   overwrite this method, and create a bypass to report the messages in a different way (e.g. by adding more
-                 *   messages to be prompted).
-                 * 
-                 * As for the separate validation mechanism, THIS METHOD SHOULD NOT HAVE/PRODUCE ANY SIDE EFFECT.
-                 */
+                /// <summary>
+                ///   Validates items being selected. By default, this implies validating every item separately. The user can freely
+                ///     overwrite this method, and create a bypass to report the messages in a different way (e.g.by adding more
+                ///     messages to be prompted).
+                /// </summary>
+                /// <remarks>If you override this one, you may need to invoke the base method.</remarks>
+                /// <param name="selectedItems">The items to validate.</param>
+                /// <param name="reportInvalidMessage">
+                ///   Callback to invoke when you want to fail the validation. You can send several prompts there.
+                /// </param>
                 protected virtual void ValidateSelection(ListItem[] selectedItems, Action<InteractiveMessage.Prompt[]> reportInvalidMessage)
                 {
                     foreach (ListItem item in selectedItems)
@@ -612,6 +717,28 @@ namespace GabTab
                  *        element differently.
                  *   3. Actually validating a selection (submitting a result).
                  */
+                /// <summary>
+                ///   <para>
+                ///     Validates an item being selected.It is up to the user to implement this method, or just
+                ///       leave it as it is right now: no validation is performed by default.
+                ///   </para>
+                ///   <para>
+                ///     When the user wants to fail a validation, all they must do is to invoke the function being
+                ///       passed as second argument.
+                ///   </para>
+                /// </summary>
+                /// <remarks>
+                ///   <para>
+                ///     THIS METHOD SHOULD NOT HAVE/PRODUCE ANY SIDE EFFECT.The reason: this function will be
+                ///       invoked in three different contexts: initial check that determines that at least one item
+                ///       is valid (and thus selectable), element render (the user may know how to render an invalid
+                ///       element differently), and validating when submitting a result.
+                ///   </para>
+                /// </remarks>
+                /// <param name="item">The list item being validated.</param>
+                /// <param name="reportInvalidMessage">
+                ///   Callback to invoke when you want to fail the validation. You can send several prompts there.
+                /// </param>
                 protected virtual void ValidateSelectedItem(ListItem item, Action<InteractiveMessage.Prompt[]> reportInvalidMessage)
                 {
                 }
@@ -787,12 +914,22 @@ namespace GabTab
                     return selectable;
                 }
 
-                /**
-                 * This protected method must be implemented! It will render a chunk of
-                 *   data elements on the game objects in `itemDisplays`. Each element in
-                 *   `itemDisplays` will also be styled depending on whether it is selected
-                 *   or not.
-                 */
+                /// <summary>
+                ///   <para>
+                ///     This method is abstract - you are forced to implement this one because you are the one who will know
+                ///       the structure of the rendering items (the prefab you choose) and the model. So, since you get an
+                ///       item of an arbitrary type, and a render target of an arbitrary structure, you have to tell how
+                ///       does the target renders according to the source item.
+                ///   </para>
+                ///   <para>
+                ///     You will also be given more data: whether the element is selectable ("valid in particular"), and whether the
+                ///       element is currently unselected, selected, or selected and also active (last selection).
+                ///   </para>
+                /// </summary>
+                /// <param name="source">The source model object to update the target according to.</param>
+                /// <param name="destination">The destination rendering object to update.</param>
+                /// <param name="isSelectable">A flag telling whether the element is valid to be selected.</param>
+                /// <param name="selectionStatus">A value telling about the selection.</param>
                 protected abstract void RenderItem(ListItem source, GameObject destination, bool isSelectable, SelectionStatus selectionStatus);
 
                 /**
@@ -831,12 +968,10 @@ namespace GabTab
                     }
                 }
 
-                /**
-                 * This protected method is optional, at user's criteria.
-                 * We could need more stuff to render in our component (e.g. a descriptive text telling "N items selected").
-                 * If the user needs to update, enable, or disable components (e.g. custom navigation buttons), they should do
-                 *   that in THIS method.
-                 */
+                /// <summary>
+                ///   You can override this behaviour to add more rendering steps. In this case,
+                ///     these steps apply to the general UI and not to particular items.
+                /// </summary>
                 protected virtual void RenderExtraDetails()
                 {
                     // No implementation. This empty implementation is safe.

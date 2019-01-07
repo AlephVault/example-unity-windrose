@@ -46,9 +46,9 @@ namespace GabTab
             ///   Asks for the quick and slow wait times, and the predicate to tell whether to use the slow
             ///     and wait times.
             /// </summary>
-            /// <param name="quickSeconds">The quick time</param>
-            /// <param name="slowSeconds">The slow time - usually 10 times bigger than <paramref name="quickSeconds"/></param>
-            /// <param name="usingQuickMovement">Predicate that checks whether to use the quick/slow time</param>
+            /// <param name="quickSeconds">The quick time.</param>
+            /// <param name="slowSeconds">The slow time - usually 10 times bigger than <paramref name="quickSeconds"/>.</param>
+            /// <param name="usingQuickMovement">Predicate that checks whether to use the quick/slow time.</param>
             public BaseWaitForQuickOrSlowSeconds(float quickSeconds, float slowSeconds, Predicate usingQuickMovement)
             {
                 this.quickSeconds = quickSeconds;

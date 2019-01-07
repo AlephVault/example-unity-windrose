@@ -6,14 +6,13 @@ namespace GabTab
     {
         namespace Interactors
         {
+            /// <summary>
+            ///   This interactor has no UI interaction. This one is used when you need to display
+            ///     text without expecting any action from the user (not even a click on "ok" or
+            ///     "continue" button).
+            /// </summary>
             public class NullInteractor : Interactor
             {
-                /**
-                 * A null interactor does nothing. When the messages end displaying, the interactor
-                 *   terminates. One would prefer the simple "End"/"Continue" terminator (i.e. a
-                 *   button or game input with those semantics), however, this one serves also for
-                 *   a testing purpose.
-                 */
                 protected override IEnumerator Input(InteractiveMessage interactiveMessage)
                 {
                     yield break;

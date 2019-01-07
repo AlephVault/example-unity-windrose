@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using Support.Types;
 
@@ -8,30 +9,37 @@ namespace GabTab
     {
         namespace Interactors
         {
-            /**
-             * This component registers all the (other) components that will be used as interactors.
-             * 
-             * In this component, the user will register them like (string key) => (Interactor component) in the UI.
-             * After that, one will be able to invoke something like this to yield an interaction inside a generator
-             *   being turned into coroutine by an InteractionInterface:
-             * 
-             *     yield return im["sample-component"].RunInteraction(... see details of this method in Interactor.cs file ...);
-             *     yield return im["another-component"].RunInteraction(... see details of this method in Interactor.cs file ...);
-             * 
-             * See the Interactor class for more details.
-             */
+            /// <summary>
+            ///   This component registers all the (other) components that will be used as interactors.
+            /// </summary>
+            /// <remarks>
+            ///   See the example in <see cref="InteractiveInterface.RunInteraction(Func{InteractorsManager, InteractiveMessage, System.Collections.IEnumerator})"/> to understand how is this class used. 
+            /// </remarks>
+            /// <seealso cref="Interactor"/>
             public class InteractorsManager : MonoBehaviour
             {
-                /**
-                 * The first thing we need to define, is a dictionary of components to register.
-                 * Such dictionary will be like (string) => (Interactor).
-                 */
+                /// <summary>
+                ///   A dictionary of keys and interactor instances. 
+                /// </summary>
                 [Serializable]
                 public class InteractorsDictionary : SerializableDictionary<string, Interactor> {}
 
+                /// <summary>
+                ///   Registered interactors.
+                /// </summary>
+                /// <remarks>
+                ///   Edit this member in the Inspector to tell which interactors will this instance
+                ///     have access to.
+                /// </remarks>
                 [SerializeField]
                 private InteractorsDictionary interactors = new InteractorsDictionary();
 
+                /// <summary>
+                ///   Retrieves an interactor to be queried/used.
+                /// </summary>
+                /// <param name="key">The key the target interactor was registered with.</param>
+                /// <returns>A registered <see cref="Interactor"/>.</returns>
+                /// <exception cref="KeyNotFoundException" />
                 public Interactor this[string key]
                 {
                     get { return interactors[key]; }

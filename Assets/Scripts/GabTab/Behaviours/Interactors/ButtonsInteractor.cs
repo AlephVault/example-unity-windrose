@@ -10,35 +10,26 @@ namespace GabTab
     {
         namespace Interactors
         {
-            /**
-             * This interactor is the easiest non-trivial interactor.
-             * 
-             * This interactor has an internal record in the form of a dictionary mapping:
-             * - Key: A Button (UI.Button) component.
-             * - Value: A string that would be the returned value in the case the button gets
-             *   clicked.
-             * 
-             * It is recommended that the buttons be children or descendants of the object
-             *   holding this component. However, this is not required to work.
-             * 
-             * When initialized (in Start event), this component will take those buttons and add
-             *   a listener for the click event. In such listener, it will set the return value
-             *   to the assigned key in the editor.
-             * 
-             * The implementation of Input() will yield a WaitUntil object, with just a predicate
-             *   asking for the value being non-null. Later, you can ask for the return value
-             *   (i.e. after calling myButtonsInteractor.RunInteraction(...), you will be able to
-             *   retrieve (ButtonsInteractor)myButtonsInteractor.Result) to know what to do next.
-             */
+            /// <summary>
+            ///   This interactor registers a list of buttons, each under a key, that
+            ///     will be available to be run. This UI element will wait until one
+            ///     of the registered buttons is pressed.
+            /// </summary>
             [RequireComponent(typeof(Image))]
             public class ButtonsInteractor : Interactor
             {
-                /**
-                 * The first thing we need to define, is a dictionary of buttons to register.
-                 * Such dictionary will be like (Button) => (string).
-                 */
+                /// <summary>
+                ///   A dictionary of keys and buttons.
+                /// </summary>
                 [Serializable]
                 public class ButtonKeyDictionary : SerializableDictionary<Button, string> { }
+                /// <summary>
+                ///   Registered buttons.
+                /// </summary>
+                /// <remarks>
+                ///   Edit this member in the Inspector to tell which buttons will this instance
+                ///     have access to.
+                /// </remarks>
                 [SerializeField]
                 private ButtonKeyDictionary buttons = new ButtonKeyDictionary();
 
@@ -53,11 +44,15 @@ namespace GabTab
                     }
                 }
 
-                /**
-                 * The implementation of this input does three important stuff:
-                 * 1. Sets the result in null.
-                 * 2. Waits until the result is no longer null.
-                 */
+                /// <summary>
+                ///   This implementation will clear any former result and wait until a result is
+                ///     available.
+                /// </summary>
+                /// <param name="interactiveMessage">
+                ///   An instance of <see cref="InteractiveInterface"/>, first referenced by the instance of
+                ///     <see cref="InteractiveInterface"/> that ultimately triggered this interaction. 
+                /// </param>
+                /// <returns>An enumerator to be run inside a coroutine.</returns>
                 protected override IEnumerator Input(InteractiveMessage interactiveMessage)
                 {
                     Result = null;

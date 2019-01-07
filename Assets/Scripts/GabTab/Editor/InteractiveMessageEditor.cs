@@ -8,7 +8,7 @@ namespace GabTab
     {
         [CustomEditor(typeof(InteractiveMessage), true)]
         [CanEditMultipleObjects]
-        public class ScrollRectEditor : Editor
+        public class InteractiveMessageEditor : Editor
         {
             SerializedProperty m_Content;
 

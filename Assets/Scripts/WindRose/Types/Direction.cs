@@ -2,8 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace WindRose {
-    namespace Types {
+namespace WindRose
+{
+    namespace Types
+    {
+        /// <summary>
+        ///   These are all the supported directions.
+        /// </summary>
         public enum Direction {
             DOWN, LEFT, RIGHT, UP, FRONT = DOWN
         }

@@ -2,6 +2,9 @@
 {
     namespace Types
     {
+        /// <summary>
+        ///   Base class for WindRose exceptions.
+        /// </summary>
         public class Exception : Support.Types.Exception
         {
             public Exception() {}

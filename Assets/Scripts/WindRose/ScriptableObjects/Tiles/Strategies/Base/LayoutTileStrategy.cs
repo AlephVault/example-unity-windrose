@@ -10,14 +10,14 @@ namespace WindRose
             {
                 namespace Base
                 {
+                    /**
+                     * Layout strategies tell whether the cell is blocking or not.
+                     * Blocking cells cannot be walked through (as determined in
+                     *   the Layout map strategy).
+                     */
                     [CreateAssetMenu(fileName = "NewLayoutTileStrategy", menuName = "Wind Rose/Tile Strategies/Layout", order = 201)]
                     public class LayoutTileStrategy : TileStrategy
                     {
-                        /**
-                         * Layout strategies tell whether the cell
-                         *   blocks the steps or allows walking.
-                         */
-
                         [SerializeField]
                         private bool blocks;
 

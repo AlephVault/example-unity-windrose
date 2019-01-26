@@ -11,15 +11,17 @@ namespace WindRose
             {
                 namespace QuantifyingStrategies
                 {
+                    /// <summary>
+                    ///   Unstacked strategies do not make a stack of items.
+                    ///   This actually means: they only make stacks of ONE item.
+                    /// </summary>
                     [CreateAssetMenu(fileName = "NewInventoryItemUnstackedQuantifyingStrategy", menuName = "Wind Rose/Inventory/Item Strategies/Quantifying/Unstacked", order = 101)]
                     public class ItemUnstackedQuantifyingStrategy : ItemQuantifyingStrategy
                     {
-                        /**
-                         * Does not make any stack. Just one element per stack.
-                         * Quantity is not represented, and cannot added, because it
-                         *   is simply 1.
-                         */
-
+                        /// <summary>
+                        ///   Instantiates an unstacked quantifying stack strategy.
+                        /// </summary>
+                        /// <returns>An unstacked quantifying stack strategy</returns>
                         public override StackQuantifyingStrategy CreateStackStrategy(object quantity)
                         {
                             return new StackUnstackedQuantifyingStrategy(this);

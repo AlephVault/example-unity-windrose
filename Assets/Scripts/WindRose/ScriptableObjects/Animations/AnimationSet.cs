@@ -12,15 +12,34 @@ namespace WindRose
         {
             using Types;
 
+            /// <summary>
+            ///   An animation set consist of 4 animation specs: one for each direction.
+            ///   Intended for animations in orientable or moving objects.
+            /// </summary>
             [CreateAssetMenu(fileName = "NewAnimationSet", menuName = "Wind Rose/Objects/Animation Set", order = 201)]
             public class AnimationSet : ScriptableObject
             {
+                /// <summary>
+                ///   Animation spec for the UP direction.
+                /// </summary>
                 [SerializeField]
                 private AnimationSpec up;
+
+                /// <summary>
+                ///   Animation spec for the DOWN direction.
+                /// </summary>
                 [SerializeField]
                 private AnimationSpec down;
+
+                /// <summary>
+                ///   Animation spec for the LEFT direction.
+                /// </summary>
                 [SerializeField]
                 private AnimationSpec left;
+
+                /// <summary>
+                ///   Animation spec for the RIGHT direction.
+                /// </summary>
                 [SerializeField]
                 private AnimationSpec right;
 
@@ -56,6 +75,12 @@ namespace WindRose
                 }
 #endif
 
+                /// <summary>
+                ///   Gets the animation spec for a given direction. This method is used internally from
+                ///     other classes (e.g. orientable).
+                /// </summary>
+                /// <param name="direction">The desired direction</param>
+                /// <returns>The animation to render</returns>
                 public AnimationSpec GetForDirection(Direction direction)
                 {
                     switch (direction)

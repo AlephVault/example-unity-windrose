@@ -12,35 +12,48 @@ namespace WindRose
                 {
                     using Types.Inventory.Stacks.RenderingStrategies;
 
+                    /// <summary>
+                    ///   Simple rendering strategies are the most common in games
+                    ///     dealing with inventories: They consider an image, a caption
+                    ///     and related data (like quantities) to be rendered as a
+                    ///     single item in a single slot.
+                    /// </summary>
                     [CreateAssetMenu(fileName = "NewInventoryItemSimpleRenderingStrategy", menuName = "Wind Rose/Inventory/Item Strategies/Rendering/Simple", order = 101)]
                     [RequireSpatialStrategy(typeof(SpatialStrategies.ItemSimpleSpatialStrategy))]
                     class ItemSimpleRenderingStrategy : ItemRenderingStrategy
                     {
-                        /**
-                         * This is a simple strategy for rendering items. Simple strategies are the
-                         *   most common among games when dealing with inventories: They will have
-                         *   a caption and an icon.
-                         * 
-                         * For this to work, this strategy will be compatible with Simple Spatial
-                         *   strategies (usage/data/quantifying strategies have no restriction).
-                         */
-
+                        /// <summary>
+                        ///   The icon to render.
+                        /// </summary>
                         [SerializeField]
                         private Sprite icon;
 
+                        /// <summary>
+                        ///   The caption to show.
+                        /// </summary>
                         [SerializeField]
                         private string caption;
 
+                        /// <summary>
+                        ///   See <see cref="icon"/>.
+                        /// </summary>
                         public Sprite Icon
                         {
                             get { return icon; }
                         }
 
+                        /// <summary>
+                        ///   See <see cref="caption"/>.
+                        /// </summary>
                         public string Caption
                         {
                             get { return caption; }
                         }
 
+                        /// <summary>
+                        ///   Instantiates a simple rendering stack strategy.
+                        /// </summary>
+                        /// <returns>A simple rendering stack strategy</returns>
                         public override StackRenderingStrategy CreateStackStrategy()
                         {
                             return new StackSimpleRenderingStrategy(this);

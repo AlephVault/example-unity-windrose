@@ -10,18 +10,14 @@ namespace WindRose
             {
                 namespace SpatialStrategies
                 {
+                    /// <summary>
+                    ///   Simple spatial strategies do not add anything on top. They
+                    ///     are intended to occupy a single slot in a sequential
+                    ///     inventory spatial management strategy.
+                    /// </summary>
                     [CreateAssetMenu(fileName = "NewInventoryItemSimpleSpatialStrategy", menuName = "Wind Rose/Inventory/Item Strategies/Spatial/Simple", order = 101)]
                     public class ItemSimpleSpatialStrategy : ItemSpatialStrategy
                     {
-                        /**
-                         * This is a simple spatial strategy that indexes
-                         *   its content. Most games using inventory make
-                         *   use of this approach: each item stack will
-                         *   be contained in one single box.
-                         * 
-                         * This strategy needs no additional data (other
-                         *   strategies may involve weight or dimensions).
-                         */
                     }
                 }
             }

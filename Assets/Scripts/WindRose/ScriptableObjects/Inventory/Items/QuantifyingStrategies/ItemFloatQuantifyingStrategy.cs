@@ -11,18 +11,28 @@ namespace WindRose
             {
                 namespace QuantifyingStrategies
                 {
+                    /// <summary>
+                    ///   <para>
+                    ///     Float strategies are not common. They make
+                    ///       stacks in float quantities.
+                    ///   </para>
+                    ///   <para>
+                    ///     Quite often a maximum amount is specified to
+                    ///       limit the stacks.
+                    ///   </para>1
+                    /// </summary>
                     [CreateAssetMenu(fileName = "NewInventoryItemFloatQuantifyingStrategy", menuName = "Wind Rose/Inventory/Item Strategies/Quantifying/Float-Stacked", order = 101)]
                     public class ItemFloatQuantifyingStrategy : ItemQuantifyingStrategy
                     {
-                        /**
-                         * Makes stacks by using positive float quantities.
-                         * It may allow a maximum if a positive (> 0) number
-                         *   is specified.
-                         */
-
+                        /// <summary>
+                        ///   The maximum amount to allow in stacks.
+                        /// </summary>
                         [SerializeField]
                         private float max = 0;
 
+                        /// <summary>
+                        ///   See <see cref="max"/>.
+                        /// </summary>
                         public float Max
                         {
                             get { return max; }
@@ -33,6 +43,10 @@ namespace WindRose
                             max = Support.Utils.Values.Max(0f, max);
                         }
 
+                        /// <summary>
+                        ///   Instantiates a float quantifying stack strategy.
+                        /// </summary>
+                        /// <returns>A float quantifying stack strategy</returns>
                         public override StackQuantifyingStrategy CreateStackStrategy(object quantity)
                         {
                             return new StackFloatQuantifyingStrategy(this, quantity);

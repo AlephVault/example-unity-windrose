@@ -8,14 +8,12 @@ namespace WindRose
         {
             namespace Strategies
             {
+                /// <summary>
+                ///   Tile strategies have no inherent behaviour or data. They are
+                ///     just data bundles to be used by related map strategies.
+                /// </summary>
                 public abstract class TileStrategy : ScriptableObject
                 {
-                    /**
-                     * This is just a marker class. Just a kind of data bundle
-                     *   for the tile. It will not execute particular logic
-                     *   but it may provide methods to be executed by map
-                     *   strategies.
-                     */
                 }
             }
         }

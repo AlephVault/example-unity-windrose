@@ -9,6 +9,11 @@ namespace WindRose
     {
         namespace Tiles
         {
+            /// <summary>
+            ///   This is an attribute to be used on Tile Strategies. This attribute ensures a tile strategy
+            ///     requires another one, because their functionalities are dependent somehow. This requirement
+            ///     is both in runtime and as documentation.
+            /// </summary>
             [AttributeUsage(AttributeTargets.Class, Inherited = true, AllowMultiple = true)]
             public class RequireTileStrategy : Support.Utils.AssetsLayout.Depends
             {

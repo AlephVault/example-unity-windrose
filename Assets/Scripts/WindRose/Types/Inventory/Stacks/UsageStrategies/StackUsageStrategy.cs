@@ -12,18 +12,23 @@ namespace WindRose
                 {
                     using ScriptableObjects.Inventory.Items.UsageStrategies;
 
+                    /// <summary>
+                    ///   Stack usage strategoes are related to Item usage strategies
+                    ///     and MAY hold dynamic data related to them. They can also
+                    ///     change states, merge, compare by equality, export and import.
+                    /// </summary>
                     public abstract class StackUsageStrategy : StackStrategy<ItemUsageStrategy>
                     {
-                        /**
-                         * This stack strategy is related to an ItemUsageStrategy.
-                         */
+                        /// <summary>
+                        ///   This stack strategy is related to an ItemUsageStrategy.
+                        /// </summary>
                         public StackUsageStrategy(ItemUsageStrategy itemStrategy) : base(itemStrategy)
                         {
                         }
 
-                        /**
-                         * Clones a usage strategy. Useful for cloning or splitting stacks.
-                         */
+                        /// <summary>
+                        ///   Clones a usage strategy. Useful for cloning or splitting stacks.
+                        /// </summary>
                         public StackUsageStrategy Clone()
                         {
                             StackUsageStrategy strategy = ItemStrategy.CreateStackStrategy();
@@ -31,39 +36,48 @@ namespace WindRose
                             return strategy;
                         }
 
+                        /// <summary>
+                        ///   Imports its data from a source object.
+                        /// </summary>
+                        /// <param name="source">The source to import from</param>
                         public virtual void Import(object source)
                         {
                         }
 
+                        /// <summary>
+                        ///   Exports the data of this strategy.
+                        /// </summary>
+                        /// <returns>A data object, suitable to import it by the same strategy</returns>
                         public virtual object Export()
                         {
                             return null;
                         }
 
-                        /**
-                         * For exatly this reason, the usage strategies may depend on the Quantifying strategies.
-                         * By interpolating I mean: certain strategies may calculate new intermediate values for the interpolated given
-                         *   the quantities. Others may instead require that both strategies are of the same type AND VALUES.
-                         * 
-                         * You can deny interpolation by returning null instead of a new instance of stack usage strategy.
-                         * 
-                         * Example: you can interpolate 1kg green powder + 1kg yellow powder by returning 2kg green powder.
-                         * 
-                         * The return value is an action (an empty procedure) that, when executed, will apply all the changes. You
-                         *   must not execute the changes directly, but return a delegate(){} that performs them.
-                         * 
-                         * THIS METHOD COMES WITH A DEFAULT IMPLEMENTATION: if the current strategy equals the other strategy, then
-                         *   we return an empty delegate. Otherwise we return null.
-                         */
+                        /// <summary>
+                        ///   <para>
+                        ///     Tries to interpolate two strategies by also considering quantities. Interpolating means computing
+                        ///       properties like <c>p1 = currentQuantity * p1 + addedQuantity * p2</c> in concept.
+                        ///   </para>
+                        ///   <para>
+                        ///     There may be cases where the current strategy and the one to interpolate are not compatible (a
+                        ///       base case involves failing in <see cref="Equals(StackUsageStrategy)"/>). In such cases the
+                        ///       appropriate return value is <c>null</c>. Otherwise, the appropriate return value is a function
+                        ///       (delegate) that performs the interpolation (such function is totally user-defined, or at least
+                        ///       usage-strategy-developer-defined, but IT MUST NOT PROVOKE A SIDE-EFFECT ON THE otherStrategy).
+                        ///   </para>
+                        /// </summary>
+                        /// <param name="otherStrategy">The strategy to interpolate against</param>
                         public virtual Action Interpolate(StackUsageStrategy otherStrategy, object currentQuantity, object addedQuantity)
                         {
                             return (Equals(otherStrategy)) ? delegate (){} : (Action)null;
                         }
 
-                        /**
-                         * This function tells whether this strategy matches perfectly (field by field) to the same strategy from a
-                         *   different stack. You must implement this one.
-                         */
+                        /// <summary>
+                        ///   Tells whether this particular strategy equals another particular strategy. This will start often by
+                        ///     checking types, and -if available- will also check the data in both strategies.
+                        /// </summary>
+                        /// <param name="otherStrategy">The strategy to compare against</param>
+                        /// <returns>Whether they can be considered equal or not</returns>
                         public abstract bool Equals(StackUsageStrategy otherStrategy);
                     }
                 }

@@ -16,17 +16,20 @@ namespace WindRose
                 {
                     using ScriptableObjects.Inventory.Items.RenderingStrategies;
 
+                    /// <summary>
+                    ///   Simple rendering strategies provide icon, caption, and quantity to be rendered
+                    ///     on compatible inventories. This will be the most common one.
+                    /// </summary>
                     public class StackSimpleRenderingStrategy : StackRenderingStrategy
                     {
-                        /**
-                         * This stack strategy provides, from its item, the data to be rendered: name and caption.
-                         * From the stack, it will retrieve the quantity to be rendered (which may be int, float, or null).
-                         */
-
                         public StackSimpleRenderingStrategy(ItemRenderingStrategy itemStrategy) : base(itemStrategy)
                         {
                         }
 
+                        /// <summary>
+                        ///   Dumps icon, caption and quantity into the <paramref name="target"/>.
+                        /// </summary>
+                        /// <param name="target">Target object on which to dump the render data</param>
                         public override void DumpRenderingData(Dictionary<string, object> target)
                         {
                             ItemSimpleRenderingStrategy strategy = ((ItemSimpleRenderingStrategy)ItemStrategy);

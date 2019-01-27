@@ -13,20 +13,26 @@ namespace WindRose
         {
             namespace Stacks
             {
+                /// <summary>
+                ///   <para>
+                ///     Stacks are live instances of inventory items. They are created by them
+                ///       and have their own strategies (which are related to the strategies in
+                ///       the item - the only difference is that there are no spatial strategies
+                ///       in the stack but just its position).
+                ///   </para>
+                ///   <para>
+                ///     Stacks are alive: they can be used, changed, split, merged, ...
+                ///   </para>
+                /// </summary>
                 public class Stack
                 {
-                    /**
-                     * A stack is the only implementation of PackHeld
-                     *   since it will be held by the pack BUT will also
-                     *   define all the needed strategies.
-                     * 
-                     * It will refer an item, and will hold paralell
-                     *   strategies created by the item (which aside
-                     *   from being the reference item, it is a factory).
-                     */
-
                     private UsageStrategies.StackUsageStrategy[] usageStrategies;
                     private Dictionary<Type, UsageStrategies.StackUsageStrategy> usageStrategiesByType;
+                    /// <summary>
+                    ///   The main usage strategy of this stack. It will be related to the underlying
+                    ///     item's main usage strategy, and identified by the inventory's main usage
+                    ///     strategy.
+                    /// </summary>
                     public UsageStrategies.StackUsageStrategy MainUsageStrategy
                     {
                         get; private set;
@@ -34,45 +40,73 @@ namespace WindRose
 
                     private RenderingStrategies.StackRenderingStrategy[] renderingStrategies;
                     private Dictionary<Type, RenderingStrategies.StackRenderingStrategy> renderingStrategiesByType;
+                    /// <summary>
+                    ///   The main rendering strategy of this stack. It will be related to the underlying
+                    ///     item's main rendering strategy, and identified by the inventory's rendering
+                    ///     strategy.
+                    /// </summary>
                     public RenderingStrategies.StackRenderingStrategy MainRenderingStrategy
                     {
                         get; private set;
                     }
 
-                    /**
-                     * Tools to get a component strategy, as we have in BundledTiles.
-                     */
-
+                    /// <summary>
+                    ///   The quantifying strategy of this stack. It will be related to the underlying
+                    ///     item's quantifying strategy (and also limited by it!).
+                    /// </summary>
                     public QuantifyingStrategies.StackQuantifyingStrategy QuantifyingStrategy
                     {
                         get; private set;
                     }
 
+                    /// <summary>
+                    ///   The position this stack has on its current container. This means this position
+                    ///     will be according to THAT specific container (and in particular: its spatial
+                    ///     strategy), and just ONE of the underlying item's spatial strategy.
+                    /// </summary>
                     public InventorySpatialManagementStrategy.QualifiedStackPosition QualifiedPosition
                     {
                         get; private set;
                     }
 
+                    /// <summary>
+                    ///   The underlying item.
+                    /// </summary>
                     public ScriptableObjects.Inventory.Items.Item Item
                     {
                         get; private set;
                     }
 
+                    /// <summary>
+                    ///   Gets a usage strategy of type <typeparamref name="T"/>.
+                    /// </summary>
+                    /// <typeparam name="T">The given type to check</typeparam>
+                    /// <returns>An attached usage strategy of that type</returns>
                     public T GetUsageStrategy<T>() where T : UsageStrategies.StackUsageStrategy
                     {
                         return usageStrategiesByType[typeof(T)] as T;
                     }
 
+                    /// <summary>
+                    ///   Gets a rendering strategy of type <typeparamref name="T"/>.
+                    /// </summary>
+                    /// <typeparam name="T">The given type to check</typeparam>
+                    /// <returns>An attached rendering strategy of that type</returns>
                     public T GetRenderingStrategy<T>() where T : RenderingStrategies.StackRenderingStrategy
                     {
                         return renderingStrategiesByType[typeof(T)] as T;
                     }
 
-                    /**
-                     * In this constructor I won't need to compute dependencies, since they are already assumed
-                     *   and sorted from the items when the constructor is invoked.
-                     */
-
+                    /// <summary>
+                    ///   Creates a stack. You will never manually instantiate a stack but instead invoke
+                    ///    <see cref="ScriptableObjects.Inventory.Items.Item.Create(object, object)"/>.
+                    /// </summary>
+                    /// <param name="item">The item to refer from this stack</param>
+                    /// <param name="quantifyingStrategy">A stack quantifying strategy</param>
+                    /// <param name="usageStrategies">Many stack usage strategies</param>
+                    /// <param name="mainUsageStrategy">A main stack usage strategy among the ones in <paramref name="usageStrategies"/></param>
+                    /// <param name="renderingStrategies">Many stack rendering strategies</param>
+                    /// <param name="mainRenderingStrategy">A main stack rendering strategy among the ones in <paramref name="renderingStrategies"/></param>
                     public Stack(ScriptableObjects.Inventory.Items.Item item,
                                  QuantifyingStrategies.StackQuantifyingStrategy quantifyingStrategy,
                                  UsageStrategies.StackUsageStrategy[] usageStrategies,
@@ -106,9 +140,10 @@ namespace WindRose
                         }
                     }
 
-                    /**
-                     * Export will not account for rendering strategies.
-                     */
+                    /// <summary>
+                    ///   Serializes its content into a tuple (item, quantity, arbitrary data).
+                    /// </summary>
+                    /// <returns>A tuple representation of this stack: (item, quantity, arbitrary data)</returns>
                     public Support.Types.Tuple<ScriptableObjects.Inventory.Items.Item, object, object> Dump()
                     {
                         return new Support.Types.Tuple<ScriptableObjects.Inventory.Items.Item, object, object>(Item, QuantifyingStrategy.Quantity, MainUsageStrategy.Export());
@@ -160,38 +195,46 @@ namespace WindRose
                                          clonedRenderingStrategies, clonedMainRenderingStrategy);
                     }
 
-                    /**
-                     * Clones the stack, entirely.
-                     */
+                    /// <summary>
+                    ///   Clones the stack completely, but the new stack is not attached to any inventory container.
+                    /// </summary>
+                    /// <returns>The cloned stack</returns>
                     public Stack Clone()
                     {
                         return Clone(QuantifyingStrategy.Clone());
                     }
 
-                    /**
-                     * Clones the stack, but with a different quantity. The stack will not be bound to any inventory.
-                     */
+                    /// <summary>
+                    ///   Clones the stack with a different quantity, and the new stack is not attached to any inventory container.
+                    /// </summary>
+                    /// <returns>The cloned stack</returns>
                     public Stack Clone(object quantity)
                     {
                         return Clone(QuantifyingStrategy.Clone(quantity));
                     }
 
-                    /**
-                     * Checks whether this stack has an allowed (in-constraints) nonzero
-                     *   quantity. Stacks not being able to satisfy this condition will not
-                     *   be added to an inventory.
-                     */
+                    /// <summary>
+                    ///   Checks whether this stack has an allowed (in-constraints) nonzero
+                    ///     quantity. Stacks not being able to satisfy this condition will not
+                    ///     be added to an inventory.
+                    /// </summary>
+                    /// <returns>Whether the quantity is allowed and non-zero</returns>
                     public bool IsAllowedNonZeroQuantity()
                     {
                         return QuantifyingStrategy.HasAllowedQuantity() && !QuantifyingStrategy.IsEmpty();
                     }
 
-                    /**
-                     * Tries to take part of the stack, defined by a quantity. It does not allow taking
-                     *   the whole stack, but just part of it.
-                     * 
-                     * If quantity is null, the entire stack will be taken.
-                     */
+                    /// <summary>
+                    ///   Takes some quantity from the current stack, creating another stack.
+                    ///   If quantity is null, the entire stack is taken.
+                    /// </summary>
+                    /// <param name="quantity">Quantity to take, or null to take everything</param>
+                    /// <param name="disallowEmpty">Whether we allow, or not, taking the whole stack</param>
+                    /// <returns>The new (taken) stack. The old one is reduced in size</returns>
+                    /// <remarks>
+                    ///   It will return null if either the quantities are invalid or <paramref name="disallowEmpty"/>
+                    ///     is true and the quantity to be taken was null or all
+                    /// </remarks>
                     public Stack Take(object quantity, bool disallowEmpty)
                     {
                         if (quantity == null)
@@ -231,6 +274,54 @@ namespace WindRose
                      * However this will vary depending on your needs.
                      */
                     public enum MergeResult { Denied, Partial, Total }
+
+                    /// <summary>
+                    ///   <para>
+                    ///     Tries to merge a stack into another.
+                    ///   </para>
+                    ///   <para>
+                    ///     Please consider the following notes: This method does not affect the source
+                    ///       stack but instead affects the target stack. This means: without the cares
+                    ///       of manually handling the source stack later, one could end with twice the
+                    ///       expected amount somewhere.
+                    ///   </para>
+                    ///   <para>
+                    ///     The resulf of the merge may be:
+                    ///     <list type="number">
+                    ///       <item>
+                    ///         <term>Denied</term>
+                    ///         <description>
+                    ///           The merge was denied. Most likely because items do not match, usage
+                    ///             strategies cannot be merged, quantities are invalid, or destination
+                    ///             quantity is full.
+                    ///         </description>
+                    ///       </item>
+                    ///       <item>
+                    ///         <term>Partial</term>
+                    ///         <description>
+                    ///           The merge was successful but not with the whole quantity. This means
+                    ///             that the destination quantity filled up and there is still some
+                    ///             quantity as difference, which will remain on the source stack.
+                    ///         </description>
+                    ///       </item>
+                    ///       <item>
+                    ///         <term>Total</term>
+                    ///         <description>
+                    ///           The source was completely merged in the destination.
+                    ///         </description>
+                    ///       </item>
+                    ///     </list>
+                    ///   </para>
+                    ///   <para>
+                    ///     As an output parameter, returns the quantity left on the source stack. The
+                    ///       caller should explicitly set such value in the source stack by calling the
+                    ///       following method: <c>source.ChangeQuantityTo(quantityLeft)</c>.
+                    ///     However this will vary depending on the needs.
+                    ///   </para>
+                    /// </summary>
+                    /// <param name="source">The source stack to merge in this one</param>
+                    /// <param name="quantityLeft">The remaining quantity that was not merged</param>
+                    /// <returns>An enumerated value according to the notes</returns>
                     public MergeResult Merge(Stack source, out object quantityLeft)
                     {
                         // preset to null so we can leave control safely
@@ -285,11 +376,13 @@ namespace WindRose
                         return saturates ? MergeResult.Partial : MergeResult.Total;
                     }
 
-                    /**
-                     * Tells whether this stack equals the other stack. This will be checked
-                     *   in terms of the usage strategies, and not in terms of quantity or
-                     *   (spatial) position.
-                     */
+                    /// <summary>
+                    ///   Tells whether this stack "equals" the other stack by comparing their
+                    ///     usage strategies. See <see cref="UsageStrategies.StackUsageStrategy.Equals(UsageStrategies.StackUsageStrategy)"/>
+                    ///     for more details.
+                    /// </summary>
+                    /// <param name="otherStack">The stack to compare</param>
+                    /// <returns>Whether both stacks equal or not (in terms of usage strategies)</returns>
                     public bool Equals(Stack otherStack)
                     {
                         if (Item == otherStack.Item)
@@ -307,58 +400,76 @@ namespace WindRose
                         return false;
                     }
 
-                    /**
-                     * Gets the underlying quantity.
-                     */
+                    /// <summary>
+                    ///   The quantity. See <see cref="QuantifyingStrategies.StackQuantifyingStrategy.Quantity"/> for more details.
+                    /// </summary>
                     public object Quantity
                     {
                         get { return QuantifyingStrategy.Quantity; }
                     }
 
-                    /**
-                     * Checks whether the quantity is full.
-                     */
+                    /// <summary>
+                    ///   Tells whether the stack is full. See <see cref="QuantifyingStrategies.StackQuantifyingStrategy.IsFull"/>
+                    ///     for more details.
+                    /// </summary>
+                    /// <returns>Whether the stack is full</returns>
                     public bool IsFull()
                     {
                         return QuantifyingStrategy.IsFull();
                     }
 
-                    /**
-                     * Checks whether the quantity is empty.
-                     */
+                    /// <summary>
+                    ///   Tells whether the stack is empty. See <see cref="QuantifyingStrategies.StackQuantifyingStrategy.IsEmpty"/>
+                    ///     for more details.
+                    /// </summary>
+                    /// <returns>Whether the stack is empty</returns>
                     public bool IsEmpty()
                     {
                         return QuantifyingStrategy.IsEmpty();
                     }
 
-                    /**
-                     * Changes the underlying quantity by certain amount.
-                     */
+                    /// <summary>
+                    ///   Modifies the quantity of the stack. See <see cref="QuantifyingStrategies.StackQuantifyingStrategy.ChangeQuantityBy(object, bool, bool)"/>
+                    ///     for more details.
+                    /// </summary>
+                    /// <param name="quantity">The quantity delta to apply</param>
+                    /// <returns>Whether the change could be performed</returns>
                     public bool ChangeQuantityBy(object quantity)
                     {
                         return QuantifyingStrategy.ChangeQuantityBy(quantity, false, false);
                     }
 
-                    /**
-                     * Determines whether adding a quantity would overflow over its maximum.
-                     * Obtains also how, and which, are the final quantities: added, left, final.
-                     */
+                    /// <summary>
+                    ///   Tells whether the stack would overflow its allowed maximum quantity when trying to add a certain quantity. See
+                    ///     <see cref="QuantifyingStrategies.StackQuantifyingStrategy.WillOverflow(object, out object, out object, out object)"/>
+                    ///     for more details.
+                    /// </summary>
+                    /// <param name="quantity">The quantity to add</param>
+                    /// <param name="finalQuantity">The quantity that would be final to the stack</param>
+                    /// <param name="quantityAdded">The quantity that would be effectively added from the given quantity</param>
+                    /// <param name="quantityLeft">The quantity that would not be added from the given quantity</param>
+                    /// <returns>Whether the quantity would overflow the maximum</returns>
                     public bool WillOverflow(object quantity, out object finalQuantity, out object quantityAdded, out object quantityLeft)
                     {
                         return QuantifyingStrategy.WillOverflow(quantity, out finalQuantity, out quantityAdded, out quantityLeft);
                     }
 
-                    /**
-                     * Saturates a stack.
-                     */
+                    /// <summary>
+                    ///   Ensures the stack's quantity is set to the maximum. See <see cref="QuantifyingStrategies.StackQuantifyingStrategy.Saturate"/>
+                    ///     for more details.
+                    /// </summary>
+                    /// <returns>Whether the saturation could be done</returns>
                     public bool Saturate()
                     {
                         return QuantifyingStrategy.Saturate();
                     }
 
-                    /**
-                     * Changes the underlying quantity to certain amount.
-                     */
+                    /// <summary>
+                    ///   Changes the stack's quantity to a specific value. See <see cref="QuantifyingStrategies.StackQuantifyingStrategy.ChangeQuantityTo(object, bool)"/>
+                    ///     for more details.
+                    /// </summary>
+                    /// <param name="quantity">The new quantity to set</param>
+                    /// <returns>Whether the quantity could be set</returns>
                     public bool ChangeQuantityTo(object quantity)
                     {
                         return QuantifyingStrategy.ChangeQuantityTo(quantity, false);

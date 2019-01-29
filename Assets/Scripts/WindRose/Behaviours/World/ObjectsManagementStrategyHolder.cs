@@ -11,18 +11,25 @@ namespace WindRose
         {
             using ObjectsManagementStrategies;
 
-            /**
-             * An objects management strategy holder will reference its map and also will
-             *   find its way to initialize its strategy. When initializing the strategy,
-             *   it should provide itself to the strategy constructor (alongside any needed
-             *   data).
-             */
+            /// <summary>
+            ///   <para>
+            ///     Object management strategy holders refer the strategy that will
+            ///       provide the rules of movement of this map. 
+            ///   </para>
+            ///   <para>
+            ///     While this component is tied to a map, the same game object must
+            ///       have at least one <see cref="ObjectsManagementStrategy"/>
+            ///       component attached so it may be selected as primary strategy
+            ///       in this component: it will determine the said rules of
+            ///       movement.
+            ///   </para>
+            /// </summary>
             [RequireComponent(typeof(Map))]
             public class ObjectsManagementStrategyHolder : MonoBehaviour
             {
-                /**
-                 * All the needed exceptions go here.
-                 */
+                /// <summary>
+                ///   Tells when the object's dimensions are unsuitable for this map.
+                /// </summary>
                 public class InvalidDimensionsException : Types.Exception
                 {
                     public readonly uint Width;
@@ -32,6 +39,9 @@ namespace WindRose
                     public InvalidDimensionsException(string message, uint width, uint height, System.Exception inner) : base(message, inner) { Width = width; Height = height; }
                 }
 
+                /// <summary>
+                ///   Tells when the object's position is unsuitable for this map.
+                /// </summary>
                 public class InvalidPositionException : Types.Exception
                 {
                     public readonly uint X;
@@ -41,6 +51,10 @@ namespace WindRose
                     public InvalidPositionException(string message, uint x, uint y, System.Exception inner) : base(message, inner) { X = x; Y = y; }
                 }
 
+                /// <summary>
+                ///   Tells when the main strategy is not among the present strategies
+                ///     in the underlying game object.
+                /// </summary>
                 public class InvalidStrategyComponentException : Types.Exception
                 {
                     public InvalidStrategyComponentException() { }
@@ -48,56 +62,85 @@ namespace WindRose
                     public InvalidStrategyComponentException(string message, Exception inner) : base(message, inner) { }
                 }
 
+                /// <summary>
+                ///   Tells when an object (intended to be added to this map)
+                ///     lacks of the required strategy.
+                /// </summary>
                 public class ObjectLacksOfCompatibleStrategy : Types.Exception
                 {
                     public ObjectLacksOfCompatibleStrategy(string message) : base(message) { }
                     public ObjectLacksOfCompatibleStrategy(string message, System.Exception inner) : base(message, inner) { }
                 }
 
+                /// <summary>
+                ///   Tells when this game object has more than one strategy
+                ///     of each type. This one should be deprecated, and
+                ///     strategies should also make use of
+                ///     <see cref="DisallowMultipleComponent"/>.
+                /// </summary>
                 public class DuplicatedComponentException : Types.Exception
                 {
                     public DuplicatedComponentException(string message) : base(message) { }
                     public DuplicatedComponentException(string message, System.Exception inner) : base(message, inner) { }
                 }
 
+                /// <summary>
+                ///   Tells when an object that is already attached is trying to
+                ///     be attached... again.
+                /// </summary>
                 public class AlreadyAttachedException : Types.Exception
                 {
                     public AlreadyAttachedException(string message) : base(message) { }
                     public AlreadyAttachedException(string message, System.Exception inner) : base(message, inner) { }
                 }
 
+                /// <summary>
+                ///   Tells when the map tries to interact with an object that
+                ///     is not attached to it.
+                /// </summary>
                 public class NotAttachedException : Types.Exception
                 {
                     public NotAttachedException(string message) : base(message) { }
                     public NotAttachedException(string message, System.Exception inner) : base(message, inner) { }
                 }
 
+                /// <summary>
+                ///   Tells when the object trying to be attached has a main
+                ///     object strategy not compatible with the map's main
+                ///     strategy.
+                /// </summary>
                 public class StrategyNowAllowedException : Types.Exception
                 {
                     public StrategyNowAllowedException(string message) : base(message) { }
                     public StrategyNowAllowedException(string message, System.Exception inner) : base(message, inner) { }
                 }
 
-                /**
-                 * Each strategy holder knows its map.
-                 */
+                /// <summary>
+                ///   The map this manager... manages. Also, the map is used by the
+                ///     strategies to fetch per-cell information.
+                /// </summary>
                 public Map Map { get; private set; }
 
-                /**
-                 * The root strategy that can be picked in the editor.
-                 */
+                /// <summary>
+                ///   The root strategy. You will typically add just one strategy to
+                ///     this game object, and it may also add other strategies as well
+                ///     (that are registered via <see cref="RequireComponent"/>), and
+                ///     you will select such strategy as the value of this property.
+                ///   The strategy in this property will be the actual ruler of the
+                ///     movement of objects inside this map.
+                /// </summary>
                 [SerializeField]
                 private ObjectsManagementStrategy strategy;
 
-                /**
-                 * Each strategy holder tells its strategy.
-                 */
+                /// <summary>
+                ///   See <see cref="strategy"/>.
+                /// </summary>
                 public ObjectsManagementStrategy Strategy { get { return strategy; } }
 
                 /**
-                 * And which tilemaps does it have.
+                 * This is the list of tilemaps from the map.
                  */
-                public UnityEngine.Tilemaps.Tilemap[] fetchedTilemaps { get; private set; }
+                private UnityEngine.Tilemaps.Tilemap[] fetchedTilemaps;
 
                 /**
                  * This is the list of sorted strategy componentes here.
@@ -120,7 +163,7 @@ namespace WindRose
                     sortedStrategies = (from component in Support.Utils.Layout.SortByDependencies(GetComponents<ObjectsManagementStrategy>()) select (component as ObjectsManagementStrategy)).ToArray();
 
                     // We cannot allow a strategy type being added (depended) twice.
-                    if (sortedStrategies.Length != new HashSet<ObjectsManagementStrategy>(sortedStrategies).Count)
+                    if (sortedStrategies.Length != new HashSet<Type>(from sortedStrategy in sortedStrategies select sortedStrategy.GetType()).Count)
                     {
                         Destroy(gameObject);
                         throw new DuplicatedComponentException("Cannot add more than one strategy instance per strategy type to an objects managemnt strategy holder");
@@ -180,10 +223,11 @@ namespace WindRose
                  * 
                  *************************************************************************************************/
 
-                /**
-                 * Initializing a strategy will be done on map initialization. This means: the map calls this
-                 *   method from its own behaviour.
-                 */
+                /// <summary>
+                ///    This method is not needed for the end user. The map invokes
+                ///      this method to initialize the appropriate data on the
+                ///      strategy (e.g. layout and global data).
+                /// </summary>
                 public void Initialize()
                 {
                     Traverse(delegate (ObjectsManagementStrategy strategy)
@@ -213,9 +257,10 @@ namespace WindRose
                     }
                 }
 
-                /**
-                 * Utility method to iterate over the map's tilemaps.
-                 */
+                /// <summary>
+                ///   Returns the map's tilemaps.
+                /// </summary>
+                /// <seealso cref="Layers.Floor.FloorLayer.Tilemaps"/>
                 public IEnumerable<UnityEngine.Tilemaps.Tilemap> Tilemaps
                 {
                     get
@@ -224,18 +269,27 @@ namespace WindRose
                     }
                 }
 
-                /**
-                 * Get a tile in one of the tilemaps.
-                 */
+                /// <summary>
+                ///   Gets a tile in one of the tilemaps.
+                /// </summary>
+                /// <param name="tilemap">The tilemap index, in the order they were added (in the editor, or manually)</param>
+                /// <param name="x">The x position inside the tilemap</param>
+                /// <param name="y">The y position inside the tilemap</param>
+                /// <returns>The tile in that position</returns>
                 public UnityEngine.Tilemaps.TileBase GetTile(int tilemap, int x, int y)
                 {
                     PrepareTilemaps();
                     return fetchedTilemaps[tilemap].GetTile(new Vector3Int(x, y, 0));
                 }
 
-                /**
-                 * Set a tile in one of the tilemaps. It will force a strategy recomputation.
-                 */
+                /// <summary>
+                ///   Sets a tile in one of the tilemaps (in a particular position).
+                ///     It also causes a strategy recomputation.
+                /// </summary>
+                /// <param name="tilemap">The tilemap index, in the order they were added (in the editor, or manually)</param>
+                /// <param name="x">The x position inside the tilemap</param>
+                /// <param name="y">The y position inside the tilemap</param>
+                /// <param name="tile">The tile to set</param>
                 public void SetTile(int tilemap, uint x, uint y, UnityEngine.Tilemaps.TileBase tile)
                 {
                     PrepareTilemaps();
@@ -249,10 +303,24 @@ namespace WindRose
                  * 
                  *************************************************************************************************/
 
+                /// <summary>
+                ///   The status of an object inside the map.
+                ///   This involves position and current movement.
+                /// </summary>
                 public class Status
                 {
+                    /// <summary>
+                    ///   The current direction the object is movement to
+                    ///     (or null if it is not moving).
+                    /// </summary>
                     public Types.Direction? Movement;
+                    /// <summary>
+                    ///   The object's current X position.
+                    /// </summary>
                     public uint X;
+                    /// <summary>
+                    ///   The object's current Y position.
+                    /// </summary>
                     public uint Y;
 
                     public Status(uint x, uint y, Types.Direction? movement = null)
@@ -262,6 +330,10 @@ namespace WindRose
                         Movement = movement;
                     }
 
+                    /// <summary>
+                    ///   Creates a clone of this object.
+                    /// </summary>
+                    /// <returns>The cloned object</returns>
                     public Status Copy()
                     {
                         return new Status(X, Y, Movement);
@@ -291,9 +363,10 @@ namespace WindRose
                     }
                 }
 
-                /**
-                 * Gets the status of the object strategy as attached to the map.
-                 */
+                /// <summary>
+                ///   Gets the <see cref="Status"/> for a given object's strategy holder.
+                /// </summary>
+                /// <param name="objectStrategyHolder">The given strategy holder</param>
                 public Status StatusFor(Objects.ObjectStrategyHolder objectStrategyHolder)
                 {
                     Objects.Strategies.ObjectStrategy objectStrategy = GetMainCompatible(objectStrategyHolder);
@@ -307,9 +380,17 @@ namespace WindRose
                     }
                 }
 
-                /**
-                 * Attaches the object strategy to the current map strategy.
-                 */
+                /// <summary>
+                ///   Attaches the object strategy to the current map strategy.
+                /// </summary>
+                /// <param name="objectStrategyHolder">The object['s strategy holder] to attach</param>
+                /// <param name="x">The X position to attach the object to</param>
+                /// <param name="y">The Y position to attach the object to</param>
+                /// <remarks>
+                ///   The object must have a compatible main strategy, and valid dimensions
+                ///   to fit in the given position. It is also an error to try to attach an
+                ///   object that is already attached.
+                /// </remarks>
                 public void Attach(Objects.ObjectStrategyHolder objectStrategyHolder, uint x, uint y)
                 {
                     Objects.Strategies.ObjectStrategy objectStrategy = GetMainCompatible(objectStrategyHolder);
@@ -352,9 +433,11 @@ namespace WindRose
                     });
                 }
 
-                /**
-                 * Detaches the object strategy from the current map strategy.
-                 */
+                /// <summary>
+                ///   Detaches the object strategy from the current map strategy.
+                /// </summary>
+                /// <param name="objectStrategyHolder">The object['s strategy holder] to detach</param>
+                /// <remarks>It is an error to detach an object that is not attached. Also, the object must have a compatible strategy.</remarks>
                 public void Detach(Objects.ObjectStrategyHolder objectStrategyHolder)
                 {
                     Objects.Strategies.ObjectStrategy objectStrategy = GetMainCompatible(objectStrategyHolder);
@@ -388,13 +471,14 @@ namespace WindRose
                     });
                 }
 
-                /*************************************************************************************************
-                 * 
-                 * Starting the movement of an object (strategy) in a direction and telling whether it is the
-                 *   continuation of a former movement (this will happen in Movable component).
-                 * 
-                 *************************************************************************************************/
-
+                /// <summary>
+                ///   Invokes the start of a movement for a given object.
+                /// </summary>
+                /// <param name="objectStrategyHolder">The object['s strategy holder] to move</param>
+                /// <param name="direction">The direction to move to</param>
+                /// <param name="continuated">If this movement should be considered a continuation of a previous movement</param>
+                /// <returns>Whether the movement could be started</returns>
+                /// <remarks>It is an error to detach an object that is not attached. Also, the object must have a compatible strategy.</remarks>
                 public bool MovementStart(Objects.ObjectStrategyHolder objectStrategyHolder, Types.Direction direction, bool continuated = false)
                 {
                     Objects.Strategies.ObjectStrategy objectStrategy = GetMainCompatible(objectStrategyHolder);
@@ -455,9 +539,12 @@ namespace WindRose
                  * 
                  *************************************************************************************************/
 
-                /**
-                 * Cancels the movement in the current object.
-                 */
+                /// <summary>
+                ///   Cancels the movement of the current object.
+                /// </summary>
+                /// <param name="objectStrategyHolder">The object['s strategy holder] to which cancel the current movement</param>
+                /// <returns>Whether the current movement could be cancelled</returns>
+                /// <remarks>It is an error to detach an object that is not attached. Also, the object must have a compatible strategy.</remarks>
                 public bool MovementCancel(Objects.ObjectStrategyHolder objectStrategyHolder)
                 {
                     Objects.Strategies.ObjectStrategy objectStrategy = GetMainCompatible(objectStrategyHolder);
@@ -517,9 +604,12 @@ namespace WindRose
                  * 
                  *************************************************************************************************/
 
-                /**
-                 * Cancels the movement in the current object.
-                 */
+                /// <summary>
+                ///   Finishes the current movement of the object.
+                /// </summary>
+                /// <param name="objectStrategyHolder">The object['s strategy holder] to which finish the movement</param>
+                /// <returns>Whether the current movement could be finished</returns>
+                /// <remarks>It is an error to detach an object that is not attached. Also, the object must have a compatible strategy.</remarks>
                 public bool MovementFinish(Objects.ObjectStrategyHolder objectStrategyHolder)
                 {
                     Objects.Strategies.ObjectStrategy objectStrategy = GetMainCompatible(objectStrategyHolder);
@@ -578,6 +668,14 @@ namespace WindRose
                  * 
                  *************************************************************************************************/
 
+
+                /// <summary>
+                ///   Teleports the object to another (X, Y) position.
+                /// </summary>
+                /// <param name="objectStrategyHolder">The object['s strategy holder] to teleport</param>
+                /// <param name="x">The X position to teleport the object to</param>
+                /// <param name="y">The Y position to teleport the object to</param>
+                /// <remarks>It is an error to detach an object that is not attached. Also, the object must have a compatible strategy.</remarks>
                 public void Teleport(Objects.ObjectStrategyHolder objectStrategyHolder, uint x, uint y)
                 {
                     Objects.Strategies.ObjectStrategy objectStrategy = GetMainCompatible(objectStrategyHolder);
@@ -625,6 +723,16 @@ namespace WindRose
                  * 
                  *************************************************************************************************/
 
+                /// <summary>
+                ///   This method is invoked by an <see cref="Objects.ObjectStrategyHolder"/>. Object strategy
+                ///     holders will call this method when one of their properties was updated in a meaningful
+                ///     way to the extent that this management strategy holder must be aware of that change.
+                /// </summary>
+                /// <param name="objectStrategyHolder">The object['s strategy holder] having a property that changed</param>
+                /// <param name="objectStrategy">The particular strategy having such property</param>
+                /// <param name="property">The property that changed</param>
+                /// <param name="oldValue">The old value</param>
+                /// <param name="newValue">The new value</param>
                 public void PropertyWasUpdated(Objects.ObjectStrategyHolder objectStrategyHolder, Objects.Strategies.ObjectStrategy objectStrategy, string property, object oldValue, object newValue)
                 {
                     Objects.Strategies.ObjectStrategy mainObjectStrategy = GetMainCompatible(objectStrategyHolder);

@@ -11,8 +11,18 @@ namespace WindRose
             {
                 namespace Solidness
                 {
+                    /// <summary>
+                    ///   Solidness masks are an bidimensional mask of integers telling to what extent is the
+                    ///     map occupied. Dimensions of this mask will match the dimensions of the map needing
+                    ///     it, and each cell's values involves to what degree the cell is overlapped by
+                    ///     solid or solid-for-others (or hole) objects.
+                    /// </summary>
                     public class SolidMask
                     {
+                        /// <summary>
+                        ///   Tells when the involved object bounds are not valid, in position/dimensions, to
+                        ///     this mask.
+                        /// </summary>
                         public class InvalidSpatialSpecException : Types.Exception
                         {
                             public InvalidSpatialSpecException() { }
@@ -20,6 +30,9 @@ namespace WindRose
                             public InvalidSpatialSpecException(string message, Exception inner) : base(message, inner) { }
                         }
 
+                        /// <summary>
+                        ///   Tells whether a cell's value cannot be decremented due to overflow.
+                        /// </summary>
                         public class CannotDecrementException : Types.Exception
                         {
                             public CannotDecrementException() { }
@@ -27,6 +40,9 @@ namespace WindRose
                             public CannotDecrementException(string message, Exception inner) : base(message, inner) { }
                         }
 
+                        /// <summary>
+                        ///   Tells whether a cell's value cannot be incremented due to overflow.
+                        /// </summary>
                         public class CannotIncrementException : Types.Exception
                         {
                             public CannotIncrementException() { }
@@ -34,6 +50,9 @@ namespace WindRose
                             public CannotIncrementException(string message, Exception inner) : base(message, inner) { }
                         }
 
+                        /// <summary>
+                        ///   Mask dimensions.
+                        /// </summary>
                         public readonly uint width, height;
                         private short[] positions;
 
@@ -45,16 +64,7 @@ namespace WindRose
                             Array.Clear(this.positions, 0, (int)(this.width * this.height));
                         }
 
-                        /**
-                         * 
-                         * With this class we ensure we can update counters on each position in the mask
-                         *   so we can ensure whether the position is "busy" or not. A busy position is
-                         *   only considered to be like that when occupied by "solid" objects. This mask
-                         *   only accounts for the counters, and not for additional functionalities.
-                         * 
-                         */
-
-                        public void CheckDimensions(uint x, uint y, uint width, uint height)
+                        private void CheckDimensions(uint x, uint y, uint width, uint height)
                         {
                             if (x + width > this.width || y + height > this.height)
                             {
@@ -62,6 +72,13 @@ namespace WindRose
                             }
                         }
 
+                        /// <summary>
+                        ///   Increments by 1 all the cells in the given bounds inside the mask.
+                        /// </summary>
+                        /// <param name="x">The X coordinate of the square's down-left corner</param>
+                        /// <param name="y">The Y coordinate of the square's down-left corner</param>
+                        /// <param name="width">The width of the square</param>
+                        /// <param name="height">The height of the square</param>
                         public void IncSquare(uint x, uint y, uint width, uint height)
                         {
                             CheckDimensions(x, y, width, height);
@@ -83,16 +100,35 @@ namespace WindRose
                             }
                         }
 
+                        /// <summary>
+                        ///   Increments by 1 all the cells in the given row inside the mask.
+                        /// </summary>
+                        /// <param name="x">The X coordinate of the square's left cell</param>
+                        /// <param name="y">The Y coordinate of the square's left cell</param>
+                        /// <param name="width">The width of the row</param>
                         public void IncRow(uint x, uint y, uint width)
                         {
                             IncSquare(x, y, width, 1);
                         }
 
+                        /// <summary>
+                        ///   Increments by 1 all the cells in the given column inside the mask.
+                        /// </summary>
+                        /// <param name="x">The X coordinate of the square's down cell</param>
+                        /// <param name="y">The Y coordinate of the square's down cell</param>
+                        /// <param name="height">The height of the column</param>
                         public void IncColumn(uint x, uint y, uint height)
                         {
                             IncSquare(x, y, 1, height);
                         }
 
+                        /// <summary>
+                        ///   Decrements by 1 all the cells in the given bounds inside the mask.
+                        /// </summary>
+                        /// <param name="x">The X coordinate of the square's down-left corner</param>
+                        /// <param name="y">The Y coordinate of the square's down-left corner</param>
+                        /// <param name="width">The width of the square</param>
+                        /// <param name="height">The height of the square</param>
                         public void DecSquare(uint x, uint y, uint width, uint height)
                         {
                             CheckDimensions(x, y, width, height);
@@ -114,16 +150,36 @@ namespace WindRose
                             }
                         }
 
+                        /// <summary>
+                        ///   Decrements by 1 all the cells in the given row inside the mask.
+                        /// </summary>
+                        /// <param name="x">The X coordinate of the square's left cell</param>
+                        /// <param name="y">The Y coordinate of the square's left cell</param>
+                        /// <param name="width">The width of the row</param>
                         public void DecRow(uint x, uint y, uint width)
                         {
                             DecSquare(x, y, width, 1);
                         }
 
+                        /// <summary>
+                        ///   Decrements by 1 all the cells in the given column inside the mask.
+                        /// </summary>
+                        /// <param name="x">The X coordinate of the square's down cell</param>
+                        /// <param name="y">The Y coordinate of the square's down cell</param>
+                        /// <param name="height">The height of the column</param>
                         public void DecColumn(uint x, uint y, uint height)
                         {
                             DecSquare(x, y, 1, height);
                         }
 
+                        /// <summary>
+                        ///   Checks whether all the cells in the given square are empty.
+                        /// </summary>
+                        /// <param name="x">The X coordinate of the square's down-left corner</param>
+                        /// <param name="y">The Y coordinate of the square's down-left corner</param>
+                        /// <param name="width">The width of the square</param>
+                        /// <param name="height">The height of the square</param>
+                        /// <returns><c>true</c> if all the checked cells are empty. <c>false</c> if at least one is not</returns>
                         public bool EmptySquare(uint x, uint y, uint width, uint height)
                         {
                             CheckDimensions(x, y, width, height);
@@ -143,21 +199,43 @@ namespace WindRose
                             return true;
                         }
 
+                        /// <summary>
+                        ///   Checks whether all the cells in the given row are empty.
+                        /// </summary>
+                        /// <param name="x">The X coordinate of the square's down-left corner</param>
+                        /// <param name="y">The Y coordinate of the square's down-left corner</param>
+                        /// <param name="width">The width of the square</param>
+                        /// <param name="height">The height of the square</param>
+                        /// <returns><c>true</c> if all the checked cells are empty. <c>false</c> if at least one is not</returns>
                         public bool EmptyRow(uint x, uint y, uint width)
                         {
                             return EmptySquare(x, y, width, 1);
                         }
 
+                        /// <summary>
+                        ///   Checks whether all the cells in the given column are empty.
+                        /// </summary>
+                        /// <param name="x">The X coordinate of the square's down-left corner</param>
+                        /// <param name="y">The Y coordinate of the square's down-left corner</param>
+                        /// <param name="width">The width of the square</param>
+                        /// <param name="height">The height of the square</param>
+                        /// <returns><c>true</c> if all the checked cells are empty. <c>false</c> if at least one is not</returns>
                         public bool EmptyColumn(uint x, uint y, uint height)
                         {
                             return EmptySquare(x, y, 1, height);
                         }
 
+                        /// <summary>
+                        ///   Gets the occupancy of a single cell
+                        /// </summary>
+                        /// <param name="x">The X coordinate to check</param>
+                        /// <param name="y">The Y coordinate to check</param>
+                        /// <returns>Whether the cell is occupied</returns>
                         public bool this[uint x, uint y]
                         {
                             get
                             {
-                                return this.positions[y * this.width + x] == 0;
+                                return positions[y * width + x] == 0;
                             }
                         }
                     }

@@ -17,12 +17,18 @@ namespace WindRose
                     using ScriptableObjects.Tiles;
                     using ScriptableObjects.Tiles.Strategies.Base;
 
-                    /**
-                     * This class allows telling which cells are blocking. Objects are not allowed to
-                     *   traverse blocking cells. Blocked positions will be mantained in a bitmask
-                     *   and determined by the topmost blocking (or unblocking) tilemap's cell for
-                     *   a certain (x, y) pair.
-                     */
+                    /// <summary>
+                    ///   <para>
+                    ///     Layout management strategies involve the ability of tiles to tell whether
+                    ///       nothing should move through them: movement will be forbidden on tiles
+                    ///       that are marked as "blocking".
+                    ///   </para>
+                    ///   <para>
+                    ///     Its counterpart is <see cref="Objects.Strategies.Base.LayoutObjectStrategy"/>.
+                    ///   </para>
+                    ///   <seealso cref="ObjectsManagementStrategy"/>
+                    ///   <seealso cref="Objects.Strategies.Base.LayoutObjectStrategy"/>
+                    /// </summary>
                     [RequireComponent(typeof(BaseObjectsManagementStrategy))]
                     public class LayoutObjectsManagementStrategy : ObjectsManagementStrategy
                     {
@@ -45,6 +51,16 @@ namespace WindRose
                             }
                         }
 
+                        /// <summary>
+                        ///   <para>
+                        ///     Checking the ability to allocate movement involve the object is not trying
+                        ///       to move through tiles marked as blocked.
+                        ///   </para>
+                        ///   <para>
+                        ///     See <see cref="ObjectsManagementStrategy.CanAllocateMovement(Dictionary{Type, bool}, ObjectStrategy, ObjectsManagementStrategyHolder.Status, Direction, bool)"/>
+                        ///       for more information on this method signature and intention.
+                        ///   </para>
+                        /// </summary>
                         public override bool CanAllocateMovement(Dictionary<Type, bool> otherComponentsResults, ObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status, Direction direction, bool continuated)
                         {
                             // First follows what the BaseStrategy tells
@@ -54,12 +70,31 @@ namespace WindRose
                             return !IsAdjacencyBlocked(status.X, status.Y, strategy.StrategyHolder.Positionable.Width, strategy.StrategyHolder.Positionable.Height, direction);
                         }
 
+                        /// <summary>
+                        ///   <para>
+                        ///     Checking the ability to clear movement is directly obtained from the
+                        ///       result provided by the same method in <see cref="BaseObjectsManagementStrategy"/>.
+                        ///   </para>
+                        /// </summary>
                         public override bool CanClearMovement(Dictionary<Type, bool> otherComponentsResults, ObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status)
                         {
                             // Just follows what the BaseStrategy tells
                             return otherComponentsResults[typeof(BaseObjectsManagementStrategy)];
                         }
 
+                        /// <summary>
+                        ///   Computing the per-cell data involves keeping the nearest block flag.
+                        ///   This means: the last flag, among all tilemaps, in the <paramref name="x"/>
+                        ///     and <paramref name="y"/> position, will determine whether the cell
+                        ///     is blocked or not. Flag can only be extracted from a tile, if the tile
+                        ///     is a <see cref="BundledTile"/> and contains a <see cref="LayoutTileStrategy"/>.
+                        /// </summary>
+                        /// <param name="x">The X position to compute</param>
+                        /// <param name="y">The Y position to compute</param>
+                        /// <remarks>
+                        ///   If no tile is <see cref="BundledTile"/> with the expected
+                        ///   <see cref="LayoutTileStrategy"/>, the computed value is <c>false</c>.
+                        /// </remarks>
                         public override void ComputeCellData(uint x, uint y)
                         {
                             bool blocks = false;
@@ -75,6 +110,9 @@ namespace WindRose
                             blockMask.SetCell(x, y, blocks);
                         }
 
+                        /// <summary>
+                        ///   Initializes an array of blocking flags to know whether the 
+                        /// </summary>
                         public override void InitGlobalCellsData()
                         {
                             uint width = StrategyHolder.Map.Width;

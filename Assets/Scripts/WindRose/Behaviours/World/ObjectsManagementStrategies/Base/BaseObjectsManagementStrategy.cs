@@ -14,11 +14,19 @@ namespace WindRose
             {
                 namespace Base
                 {
-                    /**
-                     * This base strategy is unavoidable as it offers essential logic that is needed
-                     *   in order to even prevent RuntimeErrors. This class disallows starting movement
-                     *   if a movement is in progress OR if an edge is being hit.
-                     */
+                    /// <summary>
+                    ///   <para>
+                    ///     Base management strategies will only check object movement by ensuring
+                    ///       their dimensions are never out of the map's bounds.
+                    ///   </para>
+                    ///   <para>
+                    ///     Checking whether movement can be cleared involves checking whether movement
+                    ///       is being performed, and its counterpart is
+                    ///       <see cref="Objects.Strategies.Base.BaseObjectStrategy"/>.
+                    ///   </para>
+                    ///   <seealso cref="ObjectsManagementStrategy"/>
+                    ///   <seealso cref="Objects.Strategies.Base.BaseObjectStrategy"/>
+                    /// </summary>
                     public class BaseObjectsManagementStrategy : ObjectsManagementStrategy
                     {
                         public override void AttachedStrategy(ObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status)

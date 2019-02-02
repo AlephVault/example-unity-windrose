@@ -13,6 +13,11 @@ namespace WindRose
             {
                 namespace Ceiling
                 {
+                    /// <summary>
+                    ///   The topmost layer (if present, and no custom-type
+                    ///     layers exist). It will hold <see cref="Ceilings.Ceiling"/>
+                    ///     objects inside.
+                    /// </summary>
                     [RequireComponent(typeof(Grid))]
                     public class CeilingLayer : MapLayer
                     {

@@ -14,12 +14,14 @@ namespace WindRose
                 {
                     using Support.Utils;
                     using Inventory.ManagementStrategies.PositioningStrategies;
+
+                    /// <summary>
+                    ///   This class validates and iterates position based on the map's dimensions.
+                    ///     It will yield a <see cref="Vector2Int"/> for each pair of (x, y) position
+                    ///     available in the map.
+                    /// </summary>
                     public class InventoryMapSizedPositioningManagementStrategy : InventoryPositioningManagementStrategy
                     {
-                        /**
-                         * This clas validates and iterates position based on the map's dimensions.
-                         */
-
                         private uint width;
                         private uint height;
 
@@ -31,7 +33,13 @@ namespace WindRose
                             height = map.Height;
                         }
 
-                        public override bool IsValid(object position)
+                        /// <summary>
+                        ///   Checks whether the position is a <see cref="Vector2Int"/> that is
+                        ///     a valid position among the map.
+                        /// </summary>
+                        /// <param name="position">The position to check</param>
+                        /// <returns>Whether the position is valid</returns>
+                        protected override bool IsValid(object position)
                         {
                             if (position is Vector2Int)
                             {
@@ -41,6 +49,11 @@ namespace WindRose
                             return false;
                         }
 
+                        /// <summary>
+                        ///   Enumerates all the valid positions in the map. Each position
+                        ///     will be a <see cref="Vector2Int"/>.
+                        /// </summary>
+                        /// <returns></returns>
                         public override IEnumerable<object> Positions()
                         {
                             for (var ix = 0; ix < width; ix++)

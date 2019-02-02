@@ -17,14 +17,12 @@ namespace WindRose
                 {
                     using Types.Inventory.Stacks.UsageStrategies;
 
+                    /// <summary>
+                    ///   This usage strategy is dummy. Accepts any usage strategy, but does nothing
+                    ///     when trying to use any stack.
+                    /// </summary>
                     public class InventoryNullUsageManagementStrategy : InventoryUsageManagementStrategy
                     {
-                        /**
-                         * This strategy does nothing when using a stack (which also has a null strategy there).
-                         * 
-                         * Said this, the null strategy may accept ANY main item-strategy.
-                         */
-
                         protected override IEnumerator DoUse(Types.Inventory.Stacks.Stack stack, object argument)
                         {
                             yield break;

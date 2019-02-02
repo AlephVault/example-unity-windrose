@@ -12,15 +12,18 @@ namespace WindRose
         {
             using World.Layers.Ceiling;
 
+            /// <summary>
+            ///    Ceilings are mini-tilemaps that will be painted with custom
+            ///      tiles and will provide features to hide/show/make-translucent.
+            ///      
+            /// </summary>
             [RequireComponent(typeof(Tilemap))]
             [RequireComponent(typeof(TilemapRenderer))]
             public class Ceiling : MonoBehaviour
             {
-                /**
-                 * This class defined a ceiling and provides means to
-                 *   show it, hide it, or make it translucent.
-                 */
-
+                /// <summary>
+                ///   Tells when the parent object is not a <see cref="CeilingLayer"/>.
+                /// </summary>
                 public class ParentMustBeCeilingLayerException : Types.Exception
                 {
                     public ParentMustBeCeilingLayerException() : base() { }
@@ -30,17 +33,38 @@ namespace WindRose
                 private TilemapRenderer tilemapRenderer;
                 private Grid parentGrid;
 
+                /// <summary>
+                ///   Display mode. If translucent, the value of <see cref="opacityInTranslucentMode"/>
+                ///     is chosen as the rendering opacity. If hidden it will be 0, and if visible, it
+                ///     will be 1.
+                /// </summary>
                 public enum DisplayMode { HIDDEN, TRANSLUCENT, VISIBLE }
 
+                /// <summary>
+                ///   The chosen <see cref="DisplayMode"/>.
+                /// </summary>
                 public DisplayMode displayMode;
 
+                /// <summary>
+                ///   The display mode opacity for the translucent mode.
+                ///   It will be between 0 (invisible) and 1 (visible).
+                ///     Other values will be clamped.
+                /// </summary>
                 [SerializeField]
                 [Range(0, 1)]
                 private float opacityInTranslucentMode;
 
+                /// <summary>
+                ///   The variable name for the main color variable in the
+                ///     shader material. By default it will be _Color and should
+                ///     not be changed unless the mini-tilemap uses another shader.
+                /// </summary>
                 [SerializeField]
                 private string materialColorVariable = "_Color";
 
+                /// <summary>
+                ///   See <see cref="opacityInTranslucentMode"/>.
+                /// </summary>
                 public float DisplayModeOpacity
                 {
                     get { return opacityInTranslucentMode; }

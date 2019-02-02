@@ -18,8 +18,18 @@ namespace WindRose
                     using Inventory.ManagementStrategies.SpatialStrategies;
                     using Support.Types;
                     using System.Linq;
-                    using Inventory.ManagementStrategies.RenderingStrategies;
 
+                    /// <summary>
+                    ///   <para>
+                    ///     The drop layer is a multi-container inventory on the floor. It will
+                    ///       manage all those inventories and provide convenience methods
+                    ///       (which are delegated into the <see cref="InventoryManagementStrategyHolder"/>
+                    ///       component) for each position.
+                    ///   </para>
+                    ///   <para>
+                    ///     Container IDs are <see cref="Vector2Int"/> instances.
+                    ///   </para>
+                    /// </summary>
                     [RequireComponent(typeof(InventoryMapSizedPositioningManagementStrategy))]
                     [RequireComponent(typeof(InventoryInfiniteSimpleSpatialManagementStrategy))]
                     [RequireComponent(typeof(InventoryManagementStrategyHolder))]
@@ -54,11 +64,24 @@ namespace WindRose
                          * Some convenience methods here.
                          ************************************************************/
 
+                        /// <summary>
+                        ///   New convenience method to push an item in certain position.
+                        /// </summary>
+                        /// <param name="containerPosition">The container ID to push a stack into</param>
+                        /// <param name="stack">The stack to push</param>
+                        /// <param name="finalStackPosition">The final position of the stack - if not redistributed among the existing stacks</param>
+                        /// <returns>Whether the item could be pushed</returns>
                         public bool Push(Vector2Int containerPosition, Stack stack, out object finalStackPosition)
                         {
                             return inventoryHolder.Put(containerPosition, null, stack, out finalStackPosition, true);
                         }
 
+                        /// <summary>
+                        ///   Pops a stack from a container position. This means: the last stack will be removed
+                        ///     and returned. If the container is empty, then <c>null</c> is returned.
+                        /// </summary>
+                        /// <param name="containerPosition">The container ID to pop a stack from</param>
+                        /// <returns>The popped stack, or null</returns>
                         public Stack Pop(Vector2Int containerPosition)
                         {
                             Stack stack = inventoryHolder.Last(containerPosition);
@@ -73,46 +96,73 @@ namespace WindRose
                          * Proxy calls to Inventory Holder methods (except for AddListener and related).
                          ************************************************************/
 
+                        /// <summary>
+                        ///   Convenience method. See <see cref="InventoryManagementStrategyHolder.StackPairs(object, bool)"/>.
+                        /// </summary>
                         public IEnumerable<Tuple<int, Stack>> StackPairs(Vector2Int containerPosition, bool reverse = false)
                         {
                             return from tuple in inventoryHolder.StackPairs(containerPosition, reverse) select new Tuple<int, Stack>((int)tuple.First, tuple.Second);
                         }
 
+                        /// <summary>
+                        ///   Convenience method. See <see cref="InventoryManagementStrategyHolder.Find(object, object)"/>.
+                        /// </summary>
                         public Stack Find(Vector2Int containerPosition, int stackPosition)
                         {
                             return inventoryHolder.Find(containerPosition, stackPosition);
                         }
 
+                        /// <summary>
+                        ///   Convenience method. See <see cref="InventoryManagementStrategyHolder.FindAll(object, Func{Tuple{object, Stack}, bool}, bool)"/>.
+                        /// </summary>
                         public IEnumerable<Stack> FindAll(Vector2Int containerPosition, Func<Tuple<int, Stack>, bool> predicate, bool reverse = false)
                         {
                             return inventoryHolder.FindAll(containerPosition, delegate (Tuple<object, Stack> tuple) { return predicate(new Tuple<int, Stack>((int)tuple.First, tuple.Second)); }, reverse);
                         }
 
+                        /// <summary>
+                        ///   Convenience method. See <see cref="InventoryManagementStrategyHolder.FindAll(object, ScriptableObjects.Inventory.Items.Item, bool)"/>.
+                        /// </summary>
                         public IEnumerable<Stack> FindAll(Vector2Int containerPosition, ScriptableObjects.Inventory.Items.Item item, bool reverse = false)
                         {
                             return inventoryHolder.FindAll(containerPosition, item, reverse);
                         }
 
+                        /// <summary>
+                        ///   Convenience method. See <see cref="InventoryManagementStrategyHolder.First(object)"/>.
+                        /// </summary>
                         public Stack First(Vector2Int containerPosition)
                         {
                             return inventoryHolder.First(containerPosition);
                         }
 
+                        /// <summary>
+                        ///   Convenience method. See <see cref="InventoryManagementStrategyHolder.Last(object)"/>.
+                        /// </summary>
                         public Stack Last(Vector2Int containerPosition)
                         {
                             return inventoryHolder.Last(containerPosition);
                         }
 
+                        /// <summary>
+                        ///   Convenience method. See <see cref="InventoryManagementStrategyHolder.FindOne(object, Func{Tuple{object, Stack}, bool}, bool)"/>.
+                        /// </summary>
                         public Stack FindOne(Vector2Int containerPosition, Func<Tuple<int, Stack>, bool> predicate, bool reverse = false)
                         {
                             return inventoryHolder.FindOne(containerPosition, delegate (Tuple<object, Stack> tuple) { return predicate(new Tuple<int, Stack>((int)tuple.First, tuple.Second)); }, reverse);
                         }
 
+                        /// <summary>
+                        ///   Convenience method. See <see cref="InventoryManagementStrategyHolder.FindOne(object, ScriptableObjects.Inventory.Items.Item, bool)"/>.
+                        /// </summary>
                         public Stack FindOne(Vector2Int containerPosition, ScriptableObjects.Inventory.Items.Item item, bool reverse = false)
                         {
                             return inventoryHolder.FindOne(containerPosition, item, reverse);
                         }
 
+                        /// <summary>
+                        ///   Convenience method. See <see cref="InventoryManagementStrategyHolder.Put(object, object, Stack, out object, bool?)"/>.
+                        /// </summary>
                         public bool Put(Vector2Int containerPosition, int stackPosition, Stack stack, int? finalStackPosition, bool? optimalPutOnNullPosition = null)
                         {
                             object finalOStackPosition;
@@ -121,11 +171,17 @@ namespace WindRose
                             return result;
                         }
 
+                        /// <summary>
+                        ///   Convenience method. See <see cref="InventoryManagementStrategyHolder.Remove(object, object)"/>.
+                        /// </summary>
                         public bool Remove(Vector2Int containerPosition, int stackPosition)
                         {
                             return inventoryHolder.Remove(containerPosition, stackPosition);
                         }
 
+                        /// <summary>
+                        ///   Convenience method. See <see cref="InventoryManagementStrategyHolder.Merge(object, object, object)"/>
+                        /// </summary>
                         public bool Merge(Vector2Int containerPosition, int? destinationStackPosition, int sourceStackPosition)
                         {
                             return inventoryHolder.Merge(containerPosition, destinationStackPosition, sourceStackPosition);
@@ -133,11 +189,17 @@ namespace WindRose
 
                         // The other version of `Merge` has little use here.
 
+                        /// <summary>
+                        ///   Convenience method. See <see cref="InventoryManagementStrategyHolder.Take(object, object, object, bool)"/>.
+                        /// </summary>
                         public Stack Take(Vector2Int containerPosition, int stackPosition, object quantity, bool disallowEmpty)
                         {
                             return inventoryHolder.Take(containerPosition, stackPosition, quantity, disallowEmpty);
                         }
 
+                        /// <summary>
+                        ///   Convenience method. See <see cref="InventoryManagementStrategyHolder.Split(object, object, object, object, object, out object)"/>. 
+                        /// </summary>
                         public bool Split(Vector2Int sourceContainerPosition, int sourceStackPosition, object quantity,
                                           Vector2Int newStackContainerPosition, int newStackPosition, int? finalNewStackPosition)
                         {
@@ -148,41 +210,65 @@ namespace WindRose
                             return result;
                         }
 
+                        /// <summary>
+                        ///   Convenience method. See <see cref="InventoryManagementStrategyHolder.Use(object, object)"/>.
+                        /// </summary>
                         public bool Use(Vector2Int containerPosition, int sourceStackPosition)
                         {
                             return inventoryHolder.Use(containerPosition, sourceStackPosition);
                         }
 
+                        /// <summary>
+                        ///   Convenience method. See <see cref="InventoryManagementStrategyHolder.Use(object, object, object)"/>.
+                        /// </summary>
                         public bool Use(Vector2Int containerPosition, int sourceStackPosition, object argument)
                         {
                             return inventoryHolder.Use(containerPosition, sourceStackPosition, argument);
                         }
 
+                        /// <summary>
+                        ///   Convenience method. See <see cref="InventoryManagementStrategyHolder.Clear"/>.
+                        /// </summary>
                         public void Clear()
                         {
                             inventoryHolder.Clear();
                         }
 
+                        /// <summary>
+                        ///   Convenience method. See <see cref="InventoryManagementStrategyHolder.Blink"/>.
+                        /// </summary>
                         public void Blink()
                         {
                             inventoryHolder.Blink();
                         }
 
+                        /// <summary>
+                        ///   Convenience method. See <see cref="InventoryManagementStrategyHolder.Blink(object)"/>.
+                        /// </summary>
                         public void Blink(Vector2Int containerPosition)
                         {
                             inventoryHolder.Blink(containerPosition);
                         }
 
+                        /// <summary>
+                        ///   Convenience method. See <see cref="InventoryManagementStrategyHolder.Blink(object, object)"/>.
+                        /// </summary>
                         public void Blink(Vector2Int containerPosition, int stackPosition)
                         {
                             inventoryHolder.Blink(containerPosition, stackPosition);
                         }
 
+                        /// <summary>
+                        ///   Convenience method. See <see cref="InventoryManagementStrategyHolder.Import(Types.Inventory.SerializedInventory)"/>.
+                        /// </summary>
                         public void Import(Types.Inventory.SerializedInventory serializedInventory)
                         {
                             inventoryHolder.Import(serializedInventory);
                         }
 
+                        /// <summary>
+                        ///   Convenience method. See <see cref="InventoryManagementStrategyHolder.Export"/>.
+                        /// </summary>
                         public Types.Inventory.SerializedInventory Export()
                         {
                             return inventoryHolder.Export();

@@ -9,15 +9,23 @@ namespace WindRose
         {
             namespace Layers
             {
-                /**
-                 * Map layers know their position with respect to the map.
-                 * They sort themselves in the DEFAULT layer, but this will
-                 *   occur in the context of their parent Map.
-                 */
+                /// <summary>
+                ///   A map layer sorts itself inside its parent map, in the
+                ///     DEFAULT layer, and in the zero point, identity rotation,
+                ///     and identity scale. Map layers will hold different aspects
+                ///     of the map's content, and while currently only 4 layer
+                ///     types are supported, nothing prevents the development of
+                ///     more layer types (although this is entirely up to the
+                ///     developer).
+                /// </summary>
                 [RequireComponent(typeof(Support.Behaviours.Normalized))]
                 [RequireComponent(typeof(SortingGroup))]
                 public abstract class MapLayer : MonoBehaviour
                 {
+                    /// <summary>
+                    ///   Tells when the layer is not directly contained inside
+                    ///     a map.
+                    /// </summary>
                     public class ParentMustBeMapException : Types.Exception
                     {
                         public ParentMustBeMapException() : base() { }
@@ -25,6 +33,11 @@ namespace WindRose
                     }
 
                     private SortingGroup sortingGroup;
+
+                    /// <summary>
+                    ///   The parent map this layer belongs to. It will be one level up
+                    ///     in the hierarchy.
+                    /// </summary>
                     public Map Map { get; private set; }
 
                     protected virtual void Awake()
@@ -47,6 +60,12 @@ namespace WindRose
                         sortingGroup.sortingOrder = GetSortingOrder();
                     }
 
+                    /// <summary>
+                    ///   This method is implemented in the subclasses, and return a
+                    ///     constant number telling the sort order of the layer inside
+                    ///     the parent map.
+                    /// </summary>
+                    /// <returns>The sorting layer to be used</returns>
                     protected abstract int GetSortingOrder();
                 }
             }

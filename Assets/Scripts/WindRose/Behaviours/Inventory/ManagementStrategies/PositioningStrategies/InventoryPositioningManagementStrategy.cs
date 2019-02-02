@@ -13,28 +13,42 @@ namespace WindRose
             {
                 namespace PositioningStrategies
                 {
+                    /// <summary>
+                    ///   Tells which positions are valid to handle the containers in the related
+                    ///     inventory. There will be at least two strategies here: single-inventories
+                    ///     or floor-inventories (containers in a Width x Height matrix).
+                    /// </summary>
                     public abstract class InventoryPositioningManagementStrategy : InventoryManagementStrategy
                     {
-                        /**
-                         * Tells which positions are valid to handle inventories.
-                         * 
-                         * There will be at least two strategies here:
-                         * - Single-inventories allow only `null` position.
-                         * - Floor-inventories allow and iterate over WxH positions.
-                         */
-
+                        /// <summary>
+                        ///   Tells when a container ID is invalid for this strategy.
+                        /// </summary>
                         public class InvalidPositionException : Types.Exception
                         {
-                            /**
-                             * This class tells that a given position is not valid on this spatial
-                             *   container. 
-                             */
-
                             public InvalidPositionException(string message) : base(message) {}
                         }
+                        
+                        /// <summary>
+                        ///   Tells whether a container ID is invalid for this strategy.
+                        ///     This will imply the raise of <see cref="InvalidPositionException"/>.
+                        /// </summary>
+                        /// <param name="position">The position to check</param>
+                        /// <returns>Whether it is valid</returns>
+                        protected abstract bool IsValid(object position);
 
-                        public abstract bool IsValid(object position);
+                        /// <summary>
+                        ///   An enumerable yielding all the valid positions for this strategy.
+                        /// </summary>
+                        /// <returns></returns>
                         public abstract IEnumerable<object> Positions();
+
+                        /// <summary>
+                        ///   Checks that the given position is valid. If invalid, raises
+                        ///     an exception.
+                        /// </summary>
+                        /// <param name="position">The position to check</param>
+                        /// <seealso cref="IsValid(object)"/>
+                        /// <seealso cref="InvalidPositionException"/>
                         public void CheckPosition(object position)
                         {
                             if (!IsValid(position))

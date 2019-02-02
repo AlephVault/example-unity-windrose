@@ -7,16 +7,22 @@ namespace WindRose
     {
         namespace Floors
         {
+            /// <summary>
+            ///   A floor is a behaviour that normalizes the position of a tilemap inside a map.
+            ///   Floors will be identified from object management strategies (and strategy holders)
+            ///     to get data from their tiles.
+            ///   Many floors may exist (and, often, will) in a single map. They will be stacked
+            ///     appropriately and, since they have a <see cref="TilemapRenderer"/>, they may be
+            ///     given any sort order of choice.
+            /// </summary>
             [RequireComponent(typeof(Tilemap))]
             [RequireComponent(typeof(TilemapRenderer))]
             [RequireComponent(typeof(Support.Behaviours.Normalized))]
             class Floor : MonoBehaviour
             {
-                /**
-                 * A floor can only exist in a floor layer, and will require a tilemap.
-                 * It will also be normalized in position on initialization.
-                 */
-
+                /// <summary>
+                ///   Tells when the parent is not a <see cref="World.Layers.Floor.FloorLayer"/>.
+                /// </summary>
                 public class ParentMustBeFloorLayerException : Types.Exception
                 {
                     public ParentMustBeFloorLayerException() : base() { }

@@ -17,24 +17,33 @@ namespace WindRose
                     using Types.Inventory.Stacks;
                     using Types.Inventory.Stacks.UsageStrategies;
 
+                    /// <summary>
+                    ///   <para>
+                    ///     Usage strategies try consuming or using certain items. They should have a chained
+                    ///       behaviour (i.e. depend among them), and ultimately a base usage strategy would
+                    ///       try consuming quantities of the stack being used.
+                    ///   </para>
+                    ///   <para>
+                    ///     They will interact with stacks having compatible usage (state) strategies, and
+                    ///       will run the usage behaviour in coroutines, so interactions with UI and even
+                    ///       asynchronous server connection are feasible.
+                    ///   </para>
+                    /// </summary>
                     public abstract class InventoryUsageManagementStrategy : InventoryManagementStrategy
                     {
-                        /**
-                         * Usage strategies try consuming or using certain items. Usage strategies should have a chained
-                         *   behaviour (i.e. depend among them). Ultimately, a base usage strategy will try consuming
-                         *   quantities of the stack.
-                         * 
-                         * Usage is being run as a coroutine since it may involve UI or even server-side interaction.
-                         * 
-                         * Usages will also consider their counterpart types: they will know how to interact with the stack
-                         *   based on its underlying item.
-                         */
-
+                        /// <summary>
+                        ///   Tells when something went wrong trying to use a stack: another
+                        ///     stack is already being used, or the new stack to use does not
+                        ///     belong to the current inventory manager.
+                        /// </summary>
                         public class UsageException : Exception
                         {
                             public UsageException(string message) : base(message) {}
                         }
 
+                        /// <summary>
+                        ///   Tells when a stack as an invalid (incompatible) usage strategy.
+                        /// </summary>
                         public class InvalidStackUsageStrategyCounterparyType : Types.Exception
                         {
                             public InvalidStackUsageStrategyCounterparyType(string message) : base(message) { }
@@ -45,11 +54,14 @@ namespace WindRose
                          */
 
                         /**
-                         * Tells whether a stack usage strategy is accepted by this class, or not.
-                         * Usually, the check would by type-to-type, but there are cases where dummy
-                         *   inventory usage strategies would accept any strategy, but make no use
-                         *   of them (these would be like "agnostic" usage strategies).
+                         * 
                          */
+                        /// <summary>
+                        ///   Tells whether a stack usage strategy is accepted by this class, or not.
+                        ///   Usually, the check would by type-to-type, but there are cases where dummy
+                        ///     inventory usage strategies would accept any strategy, but make no use
+                        ///     of them(these would be like "agnostic" usage strategies).
+                        /// </summary>
                         public abstract bool Accepts(StackUsageStrategy strategy);
 
                         /**
@@ -75,12 +87,25 @@ namespace WindRose
                          * There is an optional argument to customize the usage type. It may be null, so when that happens
                          *   you must be prepared to implement a default usage.
                          */
+
+
+                        /// <summary>
+                        ///   Uses a certain stack, which would be present in the inventory. The stack will have a compatible
+                        ///     strategy to be used. This method may dispatch calls to <see cref="DoUse(Stack, object)"/>
+                        ///     defined in dependencies (and related strategies in the stack will be attended there).
+                        /// </summary>
+                        /// <param name="stack">The stack being used</param>
+                        /// <param name="argument">A custom argument to setup the usage</param>
+                        /// <returns>The enumerator for the coroutine</returns>
                         protected abstract IEnumerator DoUse(Stack stack, object argument);
 
-                        /**
-                         * This wrapper just clears the usage flag after running the coroutines, even if they generate
-                         *   an error.
-                         */
+                        /// <summary>
+                        ///   This wrapper method performs the usage and, when done (or error) it clears the flag of an item
+                        ///     being used.
+                        /// </summary>
+                        /// <param name="stack">The stack being used</param>
+                        /// <param name="argument">A custom argument to setup the usage</param>
+                        /// <returns>The enumerator for the coroutine</returns>
                         protected IEnumerator DoUseWrapper(Stack stack, object argument)
                         {
                             try
@@ -93,21 +118,13 @@ namespace WindRose
                             }
                         }
 
-                        /**
-                         * Uses a stack. The stack must belong to an inventory managed by this strategy, and no other element must be being used
-                         *   right now (this will also imply: there will not be chained usages).
-                         */
-                        public void Use(Stack stack)
-                        {
-                            Use(stack, null);
-                        }
-
-                        /**
-                         * The same, but also accepts an argument. `null` value is allowed and will trigger the default behaviour. Strategies may
-                         *   ignore any passed argument silently, but a `null` case will always be allowed. However, if you want to pass `null`
-                         *   as a constant then you can use the single argument version.
-                         */
-                        public void Use(Stack stack, object argument)
+                        /// <summary>
+                        ///   Uses a stack. It must belong to this inventory manager, and no stack must be already
+                        ///     being used. A coroutine will be spawned under the hood.
+                        /// </summary>
+                        /// <param name="stack">The stack to use</param>
+                        /// <param name="argument">An optional argument to setup the usage</param>
+                        public void Use(Stack stack, object argument = null)
                         {
                             if (currentlyUsingAnItem)
                             {

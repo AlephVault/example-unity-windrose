@@ -15,18 +15,20 @@ namespace WindRose
                 using World.Layers.Ceiling;
                 using Objects;
 
+                /// <summary>
+                ///   This subtype of ceiling layer is shown when no "allowed
+                ///     objects" are under it, and will be hidden/translucent
+                ///     (such behaviour may be chosen) when at least one "allowed
+                ///     object" is under it.
+                /// </summary>
                 [RequireComponent(typeof(BoxCollider2D))]
                 [RequireComponent(typeof(Ceiling))]
                 public class LocallyTriggeredCeiling : MonoBehaviour
                 {
-                    /**
-                     * Shows/Hides the ceiling depending on the triggers on it.
-                     */
-
-                    /**
-                     * These triggers are the allowed ones - when they collide to this
-                     *   ceiling, the ceiling will change its state.
-                     */
+                    /// <summary>
+                    ///   The allowed objects. They may be changed in runtime to
+                    ///     allow more objects to be triggers of show/hide objects.
+                    /// </summary>
                     [SerializeField]
                     private List<GameObject> triggeringObjects;
                     private HashSet<GameObject> triggeringObjectsSet;
@@ -36,17 +38,26 @@ namespace WindRose
                      */
                     private HashSet<GameObject> currentStayingTriggers;
 
-                    /**
-                     * Display state to change when allowed triggers are present.
-                     */
+                    /// <summary>
+                    ///   The display mode to be used when an allowed object
+                    ///     is under the ceiling. <see cref="Ceiling.DisplayMode.VISIBLE"/>
+                    ///     cannot be chosen: it will be replaced by
+                    ///     <see cref="Ceiling.DisplayMode.VISIBLE"/> instead.
+                    /// </summary>
                     [SerializeField]
                     private Ceiling.DisplayMode displayModeWhenTriggering;
 
-                    /**
-                     * Width and Height to account for on this local triggering.
-                     */
+                    /// <summary>
+                    ///   Width of this object. It should match what is painted on
+                    ///     its tilemap.
+                    /// </summary>
                     [SerializeField]
                     private uint width;
+
+                    /// <summary>
+                    ///   Height of this object. It should match what is painted on
+                    ///     its tilemap.
+                    /// </summary>
                     [SerializeField]
                     private uint height;
 
@@ -95,21 +106,37 @@ namespace WindRose
                         currentStayingTriggers.Remove(gameObject);
                     }
 
+                    /// <summary>
+                    ///   Adds an allowed object.
+                    /// </summary>
+                    /// <param name="trigger">The object to add</param>
                     public void AddTrigger(GameObject trigger)
                     {
                         triggeringObjectsSet.Add(trigger);
                     }
 
+                    /// <summary>
+                    ///   Removes an allowed object.
+                    /// </summary>
+                    /// <param name="trigger">The object to remove</param>
                     public void RemoveTrigger(GameObject trigger)
                     {
                         triggeringObjectsSet.Remove(trigger);
                     }
 
+                    /// <summary>
+                    ///   Checks whether the object is allowed.
+                    /// </summary>
+                    /// <param name="trigger">The object to check</param>
+                    /// <returns>Whether it is allowed</returns>
                     public bool HasTrigger(GameObject trigger)
                     {
                         return triggeringObjectsSet.Contains(trigger);
                     }
 
+                    /// <summary>
+                    ///   Removes all the triggered objects.
+                    /// </summary>
                     public void ClearTriggers()
                     {
                         triggeringObjectsSet.Clear();

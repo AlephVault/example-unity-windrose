@@ -12,25 +12,49 @@ namespace WindRose
             using Support.Types;
             using Types.Inventory.Stacks;
 
+            /// <summary>
+            ///   <para>
+            ///     Inventory management strategy holders are the live
+            ///       counterpart of the <see cref="ScriptableObjects.Inventory.Items.Item"/>
+            ///       and their instantiated <see cref="Stack"/> objects, since
+            ///       the management strategy holders perform the actual logic
+            ///       of each aspect.
+            ///   </para>
+            ///   <para>
+            ///     In the same game object, instances of the other strategy types
+            ///       must be added (usage, spatial, container positioning, and rendering).
+            ///   </para>
+            /// </summary>
             public class InventoryManagementStrategyHolder : MonoBehaviour
             {
-                /**
-                 * This class is the counterpart of the item and the stack:
-                 *   the pack manager will hold the strategies being the
-                 *   respective counterparts of the stack strategies and
-                 *   the item strategies (item-stack-pack will work their
-                 *   strategies in an aligned way).
-                 */
-
+                /// <summary>
+                ///   Tells when an invalid strategy is chosen as the value
+                ///     of <see cref="mainUsageStrategy"/>, or that property
+                ///     is null.
+                /// </summary>
                 public class InvalidStrategyComponentException : Types.Exception
                 {
                     public InvalidStrategyComponentException(string message) : base(message) { }
                 }
 
+                /// <summary>
+                ///   Tells when a stack is rejected in the inventory due to
+                ///     having invalid quantity value, not having the required
+                ///     spatial strategy, or having an incompatible usage strategy.
+                /// </summary>
                 public class StackRejectedException : Types.Exception
                 {
+                    /// <summary>
+                    ///   Rejection may involve quantity of invalid type, not having
+                    ///     an instance of <see cref="ScriptableObjects.Inventory.Items.SpatialStrategies.ItemSpatialStrategy"/>
+                    ///     suitable for this inventory, or not having a compatible
+                    ///     main usage strategy.
+                    /// </summary>
                     public enum RejectionReason { InvalidQuantity, IncompatibleSpatialStrategy, IncompatibleUsageStrategy }
 
+                    /// <summary>
+                    ///   The reason of the rejection.
+                    /// </summary>
                     public readonly RejectionReason Reason;
 
                     public StackRejectedException(RejectionReason reason) : base(string.Format("The stack cannot be accepted into this inventory. Reason: {0}", reason))
@@ -57,10 +81,10 @@ namespace WindRose
                  */
                 private ManagementStrategies.UsageStrategies.InventoryUsageManagementStrategy[] sortedUsageStrategies;
 
-                /**
-                 * This is the main usage strategy this holder will have. This one is required, and must be present
-                 *   among the components.
-                 */
+                /// <summary>
+                ///   This is the main usage strategy this holder will have. This one is required, and must be present
+                ///     among the components.
+                /// </summary>
                 [SerializeField]
                 private ManagementStrategies.UsageStrategies.InventoryUsageManagementStrategy mainUsageStrategy;
 
@@ -70,9 +94,11 @@ namespace WindRose
                  */
                 private ManagementStrategies.RenderingStrategies.InventoryRenderingManagementStrategy renderingStrategy;
 
-                /**
-                 * Default setting to apply when calling PUT with a null position. 
-                 */
+                /// <summary>
+                ///   Determines how should this handler behave when calling <see cref="Put(object, object, Stack, out object, bool?)"/>
+                ///     and leaving the 5th parameter (also named <c>optimalPutOnNullPosition</c>) null: in such case, the value
+                ///     of this field will be taken. The meaning of each possible value is already described in the Put function.
+                /// </summary>
                 [SerializeField]
                 private bool optimalPutOnNullPosition = true;
 
@@ -96,48 +122,101 @@ namespace WindRose
                  *********************************************************************************************
                  *********************************************************************************************/
 
+                /// <summary>
+                ///   Given a particular container ID, this method returns an iterable traversing all the stacks
+                ///     in such container.
+                /// </summary>
+                /// <param name="containerPosition">The ID of the spatial container</param>
+                /// <param name="reverse">Whether the items should be traversed in reverse or straight way</param>
+                /// <returns>An iterable of pairs (in-container position, stack)</returns>
                 public IEnumerable<Tuple<object, Stack>> StackPairs(object containerPosition, bool reverse = false)
                 {
                     positioningStrategy.CheckPosition(containerPosition);
                     return spatialStrategy.StackPairs(containerPosition, reverse);
                 }
 
+                /// <summary>
+                ///   Finds a stack located in a particular container and a particular position.
+                /// </summary>
+                /// <param name="containerPosition">The ID of the spatial container</param>
+                /// <param name="stackPosition">The in-container position to check</param>
+                /// <returns>A stack occupying that position</returns>
                 public Stack Find(object containerPosition, object stackPosition)
                 {
                     positioningStrategy.CheckPosition(containerPosition);
                     return spatialStrategy.Find(containerPosition, stackPosition);
                 }
 
+                /// <summary>
+                ///   Finds all the stacks in a particular container that satisfy a condition.
+                /// </summary>
+                /// <param name="containerPosition">The ID of the spatial container</param>
+                /// <param name="predicate">The predicate they must satisfy</param>
+                /// <param name="reverse">Whether the items should be traversed in reverse or straight way</param>
+                /// <returns>An iterable of stacks satisfying the predicate</returns>
                 public IEnumerable<Stack> FindAll(object containerPosition, Func<Tuple<object, Stack>, bool> predicate, bool reverse = false)
                 {
                     positioningStrategy.CheckPosition(containerPosition);
                     return spatialStrategy.FindAll(containerPosition, predicate, reverse);
                 }
 
+                /// <summary>
+                ///   Finds all the stacks in a particular container of a particular item.
+                /// </summary>
+                /// <param name="containerPosition">The ID of the spatial container</param>
+                /// <param name="item">The item they have to be of</param>
+                /// <param name="reverse">Whether the items should be traversed in reverse or straight way</param>
+                /// <returns>An iterable of stacks being of that item</returns>
                 public IEnumerable<Stack> FindAll(object containerPosition, ScriptableObjects.Inventory.Items.Item item, bool reverse = false)
                 {
                     positioningStrategy.CheckPosition(containerPosition);
                     return spatialStrategy.FindAll(containerPosition, item, reverse);
                 }
 
+                /// <summary>
+                ///   Returns the first item inside the given container.
+                /// </summary>
+                /// <param name="containerPosition">The ID of the spatial container</param>
+                /// <returns>The first item inside that container</returns>
                 public Stack First(object containerPosition)
                 {
                     positioningStrategy.CheckPosition(containerPosition);
                     return spatialStrategy.First(containerPosition);
                 }
 
+                /// <summary>
+                ///   Returns the last item inside the given container.
+                /// </summary>
+                /// <param name="containerPosition">The ID of the spatial container</param>
+                /// <returns>The last item inside that container</returns>
                 public Stack Last(object containerPosition)
                 {
                     positioningStrategy.CheckPosition(containerPosition);
                     return spatialStrategy.Last(containerPosition);
                 }
 
+                /// <summary>
+                ///   Like <see cref="FindAll(object, Func{Tuple{object, Stack}, bool}, bool)"/>
+                ///     but only returns the first matched stack, or null.
+                /// </summary>
+                /// <param name="containerPosition">The ID of the spatial container</param>
+                /// <param name="predicate">The predicate they must satisfy</param>
+                /// <param name="reverse">Whether the items should be traversed in reverse or straight way</param>
+                /// <returns>The first stack matched</returns>
                 public Stack FindOne(object containerPosition, Func<Tuple<object, Stack>, bool> predicate, bool reverse = false)
                 {
                     positioningStrategy.CheckPosition(containerPosition);
                     return spatialStrategy.FindOne(containerPosition, predicate, reverse);
                 }
 
+                /// <summary>
+                ///   Like <see cref="FindAll(object, ScriptableObjects.Inventory.Items.Item, bool)"/>
+                ///     but only returns the first matched stack, or null.
+                /// </summary>
+                /// <param name="containerPosition">The ID of the spatial container</param>
+                /// <param name="predicate">The predicate they must satisfy</param>
+                /// <param name="reverse">Whether the items should be traversed in reverse or straight way</param>
+                /// <returns>The first stack matched</returns>
                 public Stack FindOne(object containerPosition, ScriptableObjects.Inventory.Items.Item item, bool reverse = false)
                 {
                     positioningStrategy.CheckPosition(containerPosition);
@@ -245,6 +324,37 @@ namespace WindRose
                     }
                 }
 
+                /// <summary>
+                ///   Puts a stack (that must not belong to any inventory) in a specified container.
+                /// </summary>
+                /// <param name="containerPosition">The ID of the spatial container</param>
+                /// <param name="stackPosition">The in-container position to use - it may be null to let the inventory choose one instead</param>
+                /// <param name="stack">The stack to add</param>
+                /// <param name="finalStackPosition">The returned final position of the stack - if null, this means the stack was optimally distributed among existing "equal" stacks</param>
+                /// <param name="optimalPutOnNullPosition">
+                ///   <para>Whether an optimal put should be used on null stack position. options are:</para>
+                ///   <list type="bullet">
+                ///     <item>
+                ///       <term><c>true</c></term>
+                ///       <description>On null input position, this stack will not be added at first but instead tried to distribute among existing "equal" stacks.</description>
+                ///     </item>
+                ///     <item>
+                ///       <term><c>false</c></term>
+                ///       <description>
+                ///         On null input position, this stack will be added at the first-free available position (valid for the spatial strategies to be
+                ///           considered).
+                ///       </description>
+                ///     </item>
+                ///     <item>
+                ///       <term><c>null</c></term>
+                ///       <description>
+                ///         Makes the value of this parameter be set from <see cref="optimalPutOnNullPosition"/> property, whose meaning will be the same
+                ///           as the previous non-null options.
+                ///       </description>
+                ///     </item>
+                ///   </list> 
+                /// </param>
+                /// <returns>Whether the stack could be put in the inventory's container (i.e. available position was appropriately got)</returns>
                 public bool Put(object containerPosition, object stackPosition, Stack stack, out object finalStackPosition, bool? optimalPutOnNullPosition = null)
                 {
                     if (!stack.QuantifyingStrategy.HasAllowedQuantity())
@@ -289,6 +399,12 @@ namespace WindRose
                     }
                 }
 
+                /// <summary>
+                ///   Removes the stack at certain position inside a container.
+                /// </summary>
+                /// <param name="containerPosition">The ID of the spatial container</param>
+                /// <param name="stackPosition">The stack position to pop out of the inventory, if present</param>
+                /// <returns>Whether an element was found and removed at that position</returns>
                 public bool Remove(object containerPosition, object stackPosition)
                 {
                     positioningStrategy.CheckPosition(containerPosition);
@@ -300,12 +416,46 @@ namespace WindRose
                     return result;                    
                 }
 
+                /// <summary>
+                ///   Merges two stacks in the same containers, provided both stacks are "mergeable" between them.
+                ///     The source stack will be merged into the destination stack, and both stacks will be merged
+                ///     creating a new stack with added quantities and interpolated properties. For this to work,
+                ///     stacks must have usage strategies that CAN be interpolated.
+                /// </summary>
+                /// <param name="containerPosition">The ID of the spatial container</param>
+                /// <param name="destinationStackPosition">The destination stack position</param>
+                /// <param name="sourceStackPosition">The source stack position</param>
+                /// <returns>
+                ///   Whether both source and destination stacks were found, quantities could be added, and they
+                ///     were compatible enough to succeed in the final step of merge/interpolation.
+                /// </returns>
+                /// <remarks>
+                ///   If quantities are saturated, there will be a partial merge and part of the source stack will
+                ///     still exist. Otherwise, the merge will be total and the source stack will be deleted.
+                /// </remarks>
                 public bool Merge(object containerPosition, object destinationStackPosition, object sourceStackPosition)
                 {
                     positioningStrategy.CheckPosition(containerPosition);
                     return Merge(containerPosition, destinationStackPosition, this, containerPosition, sourceStackPosition);
                 }
 
+                /// <summary>
+                ///   See <see cref="Merge(object, object, object)"/>. This is an alternate version (actually: this is the
+                ///     generic one) which can merge across different inventories. The logic will remain the same.
+                /// </summary>
+                /// <param name="destinationContainerPosition">The ID of the destination spatial container</param>
+                /// <param name="destinationStackPosition">The position of the destination stack</param>
+                /// <param name="sourceHolder">The source inventory managemnt strategy holder (our current instance is the destination one)</param>
+                /// <param name="sourceContainerPosition">The ID of the source spatial container</param>
+                /// <param name="sourceStackPosition">The position of the source stack</param>
+                /// <returns>
+                ///   Whether both source and destination stacks were found, quantities could be added, and they
+                ///     were compatible enough to succeed in the final step of merge/interpolation.
+                /// </returns>
+                /// <remarks>
+                ///   If quantities are saturated, there will be a partial merge and part of the source stack will
+                ///     still exist. Otherwise, the merge will be total and the source stack will be deleted.
+                /// </remarks>
                 public bool Merge(object destinationContainerPosition, object destinationStackPosition,
                                   InventoryManagementStrategyHolder sourceHolder, object sourceContainerPosition, object sourceStackPosition)
                 {
@@ -344,6 +494,16 @@ namespace WindRose
                     return false;
                 }
 
+                /// <summary>
+                ///   Takes part of the specified stack. Just a quantity, and not necessarily the whole stack.
+                ///     If this method fails, it returns null (failure may occur by having a bigger quantity
+                ///     than what may be taken, or by the element not existing).
+                /// </summary>
+                /// <param name="containerPosition">The ID of the spatial container</param>
+                /// <param name="stackPosition">The source stack position</param>
+                /// <param name="quantity">The quantity to take</param>
+                /// <param name="disallowEmpty">Whether we disallow the case of taking ALL the quantity, or we allow it</param>
+                /// <returns>A stack with the same specs, except for the quantity, or null if such quantity could not be taken</returns>
                 public Stack Take(object containerPosition, object stackPosition, object quantity, bool disallowEmpty)
                 {
                     positioningStrategy.CheckPosition(containerPosition);
@@ -368,6 +528,17 @@ namespace WindRose
                     return null;
                 }
 
+                /// <summary>
+                ///   Splits a stack in two, by taking a particular quantity of the source stack and creating a
+                ///     new one.
+                /// </summary>
+                /// <param name="sourceContainerPosition">The ID of the source spatial container</param>
+                /// <param name="sourceStackPosition">The position of the source stack</param>
+                /// <param name="quantity">The quantity to take from the source stack</param>
+                /// <param name="newStackContainerPosition">The ID of the destination spatial container</param>
+                /// <param name="newStackPosition">The position of the destination stack</param>
+                /// <param name="finalNewStackPosition">Output parameter returning the final position given for the new stack</param>
+                /// <returns>Whether the split could be performed (stack was found, quantity was available, and destination was free)</returns>
                 public bool Split(object sourceContainerPosition, object sourceStackPosition, object quantity,
                                   object newStackContainerPosition, object newStackPosition, out object finalNewStackPosition)
                 {
@@ -392,10 +563,19 @@ namespace WindRose
                     return false;
                 }
 
-                public bool Use(object containerPosition, object sourceStackPosition)
+                /// <summary>
+                ///   USES a stack in certain container and position. Using the item is an interaction
+                ///     between the usage strategy in the item/stack, and the usage strategy in the
+                ///     inventory (which is the one that has logic). The argument given to the use
+                ///     callback will be <c>null</c>.
+                /// </summary>
+                /// <param name="containerPosition">The ID of the spatial container</param>
+                /// <param name="stackPosition">The position of the stack being used</param>
+                /// <returns>Whether the usage interaction could be run</returns>
+                public bool Use(object containerPosition, object stackPosition)
                 {
                     positioningStrategy.CheckPosition(containerPosition);
-                    Stack found = Find(containerPosition, sourceStackPosition);
+                    Stack found = Find(containerPosition, stackPosition);
                     if (found != null)
                     {
                         mainUsageStrategy.Use(found);
@@ -404,6 +584,16 @@ namespace WindRose
                     return false;
                 }
 
+                /// <summary>
+                ///   USES a stack in certain container and position. Using the item is an interaction
+                ///     between the usage strategy in the item/stack, and the usage strategy in the
+                ///     inventory (which is the one that has logic). The argument given to the use
+                ///     callback will be also given.
+                /// </summary>
+                /// <param name="containerPosition">The ID of the spatial container</param>
+                /// <param name="stackPosition">The position of the stack being used</param>
+                /// <param name="argument">The argument for the usage command</param>
+                /// <returns>Whether the usage interaction could be run</returns>
                 public bool Use(object containerPosition, object sourceStackPosition, object argument)
                 {
                     positioningStrategy.CheckPosition(containerPosition);
@@ -416,6 +606,9 @@ namespace WindRose
                     return false;
                 }
 
+                /// <summary>
+                ///   Clears ALL THE INVENTORY. Deleting all the stacks from all the inventories.
+                /// </summary>
                 public void Clear()
                 {
                     spatialStrategy.Clear();
@@ -447,9 +640,11 @@ namespace WindRose
                     }
                 }
 
-                /**
-                 * Blinks a single stack on a container in the inventory.
-                 */
+                /// <summary>
+                ///   Refreshes a stack in the rendering.
+                /// </summary>
+                /// <param name="containerPosition">The ID of the container</param>
+                /// <param name="stackPosition">The position of the stack</param>
                 public void Blink(object containerPosition, object stackPosition)
                 {
                     DoBlink(containerPosition, stackPosition, Find(containerPosition, stackPosition));
@@ -463,9 +658,10 @@ namespace WindRose
                     }
                 }
 
-                /**
-                 * Blinks all the stacks in a container inside the inventory.
-                 */
+                /// <summary>
+                ///   Refreshes all the stacks of a container in the rendering.
+                /// </summary>
+                /// <param name="containerPosition">The ID of the container</param>
                 public void Blink(object containerPosition)
                 {
                     IEnumerable<Tuple<object, Stack>> pairs = null;
@@ -482,9 +678,9 @@ namespace WindRose
                     DoBlink(containerPosition, pairs);
                 }
 
-                /**
-                 * Blinks the whole inventory.
-                 */
+                /// <summary>
+                ///   Refreshes all the stacks -in the inventory- in the rendering.
+                /// </summary>
                 public void Blink()
                 {
                     foreach(object position in positioningStrategy.Positions())
@@ -499,6 +695,11 @@ namespace WindRose
                  *********************************************************************************************
                  *********************************************************************************************/
 
+                /// <summary>
+                ///   Imports some serialized data and replaces the current content of the
+                ///     inventory manager with the parsed content from the serialized data.
+                /// </summary>
+                /// <param name="serializedInventory">The data to import for this inventory</param>
                 public void Import(Types.Inventory.SerializedInventory serializedInventory)
                 {
                     Clear();
@@ -516,6 +717,11 @@ namespace WindRose
                     }
                 }
 
+                /// <summary>
+                ///   Counterpart of <see cref="Import(Types.Inventory.SerializedInventory)"/>, this method
+                ///     serializes the content of the inventory.
+                /// </summary>
+                /// <returns>The serialized content</returns>
                 public Types.Inventory.SerializedInventory Export()
                 {
                     Types.Inventory.SerializedInventory serializedInventory = new Types.Inventory.SerializedInventory();

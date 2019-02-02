@@ -16,6 +16,16 @@ namespace WindRose
             {
                 namespace Floor
                 {
+                    /// <summary>
+                    ///   <para>
+                    ///     The floor layer. This layer is mandatory and will hold the
+                    ///       floors, which in turn hold the tilemaps to be rendered.
+                    ///   </para>
+                    ///   <para>
+                    ///     This component depends on a <see cref="Grid"/> component,
+                    ///       and its cell size must be set for the children tilemaps.
+                    ///   </para>
+                    /// </summary>
                     [RequireComponent(typeof(Grid))]
                     public class FloorLayer : MapLayer
                     {
@@ -80,9 +90,10 @@ namespace WindRose
                             };
                         }
 
-                        /**
-                         * Allows iterating over its tilemaps (perhaps to perform custom logic?).
-                         */
+                        /// <summary>
+                        ///   List all the tilemaps. They will be extracted from its children
+                        ///     <see cref="Floors.Floor"/> objects.
+                        /// </summary>
                         public IEnumerable<Tilemap> Tilemaps
                         {
                             get

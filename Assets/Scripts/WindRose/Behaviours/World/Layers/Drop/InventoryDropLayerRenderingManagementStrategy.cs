@@ -17,22 +17,21 @@ namespace WindRose
             {
                 namespace Drop
                 {
+                    /// <summary>
+                    ///   This strategy renders a matrix of M x N containers, since it will be related to a map's
+                    ///     <see cref="DropLayer"/>. It will do this by creating/refreshing/destroying a lot of
+                    ///     <see cref="SimpleDropContainerRenderer"/> instances (one on each map's position).
+                    /// </summary>
                     public class InventoryDropLayerRenderingManagementStrategy : InventorySimpleRenderingManagementStrategy
                     {
-                        /**
-                         * This is the renderer for a drop layer. It is directly connected to the drop layer,
-                         *   will be its one and only renderer, and will create/destroy related drop items
-                         *   (they are just a reflection of the underlying stack and don't have interaction
-                         *   on their own).
-                         */
-
                         private SimpleDropContainerRenderer[,] dropContainers;
                         // We are completely sure we have a PositioningStrategy in the underlying object
                         private InventoryMapSizedPositioningManagementStrategy positioningStrategy;
 
-                        /**
-                         * This is a prefab you have to set. See more details in the `SimpleDropContainer` class.
-                         */
+                        /// <summary>
+                        ///   A prefab that MUST be set. It will be used to spawn the renderers for the
+                        ///     drop containers.
+                        /// </summary>
                         [SerializeField]
                         private SimpleDropContainerRenderer containerPrefab;
 
@@ -80,25 +79,50 @@ namespace WindRose
                             }
                         }
 
+                        /// <summary>
+                        ///   <para>
+                        ///     Refreshing the stack involves maybe-instantiating a container renderer, and then
+                        ///       refresh-putting an item there.
+                        ///   </para>
+                        ///   <para>
+                        ///     See <see cref="InventoryRenderingManagementStrategy.StackWasUpdated(object, object, Types.Inventory.Stacks.Stack)"/>
+                        ///       for more information on the method's signature.
+                        ///   </para>
+                        /// </summary>
+                        /// <param name="containerPosition"></param>
+                        /// <param name="stackPosition"></param>
+                        /// <param name="icon"></param>
+                        /// <param name="caption"></param>
+                        /// <param name="quantity"></param>
                         protected override void StackWasUpdated(object containerPosition, int stackPosition, Sprite icon, string caption, object quantity)
                         {
                             // Adds a stack to a container (creates the container if absent).
                             Vector2Int containerVector = (Vector2Int)containerPosition;
-                            int stackIndex = (int)stackPosition;
                             SimpleDropContainerRenderer container = getContainerFor(containerVector, true);
-                            container.RefreshWithPutting(stackIndex, icon, caption, quantity);
+                            container.RefreshWithPutting(stackPosition, icon, caption, quantity);
                         }
 
+                        /// <summary>
+                        ///   <para>
+                        ///     Removing a stack involves removing the item from the container, and then maybe-destroying
+                        ///       the container if empty.
+                        ///   </para>
+                        ///   <para>
+                        ///     See <see cref="InventoryRenderingManagementStrategy.StackWasRemoved(object, object)"/>
+                        ///       for more information on the method's signature.
+                        ///   </para>
+                        /// </summary>
+                        /// <param name="containerPosition"></param>
+                        /// <param name="stackPosition"></param>
                         protected override void StackWasRemoved(object containerPosition, int stackPosition)
                         {
                             // Removes a stack from a container (if the container exists).
                             // Removes the container if empty.
                             Vector2Int containerVector = (Vector2Int)containerPosition;
-                            int stackIndex = (int)stackPosition;
                             SimpleDropContainerRenderer container = getContainerFor(containerVector, false);
                             if (container != null)
                             {
-                                container.RefreshWithRemoving(stackIndex);
+                                container.RefreshWithRemoving(stackPosition);
                                 if (container.Empty())
                                 {
                                     Destroy(container);
@@ -107,6 +131,9 @@ namespace WindRose
                             }
                         }
 
+                        /// <summary>
+                        ///   Clearing all the containers involves destroying the renderer objects.
+                        /// </summary>
                         public override void EverythingWasCleared()
                         {
                             // Destroys all the containers.

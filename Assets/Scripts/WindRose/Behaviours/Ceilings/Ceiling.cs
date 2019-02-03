@@ -15,7 +15,6 @@ namespace WindRose
             /// <summary>
             ///    Ceilings are mini-tilemaps that will be painted with custom
             ///      tiles and will provide features to hide/show/make-translucent.
-            ///      
             /// </summary>
             [RequireComponent(typeof(Tilemap))]
             [RequireComponent(typeof(TilemapRenderer))]

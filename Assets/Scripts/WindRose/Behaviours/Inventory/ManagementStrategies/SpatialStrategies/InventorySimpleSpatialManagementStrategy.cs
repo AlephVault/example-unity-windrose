@@ -15,14 +15,15 @@ namespace WindRose
                     using ScriptableObjects.Inventory.Items.SpatialStrategies;
                     using Types.Inventory.Stacks;
 
+                    /// <summary>
+                    ///   Simple spatial management strategies involve indexed accesses. They are a finite or infinite
+                    ///     array managers.
+                    /// </summary>
                     public abstract class InventorySimpleSpatialManagementStrategy : InventorySpatialManagementStrategy
                     {
-                        /**
-                         * This spatial strategy involves an inventory with indexed positions like
-                         *   Baldur's Gate characters' bags. There will be two subclasses here:
-                         *   Finite and infinite containers.
-                         */
-
+                        /// <summary>
+                        ///   A simple container mantains a sparse array of stacks in the container.
+                        /// </summary>
                         public abstract class SimpleSpatialContainer : SpatialContainer
                         {
                             // Flags to occupy the respective positions
@@ -32,9 +33,9 @@ namespace WindRose
                             {
                             }
 
-                            /**
-                             * Finds the first empty position to put the element in.
-                             */
+                            /// <summary>
+                            ///   Find the first free slot.
+                            /// </summary>
                             public override object FirstFree(Stack stack)
                             {
                                 for(int index = 0; index < elements.Count; index++)
@@ -53,6 +54,9 @@ namespace WindRose
                                 return null;
                             }
 
+                            /// <summary>
+                            ///   Occupies a particular (integer) slot for the stack.
+                            /// </summary>
                             protected override void Occupy(object position, Stack stack)
                             {
                                 int index = (int)position;
@@ -65,9 +69,9 @@ namespace WindRose
                                 elements[index] = true;
                             }
 
-                            /**
-                             * Enumerates the positions being occupied.
-                             */
+                            /// <summary>
+                            ///   Enumerates all the indices being occupied.
+                            /// </summary>
                             protected override IEnumerable<object> Positions(bool reverse)
                             {
                                 if (!reverse)
@@ -86,6 +90,9 @@ namespace WindRose
                                 }
                             }
 
+                            /// <summary>
+                            ///   Releases the index being occupied.
+                            /// </summary>
                             protected override void Release(object position, Stack stack)
                             {
                                 // We will assume the position exists. We clear it.
@@ -97,35 +104,36 @@ namespace WindRose
                                 }
                             }
 
-                            /**
-                             * Tells whether the position is occupied by checking the index.
-                             */
+                            /// <summary>
+                            ///   Tells the position occupancy by checking the index.
+                            /// </summary>
                             private bool StackPositionIsOccupied(object position)
                             {
                                 int index = (int)position;
                                 return elements.Count > index && elements[index];
                             }
 
-                            /**
-                             * Returns the position if it is occupied. Otherwise, returns null.
-                             */
+                            /// <summary>
+                            ///   Returns the same index if it is occupied. Otherwise,
+                            ///     returns null.
+                            /// </summary>
                             protected override object Search(object position)
                             {
                                 return StackPositionIsOccupied(position) ? position : null;
                             }
 
-                            /**
-                             * Tells whether the position is available to add an element.
-                             */
+                            /// <summary>
+                            ///   Checks availability directly on the index.
+                            /// </summary>
                             protected override bool StackPositionIsAvailable(object position, Stack stack)
                             {
                                 return !StackPositionIsOccupied(position);
                             }
 
-                            /**
-                             * Tells whether a position is valid in terms of being an index and with respect
-                             *   to the Size (as a limit) if any.
-                             */
+                            /// <summary>
+                            ///   Validates the position is an integer one, and it is appropriately valued
+                            ///     and bounded.
+                            /// </summary>
                             protected override StackPositionValidity ValidateStackPosition(object position, Stack stack)
                             {
                                 if (!(position is int)) return StackPositionValidity.InvalidType;
@@ -139,14 +147,21 @@ namespace WindRose
                                 return StackPositionValidity.Valid;
                             }
 
+                            /// <summary>
+                            ///   This one must be implemented. It is the upper bound check for these containers.
+                            /// </summary>
                             protected abstract bool ValidateStackPositionAgainstUpperBound(int index);
                         }
 
-                        /**
-                         * Get the max size. 0 means "infinite".
-                         */
+                        /// <summary>
+                        ///   Gets the maximum size of each container. 0 means "infinite".
+                        /// </summary>
+                        /// <returns>The maximum size of each container</returns>
                         public abstract int GetSize();
 
+                        /// <summary>
+                        ///   Counterpart type is <see cref="ItemSimpleSpatialStrategy"/>.
+                        /// </summary>
                         protected override Type GetItemSpatialStrategyCounterpartType()
                         {
                             return typeof(ItemSimpleSpatialStrategy);

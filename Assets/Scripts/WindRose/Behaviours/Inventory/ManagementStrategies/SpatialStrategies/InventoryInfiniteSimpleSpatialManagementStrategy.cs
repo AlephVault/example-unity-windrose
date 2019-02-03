@@ -14,12 +14,15 @@ namespace WindRose
                 {
                     using ScriptableObjects.Inventory.Items.SpatialStrategies;
 
+                    /// <summary>
+                    ///   Infinite containers do not have an upper bound. Their sparse array MAY be huge if high indices
+                    ///     are occupied.
+                    /// </summary>
                     public class InventoryInfiniteSimpleSpatialManagementStrategy : InventorySimpleSpatialManagementStrategy
                     {
-                        /**
-                         * This simple container has a non-constrained size.
-                         */
-
+                        /// <summary>
+                        ///   Infinite simple containers are unbounded.
+                        /// </summary>
                         public class SimpleInfiniteSpatialContainer : SimpleSpatialContainer
                         {
                             public SimpleInfiniteSpatialContainer(InventorySpatialManagementStrategy spatialStrategy, object position) : base(spatialStrategy, position)
@@ -32,16 +35,17 @@ namespace WindRose
                             }
                         }
 
-                        protected override Type GetItemSpatialStrategyCounterpartType()
-                        {
-                            return typeof(ItemSimpleSpatialStrategy);
-                        }
-
+                        /// <summary>
+                        ///   Initializes an unbounded container.
+                        /// </summary>
                         protected override SpatialContainer InitializeContainer(object position)
                         {
                             return new SimpleInfiniteSpatialContainer(this, position);
                         }
 
+                        /// <summary>
+                        ///   The size is always 0 (will count as infinite / unbounded).
+                        /// </summary>
                         public override int GetSize()
                         {
                             return 0;

@@ -19,33 +19,27 @@ namespace WindRose
                     using ScriptableObjects.Inventory.Items;
                     using ScriptableObjects.Inventory.Items.SpatialStrategies;
 
+                    /// <summary>
+                    ///   <para>
+                    ///     Spatial management strategies manage the position of the elements in the containers. 
+                    ///   </para>
+                    ///   <para>
+                    ///     There may be different implementations like standard indexed inventory (e.g. Baldur's Gate)
+                    ///       or matrix inventory with items of different sizes (e.g. Neverwinter Nights).
+                    ///   </para>
+                    ///   <para>
+                    ///     Spatial management strategies will involve handling a particular type of position values
+                    ///       (e.g. integer index, or vector position), and a particular type of inner container, to
+                    ///       run the appropriate logic to find or add items therein.
+                    ///   </para>
+                    /// </summary>
                     public abstract class InventorySpatialManagementStrategy : InventoryManagementStrategy
                     {
-                        /**
-                         * Manages the position of the elements in the inventory. One example could involve mantaining an R-tree
-                         *   or an indexed array to map for matrix-inventories or a linear one. It doesn't just map the appropriate
-                         *   position (array index, string position, x/y coordinate in matrix) but also mantains the reference to
-                         *   the packs being initialized. Several elements will be involved here:
-                         * 
-                         * 1. This strategy, which belongs to an inventory manager.
-                         * 2. SpatialContainer: This is an abstract class (thus making this a sort of abstract factory) that
-                         *    will appropriately map, restrict, translate an arbitrary position to a stored item. Each subclass
-                         *    will handle a particular (arbitrary) data type acting as position.
-                         * 3. A position: This is an arbitrary data type. An integer, a string, a custom structure resembling
-                         *    a byte-sized pair of (x, y) elements,...
-                         * 4. A stack: Our object of interest.
-                         * 
-                         * A position manager will be given to the stack(s) to let them know its container and its position.
-                         *   However: the same will be managed by this strategy. In the same way, this strategy must know how to
-                         *   parse a position and use the appropriate class to associate that position to a new spatial container,
-                         *   which will correspond to particular-respective child strategies.
-                         */
-
-                        /**
-                         * This class just keeps track of the position value and its container, for a specific item strategy.
-                         * The latter is just illustrative: It is a way to say: "I am at position X in container Y, but referring
-                         *   to the spatial strategy Z I have among my strategies."
-                         */
+                        /// <summary>
+                        ///   Represents the current position of a stack in terms of position value, spatial
+                        ///     strategy being accounted in the underlying stack for this purpose, and the
+                        ///     spatial container this position is valid in.
+                        /// </summary>
                         public class QualifiedStackPosition : Support.Types.Tuple<object, ItemSpatialStrategy, SpatialContainer>
                         {
                             public QualifiedStackPosition(object position, ItemSpatialStrategy itemStrategy, SpatialContainer container) : base(position, itemStrategy, container)
@@ -60,16 +54,28 @@ namespace WindRose
                             positionProperty.SetValue(stack, position, null);
                         }
 
+                        /// <summary>
+                        ///   Tells when the item strategy counterpart type chosen for the spatial management
+                        ///     strategy is not a valid type (descending from <see cref="ItemSpatialStrategy"/>).
+                        /// </summary>
                         public class InvalidItemSpatialStrategyCounterpartType : Types.Exception
                         {
                             public InvalidItemSpatialStrategyCounterpartType(string message) : base(message) { }
                         }
 
+                        /// <summary>
+                        ///   Tells when the item strategy does not have a spatial strategy component being
+                        ///     of the compatible type (counterpart) of this strategy.
+                        /// </summary>
                         public class MissingExpectedItemSpatialStrategyCounterpartType : Types.Exception
                         {
                             public MissingExpectedItemSpatialStrategyCounterpartType(string message) : base(message) { }
                         }
 
+                        /// <summary>
+                        ///   Tells whether the specified spatial container ID does not belong to any existing
+                        ///     spatial container in this strategy.
+                        /// </summary>
                         public class SpatialContainerDoesNotExist : Types.Exception
                         {
                             public readonly object Position;
@@ -80,33 +86,33 @@ namespace WindRose
                             }
                         }
 
+                        /// <summary>
+                        ///   Spatial containers are the actual workspaces of the stacks: stacks are added there.
+                        /// </summary>
                         public abstract class SpatialContainer
                         {
-                            /**
-                             * Spatial containers will initialize the workspace of your stacks.
-                             * 
-                             * They will be initialized differently and that will depend exclusively on the spatial strategy.
-                             * They will have such strategy as argument and will fetch needed (settings) data from it.
-                             * 
-                             * They will belong to a in-inventory contaienr position, but that data will just be informative.
-                             * They have nothing to do with such position anyway DIRECTLY, but custom item/stack logic may
-                             *   have something to say and thus the data is potentially needed/useful.
-                             */
-
+                            /// <summary>
+                            ///   Stack position validity errors (or success).
+                            /// </summary>
                             public enum StackPositionValidity { Valid, InvalidType, InvalidValue, OutOfBounds }
 
+                            /// <summary>
+                            ///   Base class for errors regarding these containers.
+                            /// </summary>
                             public class SpatialContainerException : Types.Exception
                             {
                                 public SpatialContainerException(string message) : base(message) { }
                             }
 
+                            /// <summary>
+                            ///   Tells when the given position is not valid for this spatial container
+                            ///     type (e.g. invalid type, invalid value, or unbounded).
+                            /// </summary>
                             public class InvalidPositionException : SpatialContainerException
                             {
-                                /**
-                                 * This class tells that a given position is not valid on this spatial
-                                 *   container. 
-                                 */
-
+                                /// <summary>
+                                ///   The reason of invalidity.
+                                /// </summary>
                                 public readonly StackPositionValidity ErrorType;
 
                                 public InvalidPositionException(string message, StackPositionValidity errorType) : base(message) {
@@ -114,26 +120,40 @@ namespace WindRose
                                 }
                             }
 
+                            /// <summary>
+                            ///   Tells when a requested position (for insertion) is not available.
+                            /// </summary>
                             public class UnavailablePositionException : SpatialContainerException
                             {
                                 public UnavailablePositionException(string message) : base(message) { }
                             }
 
+                            /// <summary>
+                            ///   Tells whether the stack being added already belongs here.
+                            /// </summary>
                             public class StackAlreadyBelongsHereException : SpatialContainerException
                             {
                                 public StackAlreadyBelongsHereException(string message) : base(message) { }
                             }
 
+                            /// <summary>
+                            ///   Tells whether the stack being removed does not belong here.
+                            /// </summary>
                             public class StackDoesNotBelongHereException : SpatialContainerException
                             {
                                 public StackDoesNotBelongHereException(string message) : base(message) { }
                             }
 
-                            /**
-                             * Position of this container inside its Spatial Strategy. This value is only informative,
-                             *   and will only be useful for display renderers.
-                             */
+                            /// <summary>
+                            ///   The position of this container inside the inventory. Actually, this value
+                            ///     is only useful in the context of rendering and is tightly related to
+                            ///     <see cref="PositioningStrategies.InventoryPositioningManagementStrategy"/>.
+                            /// </summary>
                             public readonly object Position;
+
+                            /// <summary>
+                            ///   The spatial management strategy owning this ccontainer.
+                            /// </summary>
                             public readonly InventorySpatialManagementStrategy SpatialStrategy;
                             private Dictionary<object, Stack> stacks = new Dictionary<object, Stack>();
 
@@ -143,59 +163,93 @@ namespace WindRose
                                 Position = position;
                             }
 
-                            /**
-                             * Validates whether a position is VALID in terms of type, value, and bounds.
-                             * Bounds, in this context, will relate to settings and also to the given stack, if any.
-                             * There are certain situations where the stack may be null. This situation is useful
-                             *   to the Search semantic. Mutating semantics will require the stack, so it will not
-                             *   be null there.
-                             */
+                            /// <summary>
+                            ///   Validates whether a position is VALID in terms of type, value, and bounds.
+                            ///   Bounds, in this context, will relate to settings and also to the given stack, if any.
+                            ///   There are certain situations where the stack may be null. This situation is useful
+                            ///     to the Search semantic.Mutating semantics will require the stack, so it will not
+                            ///     be null there.
+                            /// </summary>
                             protected abstract StackPositionValidity ValidateStackPosition(object position, Stack stack);
-                            /**
-                             * This method has to behave as follows:
-                             * - Considering whether the stack is added, or not, to this container.
-                             *   If the stack is added, we should exclude its position/dimensions. This happend because
-                             *     in this case, the stack is one being MOVED, not added.
-                             * - The position was already validated beforehand.
-                             */
+
+                            /// <summary>
+                            ///   This method has to behave as follows:
+                            ///   <list type="bullet">
+                            ///     <item>
+                            ///       <description>
+                            ///         Considering whether the stack is added, or not, to this container.
+                            ///         If the stack is added, we should exclude its position/dimensions. This happend
+                            ///           because in this case, the stack is one being MOVED, not added.
+                            ///       </description>
+                            ///     </item>
+                            ///     <item>
+                            ///       <description>
+                            ///         The position was already validated beforehand.
+                            ///       </description>
+                            ///     </item>
+                            ///   </list>
+                            /// </summary>
                             protected abstract bool StackPositionIsAvailable(object position, Stack stack);
-                            /**
-                             * This function is used to map a position against a stack index. To this point, the
-                             *   position is considered valid and authorized, and the stack was added to (or MOVED
-                             *   to, in the moving semantic) its new position. The previous position was released,
-                             *   and the previous position was also released.
-                             * 
-                             * This function should not trigger any exception or veto operation.
-                             */
+
+                            /// <summary>
+                            ///   <para>
+                            ///     This function is used to map a position against a stack index. To this point, the
+                            ///       position is considered valid and authorized, and the stack was added to (or MOVED
+                            ///       to, in the moving semantic) its new position.The previous position was released,
+                            ///       and the previous position was also released.
+                            ///   </para>
+                            ///   <para>
+                            ///     This function should not trigger any exception or veto operation.
+                            ///   </para>
+                            /// </summary>
                             protected abstract void Occupy(object position, Stack stack);
-                            /**
-                             * This function is used to release an existing position. You are guaranteed that the
-                             *   given stack is the one being released from this inventory. You must get its
-                             *   dimensions and combine them with the position to perform your calculations.
-                             */
+                            
+                            /// <summary>
+                            ///   This function is used to release an existing position. It is guaranteed that the
+                            ///     given stack is the one being released from this inventory. To perform the
+                            ///     appropriate calculations, both dimensions and position must be considered.
+                            /// </summary>
                             protected abstract void Release(object position, Stack stack);
-                            /**
-                             * This function is to get the contents of a particular position. The return value of
-                             *   this method is the actual/registered position of a Stack, or null. Example:
-                             * - For indexed inventories, the position will be an index that will be returned
-                             *   as is if it is being used. Otherwise, null will be returned.
-                             * - For dimensional/matrix inventories, the position will be (x, y), and a different
-                             *   (x', y') may be returned. E.g. a query with (2, 2) may return (0, 0) if a stack
-                             *   is located at (0, 0) and it occupies a size of (4, 4).
-                             * 
-                             * The resulting position must be canonical: We must be able to query stacks[pos] and
-                             *   get something. Otherwise, the resulting position must be null.
-                             */
+
+                            /// <summary>
+                            ///   <para>
+                            ///     This function is to get the contents of a particular position. The return value of
+                            ///       this method is the actual/registered position of a Stack, or null. Example:
+                            ///     <list type="bullet">
+                            ///       <item>
+                            ///         <description>
+                            ///           For indexed inventories, the position will be an index that will be returned
+                            ///             as is if it is being used. Otherwise, null will be returned.
+                            ///         </description>
+                            ///       </item>
+                            ///       <item>
+                            ///         <description>
+                            ///           For dimensional/matrix inventories, the position will be (x, y), and a different
+                            ///             (x', y') may be returned. E.g. a query with (2, 2) may return (0, 0) if a stack
+                            ///             is located at (0, 0) and it occupies a size of (4, 4).
+                            ///         </description>
+                            ///       </item>
+                            ///     </list>
+                            ///   </para>
+                            ///   <para>
+                            ///     The resulting position must be canonical: We must be able to query stacks[pos] and
+                            ///       get something. Otherwise, the resulting position must be null.
+                            ///   </para>
+                            /// </summary>
                             protected abstract object Search(object position);
-                            /**
-                             * This function iterates over the registered positions. The order of iteration is up
-                             *   to the implementor, so it will not be determined in a trivial fashion like, say,
-                             *   iterating over the keys of the dictionary.
-                             * 
-                             * ALL THE POSITIONS SHOULD BE ITERATED FOR THE DISPLAYERS TO WORK PROPERLY. Every
-                             *   position being iterated should be valid. This means: stack[position] must not
-                             *   fail by absence.
-                             */
+
+                            /// <summary>
+                            ///   <para>
+                            ///     This function iterates over the registered positions.The order of iteration is up
+                            ///       to the implementor, so it will not be determined in a trivial fashion like, say,
+                            ///       iterating over the keys of the dictionary.
+                            ///   </para>
+                            ///   <para>
+                            ///     ALL THE POSITIONS SHOULD BE ITERATED FOR THE DISPLAYERS TO WORK PROPERLY. Every
+                            ///       position being iterated should be valid. This means: stack[position] must not
+                            ///       fail by absence.
+                            ///   </para>
+                            /// </summary>
                             protected abstract IEnumerable<object> Positions(bool reverse);
 
                             private void CheckValidStackPosition(object position, Stack stack)
@@ -219,36 +273,43 @@ namespace WindRose
                              * Public methods start here.
                              */
 
-                            /**
-                             * Enumerates all the position/stack pairs.
-                             */
+                            /// <summary>
+                            ///   Enumerates all the (position, stack) pairs.
+                            /// </summary>
                             public IEnumerable<Support.Types.Tuple<object, Stack>> StackPairs(bool reverse)
                             {
                                 return from position in Positions(reverse) select new Support.Types.Tuple<object, Stack>(position, stacks[position]);
                             }
 
-                            /**
-                             * Finds a stack by checking certain position.
-                             */
+                            /// <summary>
+                            ///   Finds a stack by checking certain position. See <see cref="Search(object)"/>
+                            ///     for more details.
+                            /// </summary>
+                            /// <param name="position">The position to check</param>
+                            /// <returns>The stack, or <c>null</c> if none was found</returns>
                             public Stack Find(object position)
                             {
                                 object canonicalPosition = Search(position);
                                 return canonicalPosition == null ? null : stacks[canonicalPosition];
                             }
 
-                            /**
-                             * Finds all stacks satisfying a predicate on its position and the stack.
-                             * It may reverse the order of enumeration.
-                             */
+                            /// <summary>
+                            ///   Finds all stacks satisfying a predicate on its position and the stack.
+                            ///   It may reverse the order of enumeration.
+                            /// </summary>
+                            /// <param name="predicate">The predicate to test on each stack</param>
+                            /// <param name="reverse">Whether the search is in reversed order</param>
                             public IEnumerable<Stack> FindAll(Func<Support.Types.Tuple<object, Stack>, bool> predicate, bool reverse)
                             {
                                 return from pair in StackPairs(reverse).Where(predicate) select pair.Second;
                             }
 
-                            /**
-                             * Finds all stacks having a particular item.
-                             * It may reverse the order of enumeration.
-                             */
+                            /// <summary>
+                            ///   Finds all stacks having a particular item.
+                            ///   It may reverse the order of enumeration.
+                            /// </summary>
+                            /// <param name="item">The item to check</param>
+                            /// <param name="reverse">Whether the search is in reversed order</param>
                             public IEnumerable<Stack> FindAll(Item item, bool reverse)
                             {
                                 return FindAll(delegate (Support.Types.Tuple<object, Stack> pair)
@@ -257,26 +318,12 @@ namespace WindRose
                                 }, reverse);
                             }
 
-                            /**
-                             * Gets the first stack.
-                             */
-                            public Stack First()
-                            {
-                                return (from pair in StackPairs(false) select pair.Second).FirstOrDefault();
-                            }
-
-                            /**
-                             * Gets the last stack.
-                             */
-                            public Stack Last()
-                            {
-                                return (from pair in StackPairs(true) select pair.Second).FirstOrDefault();
-                            }
-
-                            /**
-                             * Finds all stacks exactly matching an external stack.
-                             * It may reverse the order of enumeration.
-                             */
+                            /// <summary>
+                            ///   Finds all stacks exactly matching an external stack.
+                            ///   It may reverse the order of enumeration.
+                            /// </summary>
+                            /// <param name="stack">The stack to compare against</param>
+                            /// <param name="reverse">Whether the search is in reversed order</param>
                             public IEnumerable<Stack> FindAll(Stack stack, bool reverse)
                             {
                                 return FindAll(delegate (Support.Types.Tuple<object, Stack> pair)
@@ -285,49 +332,77 @@ namespace WindRose
                                 }, reverse);
                             }
 
-                            /**
-                             * Finds a stack satisfying a predicate on its position and the stack.
-                             * It may reverse the order of enumeration to find the first one.
-                             */
+                            /// <summary>
+                            ///   Gets the first stack, if any.
+                            /// </summary>
+                            /// <returns>The first stack in this container</returns>
+                            public Stack First()
+                            {
+                                return (from pair in StackPairs(false) select pair.Second).FirstOrDefault();
+                            }
+
+                            /// <summary>
+                            ///   Gets the last stack, if any.
+                            /// </summary>
+                            /// <returns>The last stack in this container</returns>
+                            public Stack Last()
+                            {
+                                return (from pair in StackPairs(true) select pair.Second).FirstOrDefault();
+                            }
+
+                            /// <summary>
+                            ///   Finds a stack satisfying a predicate on its position and the stack.
+                            ///   It may reverse the order of enumeration to find the first one.
+                            /// </summary>
+                            /// <param name="predicate">The predicate to test on each stack</param>
+                            /// <param name="reverse">Whether the search is in reversed order</param>
                             public Stack FindOne(Func<Support.Types.Tuple<object, Stack>, bool> predicate, bool reverse)
                             {
                                 return FindAll(predicate, reverse).FirstOrDefault();
                             }
 
-                            /**
-                             * Finds a stack having a particular item.
-                             * It may reverse the order of enumeration to find the first one.
-                             */
+                            /// <summary>
+                            ///   Finds a stack having a particular item.
+                            ///   It may reverse the order of enumeration to find the first one.
+                            /// </summary>
+                            /// <param name="item">The item to check</param>
+                            /// <param name="reverse">Whether the search is in reversed order</param>
                             public Stack FindOne(Item item, bool reverse)
                             {
                                 return FindAll(item, reverse).FirstOrDefault();
                             }
 
-                            /**
-                             * Finds a stack exactly matching an external stack.
-                              * It may reverse the order of enumeration to find the first one.
-                            */
+                            /// <summary>
+                            ///   Finds a stack exactly matching an external stack.
+                            ///   It may reverse the order of enumeration to find the first one.
+                            /// </summary>
+                            /// <param name="stack">The stack to compare against</param>
+                            /// <param name="reverse">Whether the search is in reversed order</param>
                             public Stack FindOne(Stack stack, bool reverse)
                             {
                                 return FindAll(stack, reverse).FirstOrDefault();
                             }
 
-                            /**
-                             * Tries to find a first-match for the item. It must return null IF
-                             *   AND ONLY IF the inventory is full (i.e. no position is available).
-                             */
+                            /// <summary>
+                            ///   Tries to find a first-match for the item. It must return null IF
+                            ///     AND ONLY IF the inventory is full (i.e. no position is available).
+                            /// </summary>
+                            /// <param name="stack">The stack the caller is looking a position for</param>
                             public abstract object FirstFree(Stack stack);
 
-                            /**
-                             * Puts a new (or moves an existing) stack in this container. It also sets
-                             *   the position of the stack. We already know the itemStrategy will be
-                             *   compatible with this strategy at this point.
-                             * 
-                             * Will return false if:
-                             * - Position was given and is not available.
-                             * - Position was not given and could not get a first-matched position
-                             *     because the inventory is "full" for the given item.
-                             */
+                            /// <summary>
+                            ///   <para>
+                            ///     Puts a new (or moves an existing) stack in this container.It also sets
+                            ///       the position of the stack.We already know the itemStrategy will be
+                            ///       compatible with this strategy at this point.
+                            ///   </para>
+                            ///   <para>
+                            ///     Will return false if the specified position is not available, or if
+                            ///       position was not specified and the container is full (or not
+                            ///       strictly full, yet unable to find an appropriate position for the
+                            ///       stack).
+                            ///   </para>
+                            /// </summary>
                             public bool Put(object position, ItemSpatialStrategy itemStrategy, Stack stack, out object finalPosition)
                             {
                                 finalPosition = null;
@@ -355,10 +430,10 @@ namespace WindRose
                                 return true;
                             }
 
-                            /**
-                             * Removes a stack from this container. It also cleans up the position of
-                             *   the stack.
-                             */
+                            /// <summary>
+                            ///   Removes a stack from this container. It also cleans up the position of
+                            ///     the stack.
+                            /// </summary>
                             public bool Remove(Stack stack)
                             {
                                 if (!stacks.ContainsValue(stack)) return false;
@@ -368,20 +443,19 @@ namespace WindRose
                                 return true;
                             }
 
-                            /**
-                             * Tells how many stacks does this container have.
-                             */
+                            /// <summary>
+                            ///   Tells how many stacks does this container have.
+                            /// </summary>
                             public int Count { get { return stacks.Count; } }
                         }
 
+                        /// <summary>
+                        ///   This fake container is used when we need a dummy container
+                        ///     that is always empty and fails on every method. This is
+                        ///     a replacement to null-checks.
+                        /// </summary>
                         public class NullSpatialContainer : SpatialContainer
                         {
-                            /**
-                             * Implements an always-empty container that fails to everything.
-                             *   This will act as a null spatial container, in order to not
-                             *   just return `null` and check it but, instead, act transparently.
-                             */
-
                             public NullSpatialContainer() : base(null, null)
                             {
                             }
@@ -422,12 +496,14 @@ namespace WindRose
 
                         private static NullSpatialContainer nullSpatialContainer = new NullSpatialContainer();
 
+                        /// <summary>
+                        ///   The counterpart type (a subclass of <see cref="ItemSpatialStrategy"/>).
+                        /// </summary>
                         public Type ItemSpatialStrategyCounterpartType { get; private set; }
 
-                        /**
-                         * You must implement this: Initializes a new contianer, giving an
-                         *   arbitrary position.
-                         */
+                        /// <summary>
+                        ///   It must be implemented: Initializes a new contianer, giving an arbitrary position.
+                        /// </summary>
                         protected abstract SpatialContainer InitializeContainer(object position);
 
                         /**
@@ -467,10 +543,10 @@ namespace WindRose
                             return container;
                         }
 
-                        /**
-                         * You must implement this: Which one is the counterpart spatial strategy type in
-                         *   the items.
-                         */
+                        /// <summary>
+                        ///   You must implement this: Which one is the counterpart spatial strategy type in
+                        ///     the items.
+                        /// </summary>
                         protected abstract Type GetItemSpatialStrategyCounterpartType();
 
                         /**
@@ -501,89 +577,96 @@ namespace WindRose
                          * public methods accessing everything. ALL THE DOCUMENTED METHODS.
                          */
 
-                        /**
-                         * Enumerates all the position/stack pairs for the container in a given position.
-                         */
+                        /// <summary>
+                        ///   Invokes <see cref="SpatialContainer.StackPairs(bool)"/> on a given container.
+                        /// </summary>
                         public IEnumerable<Support.Types.Tuple<object, Stack>> StackPairs(object containerPosition, bool reverse)
                         {
                             return GetContainer(containerPosition, IfAbsent.Null).StackPairs(reverse);
                         }
 
-                        /**
-                         * Finds a stack by checking certain stack position for the container in a given position.
-                         */
+                        /// <summary>
+                        ///   Invokes <see cref="SpatialContainer.Find(object)"/> on a given container.
+                        /// </summary>
                         public Stack Find(object containerPosition, object stackPosition)
                         {
                             return GetContainer(containerPosition, IfAbsent.Null).Find(stackPosition);
                         }
 
-                        /**
-                         * Finds all stacks satisfying a predicate on its position and the stack for the container in a given position.
-                         */
+                        /// <summary>
+                        ///   Invokes <see cref="SpatialContainer.FindAll(Func{Support.Types.Tuple{object, Stack}, bool}, bool)"/> on a given container.
+                        /// </summary>
                         public IEnumerable<Stack> FindAll(object containerPosition, Func<Support.Types.Tuple<object, Stack>, bool> predicate, bool reverse)
                         {
                             return GetContainer(containerPosition, IfAbsent.Null).FindAll(predicate, reverse);
                         }
 
-                        /**
-                         * Finds all stacks having a particular item.
-                         */
+                        /// <summary>
+                        ///   Invokes <see cref="SpatialContainer.FindAll(Item, bool)"/> on a given container.
+                        /// </summary>
                         public IEnumerable<Stack> FindAll(object containerPosition, Item item, bool reverse)
                         {
                             return GetContainer(containerPosition, IfAbsent.Null).FindAll(item, reverse);
                         }
 
-                        /**
-                         * Gets the first stack.
-                         */
-                        public Stack First(object containerPosition)
-                        {
-                            return GetContainer(containerPosition, IfAbsent.Null).First();
-                        }
-
-                        /**
-                         * Gets the last stack.
-                         */
-                        public Stack Last(object containerPosition)
-                        {
-                            return GetContainer(containerPosition, IfAbsent.Null).Last();
-                        }
-
-                        /**
-                         * Finds all stacks exactly matching an external stack.
-                         */
+                        /// <summary>
+                        ///   Invokes <see cref="SpatialContainer.FindAll(Stack, bool)"/> on a given container.
+                        /// </summary>
                         public IEnumerable<Stack> FindAll(object containerPosition, Stack stack, bool reverse)
                         {
                             return GetContainer(containerPosition, IfAbsent.Null).FindAll(stack, reverse);
                         }
 
-                        /**
-                         * Finds a stack satisfying a predicate on its position and the stack.
-                         */
+                        /// <summary>
+                        ///   Invokes <see cref="SpatialContainer.First"/> on a given container.
+                        /// </summary>
+                        public Stack First(object containerPosition)
+                        {
+                            return GetContainer(containerPosition, IfAbsent.Null).First();
+                        }
+
+                        /// <summary>
+                        ///   Invokes <see cref="SpatialContainer.Last"/> on a given container.
+                        /// </summary>
+                        public Stack Last(object containerPosition)
+                        {
+                            return GetContainer(containerPosition, IfAbsent.Null).Last();
+                        }
+
+                        /// <summary>
+                        ///   Invokes <see cref="SpatialContainer.FindOne(Func{Support.Types.Tuple{object, Stack}, bool}, bool)"/> on a given container.
+                        /// </summary>
                         public Stack FindOne(object containerPosition, Func<Support.Types.Tuple<object, Stack>, bool> predicate, bool reverse)
                         {
                             return GetContainer(containerPosition, IfAbsent.Null).FindOne(predicate, reverse);
                         }
 
-                        /**
-                         * Finds a stack having a particular item.
-                         */
+                        /// <summary>
+                        ///   Invokes <see cref="SpatialContainer.FindOne(Item, bool)"/> on a given container.
+                        /// </summary>
                         public Stack FindOne(object containerPosition, Item item, bool reverse)
                         {
                             return GetContainer(containerPosition, IfAbsent.Null).FindOne(item, reverse);
                         }
 
-                        /**
-                         * Finds a stack exactly matching an external stack.
-                         */
+                        /// <summary>
+                        ///   Invokes <see cref="SpatialContainer.FindOne(Stack, bool)"/> on a given container.
+                        /// </summary>
                         public Stack FindOne(object containerPosition, Stack stack, bool reverse)
                         {
                             return GetContainer(containerPosition, IfAbsent.Null).FindOne(stack, reverse);
                         }
 
-                        /**
-                         * Puts a stack inside a specific container.
-                         */
+                        /// <summary>
+                        ///   Puts a stack inside a position (or the first match, if position is null) which in turn
+                        ///     is inside a particular container.
+                        /// </summary>
+                        /// <param name="containerPosition">The ID of the container being added the stack to</param>
+                        /// <param name="stackPosition">The position to add the stack to</param>
+                        /// <param name="stack">The stack being added</param>
+                        /// <param name="finalStackPosition">Output of the final position</param>
+                        /// <returns>Whether it could add the stack to the container</returns>
+                        /// <remarks>If the container with that ID does not exist, it will be created.</remarks>
                         public bool Put(object containerPosition, object stackPosition, Stack stack, out object finalStackPosition)
                         {
                             SpatialContainer container = GetContainer(containerPosition, IfAbsent.Init);
@@ -602,9 +685,13 @@ namespace WindRose
                             }
                         }
 
-                        /**
-                         * Removes a stack inside a specific container.
-                         */
+                        /// <summary>
+                        ///   Removes a stack in that position.
+                        /// </summary>
+                        /// <param name="containerPosition">The container to check</param>
+                        /// <param name="stackPosition">The position to check (and remove)</param>
+                        /// <returns>Whether it could remove a stack occupying that position</returns>
+                        /// <remarks>If the container -at the end- is empty, it will be destroyed.</remarks>
                         public bool Remove(object containerPosition, object stackPosition)
                         {
                             SpatialContainer container = GetContainer(containerPosition, IfAbsent.Null);
@@ -625,9 +712,9 @@ namespace WindRose
                             return result;
                         }
 
-                        /**
-                         * Clears everything.
-                         */
+                        /// <summary>
+                        ///   Clears all the contents in all containers. Actually, it destroys all the containers.
+                        /// </summary>
                         public void Clear()
                         {
                             containers.Clear();

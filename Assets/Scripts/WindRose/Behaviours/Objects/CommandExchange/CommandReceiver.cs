@@ -11,7 +11,7 @@ namespace WindRose
             namespace CommandExchange
             {
                 [RequireComponent(typeof(TriggerLive))]
-                class CommandReceiver : MonoBehaviour
+                class CommandReceiver : MonoBehaviour, Pausable.IPausable
                 {
                     /**
                      * Receives a collision from a Command, which is a special object containing
@@ -75,12 +75,12 @@ namespace WindRose
                         SendCommandStatusFromCollision(collider, CommandStage.STAY);
                     }
 
-                    void Pause(bool fullFreeze)
+                    public void Pause(bool fullFreeze)
                     {
                         enabled = false;
                     }
 
-                    void Resume()
+                    public void Resume()
                     {
                         enabled = true;
                     }

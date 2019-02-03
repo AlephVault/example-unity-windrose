@@ -8,46 +8,44 @@ namespace WindRose
     {
         namespace Objects
         {
-            /**
-             * This behaviour implements a broadcast for pause/resume methods.
-             * 
-             * This broadcast is executed even if the object is inactive.
-             */
+            /// <summary>
+            ///   This behaviour implements a broadcast for pause/resume methods, which will be
+            ///     executed even if the object is inactive.
+            /// </summary>
             public class Pausable : MonoBehaviour
             {
-                /**
-                 * Invokes a method if it exists and the component asked to is not Pausable
-                 *   (which would be THIS component and an infinite recursion).
-                 */
-                private void InvokeIfExists(Component component, string methodName, params object[] value)
+                /// <summary>
+                ///   This interface provides methods to pause/resume the objects.
+                ///     Several 
+                /// </summary>
+                public interface IPausable
                 {
-                    Type type = component.GetType();
-                    if (type != typeof(Pausable))
-                    {
-                        MethodInfo methodInfo = type.GetMethod(methodName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-                        if (methodInfo != null)
-                        {
-                            methodInfo.Invoke(component, value);
-                        }
-                    }
+                    void Pause(bool fullFreeze);
+                    void Resume();
                 }
 
-                private void InvokeOnEachComponent(string methodName, params object[] value)
-                {
-                    foreach (MonoBehaviour behaviour in GetComponents<MonoBehaviour>())
-                    {
-                        InvokeIfExists(behaviour, methodName, value);
-                    }
-                }
-
+                /// <summary>
+                ///   Pauses the object. This will imply that its behaviours will all
+                ///     pause accordinly.
+                /// </summary>
+                /// <param name="fullFreeze">Whether also pause animations or not</param>
                 public void Pause(bool fullFreeze)
                 {
-                    InvokeOnEachComponent("Pause", fullFreeze);
+                    foreach (IPausable behaviour in GetComponents<IPausable>())
+                    {
+                        behaviour.Pause(fullFreeze);
+                    }
                 }
 
+                /// <summary>
+                ///   Resumes (releases) the object.
+                /// </summary>
                 public void Resume()
                 {
-                    InvokeOnEachComponent("Resume");
+                    foreach (IPausable behaviour in GetComponents<IPausable>())
+                    {
+                        behaviour.Resume();
+                    }
                 }
             }
         }

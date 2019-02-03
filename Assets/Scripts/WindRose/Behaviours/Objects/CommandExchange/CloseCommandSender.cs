@@ -11,7 +11,7 @@ namespace WindRose
             namespace CommandExchange
             {
                 [RequireComponent(typeof(Oriented))]
-                class CloseCommandSender : MonoBehaviour
+                class CloseCommandSender : MonoBehaviour, Pausable.IPausable
                 {
                     /**
                      * This behaviour has convenience methods to cast a command. Casting a command
@@ -108,12 +108,12 @@ namespace WindRose
                         Destroy(command.gameObject);
                     }
 
-                    void Pause(bool fullFreeze)
+                    public void Pause(bool fullFreeze)
                     {
                         paused = true;
                     }
 
-                    void Resume()
+                    public void Resume()
                     {
                         paused = false;
                     }

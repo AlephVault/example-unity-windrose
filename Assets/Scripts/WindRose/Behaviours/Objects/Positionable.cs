@@ -16,7 +16,7 @@ namespace WindRose
             [ExecuteInEditMode]
             [RequireComponent(typeof(Pausable))]
             [RequireComponent(typeof(ObjectStrategyHolder))]
-            public class Positionable : MonoBehaviour
+            public class Positionable : MonoBehaviour, Pausable.IPausable
             {
                 /**
                  * A positionable object updates its position and solidness status
@@ -255,13 +255,13 @@ namespace WindRose
                     return GetComponentInParent<ObjectsLayer>().GetCellHeight();
                 }
 
-                void Pause(bool fullFreeze)
+                public void Pause(bool fullFreeze)
                 {
                     Paused = true;
                     AnimationsPaused = fullFreeze;
                 }
 
-                void Resume()
+                public void Resume()
                 {
                     Paused = false;
                     AnimationsPaused = false;

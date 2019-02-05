@@ -144,8 +144,20 @@ namespace WindRose
                     DropLayer = ExpectOneLayerComponent<Layers.Drop.DropLayer>();
                     ObjectsLayer = ExpectOneLayerComponent<Layers.Objects.ObjectsLayer>(true);
                     CeilingLayer = ExpectOneLayerComponent<Layers.Ceiling.CeilingLayer>();
+                    Grid objectsLayerGrid = ObjectsLayer.GetComponent<Grid>();
+                    Grid floorLayerGrid = FloorLayer.GetComponent<Grid>();
+                    CopyGridProperties(objectsLayerGrid, floorLayerGrid);
+                    if (CeilingLayer != null) CopyGridProperties(CeilingLayer.GetComponent<Grid>(), floorLayerGrid);
                     // Fetching strategy - needed
                     StrategyHolder = GetComponent<ObjectsManagementStrategyHolder>();
+                }
+
+                void CopyGridProperties(Grid dst, Grid src)
+                {
+                    dst.cellSize = src.cellSize;
+                    dst.cellLayout = src.cellLayout;
+                    dst.cellGap = src.cellGap;
+                    dst.cellSwizzle = src.cellSwizzle;
                 }
 
                 private void Start()

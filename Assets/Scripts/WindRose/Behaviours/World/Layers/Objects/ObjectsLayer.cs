@@ -20,7 +20,7 @@ namespace WindRose
                     ///   </para>
                     ///   <para>
                     ///     This component depends on <see cref="Grid"/> and will provide the
-                    ///       values of the cell size. It should match the same values in the
+                    ///       values of the cell size. It will match the same values in the
                     ///       <see cref="Floor.FloorLayer"/>'s <see cref="Grid" /> component,
                     ///       although it is not strictly required or enforced.
                     ///   </para>

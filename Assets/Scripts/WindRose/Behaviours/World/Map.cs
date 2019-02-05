@@ -172,6 +172,17 @@ namespace WindRose
                 }
 
                 /// <summary>
+                ///   Attaches an object to this map.
+                /// </summary>
+                /// <param name="positionable">The object to attach</param>
+                /// <param name="x">The new X position</param>
+                /// <param name="y">The new Y position</param>
+                public void Attach(Positionable positionable, uint x, uint y)
+                {
+                    if (initialized) StrategyHolder.Attach(positionable.StrategyHolder, x, y);
+                }
+
+                /// <summary>
                 ///   Pauses the map. Actually, pauses all the objects inside the map.
                 /// </summary>
                 /// <param name="fullFreeze">If true, it also pauses objects' animations</param>

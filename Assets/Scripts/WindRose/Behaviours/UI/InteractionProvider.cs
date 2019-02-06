@@ -11,23 +11,40 @@ namespace WindRose
         {
             using World;
 
+            /// <summary>
+            ///   <para>
+            ///     Wraps all the map in the scene and also the <see cref="InteractiveInterface"/>
+            ///       that is available inside. It is expected that only one be available.
+            ///   </para>
+            ///   <para>
+            ///     The wrapped interactive interface will also have two listener to,
+            ///       perhaps, pause/release the maps. This interface will be available for
+            ///       any child that would need it (e.g. to start an interaction).
+            ///   </para>
+            /// </summary>
             public class InteractionProvider : MonoBehaviour
             {
-                /**
-                 * Wraps all the maps in the scene and also the InteractiveInterface that is
-                 *   available inside. It is expected that only one be available.
-                 * 
-                 * The wrapped interactive interface will also have two listeners to, perhaps,
-                 *   pause/release the maps. This interface will be available for any child
-                 *   that would need it (e.g. to start an interaction).
-                 */
+                /// <summary>
+                ///   Criteria to pause the map while the interaction is running: don't pause,
+                ///     pause everything but animations, or completely freeze.
+                /// </summary>
                 public enum PauseType { NO, HOLD, FREEZE }
 
+                /// <summary>
+                ///   The <see cref="PauseType"/> to use while interacting.
+                /// </summary>
                 [SerializeField]
                 private PauseType pauseType = PauseType.FREEZE;
 
                 private InteractiveInterface interactionTab;
 
+                /// <summary>
+                ///   The interactive interface. It must be present among children.
+                /// </summary>
+                /// <remarks>
+                ///   Perhaps this behaviour should be changed to require the user explicitly select
+                ///     an interactive interface among the components.
+                /// </remarks>
                 public InteractiveInterface InteractionTab { get { return interactionTab;  } }
 
                 // Use this for initialization

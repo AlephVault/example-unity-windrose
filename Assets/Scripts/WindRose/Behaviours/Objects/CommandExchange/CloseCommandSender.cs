@@ -10,29 +10,31 @@ namespace WindRose
         {
             namespace CommandExchange
             {
+                /// <summary>
+                ///   <para>
+                ///     Sends a command to an adjacent object. If the object contains a
+                ///       <see cref="CommandReceiver"/> component, it could process the
+                ///       command being sent.
+                ///   </para>
+                ///   <para>
+                ///     The object will throw command through <see cref="Cast(string, bool, object[])"/>,
+                ///       which may be instantaneous (i.e. just one frame) or stay until
+                ///       the command is released with <see cref="Release"/>. Only one command
+                ///       may exist at a time: succesive calls will release former still-alive
+                ///       commands.
+                ///   </para>
+                /// </summary>
+                /// <remarks>
+                ///   If the object being hit by a non-instantaneous command moves away, then
+                ///     it will count as if the command was released. Also, when it moves again
+                ///     into the place where the command was hit, it will count as the command
+                ///     being cast again. A good practice is to drop instantaneous commands
+                ///     to avoid this case.
+                /// </remarks>
                 [RequireComponent(typeof(Oriented))]
                 class CloseCommandSender : MonoBehaviour, Pausable.IPausable
                 {
-                    /**
-                     * This behaviour has convenience methods to cast a command. Casting a command
-                     *   actually means actively interacting with an object that can receive such
-                     *   command (e.g. talk, hit, use/press).
-                     * 
-                     * Ideally, each object having a CloseCommandSender behaviour will have one
-                     *   distinct Command object related to himself. However this is not enforced
-                     *   (and could be efficient for some kind of games to use a single command;
-                     *   yet it is still up to you and how you design your commands, since you
-                     *   could implement the EXIT status on a command receiver and so using a
-                     *   single command object for the whole game could be counterproductive.
-                     * 
-                     * You can cast a command indefinitely, or cast it just for one instant.
-                     * You can specify arbitrary command and arguments.
-                     *   
-                     * THIS IS JUST A CONVENIENCE BEHAVIOUR AND BY NO MEANS SHOULD THIS ONE
-                     *   CONSIDERED AS EXTENSIVE IN IMPLEMENTATION. Good enough to close combat
-                     *   or implementing a talk mechanism with NPCs.
-                     */
-
+                    // The command currently being sent.
                     private Misc.Command command;
                     private Oriented oriented;
                     private Positionable positionable;
@@ -80,9 +82,19 @@ namespace WindRose
                         command.arguments = arguments;
                     }
 
+                    /// <summary>
+                    ///   Casts a command in the direction it is looking to.
+                    /// </summary>
+                    /// <param name="commandName">The command name</param>
+                    /// <param name="instantaneous">
+                    ///   Whether the command will flash, or will be present untilthe next call
+                    ///   to <see cref="Release"/> or another call to <see cref="Cast(string, bool, object[])"/>
+                    /// </param>
+                    /// <param name="arguments">The command arguments</param>
                     public void Cast(string commandName, bool instantaneous = true, params object[] arguments)
                     {
                         if (paused) return;
+                        Release();
                         GameObject commandObject = new GameObject("Command");
                         CircleCollider2D collider = Support.Utils.Layout.AddComponent<CircleCollider2D>(commandObject);
                         collider.enabled = false;
@@ -99,20 +111,33 @@ namespace WindRose
 
                     private IEnumerator InstantRelease()
                     {
-                        yield return new WaitForSeconds(0.1f);
+                        yield return new WaitForSeconds(0f);
                         Release();
                     }
 
+                    /// <summary>
+                    ///   Releases the last command sent by <see cref="Cast(string, bool, object[])"/>, if still present.
+                    /// </summary>
                     public void Release()
                     {
-                        Destroy(command.gameObject);
+                        if (command)
+                        {
+                            Destroy(command.gameObject);
+                            command = null;
+                        }
                     }
 
+                    /// <summary>
+                    ///   Pauses this behaviour - it will not cast anything.
+                    /// </summary>
                     public void Pause(bool fullFreeze)
                     {
                         paused = true;
                     }
 
+                    /// <summary>
+                    ///   Resumes the behaviour - it will cast again if told to.
+                    /// </summary>
                     public void Resume()
                     {
                         paused = false;

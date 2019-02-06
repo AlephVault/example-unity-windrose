@@ -9,23 +9,25 @@ namespace WindRose
         {
             namespace Strategies
             {
-                /**
-                 * This is an object strategy. It will know:
-                 * - The strategy-holder it is tied to (directly or indirectly).
-                 * And it will have as behaviour:
-                 * - A way of notifying the strategy-holder's positionable's map's
-                 *   strategy about changes. Actually, each subclass of strategy
-                 *   will decide when to notify the changes appropriately.
-                 * This behaviour will be a Unity Behaviour, so it will be attached
-                 *   to the same object of the ObjectStrategyHolder.
-                 * It is related to a counterpart type which is a subtype of map
-                 *   strategy.
-                 */
+                /// <summary>
+                ///   <para>
+                ///     Object strategies are the counterpart of <see cref="World.ObjectsManagementStrategies.ObjectsManagementStrategy"/>,
+                ///       and will reside in the same object holding an <see cref="ObjectStrategyHolder"/>.
+                ///   </para>
+                ///   <para>
+                ///     Quite often they hold state instead of logic, and notify the counterpart management strategy in the map by invoking
+                ///       <see cref="PropertyWasUpdated(string, object, object)"/>.
+                ///   </para>
+                /// </summary>
                 [RequireComponent(typeof(Positionable))]
                 public abstract class ObjectStrategy : MonoBehaviour
                 {
                     private static Type baseCounterpartStrategyType = typeof(World.ObjectsManagementStrategies.ObjectsManagementStrategy);
 
+                    /// <summary>
+                    ///   Tells when the given counterpart type is not valid (i.e. subclass of
+                    ///     <see cref="World.ObjectsManagementStrategies.ObjectsManagementStrategy"/>).
+                    /// </summary>
                     public class UnsupportedTypeException : Types.Exception
                     {
                         public UnsupportedTypeException() { }
@@ -33,14 +35,31 @@ namespace WindRose
                         public UnsupportedTypeException(string message, Exception inner) : base(message, inner) { }
                     }
 
-                    /**
-                     * Each strategy knows its holder and its counterpart type.
-                     */
+                    /// <summary>
+                    ///   The related strategy holder, which will be in the same object.
+                    /// </summary>
                     public ObjectStrategyHolder StrategyHolder { get; private set; }
+
+                    /// <summary>
+                    ///   <para>
+                    ///     The counterpart type, which is particular to each subtype of object
+                    ///       strategy.
+                    ///   </para>
+                    ///   <para>
+                    ///     It will be a subclass of <see cref="World.ObjectsManagementStrategies.ObjectsManagementStrategy"/>.
+                    ///   </para>
+                    /// </summary>
                     public Type CounterpartType { get; private set; }
+
+                    /// <summary>
+                    ///   The related object.
+                    /// </summary>
                     public Positionable Positionable { get; private set; }
 
-                    public virtual void Awake()
+                    /**
+                     * Initializes the related data and the counterpart type.
+                     */
+                    protected virtual void Awake()
                     {
                         StrategyHolder = GetComponent<ObjectStrategyHolder>();
                         CounterpartType = GetCounterpartType();
@@ -52,21 +71,32 @@ namespace WindRose
                         Positionable = GetComponent<Positionable>();
                     }
 
-                    /**
-                     * Gets the counterpart type to operate against (in the map).
-                     */
+                    /// <summary>
+                    ///   Returns the counterpart type, which is per-strategy defined and
+                    ///     is subclass of <see cref="World.ObjectsManagementStrategies.ObjectsManagementStrategy"/>.
+                    /// </summary>
+                    /// <returns>The counterpart type</returns>
                     protected abstract Type GetCounterpartType();
 
-                    /**
-                     * This method initializes the current strategy.
-                     */
+                    /// <summary>
+                    ///   <para>
+                    ///     This method is run by the <see cref="ObjectStrategyHolder"/> and there
+                    ///       is no need or use to invoke it by hand.
+                    ///   </para>
+                    ///   <para>
+                    ///     Initializes the strategy, after the positionable is initialized.
+                    ///   </para>
+                    /// </summary>
                     public virtual void Initialize()
                     {
                     }
 
-                    /**
-                     * Sends the property update to the map strategy.
-                     */
+                    /// <summary>
+                    ///   Use this method inside properties' logic to notify the value change.
+                    /// </summary>
+                    /// <param name="property">The property being changed</param>
+                    /// <param name="oldValue">The old value</param>
+                    /// <param name="newValue">The new value</param>
                     protected void PropertyWasUpdated(string property, object oldValue, object newValue)
                     {
                         World.ObjectsManagementStrategyHolder strategyHolder = null;

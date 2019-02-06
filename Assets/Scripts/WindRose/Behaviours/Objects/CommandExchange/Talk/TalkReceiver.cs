@@ -13,43 +13,43 @@ namespace WindRose
             {
                 namespace Talk
                 {
+                    /// <summary>
+                    ///   This class is usually attached to NPCs. It will receive the
+                    ///     <see cref="TalkSender.COMMAND"/> sent by an <see cref="TalkSender"/>
+                    ///     and trigger the <see cref="onTalkReceived"/> event.
+                    /// </summary>
+                    /// <remarks>
+                    ///   When receiving the command, this object will look towards the opposite
+                    ///     direction the sender object is looking to, and then trigger the
+                    ///     <see cref="onTalkReceived"/> event.
+                    /// </remarks>
                     [RequireComponent(typeof(Oriented))]
                     [RequireComponent(typeof(CommandReceiver))]
                     class TalkReceiver : MonoBehaviour
                     {
-                        /**
-                         * This behaviour understands commands sent with .Talk() and attends them
-                         *   appropriately by triggering a new event named OnTalkCommandReceived.
-                         * 
-                         * Such callback receives an argument: The gameObject (it could be anything!)
-                         *   who wanted to start a chat interaction.
-                         * 
-                         * Since you can only talk to actual positinable objects, we will also require
-                         *   the object being orientable. When the object is being talked to, it will
-                         *   look towards the direction of the sender (if the sender is also oriented,
-                         *   which should be the case if the talk command was initiated by a TalkSender).
-                         */
-
                         Oriented oriented;
 
                         [Serializable]
                         public class UnityTalkReceivedEvent : UnityEvent<GameObject> { }
-                        public readonly UnityTalkReceivedEvent onTalkReceived = new UnityTalkReceivedEvent();
 
-                        private void Awake()
-                        {
-                            GetComponent<CommandReceiver>().onCommandReceiver.AddListener(delegate (CommandReceiver.CommandStatus status)
-                            {
-                                if (status.Stage == CommandReceiver.CommandStage.ENTER && status.Command.name == "WR:Talk")
-                                {
-                                    StartCoroutine(StartTalk(status.Command.sender));
-                                }
-                            });
-                        }
+                        /// <summary>
+                        ///   This event triggers when a <see cref="TalkSender.COMMAND"/> is received.
+                        /// </summary>
+                        /// <remarks>
+                        ///   Only ONE UI-interaction-triggering handler should be added to this event.
+                        /// </remarks>
+                        public readonly UnityTalkReceivedEvent onTalkReceived = new UnityTalkReceivedEvent();
 
                         private void Start()
                         {
                             oriented = GetComponent<Oriented>();
+                            GetComponent<CommandReceiver>().onCommandReceiver.AddListener(delegate (CommandReceiver.CommandStatus status)
+                            {
+                                if (status.Stage == CommandReceiver.CommandStage.ENTER && status.Command.name == TalkSender.COMMAND)
+                                {
+                                    StartCoroutine(StartTalk(status.Command.sender));
+                                }
+                            });
                         }
 
                         IEnumerator StartTalk(GameObject sender)

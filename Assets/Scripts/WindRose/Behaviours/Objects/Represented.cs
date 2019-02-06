@@ -8,24 +8,18 @@ namespace WindRose
         {
             using World;
 
-            // Requiring Snapped, instead of Positionable, allows us to
-            //   have the features of position automatically updated.
-            //
-            // We make no use of Snapped at all, but the behavior will
-            //   automatically be called, and Positionable will be
-            //   present anyway.
+            /// <summary>
+            ///   Handles the object's ability to animate, given sequences of sprites.
+            /// </summary>
             [RequireComponent(typeof(Snapped))]
             [RequireComponent(typeof(Sorted))]
             public class Represented : MonoBehaviour
             {
-                /**
-                 * A represented object is a positionable object which can also display
-                 *   a sprite (it is also a SpriteRenderer object). It will provide an
-                 *   animation which will change on each frame.
-                 */
-
                 private SpriteRenderer spriteRenderer;
 
+                /// <summary>
+                ///   The default animation, for when no other animation is given.
+                /// </summary>
                 [SerializeField]
                 private ScriptableObjects.Animations.AnimationSpec defaultAnimation;
 
@@ -34,6 +28,9 @@ namespace WindRose
                 private float frameInterval;
                 private int currentAnimationIndex;
 
+                /// <summary>
+                ///   Gets or sets the current animation, and resets it (on set).
+                /// </summary>
                 public ScriptableObjects.Animations.AnimationSpec CurrentAnimation
                 {
                     get { return currentAnimation; }
@@ -47,6 +44,9 @@ namespace WindRose
                     }
                 }
 
+                /// <summary>
+                ///   Sets the current animation to the default one.
+                /// </summary>
                 public void SetDefaultAnimation()
                 {
                     CurrentAnimation = defaultAnimation;
@@ -67,6 +67,15 @@ namespace WindRose
                     });
                 }
 
+                /// <summary>
+                ///   <para>
+                ///     This is a callback for the Start of the positionable. It is
+                ///       not intended to be called directly.
+                ///   </para>
+                ///   <para>
+                ///     Initializes the default animation.
+                ///   </para>
+                /// </summary>
                 public void DoStart()
                 {
                     SetDefaultAnimation();
@@ -90,6 +99,15 @@ namespace WindRose
                     return CurrentAnimation.Sprites[currentAnimationIndex];
                 }
 
+                /// <summary>
+                ///   <para>
+                ///     This is a callback for the Update of the positionable. It is
+                ///       not intended to be called directly.
+                ///   </para>
+                ///   <para>
+                ///     Updates the current animation frame on the object.
+                ///   </para>
+                /// </summary>
                 public void DoUpdate()
                 {
                     spriteRenderer.sprite = Thick();

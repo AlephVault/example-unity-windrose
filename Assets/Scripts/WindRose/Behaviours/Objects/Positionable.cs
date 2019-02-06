@@ -13,63 +13,163 @@ namespace WindRose
             using World;
             using World.Layers.Objects;
 
+            /// <summary>
+            ///   <para>
+            ///     Aside of the map, Positionable objects are the spirit of the party.
+            ///   </para>
+            ///   <para>
+            ///     Positionables are the middle step between the user interface (or
+            ///       artificial intelligence) and the underlying map and object
+            ///       strategies: They will provide the behaviour to move, teleport,
+            ///       attach to -and detach from- maps, and look in different directions.
+            ///   </para>
+            ///   <para>
+            ///     They will also provide events to help other (dependent) behaviours
+            ///       to refresh appropriately (e.g. animation change, movement start,
+            ///       ...).
+            ///   </para>
+            /// </summary>
             [ExecuteInEditMode]
             [RequireComponent(typeof(Pausable))]
             [RequireComponent(typeof(ObjectStrategyHolder))]
             public class Positionable : MonoBehaviour, Pausable.IPausable
             {
-                /**
-                 * A positionable object updates its position and solidness status
-                 *   to its holding layer.
-                 * 
-                 * It will have behaviors like walking and teleporting.
-                 */
-
                 /* *********************** Initial data *********************** */
 
+                /// <summary>
+                ///   The width of this object, in map cells.
+                /// </summary>
                 [SerializeField]
                 private uint width = 1;
 
+                /// <summary>
+                ///   The height of this object, in map cells.
+                /// </summary>
                 [SerializeField]
                 private uint height = 1;
 
                 /* *********************** Additional data *********************** */
 
+                /// <summary>
+                ///   The map this object is currently attached to.
+                /// </summary>
                 private Map parentMap = null;
                 private bool initialized = false;
 
                 /* *********************** Public properties *********************** */
 
+                /// <summary>
+                ///   See <see cref="parentMap"/>.
+                /// </summary>
                 public Map ParentMap { get { return parentMap; } }
+
+                /// <summary>
+                ///   See <see cref="width"/>.
+                /// </summary>
                 public uint Width { get { return width; } } // Referencing directly allows us to query the width without a map assigned yet.
+
+                /// <summary>
+                ///   See <see cref="height"/>.
+                /// </summary>
                 public uint Height { get { return height; } } // Referencing directly allows us to query the height without a map assigned yet.
+
+                /// <summary>
+                ///   The current X position of the object inside the attached map.
+                /// </summary>
                 public uint X { get { return parentMap.StrategyHolder.StatusFor(StrategyHolder).X; } }
+
+                /// <summary>
+                ///   The current Y position of the object inside the attached map.
+                /// </summary>
                 public uint Y { get { return parentMap.StrategyHolder.StatusFor(StrategyHolder).Y; } }
+
+                /// <summary>
+                ///   The opposite X position of this object inside the attached map, with
+                ///     respect of its <see cref="width"/> value.
+                /// </summary>
+                /// <remarks>(Xf, Yf) point is the opposite corner of (X, Y).</remarks>
                 public uint Xf { get { return parentMap.StrategyHolder.StatusFor(StrategyHolder).X + Width - 1; } }
+
+                /// <summary>
+                ///   The opposite Y position of this object inside the attached map, with
+                ///     respect of its <see cref="height"/> value.
+                /// </summary>
+                /// <remarks>(Xf, Yf) point is the opposite corner of (X, Y).</remarks>
                 public uint Yf { get { return parentMap.StrategyHolder.StatusFor(StrategyHolder).Y + Height - 1; } }
+
+                /// <summary>
+                ///   The current movement of the object inside the attached map.
+                ///   It will be <c>null</c> if the object is not moving.
+                /// </summary>
                 public Direction? Movement { get { return parentMap.StrategyHolder.StatusFor(StrategyHolder).Movement; } }
+
+                /// <summary>
+                ///   The strategy holder of this object.
+                /// </summary>
                 public ObjectStrategyHolder StrategyHolder { get; private set; }
+
+                /// <summary>
+                ///   Tells whether this object is paused.
+                /// </summary>
                 public bool Paused { get; private set; }
+
+                /// <summary>
+                ///   Tells whether the animations of this object are paused.
+                ///   For certain game configuration, you may have this in <c>false</c>
+                ///     even while having <see cref="Paused"/> in true.
+                /// </summary>
                 public bool AnimationsPaused { get; private set; }
 
                 /* *********************** Events *********************** */
 
                 [Serializable]
                 public class UnityAttachedEvent : UnityEvent<Map> { }
+
+                /// <summary>
+                ///   Event that triggers when this object is attached to a map.
+                /// </summary>
                 public readonly UnityAttachedEvent onAttached = new UnityAttachedEvent();
+
+                /// <summary>
+                ///   Event that triggers when this object is detached from its map.
+                /// </summary>
                 public readonly UnityEvent onDetached = new UnityEvent();
+
                 [Serializable]
                 public class UnityMovementEvent : UnityEvent<Types.Direction> { }
                 [Serializable]
                 public class UnityOptionalMovementEvent : UnityEvent<Types.Direction?> { }
+
+                /// <summary>
+                ///   Event that triggers when the object starts moving.
+                /// </summary>
                 public readonly UnityMovementEvent onMovementStarted = new UnityMovementEvent();
+
+                /// <summary>
+                ///   Event that triggers when the object cancels its movement.
+                /// </summary>
                 public readonly UnityOptionalMovementEvent onMovementCancelled = new UnityOptionalMovementEvent();
+
+                /// <summary>
+                ///   Event that triggers when the object completes its movement into a cell.
+                /// </summary>
                 public readonly UnityMovementEvent onMovementFinished = new UnityMovementEvent();
+
                 [Serializable]
                 public class UnityPropertyUpdateEvent : UnityEvent<string, object, object> { }
+
+                /// <summary>
+                ///   Event that triggers when the object changes one of its properties.
+                ///   This event is triggered explicitly via capabilities inside <see cref="Strategies.ObjectStrategy.PropertyWasUpdated(string, object, object)"/>.
+                /// </summary>
                 public readonly UnityPropertyUpdateEvent onPropertyUpdated = new UnityPropertyUpdateEvent();
+
                 [Serializable]
                 public class UnityTeleportedEvent : UnityEvent<uint, uint> { }
+
+                /// <summary>
+                ///   Event that triggers after the object is teleported to a certain position inside the map.
+                /// </summary>
                 public readonly UnityTeleportedEvent onTeleported = new UnityTeleportedEvent();
 
                 // These callbacks are run when this positionable starts.
@@ -170,6 +270,19 @@ namespace WindRose
                     onTeleported.RemoveAllListeners();
                 }
 
+                /// <summary>
+                ///   <para>
+                ///     This method is called when the map is initialized (first) and when this
+                ///       object starts its execution in the scene. Both conditions have to be
+                ///       fulfilled for the logic to initialize.
+                ///   </para>
+                ///   <para>
+                ///     For this method to succeed, this object must be a child object of one
+                ///       holding a <see cref="ObjectsLayer"/> which in turn must be inside a
+                ///       <see cref="Map"/>, and the map must have dimensions that allow this
+                ///       object considering its size and initial position.
+                ///   </para>
+                /// </summary>
                 public void Initialize()
                 {
                     if (!Application.isPlaying) return;
@@ -192,15 +305,34 @@ namespace WindRose
                     try
                     {
                         // We find the parent map like this: (current) -> ObjectsLayer -> map
-                        parentMap = Layout.RequireComponentInParent<Map>(transform.parent.gameObject);
-                        if (!parentMap.Initialized) return;
-                        // And we also keep its objects layer
-                        Layout.RequireComponentInParent<ObjectsLayer>(gameObject);
-                        // Then we calculate the cell position from the grid in the layer.
-                        Grid grid = Layout.RequireComponentInParent<Grid>(gameObject);
-                        Vector3Int cellPosition = grid.WorldToCell(transform.position);
-                        // Then we initialize, and perhaps it may explode due to exception.
-                        ParentMap.StrategyHolder.Attach(StrategyHolder, (uint)cellPosition.x, (uint)cellPosition.y);
+                        if (transform.parent != null && transform.parent.parent != null)
+                        {
+                            parentMap = transform.parent.parent.GetComponent<Map>();
+                        }
+                        else
+                        {
+                            parentMap = null;
+                        }
+                        // It is OK to have no map! However, the object will be detached and
+                        //   almost nothing useful will be able to be done to the object until
+                        //   it is attached.
+                        if (parentMap != null)
+                        {
+                            // Here we are with an object that was instantiated inside a map's
+                            //   hierarchy. We will not proceed and mark as initialized if
+                            //   the underlying map is not initialized beforehand: otherwise
+                            //   we would not necessarily know the appropriate dimensions.
+                            if (!parentMap.Initialized) return;
+                            // And we also keep its objects layer
+                            Layout.RequireComponentInParent<ObjectsLayer>(gameObject);
+                            // Then we calculate the cell position from the grid in the layer.
+                            Grid grid = Layout.RequireComponentInParent<Grid>(gameObject);
+                            Vector3Int cellPosition = grid.WorldToCell(transform.position);
+                            // Then we initialize, and perhaps it may explode due to exception.
+                            Attach(parentMap, (uint)cellPosition.x, (uint)cellPosition.y);
+                        }
+                        // After success of a standalone positionable being initialized, or
+                        //   an in-map positionable being
                         initialized = true;
                     }
                     catch (Layout.MissingComponentInParentException)
@@ -209,6 +341,11 @@ namespace WindRose
                     }
                 }
 
+                /// <summary>
+                ///   Detaches the object from its map. See <see cref="ObjectsManagementStrategyHolder.Detach(ObjectStrategyHolder)"/>
+                ///     for more details.
+                /// </summary>
+                /// <remarks>It does nothing if the object is not attached to a map.</remarks>
                 public void Detach()
                 {
                     // There are some times at startup when the MapState object may be null.
@@ -218,49 +355,97 @@ namespace WindRose
                     if (parentMap != null) parentMap.StrategyHolder.Detach(StrategyHolder);
                 }
 
+                /// <summary>
+                ///   Attaches the object to a map.
+                /// </summary>
+                /// <param name="map">The map to attach the object to</param>
+                /// <param name="x">The new x position of the object</param>
+                /// <param name="y">The new y position of the object</param>
+                /// <param name="force">
+                ///   If true, the object will be detached from its previous map, and attached to this one.
+                ///   If false and the object is already attached to a map, an error will raise.
+                /// </param>
                 public void Attach(Map map, uint x, uint y, bool force = false)
                 {
                     if (force) Detach();
                     // TODO: Clamp x, y? or raise exception?
-                    map.StrategyHolder.Attach(StrategyHolder, x, y);
+                    map.Attach(this, x, y);
                 }
 
+                /// <summary>
+                ///   Teleports the object to another position in the same map.
+                /// </summary>
+                /// <param name="x">The new x position of the object</param>
+                /// <param name="y">The new y position of the object</param>
+                /// <remarks>Does nothing if the object is paused.</remarks>
                 public void Teleport(uint x, uint y)
                 {
                     if (parentMap != null && !Paused) parentMap.StrategyHolder.Teleport(StrategyHolder, x, y);
                 }
 
+                /// <summary>
+                ///   Starts (allocates) a new movement. This method is intended to be invoked from
+                ///     <see cref="Movable"/> and it is not intended for the developer to invoke it.
+                /// </summary>
+                /// <param name="movementDirection">The direction of the movement to start</param>
+                /// <param name="continuated">Whether the movement should be considered a continuation of the previous one</param>
+                /// <remarks>Does nothing if the object is paused.</remarks>
                 public bool StartMovement(Direction movementDirection, bool continuated = false)
                 {
                     return parentMap != null && !Paused && parentMap.StrategyHolder.MovementStart(StrategyHolder, movementDirection, continuated);
                 }
 
+                /// <summary>
+                ///   Finishes an already started movement. This method is intended to be invoked
+                ///     from <see cref="Movable"/> and it is not intended for the developer to invoke it.
+                /// </summary>
+                /// <returns>Does nothing if the object is paused.</returns>
                 public bool FinishMovement()
                 {
                     return parentMap != null && !Paused && parentMap.StrategyHolder.MovementFinish(StrategyHolder);
                 }
 
+                /// <summary>
+                ///   Cancels an already started movement. This method is intended to be invoked
+                ///     from <see cref="Movable"/> and it is not intended for the developer to invoke it.
+                /// </summary>
+                /// <returns>Does nothing if the object is paused.</returns>
                 public bool CancelMovement()
                 {
                     return parentMap != null && !Paused && parentMap.StrategyHolder.MovementCancel(StrategyHolder);
                 }
 
+                /// <summary>
+                ///   See <see cref="ObjectsLayer.GetCellWidth"/>.
+                /// </summary>
+                /// <returns>The width of the cells of its parent Objects Layer</returns>
                 public float GetCellWidth()
                 {
                     return GetComponentInParent<ObjectsLayer>().GetCellWidth();
                 }
 
+                /// <summary>
+                ///   See <see cref="ObjectsLayer.GetCellHeight"/>.
+                /// </summary>
+                /// <returns>The height of the cells of its parent Objects Layers</returns>
                 public float GetCellHeight()
                 {
                     return GetComponentInParent<ObjectsLayer>().GetCellHeight();
                 }
 
+                /// <summary>
+                ///   Flags the object as paused.
+                /// </summary>
+                /// <param name="fullFreeze">If <c>true</c>, also flags the object animations as paused</param>
                 public void Pause(bool fullFreeze)
                 {
                     Paused = true;
                     AnimationsPaused = fullFreeze;
                 }
 
+                /// <summary>
+                ///   Flags the object, and its animations, as unpaused.
+                /// </summary>
                 public void Resume()
                 {
                     Paused = false;

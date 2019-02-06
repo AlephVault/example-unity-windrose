@@ -7,42 +7,60 @@ namespace WindRose
     {
         namespace Objects
         {
+            /// <summary>
+            ///   <para>
+            ///     Vision ranges are related to <see cref="Watcher"/> objects. They have a way to
+            ///       tell their own dimensions but are strictly tied to such watcher objects, who
+            ///       receive all the events. Think of the regions in Pokemon games where you step
+            ///       and a trainer spots you and a fight starts.
+            ///   </para>
+            ///   <para>
+            ///     Usually, this object is related to watchers, and nothing needs to be done here.
+            ///       However, this component can be created on its own, provided the
+            ///       <see cref="relatedPositionable"/> is filled accordingly.
+            ///   </para>
+            ///   <para>
+            ///     Vision ranges spread to certain direction (being specified or being taken from
+            ///       the related positionable's <see cref="Oriented"/> component), with a given
+            ///       length (considering a base of 1), and a given width (considering a base
+            ///       of 1, and spreading to each side of the main, oriented, spread).
+            ///   </para>
+            /// </summary>
             [RequireComponent(typeof(BoxCollider2D))]
             public class TriggerVisionRange : TriggerZone
             {
-                /**
-                 * A TriggerVisionRange ties to a strict WindRise component, and so will also correctly
-                 *   compute its position. Also, it will have a Box-type collision mask.
-                 * 
-                 * However, despite being a box collider as well, its purpose will be complementary to
-                 *   TriggerActivator.
-                 */
-
                 // This inner margin is not mutable and will work to avoid bleeding
                 const float BLEEDING_BUFFER = 0.1f;
 
-                // This related component will be used to tie the events of attach/detach to it, and to
-                //   calculate the offsets. It is different to the Platform, in the way that the Platform
-                //   has the component by itself.
+                /// <summary>
+                ///   The related positionable. It is mandatory.
+                /// </summary>
                 [SerializeField]
                 private Positionable relatedPositionable;
 
                 // Perhaps the related object has an Oriented component. We will make use of it.
                 private Oriented oriented;
 
-                // We will make use of this field as a fixed value if the related Positionable object
-                //   does not have an Oriented component to take the actual and current direction from.
+                /// <summary>
+                ///   If the related positionable has an <see cref="Oriented"/> component, this
+                ///     property is meaningless. However, if it doesn't, then this property
+                ///     tells which dimensions this vision range spreads to.
+                /// </summary>
                 [SerializeField]
                 private Types.Direction direction = Types.Direction.DOWN;
 
-                // Size corresponds to half-width, rounded down.
-                // e.g. 0 corresponds to 1-cell width, 1 corresponds to 3-cell width, 3 to 5, ...
+                /// <summary>
+                ///   Size corresponds to half-width, rounded down. e.g. 0 corresponds
+                ///     to 1-cell width, 1 corresponds to 3-cell width, 3 to 5, ...
+                /// </summary>
                 [SerializeField]
                 private uint visionSize = 0;
 
-                // Length corresponds to how far does the vision reach. The actual length will be this
-                //   value, plus 1 (the immediately next step is not counted as part of the vision
-                //   range).
+                /// <summary>
+                ///   Length corresponds to how far does the vision reach. The actual length will be this
+                ///     value, plus 1 (the immediately next step is not counted as part of the vision
+                ///     range).
+                /// </summary>
                 [SerializeField]
                 private uint visionLength = 0;
 
@@ -70,8 +88,12 @@ namespace WindRose
 
                 protected override void Update()
                 {
+                    Types.Direction formerDirection = direction;
                     if (oriented != null) direction = oriented.orientation;
-                    RefreshDimensions();
+                    if (formerDirection != direction)
+                    {
+                        RefreshDimensions();
+                    }
                     base.Update();
                 }
 
@@ -113,16 +135,30 @@ namespace WindRose
                     return extra + (int)positionable.Y;
                 }
 
+                /// <summary>
+                ///   The related positionable is the specified in <see cref="relatedPositionable"/>.
+                /// </summary>
+                /// <returns>The related positionable</returns>
                 protected override Positionable GetRelatedPositionable()
                 {
                     return relatedPositionable;
                 }
 
+                /// <summary>
+                ///   The involved collider is the required <see cref="BoxCollider"/>.
+                /// </summary>
+                /// <returns>The involved collider</returns>
                 protected override Collider2D GetCollider2D()
                 {
                     return GetComponent<BoxCollider2D>();
                 }
 
+                /// <summary>
+                ///   The collider is set up on every orientation change, involving
+                ///     the central and side spread (in <see cref="visionLength"/> and
+                ///     <see cref="visionSize"/>), and the bleeding.
+                /// </summary>
+                /// <param name="collider2D">The collider to with with</param>
                 protected override void SetupCollider(Collider2D collider2D)
                 {
                     BoxCollider2D boxCollider2D = (BoxCollider2D)collider2D;

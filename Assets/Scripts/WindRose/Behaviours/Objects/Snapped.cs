@@ -7,20 +7,18 @@ namespace WindRose
     {
         namespace Objects
         {
+            /// <summary>
+            ///   <para>
+            ///     Snaps the object's position vertically or horizontally to its logical
+            ///       in-map position, and considering de cell's width and height.
+            ///   </para>
+            ///   <para>
+            ///     When the object is moving, the movement axis will not be snapped.
+            ///   </para>
+            /// </summary>
             [RequireComponent(typeof(Positionable))]
             public class Snapped : MonoBehaviour
             {
-                /**
-                 * A snapped object provides behavior to react to its position
-                 *   (since it will also be a positionable object).
-                 * 
-                 * In order to map its Positionable's position against the position
-                 *   in the scene, we must define constants to map between Positionable's
-                 *   units and Scene's units. The constant SCENE_UNITS_PER_TILE_UNITS
-                 *   holds that ratio, and if you edit it, at least keep your game
-                 *   design as consistent as possible among scene and sprites.
-                 */
-
                 private Positionable positionable;
 
                 // Use this for initialization
@@ -34,7 +32,16 @@ namespace WindRose
                     });
                 }
 
-                // Update is called once per frame
+                /// <summary>
+                ///   <para>
+                ///     This is a callback for the Update of the positionable. It is
+                ///       not intended to be called directly.
+                ///   </para>
+                ///   <para>
+                ///     Clamps, snaps, and updates the position of the object in its
+                ///       attached map.
+                ///   </para>
+                /// </summary>
                 public void DoUpdate()
                 {
                     // Run this code only if this object is attached to a map

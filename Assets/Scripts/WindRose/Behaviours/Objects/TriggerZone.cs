@@ -11,28 +11,16 @@ namespace WindRose
         {
             using World;
 
+            /// <summary>
+            ///   <para>
+            ///     Trigger zones are meant to be... zones inside a map. It detects the presence and
+            ///       regular activities of <see cref="TriggerLive"/> objects like walking, moving,
+            ///       entering, leaving, staying, and being teleported. Such events will be broadcasted,
+            ///       and also the positions will be (normalized and) notified in the event.
+            ///   </para>
+            /// </summary>
             public abstract class TriggerZone : TriggerHolder
             {
-                /**
-                 * A trigger zone detects entering TriggerActivator elements. It will not do anything but
-                 *   just receive the events. No implementation will be done of how to react to those events.
-                 * 
-                 * This trigger zone will have somehow a reference to a positionable component. However such
-                 *   reference will be determined by the subclasses. Such reference will serve to not relate
-                 *   Positionable elements on different maps by mistake.
-                 * 
-                 * This component will do/ensure/detect the following behaviour on each TriggerActivator:
-                 *   1. A trigger activator has just fulfilled two conditions:
-                 *      i. be in the same map as this trigger receiver.
-                 *      ii. staying inside this trigger receiver.
-                 *   2. A trigger activator has just fulfilled one or more of these conditions:
-                 *      i. be in different map.
-                 *      ii. getting out of this trigger platform.
-                 *   3. A trigger activator is inside this map, and this trigger platform.
-                 *   4. OnDestroy will clear all event callbacks on all currently staying TriggerActivators.
-                 *   5. The installed callback will attend the "it moved!" event.
-                 */
-
                 // Registered callbacks. These correspond to the callbacks generated when the
                 //   positionable component of a TriggerActivator object changes its position.
                 //
@@ -64,21 +52,65 @@ namespace WindRose
                 }
                 private Dictionary<TriggerLive, MapTriggerCallbacks> registeredCallbacks = new Dictionary<TriggerLive, MapTriggerCallbacks>();
 
+                /// <summary>
+                ///   The fetched related positionable. See <see cref="GetRelatedPositionable"/> for more details.
+                /// </summary>
                 protected Positionable positionable;
 
-                // These five events are notified against the involved Positionable components of
-                //   already registered TriggerSender objects, the related Positionable object,
-                //   and the delta coordinates between them.
+                /// <summary>
+                ///   A zone event. It will take as argument the triggering object, the positionable returned
+                ///     in <see cref="GetRelatedPositionable"/>, and the normalized positions (x, y) as
+                ///     returned by subtracting (<see cref="GetDeltaX"/>, <see cref="GetDeltaY"/>).
+                /// </summary>
                 [Serializable]
                 public class UnityMapTriggerEvent : UnityEvent<Positionable, Positionable, int, int> { }
+
+                /// <summary>
+                ///   Event triggered when an object enters this zone.
+                /// </summary>
                 public readonly UnityMapTriggerEvent onMapTriggerEnter = new UnityMapTriggerEvent();
+
+                /// <summary>
+                ///   Event triggered when an object stays in this zone.
+                /// </summary>
                 public readonly UnityMapTriggerEvent onMapTriggerStay = new UnityMapTriggerEvent();
+
+                /// <summary>
+                ///   Event triggered when an object leaves this zone.
+                /// </summary>
                 public readonly UnityMapTriggerEvent onMapTriggerExit = new UnityMapTriggerEvent();
+
+                /// <summary>
+                ///   Event triggered when an object walked one step in this zone.
+                /// </summary>
                 public readonly UnityMapTriggerEvent onMapTriggerWalked = new UnityMapTriggerEvent();
+
+                /// <summary>
+                ///   Event triggered when an object is teleported in this zone.
+                /// </summary>
                 public readonly UnityMapTriggerEvent onMapTriggerPlaced = new UnityMapTriggerEvent();
+
+                /// <summary>
+                ///   Event triggered when an object walked one step, or is teleported, in this
+                ///     zone (triggered after <see cref="onMapTriggerWalked"/> /
+                ///     <see cref="onMapTriggerPlaced"/)>.
+                /// </summary>
                 public readonly UnityMapTriggerEvent onMapTriggerMoved = new UnityMapTriggerEvent();
 
+                /// <summary>
+                ///   This method must be implemented to get a delta Y to consider as point of
+                ///     reference when calculating the normalized position of the object
+                ///     triggering an event in this zone.
+                /// </summary>
+                /// <returns>The Y to use as delta</returns>
                 protected abstract int GetDeltaX();
+
+                /// <summary>
+                ///   This method must be implemented to get a delta X to consider as point of
+                ///     reference when calculating the normalized position of the object
+                ///     triggering an event in this zone.
+                /// </summary>
+                /// <returns>The X to use as delta</returns>
                 protected abstract int GetDeltaY();
 
                 private void InvokeEventCallback(Positionable senderObject, UnityMapTriggerEvent targetEvent)
@@ -101,27 +133,47 @@ namespace WindRose
                     targetEvent.Invoke(senderObject, positionable, x, y);
                 }
 
+                /// <summary>
+                ///   Notifies that an object has entered this zone.
+                /// </summary>
+                /// <param name="senderObject">The object entering this zone</param>
                 protected void CallOnMapTriggerEnter(Positionable senderObject)
                 {
                     InvokeEventCallback(senderObject, onMapTriggerEnter);
                 }
 
+                /// <summary>
+                ///   Notifies that an object is still in this zone.
+                /// </summary>
+                /// <param name="senderObject">The object staying in this zone</param>
                 protected void CallOnMapTriggerStay(Positionable senderObject)
                 {
                     InvokeEventCallback(senderObject, onMapTriggerStay);
                 }
 
+                /// <summary>
+                ///   Notifies that an object has left this zone.
+                /// </summary>
+                /// <param name="senderObject">The object leaving this zone</param>
                 protected void CallOnMapTriggerExit(Positionable senderObject)
                 {
                     InvokeEventCallback(senderObject, onMapTriggerExit);
                 }
 
+                /// <summary>
+                ///   Notifies that an object has been placed in this zone.
+                /// </summary>
+                /// <param name="senderObject">The object being placed in this zone</param>
                 protected void CallOnMapTriggerPlaced(Positionable senderObject)
                 {
                     InvokeEventCallback(senderObject, onMapTriggerPlaced);
                     InvokeEventCallback(senderObject, onMapTriggerMoved);
                 }
 
+                /// <summary>
+                ///   Notifies that an object walked one step in this zone.
+                /// </summary>
+                /// <param name="senderObject">The object walking one step in this zone</param>
                 protected void CallOnMapTriggerWalked(Positionable senderObject)
                 {
                     InvokeEventCallback(senderObject, onMapTriggerWalked);
@@ -197,6 +249,12 @@ namespace WindRose
                     Withdraw();
                 }
 
+                /// <summary>
+                ///   Gets the related object to this one. This zone will be bound to that positionable:
+                ///     it will follow it to its map all their life together, and this related positionable
+                ///     will be the second argument of each event.
+                /// </summary>
+                /// <returns>The reference positionable</returns>
                 protected abstract Positionable GetRelatedPositionable();
 
                 void OnTriggerEnter2D(Collider2D collision)

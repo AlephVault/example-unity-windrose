@@ -10,26 +10,42 @@ namespace WindRose
         {
             namespace CommandExchange
             {
+                /// <summary>
+                ///   <para>
+                ///     Receives a <see cref="Misc.Command"/> sent from somewhere. Since receiving
+                ///       a command involves detecting collisions, this component also requires a
+                ///       <see cref="TriggerLive"/> which does most of the work for us.
+                ///   </para>
+                ///   <para>
+                ///     Other components depending on this one may be interested in adding listeners
+                ///       to <see cref="onCommandReceiver"/> handler.
+                ///   </para>
+                /// </summary>
                 [RequireComponent(typeof(TriggerLive))]
                 class CommandReceiver : MonoBehaviour, Pausable.IPausable
                 {
-                    /**
-                     * Receives a collision from a Command, which is a special object containing
-                     *   arbitrary data about the command to be captured. Only object being
-                     *   subclasses of TriggerLive can receive commands.
-                     * 
-                     * This object needs to detect the collision of the command, and so it will
-                     *   need somehow to handle collisions.
-                     */
-
+                    /// <summary>
+                    ///   The stage of the command arrival (just entering,
+                    ///     just leaving, or present).
+                    /// </summary>
                     public enum CommandStage
                     {
                         ENTER, EXIT, STAY
                     }
 
+                    /// <summary>
+                    ///   A command status holds the details of the command and its stage.
+                    /// </summary>
                     public class CommandStatus
                     {
+                        /// <summary>
+                        ///   The stage this event is processed in (command just entering,
+                        ///     command just leaving, or command present).
+                        /// </summary>
                         public readonly CommandStage Stage;
+                        /// <summary>
+                        ///   The <see cref="Misc.Command"/> being processed.
+                        /// </summary>
                         public readonly Misc.Command Command;
                         public CommandStatus(Misc.Command command, CommandStage stage)
                         {
@@ -40,6 +56,12 @@ namespace WindRose
 
                     [Serializable]
                     public class UnityCommandReceivedEvent : UnityEvent<CommandStatus> { }
+
+                    /// <summary>
+                    ///   This event is triggered when the object receives a command from somewhere.
+                    ///   Other behaviours should add listeners to this event and handle the event
+                    ///     being received.
+                    /// </summary>
                     public readonly UnityCommandReceivedEvent onCommandReceiver = new UnityCommandReceivedEvent();
 
                     private Misc.Command GetCommand(Collider2D collider)
@@ -51,7 +73,7 @@ namespace WindRose
                     {
                         Misc.Command command = GetCommand(collider);
 
-                        if (command != null)
+                        if (enabled && command != null)
                         {
                             if (command.sender != null && command.sender.gameObject != gameObject)
                             {
@@ -75,11 +97,17 @@ namespace WindRose
                         SendCommandStatusFromCollision(collider, CommandStage.STAY);
                     }
 
+                    /// <summary>
+                    ///   Pauses the object - this means the object will not attend commands.
+                    /// </summary>
                     public void Pause(bool fullFreeze)
                     {
                         enabled = false;
                     }
 
+                    /// <summary>
+                    ///   Resumes the object - it will attend commands again.
+                    /// </summary>
                     public void Resume()
                     {
                         enabled = true;

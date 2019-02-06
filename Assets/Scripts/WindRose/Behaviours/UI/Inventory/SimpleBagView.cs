@@ -15,20 +15,17 @@ namespace WindRose
             {
                 using Objects.Bags;
 
+                /// <summary>
+                ///   Simple bag views are a subclass of <see cref="InventorySimpleBagRenderingManagementStrategy.SimpleBagInventorySubRenderer"/>
+                ///     that account for an internal array of items being visible: such items will be cleared or set (according to what actually
+                ///     happens in the sub-renderer and renderer in general)
+                /// </summary>
                 [RequireComponent(typeof(Image))]
                 public class SimpleBagView : InventorySimpleBagRenderingManagementStrategy.SimpleBagInventorySubRenderer
                 {
-                    /**
-                     * This component has sub-items that know how to render themselves.
-                     * It is an error to not have appropriate children to render the content.
-                     * 
-                     * This means: this component will be PAGINATED, and pagination will be
-                     *   set on Awake().
-                     *   
-                     * This inventory view will be mounted on a Panel component (basically,
-                     *   a Panel is an image) inside a Canvas.
-                     */
-
+                    /// <summary>
+                    ///   An UI item that will know how to render and clear itself according to "simple" data.
+                    /// </summary>
                     [RequireComponent(typeof(Image))]
                     public abstract class SimpleBagViewItem : MonoBehaviour
                     {
@@ -43,6 +40,10 @@ namespace WindRose
                         public abstract void Set(int position, Sprite icon, string caption, object quantity);
                     }
 
+                    /// <summary>
+                    ///   Tells when this UI object cannot find, among its descendants,
+                    ///     any behaviour being subclass of <see cref="SimpleBagViewItem"/>.
+                    /// </summary>
                     public class NoSimpleBagViewItemException : Types.Exception
                     {
                         public NoSimpleBagViewItemException(string message) : base(message) {}
@@ -65,9 +66,9 @@ namespace WindRose
                         }
                     }
 
-                    /**
-                     * Clearing this involves clearing each slot. Also, setting the page to 0.
-                     */
+                    /// <summary>
+                    ///   Forces every <see cref="SimpleBagViewItem"/> to <see cref="SimpleBagViewItem.Clear"/> themselves.
+                    /// </summary>
                     public override void Clear()
                     {
                         foreach(SimpleBagViewItem item in items)
@@ -76,17 +77,18 @@ namespace WindRose
                         }
                     }
 
-                    /**
-                     * Delegating call to ClearStack on the appropriate slot.
-                     */
+                    /// <summary>
+                    ///   Delegates the behaviour in the <see cref="SimpleBagViewItem"/> in the given slot by calling <see cref="SimpleBagViewItem.Clear"/>.
+                    /// </summary>
+                    /// <param name="slot"></param>
                     protected override void ClearStack(int slot)
                     {
                         items[slot].Clear();
                     }
 
-                    /**
-                     * Delegating call to SetStack on the appropriate slot.
-                     */
+                    /// <summary>
+                    ///   Delegates the behaviour in the <see cref="SimpleBagViewItem"/> in the given slot by calling <see cref="SimpleBagViewItem.Set(int, Sprite, string, object)"/>.
+                    /// </summary>
                     protected override void SetStack(int slot, int position, Sprite icon, string caption, object quantity)
                     {
                         items[slot].Set(position, icon, caption, quantity);

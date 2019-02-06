@@ -8,22 +8,30 @@ namespace WindRose
     {
         namespace Objects
         {
+            /// <summary>
+            ///   <para>
+            ///     This class holds a set of animations ready to be used by depending
+            ///       behaviours (e.g. walking. running). By default it uses the IDLE_ANIMATION
+            ///       animation key with a default animation set.
+            ///   </para>
+            ///   <para>
+            ///     This class takes into account the current direction it is looking to, and
+            ///       also the current animation being played (animations are provided by
+            ///       different animation sets, which provide an animation for each possible
+            ///       direction).
+            ///   </para>
+            /// </summary>
             [RequireComponent(typeof(Represented))]
             public class Oriented : MonoBehaviour
             {
-                /**
-                 * This class holds a set of animations ready to be used by depending
-                 *   behaviors (e.g. walking, running). By default it uses the IDLE_ANIMATION
-                 *   animation key with a default animation set.
-                 * 
-                 * This class takes into account the current direction it is looking to, and
-                 *   also the current animation being played (animations are provided by
-                 *   different animation sets, which provide an animation for each possible
-                 *   direction).
-                 */
-
+                /// <summary>
+                ///   The default animation key provided by Orientable components.
+                /// </summary>
                 public const string IDLE_ANIMATION = "";
 
+                /// <summary>
+                ///   Tells when an error is raised inside Orientable component methods.
+                /// </summary>
                 public class Exception : Types.Exception
                 {
                     public Exception() { }
@@ -31,23 +39,50 @@ namespace WindRose
                     public Exception(string message, System.Exception inner) : base(message, inner) { }
                 }
 
+                // All the registered animations
                 private Dictionary<string, ScriptableObjects.Animations.AnimationSet> animations = new Dictionary<string, ScriptableObjects.Animations.AnimationSet>();
+
+                // All the temporary replacements for the registered animations
+                private Dictionary<string, ScriptableObjects.Animations.AnimationSet> replacements = new Dictionary<string, ScriptableObjects.Animations.AnimationSet>();
+
                 private string previousAnimationKey = "";
                 private Types.Direction previousOrientation = Types.Direction.DOWN;
 
                 private Represented represented;
                 private Positionable positionable;
 
+                /// <summary>
+                ///   The default animation set (used by default for Orientable elements,
+                ///     and usually meaning the object is standing).
+                /// </summary>
                 [SerializeField]
                 private ScriptableObjects.Animations.AnimationSet idleAnimationSet;
 
+                /// <summary>
+                ///   The object's orientation. Changing this value will change the sprite
+                ///     sequence to be rendered inside the currently set <see cref="AnimationSet"/>.
+                /// </summary>
                 public Types.Direction orientation = Types.Direction.DOWN;
 
+                /// <summary>
+                ///   The key of the animation being rendered.
+                /// </summary>
                 [HideInInspector]
                 public string animationKey = IDLE_ANIMATION;
-                // Perhaps we want to override the animation being used as idle,
-                //   with a new one. It is intended to serve as a "temporary" idle
-                //   animation for any reason.
+
+                /// <summary>
+                ///   <para>
+                ///     By setting this value to a non-null string, this value will be
+                ///       used instead of <see cref="IDLE_ANIMATION"/> to choose the
+                ///       animation to be used when going idle.
+                ///   </para>
+                ///   <para>
+                ///     This is not a matter of animation replacement, but a matter of
+                ///       different logic in handing (e.g. changing this behaviour
+                ///       to use the "tired" animation key (state) instead of the
+                ///       "idle" animation key (state) without screwing either animation).
+                ///   </para>
+                /// </summary>
                 [HideInInspector]
                 public string overriddenKeyForIdleAnimation = null;
 
@@ -55,7 +90,15 @@ namespace WindRose
                 {
                     try
                     {
-                        represented.CurrentAnimation = animations[animationKey].GetForDirection(orientation);
+                        ScriptableObjects.Animations.AnimationSet replacement;
+                        if (replacements.TryGetValue(animationKey, out replacement))
+                        {
+                            represented.CurrentAnimation = replacement.GetForDirection(orientation);
+                        }
+                        else
+                        {
+                            represented.CurrentAnimation = animations[animationKey].GetForDirection(orientation);
+                        }
                     }
                     catch (KeyNotFoundException)
                     {
@@ -64,16 +107,23 @@ namespace WindRose
                     }
                 }
 
+                /// <summary>
+                ///   Sets the current animation to idle. If <see cref="overriddenKeyForIdleAnimation"/>
+                ///     is set, that value will be picked. Otherwise, <see cref="IDLE_ANIMATION"/> will
+                ///     be used.
+                /// </summary>
                 public void SetIdleAnimation()
                 {
                     animationKey = (overriddenKeyForIdleAnimation == null) ? IDLE_ANIMATION : overriddenKeyForIdleAnimation;
                 }
 
-                /**
-                 * Usually, adding an animation set is done when creating custom behaviours.
-                 *   Adding one will check whether the key does not exist, and fail otherwise.
-                 */
-                public void AddAnimationSet(string key, ScriptableObjects.Animations.AnimationSet animation)
+                /// <summary>
+                ///   Registers an animation set under a key. This is usually done when initializing
+                ///     other components (e.g. moving components).
+                /// </summary>
+                /// <param name="key">The key to use</param>
+                /// <param name="animationSet">The animation set to register</param>
+                public void AddAnimationSet(string key, ScriptableObjects.Animations.AnimationSet animationSet)
                 {
                     if (animations.ContainsKey(key))
                     {
@@ -81,17 +131,17 @@ namespace WindRose
                     }
                     else
                     {
-                        animations.Add(key, animation);
+                        animations.Add(key, animationSet);
                     }
                 }
 
-                /**
-                 * In contrast to AddAnimationSet, this method replaces an existing animation set
-                 *   in the middle of an execution of all the present behaviours. This method will check
-                 *   whether the animation exists beforehand, and fail otherwise.
-                 *   
-                 * This is intentional to prevent any accident creating new animations when it was not intended.
-                 */
+                /// <summary>
+                ///   Replaces an existing animation set with a new one. This is run at run-time
+                ///     and will require the animation being replaced to exist, or fail otherwise.
+                ///     Set animation to <c>null</c> to clear the replacement on a given key.
+                /// </summary>
+                /// <param name="key">The key of the animation being replaced</param>
+                /// <param name="animation">The new animation to use, or null to undo the replacement</param>
                 public void ReplaceAnimationSet(string key, ScriptableObjects.Animations.AnimationSet animation)
                 {
                     if (animations.ContainsKey(key))
@@ -100,7 +150,14 @@ namespace WindRose
                     }
                     else
                     {
-                        animations[key] = animation;
+                        if (animation != null)
+                        {
+                            replacements[key] = animation;
+                        }
+                        else
+                        {
+                            replacements.Remove(key);
+                        }
                         if (key == animationKey) SetCurrentAnimation();
                     }
                 }
@@ -124,12 +181,29 @@ namespace WindRose
                     });
                 }
 
+                /// <summary>
+                ///   <para>
+                ///     This is a callback for the Start of the positionable. It is
+                ///       not intended to be called directly.
+                ///   </para>
+                ///   <para>
+                ///     Initializes the current animation set to the animation key.
+                ///   </para>
+                /// </summary>
                 public void DoStart()
                 {
                     SetCurrentAnimation();
                 }
 
-                // Update is called once per frame
+                /// <summary>
+                ///   <para>
+                ///     This is a callback for the Update of the positionable. It is
+                ///       not intended to be called directly.
+                ///   </para>
+                ///   <para>
+                ///     Updates the current animation frame on the object.
+                ///   </para>
+                /// </summary>
                 public void DoUpdate()
                 {
                     // If the object is being moved, we assign the movement direction as the current orientation

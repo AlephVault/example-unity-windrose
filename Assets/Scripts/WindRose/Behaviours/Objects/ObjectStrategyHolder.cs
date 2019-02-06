@@ -10,17 +10,28 @@ namespace WindRose
         {
             using Strategies;
 
-            /**
-                * An object strategy holder will reference its positionable and also will find
-                *   its way to initialize its strategy. When initializing the strategy, it should
-                *   provide itself to the strategy constructor (alongside any needed data).
-                */
+            /// <summary>
+            ///   <para>
+            ///     Object strategy holders are the complement of Map's object management strategy
+            ///       holders, as objects are the complement of maps, and as object strategies are
+            ///       the complement of object management strategies. This class is the other side
+            ///       of the relationship between an object and the map it belongs to (the other
+            ///       side of the relationship is <see cref="World.ObjectsManagementStrategyHolder"/>).
+            ///   </para>
+            ///   <para>
+            ///     Their main purpose is to be in the same place as their related instances of
+            ///       <see cref="Strategies.ObjectStrategy"/>, and pick one of them as the default.
+            ///     The default strategy will determine the main state to be checked and also
+            ///       will involve dependencies to ther strategies (and their states).
+            ///   </para>
+            /// </summary>
             [RequireComponent(typeof(Positionable))]
             public class ObjectStrategyHolder : MonoBehaviour
             {
-                /**
-                    * All the needed exceptions go here.
-                    */
+                /// <summary>
+                ///   Tells when the instance being picked into <see cref="objectStrategy"/> is
+                ///     null or does not belong to this behaviour's underlying Game Object.
+                /// </summary>
                 public class InvalidStrategyComponentException : Types.Exception
                 {
                     public InvalidStrategyComponentException() { }
@@ -28,26 +39,39 @@ namespace WindRose
                     public InvalidStrategyComponentException(string message, Exception inner) : base(message, inner) { }
                 }
 
-                /**
-                    * Each strategy holder knows its positionable.
-                    */
+                /// <summary>
+                ///   The related <see cref="Positionable"/> (the in-map object).
+                /// </summary>
                 public Positionable Positionable { get; private set; }
 
-                /**
-                    * The root strategy that can be picked in the editor.
-                    */
+                /// <summary>
+                ///   The main strategy of this object.
+                /// </summary>
+                /// <remarks>
+                ///   This strategy will have to be compatible with the
+                ///   <see cref="World.ObjectsManagementStrategies.ObjectsManagementStrategy"/>
+                ///   picked in the <see cref="World.ObjectsManagementStrategyHolder"/>'s main
+                ///   strategy component in the map this object will intend to be attached into.
+                /// </remarks>
                 [SerializeField]
                 private ObjectStrategy objectStrategy;
 
-                /**
-                    * Each strategy holder tells its strategy.
-                    */
+                /// <summary>
+                ///   see <see cref="objectStrategy"/>.
+                /// </summary>
                 public ObjectStrategy ObjectStrategy { get { return objectStrategy; } }
 
-                /**
-                    * Initializing a strategy will be done on positionable initialization. This means: the map calls this
-                    *   method from its own behaviour.
-                    */
+                /// <summary>
+                ///   <para>
+                ///     This method will be invoked on initialization of the related
+                ///       <see cref="Positionable"/> object. It must not be invoked
+                ///       directly.
+                ///   </para>
+                ///   <para>
+                ///     Initializes the underlying main strategy (the one picked into
+                ///       the <see cref="objectStrategy"/> property).
+                ///   </para>
+                /// </summary>
                 public void Initialize()
                 {
                     ObjectStrategy.Initialize();

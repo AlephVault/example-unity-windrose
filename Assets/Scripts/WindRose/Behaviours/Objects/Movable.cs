@@ -6,9 +6,19 @@ namespace WindRose
     {
         namespace Objects
         {
+            /// <summary>
+            ///   <para>
+            ///     Movable components exist on top of <see cref="Oriented"/> components
+            ///       and add the moving animation set. They also have the means to
+            ///       start and cancel a movement on any direction.
+            ///   </para>
+            /// </summary>
             [RequireComponent(typeof(Oriented))]
             public class Movable : MonoBehaviour
             {
+                /// <summary>
+                ///   The default animation key provided by Movable components.
+                /// </summary>
                 public const string MOVE_ANIMATION = "move";
 
                 // Dependencies
@@ -19,10 +29,16 @@ namespace WindRose
                 //   of Snapped, but specified for the intended movement.
                 private Vector2 origin = Vector2.zero, target = Vector2.zero;
 
-                // These fields are the configurable features of this behavior
+                /// <summary>
+                ///   The animation to use for the object being moved.
+                /// </summary>
                 [SerializeField]
                 private ScriptableObjects.Animations.AnimationSet movingAnimationSet;
-                public uint speed = 2; // The speed is expressed in terms of units per second
+
+                /// <summary>
+                ///   The movement speed, in game units per second.
+                /// </summary>
+                public uint speed = 2;
 
                 // A runtime check to determine whether the object was moving in the previous frame
                 private bool wasMoving = false;
@@ -30,22 +46,51 @@ namespace WindRose
                 // This member hold the last movement being commanded to this object
                 private Types.Direction? CommandedMovement = null;
 
-                // A runtime check to determine whether the object is being moved
+                /// <summary>
+                ///   Tells whether the object is moving. It knows that by reading the
+                ///     current movement in the underlying positionable.
+                /// </summary>
                 public bool IsMoving { get { return positionable.Movement != null; } }
+
+                /// <summary>
+                ///   Gets the current movement in the underlying positionable.
+                /// </summary>
                 public Types.Direction? Movement { get { return positionable.Movement; } }
 
-                // Perhaps we want to override the animation being used as moving,
-                //   with a new one. It is intended to serve as a "temporary" moving
-                //   animation for any reason.
+                /// <summary>
+                ///   <para>
+                ///     By setting this value to a non-null string, this value will be
+                ///       used instead of <see cref="MOVE_ANIMATION"/> to choose the
+                ///       animation to be used when moving.
+                ///   </para>
+                ///   <para>
+                ///     This is not a matter of animation replacement, but a matter of
+                ///       different logic in handling (e.g. changing this behaviour
+                ///       to use the "run" animation key (state) instead of the
+                ///       "move" animation key (state) without screwing either animation).
+                ///   </para>
+                /// </summary>
                 [HideInInspector]
-                public string overriddenKeyForMovingAnimation = null;
+                public string overriddenKeyForMoveAnimation = null;
 
+                /// <summary>
+                ///   Sets the current animation to the movement animation registered
+                ///     in this component.
+                /// </summary>
                 public void SetMovingAnimation()
                 {
-                    string newKey = (overriddenKeyForMovingAnimation == null) ? MOVE_ANIMATION : overriddenKeyForMovingAnimation;
-                    oriented.animationKey = newKey;
+                    oriented.animationKey = (overriddenKeyForMoveAnimation == null) ? MOVE_ANIMATION : overriddenKeyForMoveAnimation;
                 }
 
+                /// <summary>
+                ///   Starts a movement in certain direction.
+                /// </summary>
+                /// <param name="movement">The direction of the new movement</param>
+                /// <param name="queueIfMoving">
+                ///   If <c>true</c>, this movement is "stored" and will execute automatically
+                ///     after the current movement ends.
+                /// </param>
+                /// <returns>Whether the movement could be started</returns>
                 public bool StartMovement(Types.Direction movement, bool queueIfMoving = true)
                 {
                     if (positionable.ParentMap == null) return false;
@@ -66,6 +111,9 @@ namespace WindRose
                     }
                 }
 
+                /// <summary>
+                ///   Cancels the current movement, if any.
+                /// </summary>
                 public void CancelMovement()
                 {
                     if (positionable.ParentMap == null) return;
@@ -92,11 +140,11 @@ namespace WindRose
 
                 void Awake()
                 {
-                    // I DON'T KNOW WHY HIDDEN PROPERTIES FROM INSPECTOR ALSO AVOID NULL VALUES.
-                    // So I'm adding this code to ensure this particular field starts as null in Start().
-                    overriddenKeyForMovingAnimation = null;
                     oriented = GetComponent<Oriented>();
                     positionable = GetComponent<Positionable>();
+                    // I DON'T KNOW WHY HIDDEN PROPERTIES FROM INSPECTOR ALSO AVOID NULL VALUES.
+                    // So I'm adding this code to ensure this particular field starts as null in Awake().
+                    overriddenKeyForMoveAnimation = null;
                     oriented.AddAnimationSet(MOVE_ANIMATION, movingAnimationSet);
                     positionable.onAttached.AddListener(delegate (World.Map parentMap)
                     {
@@ -113,7 +161,16 @@ namespace WindRose
                     });
                 }
 
-                // Update is called once per frame
+                /// <summary>
+                ///   <para>
+                ///     This is a callback for the Update of the positionable. It is
+                ///       not intended to be called directly.
+                ///   </para>
+                ///   <para>
+                ///     Updates the current in-map position on the object, reflecting
+                ///       partial movement on each frame.
+                ///   </para>
+                /// </summary>
                 public void DoUpdate()
                 {
                     if (positionable.ParentMap == null) return;

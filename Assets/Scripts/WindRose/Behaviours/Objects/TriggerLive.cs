@@ -7,21 +7,24 @@ namespace WindRose
     {
         namespace Objects
         {
+            /// <summary>
+            ///   <para>
+            ///     This components sets its underlying collider (which will be a
+            ///       <see cref="BoxCollider2D"/>) to the dimensions of the object
+            ///       (considering underlying cell's width/height).
+            ///   </para>
+            ///   <para>
+            ///     Live triggers are intended to be installed into moving objects,
+            ///       and not in objects that intend to be like platforms. They 
+            ///       ensure the collider is only active while the object is added
+            ///       to a map.
+            ///   </para>
+            /// </summary>
             [RequireComponent(typeof(Rigidbody2D))]
             [RequireComponent(typeof(Positionable))]
             [RequireComponent(typeof(BoxCollider2D))]
             public class TriggerLive : TriggerHolder
             {
-                /**
-                 * This abstract trigger has only the task of being a kinematic rigidbody, which is
-                 *   required to trigger with subclasses from TriggerZone. This abstract class should
-                 *   be a complement of TriggerZone.
-                 * 
-                 * Live triggers are deeply tied to WindRose, since they interact with positionables:
-                 *   Live triggers are live map object, which could be not the case for other types
-                 *   of colliders.
-                 */
-
                 private Rigidbody2D rigidbody2D;
                 protected override void Awake()
                 {
@@ -39,11 +42,20 @@ namespace WindRose
                     rigidbody2D = GetComponent<Rigidbody2D>();
                 }
 
+                /// <summary>
+                ///   Gets its underlying <see cref="BoxCollider2D"/> as the involved collider.
+                /// </summary>
+                /// <returns>The collider</returns>
                 protected override Collider2D GetCollider2D()
                 {
                     return GetComponent<BoxCollider2D>();
                 }
 
+                /// <summary>
+                ///   Sets up the collider to the dimensions of this object, with respect
+                ///     to the dimensions and cell width/height in the objects layer.
+                /// </summary>
+                /// <param name="collider2D"></param>
                 protected override void SetupCollider(Collider2D collider2D)
                 {
                     BoxCollider2D boxCollider2D = (BoxCollider2D)collider2D;

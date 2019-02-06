@@ -7,23 +7,40 @@ namespace WindRose
     {
         namespace Objects
         {
+            /// <summary>
+            ///   Watchers instantiate their own vision range. Their range can be
+            ///     referenced, and event handlers can be tied to it.
+            /// </summary>
             [RequireComponent(typeof(Oriented))]
             public class Watcher : MonoBehaviour
             {
-                /**
-                 * Installs a TriggerVisionRange for this component.
-                 */
-
-                // see TriggerVisionRange
+                /// <summary>
+                ///   The value to the <see cref="TriggerVisionRange.visionSize"/> property
+                ///     in their created <see cref="TriggerVisionRange"/>.
+                /// </summary>
                 [SerializeField]
                 private uint visionSize = 0;
 
-                // see TriggerVisionRange
+                /// <summary>
+                ///   The value to the <see cref="TriggerVisionRange.visionLength"/> property
+                ///     in their created <see cref="TriggerVisionRange"/>.
+                /// </summary>
                 [SerializeField]
                 private uint visionLength = 0;
 
                 private TriggerVisionRange relatedVisionRange;
+
+                /// <summary>
+                ///   Its related <see cref="TriggerVisionRange"/>. The spirit of this property
+                ///     is that it will be the one being retrieved, and events will be tied
+                ///     to them.
+                /// </summary>
                 public TriggerVisionRange RelatedVisionRange { get { return relatedVisionRange; } }
+
+                /// <summary>
+                ///   This event is triggered when this object is ready (actually: when its related
+                ///     <see cref="TriggerVisionRange"/> is created).
+                /// </summary>
                 public readonly UnityEvent onWatcherReady = new UnityEvent();
 
                 void Start()

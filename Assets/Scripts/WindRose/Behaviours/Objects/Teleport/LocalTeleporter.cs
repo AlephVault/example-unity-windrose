@@ -11,36 +11,39 @@ namespace WindRose
         {
             namespace Teleport
             {
+                /// <summary>
+                ///   <para>
+                ///     A local teleporter will ensure that an object that enters
+                ///       (walks) into it, will be teleported to a related
+                ///       <see cref="TeleportTarget"/>, located in the same
+                ///       scene (perhaps in another map).
+                ///   </para>
+                ///   <para>
+                ///     Teleportation will only by triggered when the object
+                ///       FULLY WALKS into the teleporter. This is important to
+                ///       remind when the entering object has dimensions greater
+                ///       than (1, 1).
+                ///   </para>
+                ///   <para>
+                ///     For two-sided teleporters, the object holding this component
+                ///       may also hold <see cref="TeleportTarget"/>, and having
+                ///       another object in similar conditions, they can specify
+                ///       each other's <see cref="Target"/> and so have a bidirectional
+                ///       path of teleportation.
+                ///   </para>
+                /// </summary>
+                /// <remarks>
+                ///   You may subclass this component to customize the
+                ///     <see cref="CanTeleport(Positionable, TeleportTarget)"/> and
+                ///     <see cref="DoTeleport(Action)"/> methods if you want to run
+                ///     asynchronous code or add fade effects.
+                /// </remarks>
                 [RequireComponent(typeof(TriggerPlatform))]
                 public class LocalTeleporter : MonoBehaviour
                 {
-                    /**
-                     * A local teleporter performs a teleport in the same scene.
-                     * 
-                     * However, since a scene may have several distinct maps, a
-                     *   local teleporter will be able to teleport to a different
-                     *   map. To make this possible, one field will exist:
-                     *   
-                     *   1. Teleport target. This target may belong to the same or
-                     *        a different map, and will be in a valid position (as
-                     *        and positionable object is!).
-                     *   2. An orientation the teleported object (if orientable) will
-                     *        have.
-                     *   
-                     *   Under the hoods, a teleporter is just a call to Attach
-                     *     on the activator object that enters (walking) to the
-                     *     teleporter, appropriately, to the map and coordinates
-                     *     the teleport target will refer. This involves:
-                     *   
-                     *   1. The activator must be seen "walking" into to this teleporter.
-                     *   2. The activator must be completely contained by this teleporter.
-                     *   3. Satisfied those conditions, a teleport will occur to the target
-                     *        position. The teleportation method may be overriden, and the
-                     *        default one is instantaneous.
-                     *   4. The teleportation may force a new orientation of the teleported
-                     *        object (if the object is actually orientable).
-                     */
-
+                    /// <summary>
+                    ///   The end side of this teleport.
+                    /// </summary>
                     public TeleportTarget Target;
                     
                     // Use this for initialization
@@ -78,9 +81,14 @@ namespace WindRose
                         }
                     }
 
-                    /**
-                     * Perhaps you'd like to override this one to add custom checks before teleporting?
-                     */
+                    /// <summary>
+                    ///   If overriding this class, a condition may be set to tell whether an object will trigger
+                    ///     the teleportation, or if such teleportation will be silently cancelled (not done), and
+                    ///     the inner object will be inside the teleporter as if it was a regular step.
+                    /// </summary>
+                    /// <param name="objectToBeTeleported">The object intending to be teleported</param>
+                    /// <param name="teleportTarget">The teleport target</param>
+                    /// <returns>Whether the teleport can occur</returns>
                     protected virtual bool CanTeleport(Positionable objectToBeTeleported, TeleportTarget teleportTarget)
                     {
                         return true;
@@ -116,9 +124,13 @@ namespace WindRose
                         }
                     }
 
-                    /**
-                     * Perhaps you'd like to override this one to add custom behaviour? (e.g. animations)
-                     */
+                    /// <summary>
+                    ///   This method can be overriden to provide an asynchronous teleportation! One example
+                    ///     is producing a fade-out effect, then invoking <paramref name="teleport"/> callback,
+                    ///     and then producing a fade-in. PLEASE REMIND: THE CALLBACK MUST BE INVOKED EXACTLY
+                    ///     ONCE.
+                    /// </summary>
+                    /// <param name="teleport">The callback to invoke. IT MUST BE INVOKED SOMEWHERE IN THE IMPLEMENTATION.</param>
                     protected virtual void DoTeleport(Action teleport)
                     {
                         teleport();

@@ -6,18 +6,20 @@ namespace WindRose
     {
         namespace Objects
         {
+            /// <summary>
+            ///   A platform notifies the zone events (see <see cref="TriggerZone"/> for more details)
+            ///     and calculates the zone bounds based on its underlying positionable's dimensions,
+            ///     but considering an "inner margin" factor to avoid collisions when objects are
+            ///     not there but immediately adjacent in any axis.
+            /// </summary>
             [RequireComponent(typeof(Positionable))]
             [RequireComponent(typeof(BoxCollider2D))]
             public class TriggerPlatform : TriggerZone
             {
-                /**
-                 * A TriggerPlatform is a strict WindRise component, and so will also correctly compute its
-                 *   collision mask, which will be a box.
-                 * 
-                 * However, despite being a box collider as well, its purpose will be complementary to
-                 *   TriggerActivator.
-                 */
-
+                /// <summary>
+                ///   The inner margin to set. It must be strictly positive to avoid "bleeding"
+                ///     (collisions with adjacent <see cref="TriggerLive"/> objects).
+                /// </summary>
                 [SerializeField]
                 private float innerMarginFactor = 0.25f;
 
@@ -26,26 +28,49 @@ namespace WindRose
                     base.Start();
                 }
 
+                /// <summary>
+                ///   The delta X is the object's X position.
+                /// </summary>
+                /// <returns>The delta X</returns>
                 protected override int GetDeltaX()
                 {
                     return (int)positionable.X;
                 }
 
+                /// <summary>
+                ///   The delta Y is the object's Y position.
+                /// </summary>
+                /// <returns>The delta Y</returns>
                 protected override int GetDeltaY()
                 {
                     return (int)positionable.Y;
                 }
 
+                /// <summary>
+                ///   The related positionable is itself.
+                /// </summary>
+                /// <returns></returns>
                 protected override Positionable GetRelatedPositionable()
                 {
                     return GetComponent<Positionable>();
                 }
 
+                /// <summary>
+                ///   The related collider is its <see cref="BoxCollider2D"/>
+                ///     component, required right here.
+                /// </summary>
+                /// <returns></returns>
                 protected override Collider2D GetCollider2D()
                 {
                     return GetComponent<BoxCollider2D>();
                 }
 
+                /// <summary>
+                ///   Sets up the collider considering not just its dimensions
+                ///     (like <see cref="TriggerLive"/> does) but also the inner
+                ///     margin to avoid bleeding.
+                /// </summary>
+                /// <param name="collider2D">The collider to set up</param>
                 protected override void SetupCollider(Collider2D collider2D)
                 {
                     BoxCollider2D boxCollider2D = (BoxCollider2D)collider2D;

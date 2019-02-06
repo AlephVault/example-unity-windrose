@@ -10,12 +10,14 @@ namespace WindRose
             {
                 namespace Base
                 {
-                    /**
-                     * Just a marker to be the counterpart of BaseStrategy (in map).
-                     * See the documentation of that class for more details.
-                     */
+                    /// <summary>
+                    ///   This strategy is just the counterpart of <see cref="World.ObjectsManagementStrategies.Base.BaseObjectsManagementStrategy"/>.
+                    /// </summary>
                     class BaseObjectStrategy : ObjectStrategy
                     {
+                        /// <summary>
+                        ///   The counterpart type is <see cref="World.ObjectsManagementStrategies.Base.BaseObjectsManagementStrategy"/>.
+                        /// </summary>
                         protected override Type GetCounterpartType()
                         {
                             return typeof(World.ObjectsManagementStrategies.Base.BaseObjectsManagementStrategy);

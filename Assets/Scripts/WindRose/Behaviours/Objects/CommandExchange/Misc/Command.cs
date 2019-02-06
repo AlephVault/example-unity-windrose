@@ -12,37 +12,34 @@ namespace WindRose
             {
                 namespace Misc
                 {
+                    /// <summary>
+                    ///   A command is a simple game object that will be cast by a <see cref="CloseCommandSender"/>
+                    ///     or other classes creating it (like dependent classes), and received by
+                    ///     <see cref="CommandReceiver"/> or dependent classes.
+                    /// </summary>
                     [RequireComponent(typeof(CircleCollider2D))]
                     class Command : MonoBehaviour
                     {
-                        /**
-                         * A command is just a small circle collider which can hold data
-                         *   referring the "command" being sent. Such "command" is as meaningful
-                         *   as desired and interpreted by the receiver that errrr... "receives"
-                         *   it.
-                         * 
-                         * The collider will have a small radius and act as just a trigger (i.e.
-                         *   not as a regular collision).
-                         * 
-                         * The receiver will be a live trigger (e.g. a character or solid object).
-                         * 
-                         * ANY OBJECT OR MEDIUM CAN CAST A COMMAND. There is no restriction, but
-                         *   just the suggestion of moving the data accordingly. However, the ideal
-                         *   scenario is that commands are cast by a controlled environment (e.g.
-                         *   a CloseCommandSender, which requires both odd width and height (in
-                         *   map tiles) and casts a command appropriately in that direction.
-                         */
-
+                        /// <summary>
+                        ///   Usually, the sender of the command (this is the case when being cast by
+                        ///     <see cref="CloseCommandSender"/>).
+                        /// </summary>
                         [HideInInspector]
                         public GameObject sender;
 
+                        /// <summary>
+                        ///   The name of the command.
+                        /// </summary>
                         [HideInInspector]
                         public string name;
 
+                        /// <summary>
+                        ///   Additional arguments this command may have.
+                        /// </summary>
                         [HideInInspector]
                         public object[] arguments;
 
-                        public void Start()
+                        void Start()
                         {
                             CircleCollider2D collider = GetComponent<CircleCollider2D>();
                             collider.radius = 0;

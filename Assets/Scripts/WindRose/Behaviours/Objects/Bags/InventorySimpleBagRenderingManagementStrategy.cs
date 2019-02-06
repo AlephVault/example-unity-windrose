@@ -16,23 +16,22 @@ namespace WindRose
         {
             namespace Bags
             {
+                /// <summary>
+                ///   This is a rendering strategy for <see cref="SimpleBag"/> behaviours.
+                ///     This strategy will allow the connection of several objects acting
+                ///     as "viewers" (<see cref="SimpleBagInventorySubRenderer"/>).
+                /// </summary>
                 [RequireComponent(typeof(SimpleBag))]
                 public class InventorySimpleBagRenderingManagementStrategy : InventorySimpleRenderingManagementStrategy
                 {
-                    /**
-                     * This rendering strategy renders a simple bag. A simple bag will have
-                     *   just one position, but will have perhaps multiple "viewers". THESE
-                     *   CLASSES ARE NOT JUST RENDERERS: THEY ARE INTENDED TO WORK AS THE UI
-                     *   OF THE INVENTORY BEING DISPLAYED.
-                     * 
-                     * Sub-renderers may imply pagination. This means: Pagination can be
-                     *   configured into them via several means. Always considering:
-                     *   1. Page Size of 0 means no pagination.
-                     *   2. Page Offset of N will mean an actual offset of N * (Page Size).
-                     * 
-                     * Paging *may* change later (if child components are defined so), but
-                     *   there is no guarantee here.
-                     */
+                    /// <summary>
+                    ///   A sub-renderer is, basically, a view than can be connected
+                    ///     to an <see cref="InventorySimpleBagRenderingManagementStrategy"/>.
+                    ///   It is not just a way to render items, but also a way to
+                    ///     interact with them by -e.g.- pagination: different sub
+                    ///     renderers may show different pages, but they will render
+                    ///     the same underlying items.
+                    /// </summary>
                     public abstract class SimpleBagInventorySubRenderer : MonoBehaviour
                     {
                         /**
@@ -43,10 +42,10 @@ namespace WindRose
                          */
                         private InventorySimpleBagRenderingManagementStrategy sourceRenderer;
 
-                        /**
-                         * To make this work, the sub-renderers will need to know the data to
-                         *   render.
-                         */
+                        /// <summary>
+                        ///   Contains the elements to render, in terms of its position
+                        ///     and the simple data fields: icon, caption, and quantity.
+                        /// </summary>
                         protected SortedDictionary<int, Tuple<Sprite, string, object>> elements;
 
                         /**
@@ -59,34 +58,74 @@ namespace WindRose
                          *   The page value will determine an offset of: N*PageSize elements.
                          * - There is a protected method if you want to change the paging later.
                          */
+
+                        /// <summary>
+                        ///   Returns the underlying simple bag (which is tied to the related
+                        ///     renderer).
+                        /// </summary>
                         public SimpleBag SourceSimpleBag
                         {
                             get { return sourceRenderer != null ? sourceRenderer.SimpleBag : null; }
                         }
+
+                        /// <summary>
+                        ///   This value will be 0 if no paging is meant to be used in this
+                        ///     view. Otherwise, it will be a >= number.
+                        /// </summary>
                         public uint PageSize { get; protected set; }
+
+                        /// <summary>
+                        ///   This is the current page. If <see cref="PageSize"/> is zero, this
+                        ///     value will be zero. Otherwise, this value will be multiplied
+                        ///     by <see cref="PageSize"/> to get the current offset of elements
+                        ///     to render.
+                        /// </summary>
                         public uint Page { get; protected set; }
+
+                        /// <summary>
+                        ///   Tells whether this sub-renderer applies pagination. This will happen
+                        ///     when <see cref="PageSize"/> is > 0.
+                        /// </summary>
                         public bool Paginates { get { return PageSize > 0; } }
+
+                        /// <summary>
+                        ///   The actual offset of elements to render, as multiplication of
+                        ///     <see cref="Page"/> and <see cref="PageSize"/>.
+                        /// </summary>
                         public uint Offset { get { return PageSize * Page; } }
-                        /**
-                         * Calculates the maximum allowed page to display.
-                         * It will be 0 for infinite, but may be nonzero for regular paging.
-                         */
+
+                        /// <summary>
+                        ///   Returns the maximum available page to render, given the current
+                        ///     <see cref="PageSize"/>.
+                        /// </summary>
                         public uint MaxPage()
                         {
                             if (PageSize == 0) return 0;
                             if (elements.Count == 0) return 0;
                             return (uint)elements.Last().Key / PageSize;
                         }
+
                         /**
                          * Calculates the page on which you'll find a particular position.
                          */
+
+                        /// <summary>
+                        ///   Calculates the page -considering current page settings-
+                        ///     for a particular position in the bag.
+                        /// </summary>
                         public uint PageFor(int position)
                         {
                             return PageSize == 0 ? 0 : (uint)position / PageSize;
                         }
+
                         /**
                          * Changes the page size and updates the page accordingly.
                          */
+
+                        /// <summary>
+                        ///   Changes the current <see cref="PageSize"/> and will
+                        ///     also set the <see cref="Page"/> accordingly.
+                        /// </summary>
                         protected void ChangePageSize(uint newPageSize)
                         {
                             if (PageSize == newPageSize) return;
@@ -106,20 +145,12 @@ namespace WindRose
                             Refresh();
                         }
 
-                        /**
-                         * This method refreshes (actually: re-renders) all the elements being
-                         *   held as data. In order to this method work appropriately, data must
-                         *   be up-to-date in `elements` collection.
-                         * 
-                         * When there is no paging, everything is being rendered. In this case,
-                         *   refreshing involves:
-                         * 1. Clearing everything, because you don't know the capacity beforehand.
-                         * 2. Iterating over each element, and refreshing it.
-                         * 
-                         * A different case is when you have a paging: You know the capacity, so
-                         *   you will know how to treat each element in the capacity (e.g. inventory
-                         *   slots in regular layouts).
-                         */
+                        /// <summary>
+                        ///   Refreshes the content being rendered. This involves clearing everything,
+                        ///     rendering each stack, and then applying a final rendering. These two
+                        ///     steps are abstract and must be implemented by subclasses (since it
+                        ///     is just a matter of the particular UI to create for them).
+                        /// </summary>
                         public virtual void Refresh()
                         {
                             if (PageSize == 0)
@@ -159,25 +190,33 @@ namespace WindRose
                             AfterRefresh();
                         }
 
-                        /**
-                         * Clears all the displays. Useful when you have been commanded to clear your display,
-                         *   or when you are refreshing everything in a non-paginated layout.
-                         */
+                        /// <summary>
+                        ///   This method must be implemented. It must clear everything accordingly: stacks
+                        ///     and whatever the UI needs to clear.
+                        /// </summary>
                         public abstract void Clear();
 
-                        /**
-                         * Renders a particular stack (by its data) element inside a particular slot (by its index).
-                         */
+                        /// <summary>
+                        ///   This method must be implemented. It draws a particular stack in a particular
+                        ///     slot for a particular original position.
+                        /// </summary>
+                        /// <param name="slot">The slot to render into. It will be constrained by <see cref="PageSize"/></param>
+                        /// <param name="position">The source position</param>
+                        /// <param name="icon">The stack's icon</param>
+                        /// <param name="caption">The stack's caption</param>
+                        /// <param name="quantity">The stackc's quantity</param>
                         protected abstract void SetStack(int slot, int position, Sprite icon, string caption, object quantity);
 
-                        /**
-                         * Clears a particular slot (by its index) - no stack will be displayed there.
-                         */
+                        /// <summary>
+                        ///   Clears a particular slot. No stack will be rendered there.
+                        /// </summary>
+                        /// <param name="slot">The slot to clear. It will be constrained by <see cref="PageSize"/></param>
                         protected abstract void ClearStack(int slot);
 
-                        /**
-                         * Sets more data you'd like (e.g. page number).
-                         */
+                        /// <summary>
+                        ///   Additional custom logic that may be implemented to apply after refreshing
+                        ///     our rendering.
+                        /// </summary>
                         protected virtual void AfterRefresh() {}
 
                         /**
@@ -186,6 +225,13 @@ namespace WindRose
                          * 
                          * You can override it but, if you do, ensure you call base.Connected(sbRenderer) somewhere.
                          */
+
+                        /// <summary>
+                        ///   This method will never be used directly, but it is a callback that will clear everything
+                        ///     and refresh again but according the new rendering strategy being attached (connected)
+                        ///     to. Although this logic may be overridden, it is needed a call to <c>base.Connected</c>
+                        ///     somewhere in the code.
+                        /// </summary>
                         public virtual void Connected(InventorySimpleBagRenderingManagementStrategy sbRenderer)
                         {
                             if (sourceRenderer != null)
@@ -213,12 +259,11 @@ namespace WindRose
                             Refresh();
                         }
 
-                        /**
-                         * This callback tells what happens when this sub-renderer is disconnected from the management
-                         *   strategy.
-                         * 
-                         * You can override it but, if you do, ensure toy call base.Disconnected() somewhere.
-                         */
+                        /// <summary>
+                        ///   This method will never be used directly, but it is a callback that will clear everything
+                        ///     because it will be disconnected from its former rendering strategy. Although this logic
+                        ///     may be overridden, it is needed a call to <c>base.Connected</c> somewhere in the code.
+                        /// </summary>
                         public virtual void Disconnected()
                         {
                             sourceRenderer = null;
@@ -231,6 +276,16 @@ namespace WindRose
                          * Otherwise, returns a number between 0 and (PageSize - 1), or returns the
                          *   input position as the slot if PageSize = 0;
                          */
+
+                        /// <summary>
+                        ///   Returns the slot index to use for certain visible position (according to
+                        ///     paging settings).
+                        /// </summary>
+                        /// <returns>
+                        ///   If the given position is not meant to be visible, it returns -1. Otherwise,
+                        ///   it returns the index between 0 and <see cref="PageSize"/> -1, or the same
+                        ///   position if <see cref="PageSize"/> is 0
+                        /// </returns>
                         protected int SlotFor(int position)
                         {
                             if (PageSize == 0)
@@ -247,9 +302,16 @@ namespace WindRose
                             return -1;
                         }
 
-                        /**
-                         * Updates the content of a stack (i.e. updates rendering value for a position).
-                         */
+                        /// <summary>
+                        ///   Updates a single stack position. Intended to be called by the rendering 
+                        ///     management strategy, this method will account only for visible items.
+                        ///     See <see cref="SetStack(int, int, Sprite, string, object)"/> for more
+                        ///     details.
+                        /// </summary>
+                        /// <param name="position">The position to update its data</param>
+                        /// <param name="icon">The stack's icon</param>
+                        /// <param name="caption">The stack's caption</param>
+                        /// <param name="quantity">The stack's quantity</param>
                         public void UpdateStack(int position, Sprite icon, string caption, object quantity)
                         {
                             elements[position] = new Tuple<Sprite, string, object>(icon, caption, quantity);
@@ -261,9 +323,12 @@ namespace WindRose
                             }
                         }
 
-                        /**
-                         * Removes the content of a stack (i.e. clear rendering value for a position).
-                         */
+                        /// <summary>
+                        ///   Removes a single stack position. Intended to be called by the rendering
+                        ///     management strategy, this method will account only for visible items.
+                        ///     See <see cref="ClearStack(int)"/> for more details.
+                        /// </summary>
+                        /// <param name="position">The position to clear its data</param>
                         public void RemoveStack(int position)
                         {
                             elements.Remove(position);
@@ -287,11 +352,15 @@ namespace WindRose
                             return wasUnclamped;
                         }
 
-                        /**
-                         * Moves to the next page (and refreshes).
-                         * If the second argument is true, the move is not actually
-                         *   performed, but just the test whether it could move.
-                         */
+                        /// <summary>
+                        ///   Moves one page forward, and updates the content accordingly. This method is meant
+                        ///     to be invoked by the UI.
+                        /// </summary>
+                        /// <param name="justTest">
+                        ///   If <c>true</c>, it doesn't actually perform the move but just tells whether it can
+                        ///   move or not
+                        /// </param>
+                        /// <returns>Whether it could move</returns>
                         public bool Next(bool justTest = false)
                         {
                             bool wasUnclamped = ClampPage();
@@ -310,11 +379,15 @@ namespace WindRose
                             return canIncrement;
                         }
 
-                        /**
-                         * Goes to the previous page (and refreshes).
-                         * If the second argument is true, the move is not actually
-                         *   performed, but just the test whether it could move.
-                         */
+                        /// <summary>
+                        ///   Moves one page backward, and updates the content accordingly. This method is meant
+                        ///     to be invoked by the UI.
+                        /// </summary>
+                        /// <param name="justTest">
+                        ///   If <c>true</c>, it doesn't actually perform the move but just tells whether it can
+                        ///   move or not
+                        /// </param>
+                        /// <returns>Whether it could move</returns>
                         public bool Prev(bool justTest = false)
                         {
                             bool wasUnclamped = ClampPage();
@@ -333,13 +406,14 @@ namespace WindRose
                             return canDecrement;
                         }
 
-                        /**
-                         * This method is quite different: it goes to another page.
-                         * If the page is lower than 0 or greater than MaxPage, it
-                         *   is clamped to that value.
-                         * Returns whether the change occurs or not (perhaps even the
-                         *   same page is refreshed).
-                         */
+                        /// <summary>
+                        ///   Chooses another page to render. Refreshes everything on success.
+                        /// </summary>
+                        /// <param name="page">
+                        ///   The new page, which will be clamped between 0 and the maximum
+                        ///   page to render as per the paging settings
+                        /// </param>
+                        /// <returns>Whether it changed the page, or is rendering the same one</returns>
                         public bool Go(uint page)
                         {
                             page = Values.Clamp(0, page, MaxPage());
@@ -360,34 +434,35 @@ namespace WindRose
                         }
                     }
 
-                    /**
-                     * Exception to tell when the sub-renderer is null.
-                     */
+                    /// <summary>
+                    ///   Tells when trying to add a null <see cref="SimpleBagInventorySubRenderer"/>
+                    ///     when calling <see cref="AddSubRenderer(SimpleBagInventorySubRenderer)"/>.
+                    /// </summary>
                     public class InvalidSubRendererException : Types.Exception
                     {
                         public InvalidSubRendererException(string message) : base(message) { }
                     }
 
-                    /**
-                     * This renderer will have sub-renderers for it to work appropriately: inventory may be
-                     *   watched from different simultaneous sides. Those sides will be instance of this new
-                     *   subclass: SimpleBagInventorySubRenderer.
-                     */
+                    /// <summary>
+                    ///   The initial list of <see cref="SimpleBagInventorySubRenderer"/> instances
+                    ///     to add to this rendering strategy.
+                    /// </summary>
                     [SerializeField]
                     private List<SimpleBagInventorySubRenderer> subRenderers = new List<SimpleBagInventorySubRenderer>();
                     private HashSet<SimpleBagInventorySubRenderer> subRenderersSet = new HashSet<SimpleBagInventorySubRenderer>();
 
+                    /// <summary>
+                    ///   The <see cref="SimpleBag"/> this strategy is linked to.
+                    /// </summary>
                     public SimpleBag SimpleBag
                     {
                         get; private set;
                     }
 
-                    /**
-                     * This class will account for max size, since it will be related to a Simple Spatial
-                     *   Strategy that could either be finite (size > 0) or infinite (size == 0). However,
-                     *   while this renderer is not attached to any object (which will occur for a split
-                     *   second, say), the max size is -1.
-                     */
+                    /// <summary>
+                    ///   The max size of the container in the <see cref="SimpleBag"/>. This size will actually be taken from
+                    ///     the related spatial strategy.
+                    /// </summary>
                     public int MaxSize
                     {
                         get; private set;
@@ -420,11 +495,13 @@ namespace WindRose
                         }
                     }
 
-                    /**
-                     * Two methods here to handle the different sub-renderers. Remember:
-                     *   one sub-renderer will only watch one single simple bag at a time.
-                     */
-
+                    /// <summary>
+                    ///   Adds a sub-renderer to this rendering management strategy. The sub-renderer will
+                    ///     refresh with this renderer's data accordingly, and will be synchronized until
+                    ///     it is removed by a call to <see cref="RemoveSubRenderer(SimpleBagInventorySubRenderer)"/>.
+                    /// </summary>
+                    /// <param name="subRenderer">The <see cref="SimpleBagInventorySubRenderer"/> to add</param>
+                    /// <returns>Whether it could be added, or it was already added</returns>
                     public bool AddSubRenderer(SimpleBagInventorySubRenderer subRenderer)
                     {
                         if (subRenderer == null)
@@ -442,6 +519,12 @@ namespace WindRose
                         return true;
                     }
 
+                    /// <summary>
+                    ///   Removes a sub-renderer from this rendering management strategy. The sub-renderer will
+                    ///     be cleared and removed.
+                    /// </summary>
+                    /// <param name="subRenderer">The <see cref="SimpleBagInventorySubRenderer"/> to remove</param>
+                    /// <returns>Whether it could be removed, or it wasn't connected here on first place</returns>
                     public bool RemoveSubRenderer(SimpleBagInventorySubRenderer subRenderer)
                     {
                         if (!subRenderersSet.Contains(subRenderer))
@@ -458,6 +541,11 @@ namespace WindRose
                      * Methods to delegate the rendering on the sub-renderers
                      **************************************/
 
+                    /// <summary>
+                    ///   This method is invoked by the related inventory management strategy holder
+                    ///     and will delegate everything in the underlying sub-renderers: clearing
+                    ///     its contents.
+                    /// </summary>
                     public override void EverythingWasCleared()
                     {
                         foreach(SimpleBagInventorySubRenderer subRenderer in subRenderersSet)
@@ -466,6 +554,11 @@ namespace WindRose
                         }
                     }
 
+                    /// <summary>
+                    ///   This method is invoked by the related inventory management strategy holder
+                    ///     and will delegate everything in the underlying sub-renderers: updating
+                    ///     a stack.
+                    /// </summary>
                     protected override void StackWasUpdated(object containerPosition, int stackPosition, Sprite icon, string caption, object quantity)
                     {
                         foreach (SimpleBagInventorySubRenderer subRenderer in subRenderersSet)
@@ -474,6 +567,11 @@ namespace WindRose
                         }
                     }
 
+                    /// <summary>
+                    ///   This method is invoked by the related inventory management strategy holder
+                    ///     and will delegate everything in the underlying sub-renderers: removing
+                    ///     a stack.
+                    /// </summary>
                     protected override void StackWasRemoved(object containerPosition, int stackPosition)
                     {
                         foreach (SimpleBagInventorySubRenderer subRenderer in subRenderersSet)

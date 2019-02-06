@@ -10,22 +10,25 @@ namespace WindRose
         {
             namespace Teleport
             {
+                /// <summary>
+                ///   The end side of a <see cref="LocalTeleporter"/>. See that
+                ///     class for more informaation.
+                /// </summary>
                 [RequireComponent(typeof(TriggerPlatform))]
                 public class TeleportTarget : MonoBehaviour
                 {
-                    /**
-                     * A teleport target is a placeholder to allow
-                     *   teleportation. It will be a trigger platform
-                     *   and will have more logic when implementing
-                     *   the remote teleporters (i.e. teleporting
-                     *   across different scenes).
-                     *   
-                     * Right now the teleport target will only know
-                     *   how must the object be oriented when ending
-                     *   its teleportation here, if an orientation is
-                     *   given.
-                     */
+                    /// <summary>
+                    ///   Tells whether the just teleported object will look
+                    ///     (by setting its <see cref="Oriented.orientation"/>
+                    ///     property to a new value) to the orientation specified
+                    ///     in <see cref="NewOrientation"/>.
+                    /// </summary>
                     public bool ForceOrientation = true;
+
+                    /// <summary>
+                    ///   This property is meaningful only if <see cref="ForceOrientation"/>
+                    ///     is <c>true</c>.
+                    /// </summary>
                     public Types.Direction NewOrientation = Types.Direction.DOWN;
                 }
             }

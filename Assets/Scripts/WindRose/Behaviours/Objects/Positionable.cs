@@ -192,7 +192,7 @@ namespace WindRose
                          */
                         parentMap = newParentMap; 
                         ObjectsLayer objectsLayer = parentMap.GetComponentInChildren<ObjectsLayer>();
-                        transform.parent = objectsLayer.transform;
+                        EnsureAppropriateVerticalSorting();
                         transform.localPosition = new Vector3(
                             X * objectsLayer.GetCellWidth(),
                             Y * objectsLayer.GetCellHeight(),
@@ -243,12 +243,21 @@ namespace WindRose
                     startCallbacks();
                 }
 
+                void EnsureAppropriateVerticalSorting()
+                {
+                    transform.parent = parentMap.ObjectsLayer.MainSubLayer[(int)parentMap.Height - 1 - (int)Y].transform;
+                }
+
                 void Update()
                 {
                     // Run the update on other components.
                     // Catch the null reference exception for when it is destroyed.
                     try
                     {
+                        if (parentMap)
+                        {
+                            EnsureAppropriateVerticalSorting();
+                        }
                         if (!Paused) updateCallbacks();
                         if (!AnimationsPaused) updateAnimationCallbacks();
                     }

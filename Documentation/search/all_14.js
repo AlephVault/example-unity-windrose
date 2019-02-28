@@ -2,6 +2,7 @@ var searchData=
 [
   ['tilemaps',['Tilemaps',['../namespace_unity_engine_1_1_tilemaps.html',1,'UnityEngine']]],
   ['unavailablepositionexception',['UnavailablePositionException',['../class_wind_rose_1_1_behaviours_1_1_inventory_1_1_management_strategies_1_1_spatial_strategies_1_15cac11ca8e7c77387077b8189fa700a.html',1,'WindRose::Behaviours::Inventory::ManagementStrategies::SpatialStrategies::InventorySpatialManagementStrategy::SpatialContainer']]],
+  ['underlayssublayer',['UnderlaysSubLayer',['../class_wind_rose_1_1_behaviours_1_1_world_1_1_layers_1_1_objects_1_1_objects_layer.html#a9205f3d72a9729529bbd1a313fc36df9',1,'WindRose::Behaviours::World::Layers::Objects::ObjectsLayer']]],
   ['unite',['Unite',['../class_wind_rose_1_1_types_1_1_bitmask.html#a9cb5c60b66372878e0dd9e9715531649',1,'WindRose::Types::Bitmask']]],
   ['unityattachedevent',['UnityAttachedEvent',['../class_wind_rose_1_1_behaviours_1_1_objects_1_1_positionable_1_1_unity_attached_event.html',1,'WindRose::Behaviours::Objects::Positionable']]],
   ['unitycommandreceivedevent',['UnityCommandReceivedEvent',['../class_wind_rose_1_1_behaviours_1_1_objects_1_1_command_exchange_1_1_command_receiver_1_1_unity_command_received_event.html',1,'WindRose::Behaviours::Objects::CommandExchange::CommandReceiver']]],

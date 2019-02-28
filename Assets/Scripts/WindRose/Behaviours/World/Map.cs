@@ -137,8 +137,8 @@ namespace WindRose
                 private void Awake()
                 {
                     // Starting the dimensions
-                    width = Values.Clamp(1, width, 100);
-                    height = Values.Clamp(1, height, 100);
+                    width = Values.Clamp(1, width, (uint)short.MaxValue);
+                    height = Values.Clamp(1, height, (uint)short.MaxValue);
                     // Requiring the layers - at most one of each them may exist per map
                     FloorLayer = ExpectOneLayerComponent<Layers.Floor.FloorLayer>(true);
                     DropLayer = ExpectOneLayerComponent<Layers.Drop.DropLayer>();

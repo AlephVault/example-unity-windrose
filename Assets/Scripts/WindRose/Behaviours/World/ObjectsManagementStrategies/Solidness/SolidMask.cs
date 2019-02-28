@@ -58,8 +58,8 @@ namespace WindRose
 
                         public SolidMask(uint width, uint height)
                         {
-                            this.width = Values.Clamp<uint>(1, width, 100);
-                            this.height = Values.Clamp<uint>(1, height, 100);
+                            this.width = Values.Clamp(1, width, (uint)short.MaxValue);
+                            this.height = Values.Clamp(1, height, (uint)short.MaxValue);
                             this.positions = new short[this.width * this.height];
                             Array.Clear(this.positions, 0, (int)(this.width * this.height));
                         }

@@ -37,6 +37,7 @@ var searchData=
   ['solidnessobjectsmanagementstrategy',['SolidnessObjectsManagementStrategy',['../class_wind_rose_1_1_behaviours_1_1_world_1_1_objects_management_strategies_1_1_solidness_1_1_solb322536310c69136c420b1d4b982c450.html',1,'WindRose::Behaviours::World::ObjectsManagementStrategies::Solidness']]],
   ['solidnessobjectstrategy',['SolidnessObjectStrategy',['../class_wind_rose_1_1_behaviours_1_1_objects_1_1_strategies_1_1_solidness_1_1_solidness_object_strategy.html',1,'WindRose::Behaviours::Objects::Strategies::Solidness']]],
   ['sorted',['Sorted',['../class_wind_rose_1_1_behaviours_1_1_objects_1_1_sorted.html',1,'WindRose::Behaviours::Objects']]],
+  ['sortingsublayer',['SortingSubLayer',['../class_wind_rose_1_1_behaviours_1_1_world_1_1_layers_1_1_objects_1_1_sorting_sub_layer.html',1,'WindRose::Behaviours::World::Layers::Objects']]],
   ['spacebaraccelerator',['SpacebarAccelerator',['../class_spacebar_accelerator.html',1,'']]],
   ['spatialcontainer',['SpatialContainer',['../class_wind_rose_1_1_behaviours_1_1_inventory_1_1_management_strategies_1_1_spatial_strategies_1_ebaeddfced43c32401abb7030adb3d59.html',1,'WindRose::Behaviours::Inventory::ManagementStrategies::SpatialStrategies::InventorySpatialManagementStrategy']]],
   ['spatialcontainerdoesnotexist',['SpatialContainerDoesNotExist',['../class_wind_rose_1_1_behaviours_1_1_inventory_1_1_management_strategies_1_1_spatial_strategies_1_29e2be1fa600fae2813ef0b555151d90.html',1,'WindRose::Behaviours::Inventory::ManagementStrategies::SpatialStrategies::InventorySpatialManagementStrategy']]],

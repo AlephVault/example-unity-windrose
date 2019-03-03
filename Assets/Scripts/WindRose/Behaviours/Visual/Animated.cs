@@ -4,24 +4,25 @@ namespace WindRose
 {
     namespace Behaviours
     {
-        namespace Objects
+        namespace Visual
         {
-            using World;
-
             /// <summary>
             ///   Handles the object's ability to animate, given sequences of sprites.
             /// </summary>
-            [RequireComponent(typeof(Snapped))]
-            [RequireComponent(typeof(Sorted))]
-            public class Represented : MonoBehaviour
+            [RequireComponent(typeof(SpriteRenderer))]
+            public class Animated : MonoBehaviour
             {
-                private SpriteRenderer spriteRenderer;
+                protected SpriteRenderer spriteRenderer;
 
                 /// <summary>
                 ///   The default animation, for when no other animation is given.
                 /// </summary>
                 [SerializeField]
                 private ScriptableObjects.Animations.AnimationSpec defaultAnimation;
+
+                /**
+                 * Stuff to handle and render the current animation.
+                 */
 
                 private ScriptableObjects.Animations.AnimationSpec currentAnimation;
                 private float currentTime;
@@ -52,19 +53,10 @@ namespace WindRose
                     CurrentAnimation = defaultAnimation;
                 }
 
-                void Awake()
+                protected virtual void Awake()
                 {
                     spriteRenderer = GetComponent<SpriteRenderer>();
                     spriteRenderer.enabled = false;
-                    Positionable positionable = GetComponent<Positionable>();
-                    positionable.onAttached.AddListener(delegate (Map parentMap)
-                    {
-                        spriteRenderer.enabled = true;
-                    });
-                    positionable.onDetached.AddListener(delegate ()
-                    {
-                        spriteRenderer.enabled = false;
-                    });
                 }
 
                 /// <summary>
@@ -88,7 +80,7 @@ namespace WindRose
                     frameInterval = 1.0f / currentAnimation.FPS;
                 }
 
-                private Sprite Thick()
+                private Sprite Tick()
                 {
                     currentTime += Time.deltaTime;
                     if (currentTime > frameInterval)
@@ -110,7 +102,7 @@ namespace WindRose
                 /// </summary>
                 public void DoUpdate()
                 {
-                    spriteRenderer.sprite = Thick();
+                    spriteRenderer.sprite = Tick();
                 }
             }
         }

@@ -21,7 +21,7 @@ namespace WindRose
             ///       direction).
             ///   </para>
             /// </summary>
-            [RequireComponent(typeof(Represented))]
+            [RequireComponent(typeof(Animated))]
             public class Oriented : MonoBehaviour
             {
                 /// <summary>
@@ -48,7 +48,7 @@ namespace WindRose
                 private string previousAnimationKey = "";
                 private Types.Direction previousOrientation = Types.Direction.DOWN;
 
-                private Represented represented;
+                private Animated represented;
                 private Positionable positionable;
 
                 /// <summary>
@@ -170,7 +170,7 @@ namespace WindRose
                     overriddenKeyForIdleAnimation = null;
                     AddAnimationSet(IDLE_ANIMATION, idleAnimationSet);
                     positionable = GetComponent<Positionable>();
-                    represented = GetComponent<Represented>();
+                    represented = GetComponent<Animated>();
                     positionable.onAttached.AddListener(delegate (World.Map map)
                     {
                         enabled = true;

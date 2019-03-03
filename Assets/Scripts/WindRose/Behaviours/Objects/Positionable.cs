@@ -209,7 +209,7 @@ namespace WindRose
                     Movable movable = GetComponent<Movable>();
                     Snapped snapped = GetComponent<Snapped>();
                     Sorted sorted = GetComponent<Sorted>();
-                    Represented represented = GetComponent<Represented>();
+                    Animated represented = GetComponent<Animated>();
 
                     // Add them to start, update, and animationUpdate callbacks
                     if (oriented != null)

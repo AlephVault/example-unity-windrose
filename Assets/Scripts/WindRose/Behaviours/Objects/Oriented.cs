@@ -40,10 +40,10 @@ namespace WindRose
                 }
 
                 // All the registered animations
-                private Dictionary<string, ScriptableObjects.Animations.AnimationSet> animations = new Dictionary<string, ScriptableObjects.Animations.AnimationSet>();
+                private Dictionary<string, ScriptableObjects.Animations.AnimationRose> animations = new Dictionary<string, ScriptableObjects.Animations.AnimationRose>();
 
                 // All the temporary replacements for the registered animations
-                private Dictionary<string, ScriptableObjects.Animations.AnimationSet> replacements = new Dictionary<string, ScriptableObjects.Animations.AnimationSet>();
+                private Dictionary<string, ScriptableObjects.Animations.AnimationRose> replacements = new Dictionary<string, ScriptableObjects.Animations.AnimationRose>();
 
                 private string previousAnimationKey = "";
                 private Types.Direction previousOrientation = Types.Direction.DOWN;
@@ -56,7 +56,7 @@ namespace WindRose
                 ///     and usually meaning the object is standing).
                 /// </summary>
                 [SerializeField]
-                private ScriptableObjects.Animations.AnimationSet idleAnimationSet;
+                private ScriptableObjects.Animations.AnimationRose idleAnimationSet;
 
                 /// <summary>
                 ///   The object's orientation. Changing this value will change the sprite
@@ -90,7 +90,7 @@ namespace WindRose
                 {
                     try
                     {
-                        ScriptableObjects.Animations.AnimationSet replacement;
+                        ScriptableObjects.Animations.AnimationRose replacement;
                         if (replacements.TryGetValue(animationKey, out replacement))
                         {
                             represented.CurrentAnimation = replacement.GetForDirection(orientation);
@@ -123,7 +123,7 @@ namespace WindRose
                 /// </summary>
                 /// <param name="key">The key to use</param>
                 /// <param name="animationSet">The animation set to register</param>
-                public void AddAnimationSet(string key, ScriptableObjects.Animations.AnimationSet animationSet)
+                public void AddAnimationSet(string key, ScriptableObjects.Animations.AnimationRose animationSet)
                 {
                     if (animations.ContainsKey(key))
                     {
@@ -142,7 +142,7 @@ namespace WindRose
                 /// </summary>
                 /// <param name="key">The key of the animation being replaced</param>
                 /// <param name="animation">The new animation to use, or null to undo the replacement</param>
-                public void ReplaceAnimationSet(string key, ScriptableObjects.Animations.AnimationSet animation)
+                public void ReplaceAnimationSet(string key, ScriptableObjects.Animations.AnimationRose animation)
                 {
                     if (animations.ContainsKey(key))
                     {

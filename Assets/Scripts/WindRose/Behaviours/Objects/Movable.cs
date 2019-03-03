@@ -33,7 +33,7 @@ namespace WindRose
                 ///   The animation to use for the object being moved.
                 /// </summary>
                 [SerializeField]
-                private ScriptableObjects.Animations.AnimationSet movingAnimationSet;
+                private ScriptableObjects.Animations.AnimationRose movingAnimationSet;
 
                 /// <summary>
                 ///   The movement speed, in game units per second.

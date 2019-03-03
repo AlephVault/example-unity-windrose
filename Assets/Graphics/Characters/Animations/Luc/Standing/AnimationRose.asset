@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c62fde038c240ca4b82fc755090c6753, type: 3}
+  m_Name: AnimationRose
+  m_EditorClassIdentifier: 
+  up: {fileID: 11400000, guid: ad8b653e98630924587bb627d000aaf7, type: 2}
+  down: {fileID: 11400000, guid: 33a0e1a7b2fad324d9e81d4d0d436433, type: 2}
+  left: {fileID: 11400000, guid: 40b2b15cfdc7c1344a1aacdc8d79abe2, type: 2}
+  right: {fileID: 11400000, guid: aa4515722cace5e449aa5d2cf8bf70a0, type: 2}

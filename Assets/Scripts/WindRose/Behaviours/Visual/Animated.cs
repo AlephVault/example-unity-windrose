@@ -18,13 +18,13 @@ namespace WindRose
                 ///   The default animation, for when no other animation is given.
                 /// </summary>
                 [SerializeField]
-                private ScriptableObjects.Animations.AnimationSpec defaultAnimation;
+                private ScriptableObjects.Animations.Animation defaultAnimation;
 
                 /**
                  * Stuff to handle and render the current animation.
                  */
 
-                private ScriptableObjects.Animations.AnimationSpec currentAnimation;
+                private ScriptableObjects.Animations.Animation currentAnimation;
                 private float currentTime;
                 private float frameInterval;
                 private int currentAnimationIndex;
@@ -32,7 +32,7 @@ namespace WindRose
                 /// <summary>
                 ///   Gets or sets the current animation, and resets it (on set).
                 /// </summary>
-                public ScriptableObjects.Animations.AnimationSpec CurrentAnimation
+                public ScriptableObjects.Animations.Animation CurrentAnimation
                 {
                     get { return currentAnimation; }
                     set

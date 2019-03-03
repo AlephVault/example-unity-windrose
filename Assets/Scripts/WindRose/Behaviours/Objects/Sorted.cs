@@ -7,7 +7,7 @@ namespace WindRose
         namespace Objects
         {
             /// <summary>
-            ///   The sub-layer 
+            ///   Sorts the element by its X position. The element is already sorted by its Y position.
             /// </summary>
             [RequireComponent(typeof(Snapped))]
             [RequireComponent(typeof(SpriteRenderer))]

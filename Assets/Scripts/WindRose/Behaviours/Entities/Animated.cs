@@ -4,10 +4,10 @@ namespace WindRose
 {
     namespace Behaviours
     {
-        namespace Visual
+        namespace Entities
         {
             /// <summary>
-            ///   Handles the object's ability to animate, given sequences of sprites.
+            ///   Handles the object's ability to animate, given a sequence of sprites.
             /// </summary>
             [RequireComponent(typeof(SpriteRenderer))]
             public class Animated : MonoBehaviour
@@ -24,7 +24,7 @@ namespace WindRose
                  * Stuff to handle and render the current animation.
                  */
 
-                private ScriptableObjects.Animations.Animation currentAnimation;
+                private new ScriptableObjects.Animations.Animation animation;
                 private float currentTime;
                 private float frameInterval;
                 private int currentAnimationIndex;
@@ -32,14 +32,14 @@ namespace WindRose
                 /// <summary>
                 ///   Gets or sets the current animation, and resets it (on set).
                 /// </summary>
-                public ScriptableObjects.Animations.Animation CurrentAnimation
+                public ScriptableObjects.Animations.Animation Animation
                 {
-                    get { return currentAnimation; }
+                    get { return animation; }
                     set
                     {
-                        if (currentAnimation != value)
+                        if (animation != value)
                         {
-                            currentAnimation = value;
+                            animation = value;
                             Reset();
                         }
                     }
@@ -50,7 +50,7 @@ namespace WindRose
                 /// </summary>
                 public void SetDefaultAnimation()
                 {
-                    CurrentAnimation = defaultAnimation;
+                    Animation = defaultAnimation;
                 }
 
                 protected virtual void Awake()
@@ -77,7 +77,7 @@ namespace WindRose
                 {
                     currentTime = 0;
                     currentAnimationIndex = 0;
-                    frameInterval = 1.0f / currentAnimation.FPS;
+                    frameInterval = 1.0f / animation.FPS;
                 }
 
                 private Sprite Tick()
@@ -86,9 +86,9 @@ namespace WindRose
                     if (currentTime > frameInterval)
                     {
                         currentTime -= frameInterval;
-                        currentAnimationIndex = ((currentAnimationIndex + 1) % CurrentAnimation.Sprites.Length);
+                        currentAnimationIndex = ((currentAnimationIndex + 1) % Animation.Sprites.Length);
                     }
-                    return CurrentAnimation.Sprites[currentAnimationIndex];
+                    return Animation.Sprites[currentAnimationIndex];
                 }
 
                 /// <summary>

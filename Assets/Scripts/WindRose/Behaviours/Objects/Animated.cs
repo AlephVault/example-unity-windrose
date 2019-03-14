@@ -13,7 +13,7 @@ namespace WindRose
             /// </summary>
             [RequireComponent(typeof(Snapped))]
             [RequireComponent(typeof(Sorted))]
-            public class Animated : Visual.Animated
+            public class Animated : Entities.Animated
             {
                 protected override void Awake()
                 {

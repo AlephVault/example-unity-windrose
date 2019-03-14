@@ -93,11 +93,11 @@ namespace WindRose
                         ScriptableObjects.Animations.AnimationRose replacement;
                         if (replacements.TryGetValue(animationKey, out replacement))
                         {
-                            represented.CurrentAnimation = replacement.GetForDirection(orientation);
+                            represented.Animation = replacement.GetForDirection(orientation);
                         }
                         else
                         {
-                            represented.CurrentAnimation = animations[animationKey].GetForDirection(orientation);
+                            represented.Animation = animations[animationKey].GetForDirection(orientation);
                         }
                     }
                     catch (KeyNotFoundException)

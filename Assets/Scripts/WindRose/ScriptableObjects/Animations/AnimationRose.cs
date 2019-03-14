@@ -254,7 +254,7 @@ namespace WindRose
                 }
 
                 [MenuItem("Assets/Create/Wind Rose/Objects/Animation Rose (with empty animations)")]
-                public static void CreateInstanceWithChildSpecs()
+                public static void CreateInstanceWithNoChildSpecs()
                 {
                     CreateInstanceWithChildSpecs(delegate (string path, AnimationRose rose, Animation down, Animation left, Animation right, Animation up)
                     {

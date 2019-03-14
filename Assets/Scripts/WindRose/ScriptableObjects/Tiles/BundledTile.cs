@@ -49,7 +49,7 @@ namespace WindRose
                     public TileStrategyDependencyException(string message) : base(message) {}
                 }
 
-                void Awake()
+                void OnEnable()
                 {
                     try
                     {

@@ -186,16 +186,16 @@ namespace WindRose
                     {
                         /*
                          * Attaching to a map involves:
-                         * 1. The actual "parent" of the object will be a child of the RelatedMap being an ObjectsLayer.
-                         * 2. We set the parent transform of the object to such ObjectsLayer's transform.
+                         * 1. The actual "parent" of the object will be a child of the RelatedMap being an EntitiesLayer.
+                         * 2. We set the parent transform of the object to such EntitiesLayer's transform.
                          * 3. Finally we must ensure the transform.localPosition be updated accordingly (i.e. forcing a snap).
                          */
                         parentMap = newParentMap; 
-                        ObjectsLayer objectsLayer = parentMap.GetComponentInChildren<ObjectsLayer>();
+                        EntitiesLayer entitiesLayer = parentMap.GetComponentInChildren<EntitiesLayer>();
                         EnsureAppropriateVerticalSorting();
                         transform.localPosition = new Vector3(
-                            X * objectsLayer.GetCellWidth(),
-                            Y * objectsLayer.GetCellHeight(),
+                            X * entitiesLayer.GetCellWidth(),
+                            Y * entitiesLayer.GetCellHeight(),
                             0
                         );
                     });
@@ -245,7 +245,7 @@ namespace WindRose
 
                 void EnsureAppropriateVerticalSorting()
                 {
-                    transform.parent = parentMap.ObjectsLayer.MainSubLayer[(int)parentMap.Height - 1 - (int)Y].transform;
+                    transform.parent = parentMap.EntitiesLayer.MainSubLayer[(int)parentMap.Height - 1 - (int)Y].transform;
                 }
 
                 void Update()
@@ -287,7 +287,7 @@ namespace WindRose
                 ///   </para>
                 ///   <para>
                 ///     For this method to succeed, this object must be a child object of one
-                ///       holding a <see cref="ObjectsLayer"/> which in turn must be inside a
+                ///       holding a <see cref="EntitiesLayer"/> which in turn must be inside a
                 ///       <see cref="Map"/>, and the map must have dimensions that allow this
                 ///       object considering its size and initial position.
                 ///   </para>
@@ -313,7 +313,7 @@ namespace WindRose
 
                     try
                     {
-                        // We find the parent map like this: (current) -> ObjectsLayer -> map
+                        // We find the parent map like this: (current) -> EntitiesLayer -> map
                         if (transform.parent != null && transform.parent.parent != null)
                         {
                             parentMap = transform.parent.parent.GetComponent<Map>();
@@ -333,7 +333,7 @@ namespace WindRose
                             //   we would not necessarily know the appropriate dimensions.
                             if (!parentMap.Initialized) return;
                             // And we also keep its objects layer
-                            Layout.RequireComponentInParent<ObjectsLayer>(gameObject);
+                            Layout.RequireComponentInParent<EntitiesLayer>(gameObject);
                             // Then we calculate the cell position from the grid in the layer.
                             Grid grid = Layout.RequireComponentInParent<Grid>(gameObject);
                             Vector3Int cellPosition = grid.WorldToCell(transform.position);
@@ -425,21 +425,21 @@ namespace WindRose
                 }
 
                 /// <summary>
-                ///   See <see cref="ObjectsLayer.GetCellWidth"/>.
+                ///   See <see cref="EntitiesLayer.GetCellWidth"/>.
                 /// </summary>
                 /// <returns>The width of the cells of its parent Objects Layer</returns>
                 public float GetCellWidth()
                 {
-                    return GetComponentInParent<ObjectsLayer>().GetCellWidth();
+                    return GetComponentInParent<EntitiesLayer>().GetCellWidth();
                 }
 
                 /// <summary>
-                ///   See <see cref="ObjectsLayer.GetCellHeight"/>.
+                ///   See <see cref="EntitiesLayer.GetCellHeight"/>.
                 /// </summary>
                 /// <returns>The height of the cells of its parent Objects Layers</returns>
                 public float GetCellHeight()
                 {
-                    return GetComponentInParent<ObjectsLayer>().GetCellHeight();
+                    return GetComponentInParent<EntitiesLayer>().GetCellHeight();
                 }
 
                 /// <summary>

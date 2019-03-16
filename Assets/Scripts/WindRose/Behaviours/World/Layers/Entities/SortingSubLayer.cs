@@ -22,9 +22,9 @@ namespace WindRose
                     ///       the number of sorting groups being created depends on the map
                     ///       this object belongs to, this implies this object is required
                     ///       to be inside a map (it will be usually bound to a layer), but
-                    ///       it will actually be inside a map's <see cref="ObjectsLayer"/>
+                    ///       it will actually be inside a map's <see cref="EntitiesLayer"/>
                     ///       (actually, this component will be attached to a newly
-                    ///       instantiated object by an <see cref="ObjectsLayer"/>).
+                    ///       instantiated object by an <see cref="EntitiesLayer"/>).
                     ///   </para>
                     ///   <para>
                     ///     Related to those groups, this class provides methods to get any
@@ -40,8 +40,8 @@ namespace WindRose
 
                         void Awake()
                         {
-                            ObjectsLayer objectsLayer = Layout.RequireComponentInParent<ObjectsLayer>(this);
-                            uint height = Layout.RequireComponentInParent<Map>(objectsLayer).Height;
+                            EntitiesLayer entitiesLayer = Layout.RequireComponentInParent<EntitiesLayer>(this);
+                            uint height = Layout.RequireComponentInParent<Map>(entitiesLayer).Height;
                             sortingGroups = new SortingGroup[height];
                             for(uint index = 0; index < height; index++)
                             {

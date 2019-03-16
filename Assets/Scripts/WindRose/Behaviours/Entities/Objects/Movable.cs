@@ -23,7 +23,7 @@ namespace WindRose
 
                 // Dependencies
                 private Oriented oriented;
-                private Positionable positionable;
+                private Object mapObject;
 
                 // Origin and target of movement. This has to do with the min/max values
                 //   of Snapped, but specified for the intended movement.
@@ -48,14 +48,14 @@ namespace WindRose
 
                 /// <summary>
                 ///   Tells whether the object is moving. It knows that by reading the
-                ///     current movement in the underlying positionable.
+                ///     current movement in the underlying map object.
                 /// </summary>
-                public bool IsMoving { get { return positionable.Movement != null; } }
+                public bool IsMoving { get { return mapObject.Movement != null; } }
 
                 /// <summary>
-                ///   Gets the current movement in the underlying positionable.
+                ///   Gets the current movement in the underlying map object.
                 /// </summary>
-                public Types.Direction? Movement { get { return positionable.Movement; } }
+                public Types.Direction? Movement { get { return mapObject.Movement; } }
 
                 /// <summary>
                 ///   <para>
@@ -93,7 +93,7 @@ namespace WindRose
                 /// <returns>Whether the movement could be started</returns>
                 public bool StartMovement(Types.Direction movement, bool queueIfMoving = true)
                 {
-                    if (positionable.ParentMap == null) return false;
+                    if (mapObject.ParentMap == null) return false;
 
                     if (IsMoving)
                     {
@@ -107,7 +107,7 @@ namespace WindRose
                     }
                     else
                     {
-                        return positionable.StartMovement(movement);
+                        return mapObject.StartMovement(movement);
                     }
                 }
 
@@ -116,9 +116,9 @@ namespace WindRose
                 /// </summary>
                 public void CancelMovement()
                 {
-                    if (positionable.ParentMap == null) return;
+                    if (mapObject.ParentMap == null) return;
 
-                    positionable.CancelMovement();
+                    mapObject.CancelMovement();
                 }
 
                 private Vector2 VectorForCurrentDirection()
@@ -126,13 +126,13 @@ namespace WindRose
                     switch (Movement)
                     {
                         case Types.Direction.UP:
-                            return Vector2.up * positionable.GetCellHeight();
+                            return Vector2.up * mapObject.GetCellHeight();
                         case Types.Direction.DOWN:
-                            return Vector2.down * positionable.GetCellHeight();
+                            return Vector2.down * mapObject.GetCellHeight();
                         case Types.Direction.LEFT:
-                            return Vector2.left * positionable.GetCellWidth();
+                            return Vector2.left * mapObject.GetCellWidth();
                         case Types.Direction.RIGHT:
-                            return Vector2.right * positionable.GetCellWidth();
+                            return Vector2.right * mapObject.GetCellWidth();
                     }
                     // This one is never reached!
                     return Vector2.zero;
@@ -141,12 +141,12 @@ namespace WindRose
                 void Awake()
                 {
                     oriented = GetComponent<Oriented>();
-                    positionable = GetComponent<Positionable>();
+                    mapObject = GetComponent<Object>();
                     // I DON'T KNOW WHY HIDDEN PROPERTIES FROM INSPECTOR ALSO AVOID NULL VALUES.
                     // So I'm adding this code to ensure this particular field starts as null in Awake().
                     overriddenKeyForMoveAnimation = null;
                     oriented.AddAnimationSet(MOVE_ANIMATION, movingAnimationSet);
-                    positionable.onAttached.AddListener(delegate (World.Map parentMap)
+                    mapObject.onAttached.AddListener(delegate (World.Map parentMap)
                     {
                         // Avoid inheriting former value of origin.
                         // If a movement is being performed, then
@@ -155,7 +155,7 @@ namespace WindRose
                         wasMoving = false;
                         enabled = true;
                     });
-                    positionable.onDetached.AddListener(delegate ()
+                    mapObject.onDetached.AddListener(delegate ()
                     {
                         enabled = false;
                     });
@@ -163,7 +163,7 @@ namespace WindRose
 
                 /// <summary>
                 ///   <para>
-                ///     This is a callback for the Update of the positionable. It is
+                ///     This is a callback for the Update of the map object. It is
                 ///       not intended to be called directly.
                 ///   </para>
                 ///   <para>
@@ -173,7 +173,7 @@ namespace WindRose
                 /// </summary>
                 public void DoUpdate()
                 {
-                    if (positionable.ParentMap == null) return;
+                    if (mapObject.ParentMap == null) return;
 
                     if (IsMoving)
                     {
@@ -206,7 +206,7 @@ namespace WindRose
                             {
                                 // If the movement and the localPosition (converted to 2D vector) are the same,
                                 //   we mark the movement as finished.
-                                positionable.FinishMovement();
+                                mapObject.FinishMovement();
                             }
                             else
                             {
@@ -238,7 +238,7 @@ namespace WindRose
 
                                 // We intend to at least finish this movement and perhaps continue with a new one
                                 Types.Direction currentMovement = Movement.Value;
-                                positionable.FinishMovement();
+                                mapObject.FinishMovement();
                                 if (traversedDistanceSinceOrigin > vector.magnitude)
                                 {
                                     origin = target;
@@ -246,7 +246,7 @@ namespace WindRose
                                     // If the movement cannot be performed, we break this loop
                                     //   and also clamp the movement to the actual box, so we
                                     //   avoid "bounces".
-                                    if (!positionable.StartMovement(currentMovement))
+                                    if (!mapObject.StartMovement(currentMovement))
                                     {
                                         transform.localPosition = new Vector3(origin.x, origin.y, transform.localPosition.z);
                                         break;
@@ -257,7 +257,7 @@ namespace WindRose
                     }
                     else if (CommandedMovement != null)
                     {
-                        positionable.StartMovement(CommandedMovement.Value);
+                        mapObject.StartMovement(CommandedMovement.Value);
                     }
                     else
                     {

@@ -45,13 +45,13 @@ namespace WindRose
 
                 void Start()
                 {
-                    Positionable positionable = GetComponent<Positionable>();
+                    Object mapObject = GetComponent<Object>();
                     Oriented oriented = GetComponent<Oriented>();
                     GameObject aNewGameObject = new GameObject("WatcherVisionRange");
                     Support.Utils.Layout.AddComponent<BoxCollider2D>(aNewGameObject);
                     relatedVisionRange = Support.Utils.Layout.AddComponent<TriggerVisionRange>(aNewGameObject, new System.Collections.Generic.Dictionary<string, object>()
                     {
-                        { "relatedPositionable", positionable },
+                        { "relatedObject", mapObject },
                         { "direction", oriented.orientation },
                         { "visionSize", visionSize },
                         { "visionLength", visionLength }

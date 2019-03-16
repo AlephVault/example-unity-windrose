@@ -14,17 +14,17 @@ namespace WindRose
             public class Sorted : MonoBehaviour
             {
                 private SpriteRenderer spriteRenderer;
-                private Positionable positionable;
+                private Object mapObject;
 
                 void Awake()
                 {
                     spriteRenderer = GetComponent<SpriteRenderer>();
-                    positionable = GetComponent<Positionable>();
-                    positionable.onAttached.AddListener(delegate (World.Map map)
+                    mapObject = GetComponent<Object>();
+                    mapObject.onAttached.AddListener(delegate (World.Map map)
                     {
                         enabled = true;
                     });
-                    positionable.onDetached.AddListener(delegate ()
+                    mapObject.onDetached.AddListener(delegate ()
                     {
                         enabled = false;
                     });
@@ -32,7 +32,7 @@ namespace WindRose
 
                 /// <summary>
                 ///   <para>
-                ///     This is a callback for the Update of the positionable. It is
+                ///     This is a callback for the Update of the map object. It is
                 ///       not intended to be called directly.
                 ///   </para>
                 ///   <para>
@@ -44,7 +44,7 @@ namespace WindRose
                 {
                     // We order the sprite
                     spriteRenderer.sortingLayerID = 0;
-                    spriteRenderer.sortingOrder = (int)positionable.Xf;
+                    spriteRenderer.sortingOrder = (int)mapObject.Xf;
                 }
             }
         }

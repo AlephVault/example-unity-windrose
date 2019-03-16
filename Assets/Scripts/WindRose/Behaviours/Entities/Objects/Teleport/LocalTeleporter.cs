@@ -34,7 +34,7 @@ namespace WindRose
                 /// </summary>
                 /// <remarks>
                 ///   You may subclass this component to customize the
-                ///     <see cref="CanTeleport(Positionable, TeleportTarget)"/> and
+                ///     <see cref="CanTeleport(Object, TeleportTarget)"/> and
                 ///     <see cref="DoTeleport(Action)"/> methods if you want to run
                 ///     asynchronous code or add fade effects.
                 /// </remarks>
@@ -53,19 +53,19 @@ namespace WindRose
                         platform.onMapTriggerWalked.AddListener(OnWalkedIntoTeleporter);
                     }
 
-                    private void OnWalkedIntoTeleporter(Positionable objectToBeTeleported, Positionable thisTeleporter, int x, int y)
+                    private void OnWalkedIntoTeleporter(Object objectToBeTeleported, Object thisTeleporter, int x, int y)
                     {
                         if (enabled && Target)
                         {
-                            Positionable tgPositionable = Target.GetComponent<Positionable>();
-                            if (tgPositionable.ParentMap)
+                            Object tgObject = Target.GetComponent<Object>();
+                            if (tgObject.ParentMap)
                             {
                                 uint thisWidth = thisTeleporter.Width;
                                 uint thisHeight = thisTeleporter.Height;
                                 uint objWidth = objectToBeTeleported.Width;
                                 uint objHeight = objectToBeTeleported.Height;
-                                uint tgWidth = tgPositionable.Width;
-                                uint tgHeight = tgPositionable.Height;
+                                uint tgWidth = tgObject.Width;
+                                uint tgHeight = tgObject.Height;
 
                                 bool fullyContained = (x >= 0 && y >= 0 && x <= (thisWidth - objWidth) && y <= (thisHeight - objHeight));
                                 bool matchingTarget = (tgWidth >= objWidth && tgHeight >= objHeight && tgWidth % 2 == objWidth % 2 && tgHeight % 2 == objHeight % 2);
@@ -74,7 +74,7 @@ namespace WindRose
                                 {
                                     DoTeleport(delegate ()
                                     {
-                                        ObjectTeleportOperation(objectToBeTeleported, Target, tgPositionable);
+                                        ObjectTeleportOperation(objectToBeTeleported, Target, tgObject);
                                     });
                                 }
                             }
@@ -89,7 +89,7 @@ namespace WindRose
                     /// <param name="objectToBeTeleported">The object intending to be teleported</param>
                     /// <param name="teleportTarget">The teleport target</param>
                     /// <returns>Whether the teleport can occur</returns>
-                    protected virtual bool CanTeleport(Positionable objectToBeTeleported, TeleportTarget teleportTarget)
+                    protected virtual bool CanTeleport(Object objectToBeTeleported, TeleportTarget teleportTarget)
                     {
                         return true;
                     }
@@ -98,19 +98,19 @@ namespace WindRose
                      * This method will only be invoked in the context of a callback. This only has the use to work as the internal
                      *   callback of a process that can be deferred by the user (DoTeleport).
                      */
-                    private void ObjectTeleportOperation(Positionable objectToBeTeleported, TeleportTarget teleportTarget, Positionable teleportTargetPositionable)
+                    private void ObjectTeleportOperation(Object objectToBeTeleported, TeleportTarget teleportTarget, Object teleportTargetObject)
                     {
-                        uint tgX = teleportTargetPositionable.X;
-                        uint tgY = teleportTargetPositionable.Y;
-                        uint tgWidth = teleportTargetPositionable.Width;
-                        uint tgHeight = teleportTargetPositionable.Height;
+                        uint tgX = teleportTargetObject.X;
+                        uint tgY = teleportTargetObject.Y;
+                        uint tgWidth = teleportTargetObject.Width;
+                        uint tgHeight = teleportTargetObject.Height;
                         uint x = tgX + (tgWidth - objectToBeTeleported.Width) / 2;
                         uint y = tgY + (tgHeight - objectToBeTeleported.Height) / 2;
 
                         // Choose between an in-map teleport or a full-force-attach to a new map.
-                        if (teleportTargetPositionable.ParentMap != objectToBeTeleported.ParentMap)
+                        if (teleportTargetObject.ParentMap != objectToBeTeleported.ParentMap)
                         {
-                            objectToBeTeleported.Attach(teleportTargetPositionable.ParentMap, x, y, true);
+                            objectToBeTeleported.Attach(teleportTargetObject.ParentMap, x, y, true);
                         }
                         else
                         {

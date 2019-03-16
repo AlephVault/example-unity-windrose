@@ -30,15 +30,15 @@ class WaypointHandled : MonoBehaviour
     {
         movable = GetComponent<Movable>();
         oriented = GetComponent<Oriented>();
-        Positionable positionable = GetComponent<Positionable>();
-        positionable.onAttached.AddListener(delegate (Map map)
+        WindRose.Behaviours.Entities.Objects.Object mapObject = GetComponent<WindRose.Behaviours.Entities.Objects.Object>();
+        mapObject.onAttached.AddListener(delegate (Map map)
         {
             if (waySteps.Length != 0)
             {
                 currentCoroutine = StartCoroutine(PerformMovement());
             }
         });
-        positionable.onDetached.AddListener(delegate ()
+        mapObject.onDetached.AddListener(delegate ()
         {
             if (currentCoroutine != null) StopCoroutine(currentCoroutine);
             currentCoroutine = null;

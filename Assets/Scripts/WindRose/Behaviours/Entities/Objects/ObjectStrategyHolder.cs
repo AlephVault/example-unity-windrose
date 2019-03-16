@@ -25,7 +25,7 @@ namespace WindRose
             ///       will involve dependencies to ther strategies (and their states).
             ///   </para>
             /// </summary>
-            [RequireComponent(typeof(Positionable))]
+            [RequireComponent(typeof(Object))]
             public class ObjectStrategyHolder : MonoBehaviour
             {
                 /// <summary>
@@ -40,9 +40,9 @@ namespace WindRose
                 }
 
                 /// <summary>
-                ///   The related <see cref="Positionable"/> (the in-map object).
+                ///   The related <see cref="Objects.Object"/> (the in-map object).
                 /// </summary>
-                public Positionable Positionable { get; private set; }
+                public Object Object { get; private set; }
 
                 /// <summary>
                 ///   The main strategy of this object.
@@ -64,7 +64,7 @@ namespace WindRose
                 /// <summary>
                 ///   <para>
                 ///     This method will be invoked on initialization of the related
-                ///       <see cref="Positionable"/> object. It must not be invoked
+                ///       <see cref="Object"/> object. It must not be invoked
                 ///       directly.
                 ///   </para>
                 ///   <para>
@@ -78,11 +78,11 @@ namespace WindRose
                 }
 
                 /**
-                    * On initialization, the strategy will fetch its positionable to, actually, know it.
+                    * On initialization, the strategy will fetch its map object to, actually, know it.
                     */
                 protected virtual void Awake()
                 {
-                    Positionable = GetComponent<Positionable>();
+                    Object = GetComponent<Object>();
                     if (objectStrategy == null || !(new HashSet<ObjectStrategy>(GetComponents<ObjectStrategy>()).Contains(objectStrategy))) {
                         Destroy(gameObject);
                         throw new InvalidStrategyComponentException("The selected strategy component must be non-null and present among the current object's components");

@@ -61,7 +61,7 @@ namespace WindRose
 
                 /// <summary>
                 ///   <para>
-                ///     This is a callback for the Start of the positionable. It is
+                ///     This is a callback for the Start of the map object. It is
                 ///       not intended to be called directly.
                 ///   </para>
                 ///   <para>
@@ -93,7 +93,7 @@ namespace WindRose
 
                 /// <summary>
                 ///   <para>
-                ///     This is a callback for the Update of the positionable. It is
+                ///     This is a callback for the Update of the map object. It is
                 ///       not intended to be called directly.
                 ///   </para>
                 ///   <para>

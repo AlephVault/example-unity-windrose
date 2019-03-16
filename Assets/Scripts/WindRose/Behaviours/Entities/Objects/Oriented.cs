@@ -49,7 +49,7 @@ namespace WindRose
                 private Types.Direction previousOrientation = Types.Direction.DOWN;
 
                 private Animated represented;
-                private Positionable positionable;
+                private Object mapObject;
 
                 /// <summary>
                 ///   The default animation set (used by default for Orientable elements,
@@ -169,13 +169,13 @@ namespace WindRose
                     // So I'm adding this code to ensure this particular field starts as null in Awake().
                     overriddenKeyForIdleAnimation = null;
                     AddAnimationSet(IDLE_ANIMATION, idleAnimationSet);
-                    positionable = GetComponent<Positionable>();
+                    mapObject = GetComponent<Object>();
                     represented = GetComponent<Animated>();
-                    positionable.onAttached.AddListener(delegate (World.Map map)
+                    mapObject.onAttached.AddListener(delegate (World.Map map)
                     {
                         enabled = true;
                     });
-                    positionable.onDetached.AddListener(delegate ()
+                    mapObject.onDetached.AddListener(delegate ()
                     {
                         enabled = false;
                     });
@@ -183,7 +183,7 @@ namespace WindRose
 
                 /// <summary>
                 ///   <para>
-                ///     This is a callback for the Start of the positionable. It is
+                ///     This is a callback for the Start of the map object. It is
                 ///       not intended to be called directly.
                 ///   </para>
                 ///   <para>
@@ -197,7 +197,7 @@ namespace WindRose
 
                 /// <summary>
                 ///   <para>
-                ///     This is a callback for the Update of the positionable. It is
+                ///     This is a callback for the Update of the map object. It is
                 ///       not intended to be called directly.
                 ///   </para>
                 ///   <para>
@@ -207,9 +207,9 @@ namespace WindRose
                 public void DoUpdate()
                 {
                     // If the object is being moved, we assign the movement direction as the current orientation
-                    if (positionable.Movement != null && positionable.Movement != orientation)
+                    if (mapObject.Movement != null && mapObject.Movement != orientation)
                     {
-                        orientation = positionable.Movement.Value;
+                        orientation = mapObject.Movement.Value;
                     }
 
                     // Given an animation change or an orientation change, we change the animation

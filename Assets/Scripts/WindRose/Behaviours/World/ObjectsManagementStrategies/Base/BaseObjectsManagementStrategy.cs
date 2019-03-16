@@ -37,16 +37,16 @@ namespace WindRose
                         {
                             if (status.Movement != null) return false;
 
-                            Entities.Objects.Positionable positionable = strategy.StrategyHolder.Positionable;
+                            Entities.Objects.Object mapObject = strategy.StrategyHolder.Object;
 
                             switch (direction)
                             {
                                 case Direction.LEFT:
                                     return status.X != 0;
                                 case Direction.UP:
-                                    return status.Y + positionable.Height < StrategyHolder.Map.Height;
+                                    return status.Y + mapObject.Height < StrategyHolder.Map.Height;
                                 case Direction.RIGHT:
-                                    return status.X + positionable.Width < StrategyHolder.Map.Width;
+                                    return status.X + mapObject.Width < StrategyHolder.Map.Width;
                                 case Direction.DOWN:
                                     return status.Y != 0;
                             }

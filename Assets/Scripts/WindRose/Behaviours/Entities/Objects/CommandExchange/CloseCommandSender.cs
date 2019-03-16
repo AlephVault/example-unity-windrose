@@ -37,13 +37,13 @@ namespace WindRose
                     // The command currently being sent.
                     private Misc.Command command;
                     private Oriented oriented;
-                    private Positionable positionable;
+                    private Object mapObject;
                     private bool paused = false;
 
                     private void Start()
                     {
                         oriented = GetComponent<Oriented>();
-                        positionable = GetComponent<Positionable>();
+                        mapObject = GetComponent<Object>();
                     }
 
                     private void FixCommandPosition()
@@ -52,20 +52,20 @@ namespace WindRose
                         switch (oriented.orientation)
                         {
                             case Types.Direction.DOWN:
-                                x = positionable.transform.position.x + (positionable.Width / 2f) * positionable.GetCellWidth();
-                                y = positionable.transform.position.y - 0.5f * positionable.GetCellHeight();
+                                x = mapObject.transform.position.x + (mapObject.Width / 2f) * mapObject.GetCellWidth();
+                                y = mapObject.transform.position.y - 0.5f * mapObject.GetCellHeight();
                                 break;
                             case Types.Direction.UP:
-                                x = positionable.transform.position.x + (positionable.Width / 2f) * positionable.GetCellWidth();
-                                y = positionable.transform.position.y + (positionable.Height + 0.5f) * positionable.GetCellHeight();
+                                x = mapObject.transform.position.x + (mapObject.Width / 2f) * mapObject.GetCellWidth();
+                                y = mapObject.transform.position.y + (mapObject.Height + 0.5f) * mapObject.GetCellHeight();
                                 break;
                             case Types.Direction.LEFT:
-                                y = positionable.transform.position.y + (positionable.Height / 2f) * positionable.GetCellHeight();
-                                x = positionable.transform.position.x - 0.5f * positionable.GetCellWidth();
+                                y = mapObject.transform.position.y + (mapObject.Height / 2f) * mapObject.GetCellHeight();
+                                x = mapObject.transform.position.x - 0.5f * mapObject.GetCellWidth();
                                 break;
                             case Types.Direction.RIGHT:
-                                y = positionable.transform.position.y + (positionable.Height / 2f) * positionable.GetCellHeight();
-                                x = positionable.transform.position.x + (positionable.Width + 0.5f) * positionable.GetCellWidth();
+                                y = mapObject.transform.position.y + (mapObject.Height / 2f) * mapObject.GetCellHeight();
+                                x = mapObject.transform.position.x + (mapObject.Width + 0.5f) * mapObject.GetCellWidth();
                                 break;
                             default:
                                 x = command.transform.position.x;

@@ -94,7 +94,7 @@ namespace WindRose
                         {
                             if (!otherComponentsResults[typeof(Base.BaseObjectsManagementStrategy)]) return false;
                             SolidnessStatus solidness = ((Entities.Objects.Strategies.Solidness.SolidnessObjectStrategy)strategy).Solidness;
-                            return solidness.Traverses() || IsAdjacencyFree(status.X, status.Y, strategy.StrategyHolder.Positionable.Width, strategy.StrategyHolder.Positionable.Height, direction);
+                            return solidness.Traverses() || IsAdjacencyFree(status.X, status.Y, strategy.StrategyHolder.Object.Width, strategy.StrategyHolder.Object.Height, direction);
                         }
 
                         /// <summary>
@@ -228,11 +228,11 @@ namespace WindRose
                         {
                             if (solidness.Occupies())
                             {
-                                IncrementBody(status.X, status.Y, strategy.StrategyHolder.Positionable.Width, strategy.StrategyHolder.Positionable.Height);
+                                IncrementBody(status.X, status.Y, strategy.StrategyHolder.Object.Width, strategy.StrategyHolder.Object.Height);
                             }
                             else if (solidness.Carves())
                             {
-                                DecrementBody(status.X, status.Y, strategy.StrategyHolder.Positionable.Width, strategy.StrategyHolder.Positionable.Height);
+                                DecrementBody(status.X, status.Y, strategy.StrategyHolder.Object.Width, strategy.StrategyHolder.Object.Height);
                             }
                         }
 
@@ -240,11 +240,11 @@ namespace WindRose
                         {
                             if (solidness.Occupies())
                             {
-                                DecrementBody(status.X, status.Y, strategy.StrategyHolder.Positionable.Width, strategy.StrategyHolder.Positionable.Height);
+                                DecrementBody(status.X, status.Y, strategy.StrategyHolder.Object.Width, strategy.StrategyHolder.Object.Height);
                             }
                             else if (solidness.Carves())
                             {
-                                IncrementBody(status.X, status.Y, strategy.StrategyHolder.Positionable.Width, strategy.StrategyHolder.Positionable.Height);
+                                IncrementBody(status.X, status.Y, strategy.StrategyHolder.Object.Width, strategy.StrategyHolder.Object.Height);
                             }
                         }
 
@@ -252,11 +252,11 @@ namespace WindRose
                         {
                             if (solidness.Occupies())
                             {
-                                IncrementAdjacent(status.X, status.Y, strategy.StrategyHolder.Positionable.Width, strategy.StrategyHolder.Positionable.Height, status.Movement);
+                                IncrementAdjacent(status.X, status.Y, strategy.StrategyHolder.Object.Width, strategy.StrategyHolder.Object.Height, status.Movement);
                             }
                             else if (solidness.Carves())
                             {
-                                DecrementAdjacent(status.X, status.Y, strategy.StrategyHolder.Positionable.Width, strategy.StrategyHolder.Positionable.Height, status.Movement);
+                                DecrementAdjacent(status.X, status.Y, strategy.StrategyHolder.Object.Width, strategy.StrategyHolder.Object.Height, status.Movement);
                             }
                         }
 
@@ -264,11 +264,11 @@ namespace WindRose
                         {
                             if (solidness.Occupies())
                             {
-                                DecrementAdjacent(status.X, status.Y, strategy.StrategyHolder.Positionable.Width, strategy.StrategyHolder.Positionable.Height, status.Movement);
+                                DecrementAdjacent(status.X, status.Y, strategy.StrategyHolder.Object.Width, strategy.StrategyHolder.Object.Height, status.Movement);
                             }
                             else if (solidness.Carves())
                             {
-                                IncrementAdjacent(status.X, status.Y, strategy.StrategyHolder.Positionable.Width, strategy.StrategyHolder.Positionable.Height, status.Movement);
+                                IncrementAdjacent(status.X, status.Y, strategy.StrategyHolder.Object.Width, strategy.StrategyHolder.Object.Height, status.Movement);
                             }
                         }
 
@@ -276,11 +276,11 @@ namespace WindRose
                         {
                             if (solidness.Occupies())
                             {
-                                DecrementAdjacent(status.X, status.Y, strategy.StrategyHolder.Positionable.Width, strategy.StrategyHolder.Positionable.Height, status.Movement.Opposite());
+                                DecrementAdjacent(status.X, status.Y, strategy.StrategyHolder.Object.Width, strategy.StrategyHolder.Object.Height, status.Movement.Opposite());
                             }
                             else if (solidness.Carves())
                             {
-                                IncrementAdjacent(status.X, status.Y, strategy.StrategyHolder.Positionable.Width, strategy.StrategyHolder.Positionable.Height, status.Movement.Opposite());
+                                IncrementAdjacent(status.X, status.Y, strategy.StrategyHolder.Object.Width, strategy.StrategyHolder.Object.Height, status.Movement.Opposite());
                             }
                         }
 

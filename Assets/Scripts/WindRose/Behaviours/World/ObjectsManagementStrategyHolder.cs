@@ -405,7 +405,7 @@ namespace WindRose
                     }
 
                     // Does it fit regarding bounds?
-                    if (x > Map.Width - objectStrategyHolder.Positionable.Width || y > Map.Height - objectStrategyHolder.Positionable.Height)
+                    if (x > Map.Width - objectStrategyHolder.Object.Width || y > Map.Height - objectStrategyHolder.Object.Height)
                     {
                         throw new InvalidPositionException("Object coordinates and dimensions are not valid inside intended map's dimensions", x, y);
                     }
@@ -418,7 +418,7 @@ namespace WindRose
                     AttachedStrategy(objectStrategy, status);
 
                     // Finally, notify the client strategy.
-                    objectStrategy.Positionable.onAttached.Invoke(Map);
+                    objectStrategy.Object.onAttached.Invoke(Map);
                 }
 
                 /**
@@ -456,7 +456,7 @@ namespace WindRose
                     attachedStrategies.Remove(objectStrategy);
 
                     // Finally, notify the client strategy.
-                    objectStrategy.Positionable.onDetached.Invoke();
+                    objectStrategy.Object.onDetached.Invoke();
                 }
 
                 /**
@@ -501,7 +501,7 @@ namespace WindRose
                         DoAllocateMovement(objectStrategy, status, direction, continuated, "Before");
                         status.Movement = direction;
                         DoAllocateMovement(objectStrategy, status, direction, continuated, "AfterMovementAllocation");
-                        objectStrategy.Positionable.onMovementStarted.Invoke(direction);
+                        objectStrategy.Object.onMovementStarted.Invoke(direction);
                         DoAllocateMovement(objectStrategy, status, direction, continuated, "After");
                         return true;
                     }
@@ -566,7 +566,7 @@ namespace WindRose
                         DoClearMovement(strategy, status, formerMovement, "Before");
                         status.Movement = null;
                         DoClearMovement(strategy, status, formerMovement, "AfterMovementClear");
-                        strategy.Positionable.onMovementCancelled.Invoke(formerMovement);
+                        strategy.Object.onMovementCancelled.Invoke(formerMovement);
                         DoClearMovement(strategy, status, formerMovement, "Before");
                         return true;
                     }
@@ -641,7 +641,7 @@ namespace WindRose
                         DoConfirmMovement(objectStrategy, status, formerMovement, "AfterPositionChange");
                         status.Movement = null;
                         DoConfirmMovement(objectStrategy, status, formerMovement, "AfterMovementClear");
-                        objectStrategy.Positionable.onMovementFinished.Invoke(formerMovement);
+                        objectStrategy.Object.onMovementFinished.Invoke(formerMovement);
                         DoConfirmMovement(objectStrategy, status, formerMovement, "After");
                         return true;
                     }
@@ -684,7 +684,7 @@ namespace WindRose
 
                     Status status = attachedStrategies[objectStrategy];
 
-                    if (status.X > Map.Width - objectStrategyHolder.Positionable.Width || y > Map.Height - objectStrategyHolder.Positionable.Height)
+                    if (status.X > Map.Width - objectStrategyHolder.Object.Width || y > Map.Height - objectStrategyHolder.Object.Height)
                     {
                         throw new InvalidPositionException("New object coordinates and dimensions are not valid inside intended map's dimensions", status.X, status.Y);
                     }
@@ -694,7 +694,7 @@ namespace WindRose
                     status.X = x;
                     status.Y = y;
                     DoTeleport(objectStrategy, status, x, y, "AfterPositionChange");
-                    objectStrategy.Positionable.onTeleported.Invoke(x, y);
+                    objectStrategy.Object.onTeleported.Invoke(x, y);
                     DoTeleport(objectStrategy, status, x, y, "After");
                 }
 
@@ -741,7 +741,7 @@ namespace WindRose
 
                     (GetComponent(objectStrategy.CounterpartType) as ObjectsManagementStrategy).DoProcessPropertyUpdate(mainObjectStrategy, attachedStrategies[mainObjectStrategy], property, oldValue, newValue);
 
-                    mainObjectStrategy.Positionable.onPropertyUpdated.Invoke(property, oldValue, newValue);
+                    mainObjectStrategy.Object.onPropertyUpdated.Invoke(property, oldValue, newValue);
                 }
             }
         }

@@ -16,16 +16,16 @@ namespace WindRose
             ///     When the object is moving, the movement axis will not be snapped.
             ///   </para>
             /// </summary>
-            [RequireComponent(typeof(Positionable))]
+            [RequireComponent(typeof(Object))]
             public class Snapped : MonoBehaviour
             {
-                private Positionable positionable;
+                private Object mapObject;
 
                 // Use this for initialization
                 void Awake()
                 {
-                    positionable = GetComponent<Positionable>();
-                    positionable.onAttached.AddListener(delegate (World.Map map)
+                    mapObject = GetComponent<Object>();
+                    mapObject.onAttached.AddListener(delegate (World.Map map)
                     {
                         // Forcing this to avoid a blink.
                         DoUpdate();
@@ -34,7 +34,7 @@ namespace WindRose
 
                 /// <summary>
                 ///   <para>
-                ///     This is a callback for the Update of the positionable. It is
+                ///     This is a callback for the Update of the map object. It is
                 ///       not intended to be called directly.
                 ///   </para>
                 ///   <para>
@@ -45,7 +45,7 @@ namespace WindRose
                 public void DoUpdate()
                 {
                     // Run this code only if this object is attached to a map
-                    if (positionable.ParentMap == null) return;
+                    if (mapObject.ParentMap == null) return;
 
                     bool snapInX = false;
                     bool snapInY = false;
@@ -62,37 +62,36 @@ namespace WindRose
                     float? maxY = 0;
                     float finalX = 0;
                     float finalY = 0;
-                    float cellWidth = positionable.GetCellWidth();
-                    float cellHeight = positionable.GetCellHeight();
+                    float cellWidth = mapObject.GetCellWidth();
+                    float cellHeight = mapObject.GetCellHeight();
 
-                    // A positionable will ALWAYS be attached, since Start, until Destroy.
                     // In this context, we can ALWAYS check for its current movement or position.
 
-                    switch (positionable.Movement)
+                    switch (mapObject.Movement)
                     {
                         case Types.Direction.LEFT:
                             snapInY = true;
                             clampInX = true;
                             minX = null;
-                            maxX = positionable.X * cellWidth;
+                            maxX = mapObject.X * cellWidth;
                             break;
                         case Types.Direction.RIGHT:
                             snapInY = true;
                             clampInX = true;
-                            minX = positionable.X * cellWidth;
+                            minX = mapObject.X * cellWidth;
                             maxX = null;
                             break;
                         case Types.Direction.UP:
                             snapInX = true;
                             clampInY = true;
-                            minY = positionable.Y * cellHeight;
+                            minY = mapObject.Y * cellHeight;
                             maxY = null;
                             break;
                         case Types.Direction.DOWN:
                             snapInX = true;
                             clampInY = true;
                             minY = null;
-                            maxY = positionable.Y * cellHeight;
+                            maxY = mapObject.Y * cellHeight;
                             break;
                         default:
                             snapInX = true;
@@ -100,8 +99,8 @@ namespace WindRose
                             break;
                     }
 
-                    innerX = snapInX ? positionable.X * cellWidth : initialX;
-                    innerY = snapInY ? positionable.Y * cellHeight : initialY;
+                    innerX = snapInX ? mapObject.X * cellWidth : initialX;
+                    innerY = snapInY ? mapObject.Y * cellHeight : initialY;
 
                     finalX = clampInX ? Values.Clamp<float>(minX, innerX, maxX) : innerX;
                     finalY = clampInY ? Values.Clamp<float>(minY, innerY, maxY) : innerY;

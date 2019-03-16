@@ -123,7 +123,7 @@ namespace WindRose
 
                 /// <summary>
                 ///   Tells whether the map is initialized. No need to make use of
-                ///     this property, but <see cref="Positionable"/> objects will.
+                ///     this property, but <see cref="Object"/> objects will.
                 /// </summary>
                 public bool Initialized { get { return initialized; } }
 
@@ -176,22 +176,22 @@ namespace WindRose
                     // InitBlockedPositions();
                     // We consider this map as initialized after its strategy started.
                     initialized = true;
-                    // Now, it is turn of the already-in-place positionables to initialize.
-                    foreach (Positionable positionable in GetComponentsInChildren<Positionable>())
+                    // Now, it is turn of the already-in-place map objects to initialize.
+                    foreach (Object mapObject in GetComponentsInChildren<Object>())
                     {
-                        positionable.Initialize();
+                        mapObject.Initialize();
                     }
                 }
 
                 /// <summary>
                 ///   Attaches an object to this map.
                 /// </summary>
-                /// <param name="positionable">The object to attach</param>
+                /// <param name="mapObject">The object to attach</param>
                 /// <param name="x">The new X position</param>
                 /// <param name="y">The new Y position</param>
-                public void Attach(Positionable positionable, uint x, uint y)
+                public void Attach(Object mapObject, uint x, uint y)
                 {
-                    if (initialized) StrategyHolder.Attach(positionable.StrategyHolder, x, y);
+                    if (initialized) StrategyHolder.Attach(mapObject.StrategyHolder, x, y);
                 }
 
                 /// <summary>

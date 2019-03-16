@@ -21,7 +21,7 @@ namespace WindRose
             ///   </para>
             /// </summary>
             [RequireComponent(typeof(Rigidbody2D))]
-            [RequireComponent(typeof(Positionable))]
+            [RequireComponent(typeof(Object))]
             [RequireComponent(typeof(BoxCollider2D))]
             public class TriggerLive : TriggerHolder
             {
@@ -30,12 +30,12 @@ namespace WindRose
                 {
                     base.Awake();
                     collider2D.enabled = false;
-                    Positionable positionable = GetComponent<Positionable>();
-                    positionable.onAttached.AddListener(delegate (World.Map map)
+                    Object mapObject = GetComponent<Object>();
+                    mapObject.onAttached.AddListener(delegate (World.Map map)
                     {
                         collider2D.enabled = true;
                     });
-                    positionable.onDetached.AddListener(delegate ()
+                    mapObject.onDetached.AddListener(delegate ()
                     {
                         collider2D.enabled = false;
                     });
@@ -59,9 +59,9 @@ namespace WindRose
                 protected override void SetupCollider(Collider2D collider2D)
                 {
                     BoxCollider2D boxCollider2D = (BoxCollider2D)collider2D;
-                    Positionable positionable = GetComponent<Positionable>();
+                    Object mapObject = GetComponent<Object>();
                     // collision mask will have certain width and height
-                    boxCollider2D.size = new Vector2(positionable.Width * positionable.GetCellWidth(), positionable.Height * positionable.GetCellHeight());
+                    boxCollider2D.size = new Vector2(mapObject.Width * mapObject.GetCellWidth(), mapObject.Height * mapObject.GetCellHeight());
                     // and starting with those dimensions, we compute the offset as >>> and vvv
                     boxCollider2D.offset = new Vector2(boxCollider2D.size.x / 2, boxCollider2D.size.y / 2);
                 }

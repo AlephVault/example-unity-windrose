@@ -17,11 +17,11 @@ namespace WindRose
             ///   <para>
             ///     Usually, this object is related to watchers, and nothing needs to be done here.
             ///       However, this component can be created on its own, provided the
-            ///       <see cref="relatedPositionable"/> is filled accordingly.
+            ///       <see cref="relatedObject"/> is filled accordingly.
             ///   </para>
             ///   <para>
             ///     Vision ranges spread to certain direction (being specified or being taken from
-            ///       the related positionable's <see cref="Oriented"/> component), with a given
+            ///       the related map object's <see cref="Oriented"/> component), with a given
             ///       length (considering a base of 1), and a given width (considering a base
             ///       of 1, and spreading to each side of the main, oriented, spread).
             ///   </para>
@@ -33,16 +33,16 @@ namespace WindRose
                 const float BLEEDING_BUFFER = 0.1f;
 
                 /// <summary>
-                ///   The related positionable. It is mandatory.
+                ///   The related map object. It is mandatory.
                 /// </summary>
                 [SerializeField]
-                private Positionable relatedPositionable;
+                private Object relatedObject;
 
                 // Perhaps the related object has an Oriented component. We will make use of it.
                 private Oriented oriented;
 
                 /// <summary>
-                ///   If the related positionable has an <see cref="Oriented"/> component, this
+                ///   If the related map object has an <see cref="Oriented"/> component, this
                 ///     property is meaningless. However, if it doesn't, then this property
                 ///     tells which dimensions this vision range spreads to.
                 /// </summary>
@@ -70,18 +70,18 @@ namespace WindRose
                 protected override void Awake()
                 {
                     base.Awake();
-                    oriented = positionable.GetComponent<Oriented>();
+                    oriented = mapObject.GetComponent<Oriented>();
                 }
 
                 protected override void Start()
                 {
                     base.Start();
-                    if (positionable.Width % 2 == 0 || positionable.Height % 2 == 0)
+                    if (mapObject.Width % 2 == 0 || mapObject.Height % 2 == 0)
                     {
-                        throw new Types.Exception("For a vision range to work appropriately, the related positionable must have an odd width and height");
+                        throw new Types.Exception("For a vision range to work appropriately, the related map object must have an odd width and height");
                     }
-                    halfHeight = positionable.Height / 2;
-                    halfWidth = positionable.Width / 2;
+                    halfHeight = mapObject.Height / 2;
+                    halfWidth = mapObject.Width / 2;
                     // Forcing accurate position the first time
                     Update();
                 }
@@ -103,7 +103,7 @@ namespace WindRose
                     switch (direction)
                     {
                         case Types.Direction.RIGHT:
-                            extra = (int)positionable.Width;
+                            extra = (int)mapObject.Width;
                             break;
                         case Types.Direction.UP:
                         case Types.Direction.DOWN:
@@ -113,7 +113,7 @@ namespace WindRose
                             extra = 0;
                             break;
                     }
-                    return extra + (int)positionable.X;
+                    return extra + (int)mapObject.X;
                 }
 
                 protected override int GetDeltaY()
@@ -122,7 +122,7 @@ namespace WindRose
                     switch (direction)
                     {
                         case Types.Direction.UP:
-                            extra = (int)positionable.Height;
+                            extra = (int)mapObject.Height;
                             break;
                         case Types.Direction.LEFT:
                         case Types.Direction.RIGHT:
@@ -132,16 +132,16 @@ namespace WindRose
                             extra = 0;
                             break;
                     }
-                    return extra + (int)positionable.Y;
+                    return extra + (int)mapObject.Y;
                 }
 
                 /// <summary>
-                ///   The related positionable is the specified in <see cref="relatedPositionable"/>.
+                ///   The related map object is the specified in <see cref="relatedObject"/>.
                 /// </summary>
-                /// <returns>The related positionable</returns>
-                protected override Positionable GetRelatedPositionable()
+                /// <returns>The related map object</returns>
+                protected override Object GetRelatedObject()
                 {
-                    return relatedPositionable;
+                    return relatedObject;
                 }
 
                 /// <summary>
@@ -162,8 +162,8 @@ namespace WindRose
                 protected override void SetupCollider(Collider2D collider2D)
                 {
                     BoxCollider2D boxCollider2D = (BoxCollider2D)collider2D;
-                    float cellWidth = positionable.GetCellWidth();
-                    float cellHeight = positionable.GetCellHeight();
+                    float cellWidth = mapObject.GetCellWidth();
+                    float cellHeight = mapObject.GetCellHeight();
                     // we set the size based on the direction we are looking, and also the offset back to the right-top corner
                     switch (direction)
                     {
@@ -177,12 +177,12 @@ namespace WindRose
                     }
                     boxCollider2D.offset = new Vector2(0.5f * boxCollider2D.size.x, 0.5f * boxCollider2D.size.y);
                     // also we set the transform of this vision range, using global coordinates:
-                    Vector3 basePosition = positionable.transform.position;
+                    Vector3 basePosition = mapObject.transform.position;
                     Vector3 newPosition = Vector3.zero;
                     switch (direction)
                     {
                         case Types.Direction.UP:
-                            newPosition = new Vector3(basePosition.x - visionSize * cellWidth, basePosition.y + positionable.Height * cellHeight, basePosition.z);
+                            newPosition = new Vector3(basePosition.x - visionSize * cellWidth, basePosition.y + mapObject.Height * cellHeight, basePosition.z);
                             break;
                         case Types.Direction.DOWN:
                             newPosition = new Vector3(basePosition.x - visionSize * cellWidth, basePosition.y - (visionLength + 1) * cellHeight, basePosition.z);
@@ -191,7 +191,7 @@ namespace WindRose
                             newPosition = new Vector3(basePosition.x - boxCollider2D.size.x, basePosition.y - visionSize * cellHeight, basePosition.z);
                             break;
                         case Types.Direction.RIGHT:
-                            newPosition = new Vector3(basePosition.x + positionable.Width * cellWidth, basePosition.y - visionSize * cellHeight, basePosition.z);
+                            newPosition = new Vector3(basePosition.x + mapObject.Width * cellWidth, basePosition.y - visionSize * cellHeight, basePosition.z);
                             break;
                         default:
                             break;

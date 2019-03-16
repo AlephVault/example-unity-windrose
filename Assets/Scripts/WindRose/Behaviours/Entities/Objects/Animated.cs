@@ -18,12 +18,12 @@ namespace WindRose
                 protected override void Awake()
                 {
                     base.Awake();
-                    Positionable positionable = GetComponent<Positionable>();
-                    positionable.onAttached.AddListener(delegate (Map parentMap)
+                    Object mapObject = GetComponent<Object>();
+                    mapObject.onAttached.AddListener(delegate (Map parentMap)
                     {
                         spriteRenderer.enabled = true;
                     });
-                    positionable.onDetached.AddListener(delegate ()
+                    mapObject.onDetached.AddListener(delegate ()
                     {
                         spriteRenderer.enabled = false;
                     });

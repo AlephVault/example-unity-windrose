@@ -67,7 +67,7 @@ namespace WindRose
                             if (!otherComponentsResults[typeof(BaseObjectsManagementStrategy)]) return false;
 
                             // Then check for cells being blocked
-                            return !IsAdjacencyBlocked(status.X, status.Y, strategy.StrategyHolder.Positionable.Width, strategy.StrategyHolder.Positionable.Height, direction);
+                            return !IsAdjacencyBlocked(status.X, status.Y, strategy.StrategyHolder.Object.Width, strategy.StrategyHolder.Object.Height, direction);
                         }
 
                         /// <summary>

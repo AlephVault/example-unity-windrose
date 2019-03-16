@@ -19,7 +19,7 @@ namespace WindRose
                 ///       <see cref="PropertyWasUpdated(string, object, object)"/>.
                 ///   </para>
                 /// </summary>
-                [RequireComponent(typeof(Positionable))]
+                [RequireComponent(typeof(Object))]
                 public abstract class ObjectStrategy : MonoBehaviour
                 {
                     private static Type baseCounterpartStrategyType = typeof(World.ObjectsManagementStrategies.ObjectsManagementStrategy);
@@ -54,7 +54,7 @@ namespace WindRose
                     /// <summary>
                     ///   The related object.
                     /// </summary>
-                    public Positionable Positionable { get; private set; }
+                    public Object Object { get; private set; }
 
                     /**
                      * Initializes the related data and the counterpart type.
@@ -68,7 +68,7 @@ namespace WindRose
                             Destroy(gameObject);
                             throw new UnsupportedTypeException(string.Format("The type returned by CounterpartType must be a subclass of {0}", baseCounterpartStrategyType.FullName));
                         }
-                        Positionable = GetComponent<Positionable>();
+                        Object = GetComponent<Object>();
                     }
 
                     /// <summary>
@@ -84,7 +84,7 @@ namespace WindRose
                     ///       is no need or use to invoke it by hand.
                     ///   </para>
                     ///   <para>
-                    ///     Initializes the strategy, after the positionable is initialized.
+                    ///     Initializes the strategy, after the map object is initialized.
                     ///   </para>
                     /// </summary>
                     public virtual void Initialize()
@@ -102,7 +102,7 @@ namespace WindRose
                         World.ObjectsManagementStrategyHolder strategyHolder = null;
                         try
                         {
-                            strategyHolder = StrategyHolder.Positionable.ParentMap.StrategyHolder;
+                            strategyHolder = StrategyHolder.Object.ParentMap.StrategyHolder;
                         }
                         catch(NullReferenceException)
                         {

@@ -15,10 +15,10 @@ namespace WindRose
 
             /// <summary>
             ///   <para>
-            ///     Aside of the map, Positionable objects are the spirit of the party.
+            ///     Aside of the map itself, map objects are the spirit of the party.
             ///   </para>
             ///   <para>
-            ///     Positionables are the middle step between the user interface (or
+            ///     Map objects are the middle step between the user interface (or
             ///       artificial intelligence) and the underlying map and object
             ///       strategies: They will provide the behaviour to move, teleport,
             ///       attach to -and detach from- maps, and look in different directions.
@@ -32,7 +32,7 @@ namespace WindRose
             [ExecuteInEditMode]
             [RequireComponent(typeof(Pausable))]
             [RequireComponent(typeof(ObjectStrategyHolder))]
-            public class Positionable : MonoBehaviour, Pausable.IPausable
+            public class Object : MonoBehaviour, Pausable.IPausable
             {
                 /* *********************** Initial data *********************** */
 
@@ -172,11 +172,11 @@ namespace WindRose
                 /// </summary>
                 public readonly UnityTeleportedEvent onTeleported = new UnityTeleportedEvent();
 
-                // These callbacks are run when this positionable starts.
+                // These callbacks are run when this map object starts.
                 private Action startCallbacks = delegate() {};
-                // These callbacks are run when this positionable updates and is not paused.
+                // These callbacks are run when this map object updates and is not paused.
                 private Action updateCallbacks = delegate () { };
-                // These callbacks are run when this positionable updates and animations are not paused.
+                // These callbacks are run when this map object updates and animations are not paused.
                 private Action updateAnimationCallbacks = delegate () { };
 
                 private void Awake()
@@ -209,7 +209,7 @@ namespace WindRose
                     Movable movable = GetComponent<Movable>();
                     Snapped snapped = GetComponent<Snapped>();
                     Sorted sorted = GetComponent<Sorted>();
-                    Animated represented = GetComponent<Animated>();
+                    Animated animated = GetComponent<Animated>();
 
                     // Add them to start, update, and animationUpdate callbacks
                     if (oriented != null)
@@ -229,10 +229,10 @@ namespace WindRose
                     {
                         updateCallbacks += sorted.DoUpdate;
                     }
-                    if (represented != null)
+                    if (animated != null)
                     {
-                        startCallbacks += represented.DoStart;
-                        updateAnimationCallbacks += represented.DoUpdate;
+                        startCallbacks += animated.DoStart;
+                        updateAnimationCallbacks += animated.DoUpdate;
                     }
                 }
 
@@ -304,7 +304,7 @@ namespace WindRose
                     // We will make use of strategy
                     if (StrategyHolder == null)
                     {
-                        throw new Exception("An object strategy holder is required when the positionable initializes.");
+                        throw new Exception("An object strategy holder is required when the map object initializes.");
                     }
                     else
                     {
@@ -340,8 +340,8 @@ namespace WindRose
                             // Then we initialize, and perhaps it may explode due to exception.
                             Attach(parentMap, (uint)cellPosition.x, (uint)cellPosition.y);
                         }
-                        // After success of a standalone positionable being initialized, or
-                        //   an in-map positionable being
+                        // After success of a standalone map object being initialized, either
+                        //   by itself or by the parent map invoking the initialization.
                         initialized = true;
                     }
                     catch (Layout.MissingComponentInParentException)

@@ -31,7 +31,7 @@ namespace WindRose
                 ///       and <see cref="InventorySimpleBagRenderingManagementStrategy"/>.
                 ///   </para>
                 /// </summary>
-                [RequireComponent(typeof(Positionable))]
+                [RequireComponent(typeof(Objects.Object))]
                 [RequireComponent(typeof(InventorySinglePositioningManagementStrategy))]
                 [RequireComponent(typeof(InventorySimpleSpatialManagementStrategy))]
                 [RequireComponent(typeof(InventoryManagementStrategyHolder))]
@@ -39,7 +39,7 @@ namespace WindRose
                 public class SimpleBag : MonoBehaviour
                 {
                     private InventoryManagementStrategyHolder inventoryHolder;
-                    private Positionable positionable;
+                    private Objects.Object mapObject;
 
                     /**
                      * Awake/Start pre-register the renderers (if they are set).
@@ -48,7 +48,7 @@ namespace WindRose
                     void Awake()
                     {
                         inventoryHolder = GetComponent<InventoryManagementStrategyHolder>();
-                        positionable = GetComponent<Positionable>();
+                        mapObject = GetComponent<Objects.Object>();
                     }
 
                     /**
@@ -233,12 +233,12 @@ namespace WindRose
                     
                     private DropLayer GetDropLayer()
                     {
-                        if (positionable.ParentMap == null)
+                        if (mapObject.ParentMap == null)
                         {
                             return null;
                         }
 
-                        return positionable.ParentMap.DropLayer;
+                        return mapObject.ParentMap.DropLayer;
                     }
 
                     /// <summary>
@@ -269,7 +269,7 @@ namespace WindRose
                             {
                                 object finalStackPosition;
                                 // This call will NEVER fail: drop layers have infinite length.
-                                return dropLayer.Push(new Vector2Int((int)positionable.X, (int)positionable.Y), taken, out finalStackPosition);
+                                return dropLayer.Push(new Vector2Int((int)mapObject.X, (int)mapObject.Y), taken, out finalStackPosition);
                             }
                         }
 
@@ -300,7 +300,7 @@ namespace WindRose
                             return false;
                         }
 
-                        Vector2Int containerPosition = new Vector2Int((int)positionable.X, (int)positionable.Y);
+                        Vector2Int containerPosition = new Vector2Int((int)mapObject.X, (int)mapObject.Y);
                         Stack found = dropLayer.Last(containerPosition);
                         if (found != null)
                         {

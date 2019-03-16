@@ -42,7 +42,7 @@ namespace WindRose
                         public SortingSubLayer UnderlaysSubLayer { get; private set; }
 
                         /// <summary>
-                        ///   All the <see cref="Positionable"/> objects will fall inside this
+                        ///   All the <see cref="Entities.Objects.Object"/> objects will fall inside this
                         ///     sub layer. Their underlays or overlays will fall inside the
                         ///     other two sub layers.
                         /// </summary>

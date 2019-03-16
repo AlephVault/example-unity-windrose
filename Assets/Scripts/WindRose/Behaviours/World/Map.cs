@@ -9,7 +9,7 @@ namespace WindRose
     {
         namespace World
         {
-            using Objects;
+            using Entities.Objects;
 
             /// <summary>
             ///   Everything happens here. A map is essentially the place where movement and

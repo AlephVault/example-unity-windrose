@@ -36,11 +36,11 @@ namespace WindRose
                 /// </summary>
                 public abstract class ObjectsManagementStrategy : MonoBehaviour
                 {
-                    private static Type baseCounterpartStrategyType = typeof(Objects.Strategies.ObjectStrategy);
+                    private static Type baseCounterpartStrategyType = typeof(Entities.Objects.Strategies.ObjectStrategy);
 
                     /// <summary>
                     ///   Tells when the specified (returned) compatible or counterpart
-                    ///     type is not a subclass of <see cref="Objects.Strategies.ObjectStrategy"/>.
+                    ///     type is not a subclass of <see cref="Entities.Objects.Strategies.ObjectStrategy"/>.
                     /// </summary>
                     public class UnsupportedTypeException : Types.Exception
                     {
@@ -73,7 +73,7 @@ namespace WindRose
                     /// <summary>
                     ///   This method MUST be implemented to tell the strategy which type is to
                     ///     be considered the compatible one. Such type must be a subclass of 
-                    ///     <see cref="Objects.Strategies.ObjectStrategy"/>.
+                    ///     <see cref="Entities.Objects.Strategies.ObjectStrategy"/>.
                     /// </summary>
                     /// <returns>The type identified as compatible to this trategy</returns>
                     protected abstract Type GetCounterpartType();
@@ -126,7 +126,7 @@ namespace WindRose
                     /// </summary>
                     /// <param name="strategy">The compatible strategy of the object just attached</param>
                     /// <param name="status">The status (position and movement) of the underlying object</param>
-                    public virtual void AttachedStrategy(Objects.Strategies.ObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status)
+                    public virtual void AttachedStrategy(Entities.Objects.Strategies.ObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status)
                     {
                     }
 
@@ -137,7 +137,7 @@ namespace WindRose
                     /// </summary>
                     /// <param name="strategy">The compatible strategy of the object being detached</param>
                     /// <param name="status">The status (position and movement) of the underlying object</param>
-                    public virtual void DetachedStrategy(Objects.Strategies.ObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status)
+                    public virtual void DetachedStrategy(Entities.Objects.Strategies.ObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status)
                     {
                     }
 
@@ -157,7 +157,7 @@ namespace WindRose
                     /// <param name="strategy">The compatible strategy of the object being checked</param>
                     /// <param name="status">The status (position and movement) of the underlying object</param>
                     /// <returns>Whether it can cancel the movement or not</returns>
-                    public abstract bool CanAllocateMovement(Dictionary<Type, bool> otherComponentsResults, Objects.Strategies.ObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status, Types.Direction direction, bool continuated);
+                    public abstract bool CanAllocateMovement(Dictionary<Type, bool> otherComponentsResults, Entities.Objects.Strategies.ObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status, Types.Direction direction, bool continuated);
 
                     /// <summary>
                     ///   This method may be implemented to tell how will the strategy react when the underlying object
@@ -175,7 +175,7 @@ namespace WindRose
                     ///     <item>
                     ///       <term>After</term>
                     ///       <description>
-                    ///         After the whole allocation (including <see cref="Objects.Positionable.onMovementStarted"/>
+                    ///         After the whole allocation (including <see cref="Entities.Objects.Positionable.onMovementStarted"/>
                     ///           event handlers).
                     ///       </description>
                     ///     </item>
@@ -186,7 +186,7 @@ namespace WindRose
                     /// <param name="direction">The direction of this new movement</param>
                     /// <param name="continuated">Whether the movement being allocated is considered a continuation of a former movement (in the same direction, and immediate)</param>
                     /// <param name="stage">A string value: "Before", "AfterMovementAllocation", "After"</param>
-                    public virtual void DoAllocateMovement(Objects.Strategies.ObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status, Types.Direction direction, bool continuated, string stage)
+                    public virtual void DoAllocateMovement(Entities.Objects.Strategies.ObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status, Types.Direction direction, bool continuated, string stage)
                     {
                     }
 
@@ -207,7 +207,7 @@ namespace WindRose
                     /// <param name="strategy">The compatible strategy of the object being checked</param>
                     /// <param name="status">The status (position and movement) of the underlying object</param>
                     /// <returns>Whether it can cancel the movement or not</returns>
-                    public abstract bool CanClearMovement(Dictionary<Type, bool> otherComponentsResults, Objects.Strategies.ObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status);
+                    public abstract bool CanClearMovement(Dictionary<Type, bool> otherComponentsResults, Entities.Objects.Strategies.ObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status);
 
                     /// <summary>
                     ///   This method may be implemented to tell how will the strategy react when the underlying object
@@ -225,7 +225,7 @@ namespace WindRose
                     ///     <item>
                     ///       <term>After</term>
                     ///       <description>
-                    ///         After the whole clear (including <see cref="Objects.Positionable.onMovementCancelled"/>
+                    ///         After the whole clear (including <see cref="Entities.Objects.Positionable.onMovementCancelled"/>
                     ///           event handlers).
                     ///       </description>
                     ///     </item>
@@ -236,7 +236,7 @@ namespace WindRose
                     /// <param name="formerMovement">The movement being cancelled</param>
                     /// <param name="stage">A string value: "Before", "AfterMovementClear", "After"</param>
                     /// <remarks>You will never make use of this method directly. Movement strategy will make use of this one.</remarks>
-                    public virtual void DoClearMovement(Objects.Strategies.ObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status, Types.Direction? formerMovement, string stage)
+                    public virtual void DoClearMovement(Entities.Objects.Strategies.ObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status, Types.Direction? formerMovement, string stage)
                     {
                     }
 
@@ -260,7 +260,7 @@ namespace WindRose
                     ///     <item>
                     ///       <term>After</term>
                     ///       <description>
-                    ///         After the whole movement (including <see cref="Objects.Positionable.onMovementFinished"/>
+                    ///         After the whole movement (including <see cref="Entities.Objects.Positionable.onMovementFinished"/>
                     ///           event handlers).
                     ///       </description>
                     ///     </item>
@@ -271,7 +271,7 @@ namespace WindRose
                     /// <param name="formerMovement">The movement being finished</param>
                     /// <param name="stage">A string value: "Before", "AfterPositionChange", "AfterMovementClear", "After"</param>
                     /// <remarks>You will never make use of this method directly. Movement strategy will make use of this one.</remarks>
-                    public virtual void DoConfirmMovement(Objects.Strategies.ObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status, Types.Direction? formerMovement, string stage)
+                    public virtual void DoConfirmMovement(Entities.Objects.Strategies.ObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status, Types.Direction? formerMovement, string stage)
                     {
                     }
 
@@ -291,7 +291,7 @@ namespace WindRose
                     ///     <item>
                     ///       <term>After</term>
                     ///       <description>
-                    ///         After the whole teleport (including <see cref="Objects.Positionable.onTeleported"/>
+                    ///         After the whole teleport (including <see cref="Entities.Objects.Positionable.onTeleported"/>
                     ///           event handlers).
                     ///       </description>
                     ///     </item>
@@ -302,7 +302,7 @@ namespace WindRose
                     /// <param name="x">The X position of the teleport command</param>
                     /// <param name="y">The Y position of the teleport command</param>
                     /// <param name="stage">A string value: "Before", "After", "AfterPositionChange"</param>
-                    public virtual void DoTeleport(Objects.Strategies.ObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status, uint x, uint y, string stage)
+                    public virtual void DoTeleport(Entities.Objects.Strategies.ObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status, uint x, uint y, string stage)
                     {
                     }
 
@@ -316,7 +316,7 @@ namespace WindRose
                     /// <param name="property">The property being changed</param>
                     /// <param name="oldValue">The old value</param>
                     /// <param name="newValue">The new value</param>
-                    public virtual void DoProcessPropertyUpdate(Objects.Strategies.ObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status, string property, object oldValue, object newValue)
+                    public virtual void DoProcessPropertyUpdate(Entities.Objects.Strategies.ObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status, string property, object oldValue, object newValue)
                     {
                     }
                 }

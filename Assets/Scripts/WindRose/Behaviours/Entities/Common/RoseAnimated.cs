@@ -4,7 +4,7 @@ namespace WindRose
 {
     namespace Behaviours
     {
-        namespace Entities
+        namespace Entities.Common
         {
             /// <summary>
             ///   Handles the object's ability to animate, given four sequences of sprites.

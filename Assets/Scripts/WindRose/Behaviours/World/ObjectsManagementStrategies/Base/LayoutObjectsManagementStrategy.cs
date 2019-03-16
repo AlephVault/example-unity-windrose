@@ -13,7 +13,7 @@ namespace WindRose
             {
                 namespace Base
                 {
-                    using Objects.Strategies;
+                    using Entities.Objects.Strategies;
                     using ScriptableObjects.Tiles;
                     using ScriptableObjects.Tiles.Strategies.Base;
 
@@ -24,10 +24,10 @@ namespace WindRose
                     ///       that are marked as "blocking".
                     ///   </para>
                     ///   <para>
-                    ///     Its counterpart is <see cref="Objects.Strategies.Base.LayoutObjectStrategy"/>.
+                    ///     Its counterpart is <see cref="Entities.Objects.Strategies.Base.LayoutObjectStrategy"/>.
                     ///   </para>
                     ///   <seealso cref="ObjectsManagementStrategy"/>
-                    ///   <seealso cref="Objects.Strategies.Base.LayoutObjectStrategy"/>
+                    ///   <seealso cref="Entities.Objects.Strategies.Base.LayoutObjectStrategy"/>
                     /// </summary>
                     [RequireComponent(typeof(BaseObjectsManagementStrategy))]
                     public class LayoutObjectsManagementStrategy : ObjectsManagementStrategy
@@ -122,7 +122,7 @@ namespace WindRose
 
                         protected override Type GetCounterpartType()
                         {
-                            return typeof(Objects.Strategies.Base.LayoutObjectStrategy);
+                            return typeof(Entities.Objects.Strategies.Base.LayoutObjectStrategy);
                         }
                     }
                 }

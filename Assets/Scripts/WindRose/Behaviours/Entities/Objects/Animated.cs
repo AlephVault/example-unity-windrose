@@ -4,7 +4,7 @@ namespace WindRose
 {
     namespace Behaviours
     {
-        namespace Objects
+        namespace Entities.Objects
         {
             using World;
 
@@ -13,7 +13,7 @@ namespace WindRose
             /// </summary>
             [RequireComponent(typeof(Snapped))]
             [RequireComponent(typeof(Sorted))]
-            public class Animated : Entities.Animated
+            public class Animated : Common.Animated
             {
                 protected override void Awake()
                 {

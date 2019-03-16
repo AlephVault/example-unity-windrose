@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using WindRose.Behaviours.Objects.Strategies;
+using WindRose.Behaviours.Entities.Objects.Strategies;
 using WindRose.Types;
 using UnityEngine;
 
@@ -22,10 +22,10 @@ namespace WindRose
                     ///   <para>
                     ///     Checking whether movement can be cleared involves checking whether movement
                     ///       is being performed, and its counterpart is
-                    ///       <see cref="Objects.Strategies.Base.BaseObjectStrategy"/>.
+                    ///       <see cref="Entities.Objects.Strategies.Base.BaseObjectStrategy"/>.
                     ///   </para>
                     ///   <seealso cref="ObjectsManagementStrategy"/>
-                    ///   <seealso cref="Objects.Strategies.Base.BaseObjectStrategy"/>
+                    ///   <seealso cref="Entities.Objects.Strategies.Base.BaseObjectStrategy"/>
                     /// </summary>
                     public class BaseObjectsManagementStrategy : ObjectsManagementStrategy
                     {
@@ -37,7 +37,7 @@ namespace WindRose
                         {
                             if (status.Movement != null) return false;
 
-                            Objects.Positionable positionable = strategy.StrategyHolder.Positionable;
+                            Entities.Objects.Positionable positionable = strategy.StrategyHolder.Positionable;
 
                             switch (direction)
                             {
@@ -92,7 +92,7 @@ namespace WindRose
 
                         protected override Type GetCounterpartType()
                         {
-                            return typeof(Objects.Strategies.Base.BaseObjectStrategy);
+                            return typeof(Entities.Objects.Strategies.Base.BaseObjectStrategy);
                         }
                     }
                 }

@@ -2,8 +2,8 @@
 using UnityEngine;
 using GabTab.Behaviours;
 using GabTab.Behaviours.Interactors;
-using WindRose.Behaviours.Objects;
-using WindRose.Behaviours.Objects.CommandExchange.Talk;
+using WindRose.Behaviours.Entities.Objects;
+using WindRose.Behaviours.Entities.Objects.CommandExchange.Talk;
 
 [RequireComponent(typeof(InteractionLauncher))]
 [RequireComponent(typeof(TalkReceiver))]

@@ -13,7 +13,7 @@ namespace WindRose
         {
             namespace Inventory
             {
-                using Objects.Bags;
+                using Entities.Objects.Bags;
 
                 /// <summary>
                 ///   Simple bag views are a subclass of <see cref="InventorySimpleBagRenderingManagementStrategy.SimpleBagInventorySubRenderer"/>

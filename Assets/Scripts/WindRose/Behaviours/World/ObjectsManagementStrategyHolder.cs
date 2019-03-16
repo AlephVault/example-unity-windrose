@@ -199,17 +199,17 @@ namespace WindRose
                  * Given a particular strategy component, obtain the appropriate objectStrategy component from a main object
                  *   strategy.
                  */
-                private Objects.Strategies.ObjectStrategy GetCompatible(Objects.Strategies.ObjectStrategy target, ObjectsManagementStrategy source)
+                private Entities.Objects.Strategies.ObjectStrategy GetCompatible(Entities.Objects.Strategies.ObjectStrategy target, ObjectsManagementStrategy source)
                 {
-                    return target.GetComponent(source.CounterpartType) as Objects.Strategies.ObjectStrategy;
+                    return target.GetComponent(source.CounterpartType) as Entities.Objects.Strategies.ObjectStrategy;
                 }
 
                 /**
                  * Gets the main strategy of the target holder according to our main strategy.
                  */
-                private Objects.Strategies.ObjectStrategy GetMainCompatible(Objects.ObjectStrategyHolder target)
+                private Entities.Objects.Strategies.ObjectStrategy GetMainCompatible(Entities.Objects.ObjectStrategyHolder target)
                 {
-                    Objects.Strategies.ObjectStrategy objectStrategy = target.GetComponent(strategy.CounterpartType) as Objects.Strategies.ObjectStrategy;
+                    Entities.Objects.Strategies.ObjectStrategy objectStrategy = target.GetComponent(strategy.CounterpartType) as Entities.Objects.Strategies.ObjectStrategy;
                     if (objectStrategy == null)
                     {
                         throw new ObjectLacksOfCompatibleStrategy("Related object strategy holder component lacks of compatible strategy component for the current map strategy");
@@ -340,9 +340,9 @@ namespace WindRose
                     }
                 }
 
-                private Dictionary<Objects.Strategies.ObjectStrategy, Status> attachedStrategies = new Dictionary<Objects.Strategies.ObjectStrategy, Status>();
+                private Dictionary<Entities.Objects.Strategies.ObjectStrategy, Status> attachedStrategies = new Dictionary<Entities.Objects.Strategies.ObjectStrategy, Status>();
 
-                private void RequireAttached(Objects.Strategies.ObjectStrategy strategy)
+                private void RequireAttached(Entities.Objects.Strategies.ObjectStrategy strategy)
                 {
                     if (strategy == null)
                     {
@@ -355,7 +355,7 @@ namespace WindRose
                     }
                 }
 
-                private void RequireNotAttached(Objects.Strategies.ObjectStrategy strategy)
+                private void RequireNotAttached(Entities.Objects.Strategies.ObjectStrategy strategy)
                 {
                     if (attachedStrategies.ContainsKey(strategy))
                     {
@@ -367,9 +367,9 @@ namespace WindRose
                 ///   Gets the <see cref="Status"/> for a given object's strategy holder.
                 /// </summary>
                 /// <param name="objectStrategyHolder">The given strategy holder</param>
-                public Status StatusFor(Objects.ObjectStrategyHolder objectStrategyHolder)
+                public Status StatusFor(Entities.Objects.ObjectStrategyHolder objectStrategyHolder)
                 {
-                    Objects.Strategies.ObjectStrategy objectStrategy = GetMainCompatible(objectStrategyHolder);
+                    Entities.Objects.Strategies.ObjectStrategy objectStrategy = GetMainCompatible(objectStrategyHolder);
                     if (attachedStrategies.ContainsKey(objectStrategy))
                     {
                         return attachedStrategies[objectStrategy];
@@ -391,9 +391,9 @@ namespace WindRose
                 ///   to fit in the given position. It is also an error to try to attach an
                 ///   object that is already attached.
                 /// </remarks>
-                public void Attach(Objects.ObjectStrategyHolder objectStrategyHolder, uint x, uint y)
+                public void Attach(Entities.Objects.ObjectStrategyHolder objectStrategyHolder, uint x, uint y)
                 {
-                    Objects.Strategies.ObjectStrategy objectStrategy = GetMainCompatible(objectStrategyHolder);
+                    Entities.Objects.Strategies.ObjectStrategy objectStrategy = GetMainCompatible(objectStrategyHolder);
 
                     // Require it not attached
                     RequireNotAttached(objectStrategy);
@@ -425,7 +425,7 @@ namespace WindRose
                  * Iterates over each strategy and calls its AttachedStrategy appropriately
                  *   (from less to more dependent strategies).
                  */
-                private void AttachedStrategy(Objects.Strategies.ObjectStrategy objectStrategy, Status status)
+                private void AttachedStrategy(Entities.Objects.Strategies.ObjectStrategy objectStrategy, Status status)
                 {
                     Traverse(delegate (ObjectsManagementStrategy strategy)
                     {
@@ -438,9 +438,9 @@ namespace WindRose
                 /// </summary>
                 /// <param name="objectStrategyHolder">The object['s strategy holder] to detach</param>
                 /// <remarks>It is an error to detach an object that is not attached. Also, the object must have a compatible strategy.</remarks>
-                public void Detach(Objects.ObjectStrategyHolder objectStrategyHolder)
+                public void Detach(Entities.Objects.ObjectStrategyHolder objectStrategyHolder)
                 {
-                    Objects.Strategies.ObjectStrategy objectStrategy = GetMainCompatible(objectStrategyHolder);
+                    Entities.Objects.Strategies.ObjectStrategy objectStrategy = GetMainCompatible(objectStrategyHolder);
 
                     // Require it attached to the map
                     RequireAttached(objectStrategy);
@@ -463,7 +463,7 @@ namespace WindRose
                  * Iterates over each strategy and calls its DetachedStrategy appropriately
                  *   (from less to more dependent strategies).
                  */
-                private void DetachedStrategy(Objects.Strategies.ObjectStrategy objectStrategy, Status status)
+                private void DetachedStrategy(Entities.Objects.Strategies.ObjectStrategy objectStrategy, Status status)
                 {
                     Traverse(delegate (ObjectsManagementStrategy strategy)
                     {
@@ -479,9 +479,9 @@ namespace WindRose
                 /// <param name="continuated">If this movement should be considered a continuation of a previous movement</param>
                 /// <returns>Whether the movement could be started</returns>
                 /// <remarks>It is an error to detach an object that is not attached. Also, the object must have a compatible strategy.</remarks>
-                public bool MovementStart(Objects.ObjectStrategyHolder objectStrategyHolder, Types.Direction direction, bool continuated = false)
+                public bool MovementStart(Entities.Objects.ObjectStrategyHolder objectStrategyHolder, Types.Direction direction, bool continuated = false)
                 {
-                    Objects.Strategies.ObjectStrategy objectStrategy = GetMainCompatible(objectStrategyHolder);
+                    Entities.Objects.Strategies.ObjectStrategy objectStrategy = GetMainCompatible(objectStrategyHolder);
 
                     // Require it attached to the map
                     RequireAttached(objectStrategy);
@@ -494,7 +494,7 @@ namespace WindRose
                 /**
                  * Executes the actual movement allocation.
                  */
-                private bool AllocateMovement(Objects.Strategies.ObjectStrategy objectStrategy, Status status, Types.Direction direction, bool continuated = false)
+                private bool AllocateMovement(Entities.Objects.Strategies.ObjectStrategy objectStrategy, Status status, Types.Direction direction, bool continuated = false)
                 {
                     if (CanAllocateMovement(objectStrategy, status, direction, continuated))
                     {
@@ -514,7 +514,7 @@ namespace WindRose
                 /**
                  * Iterates all the strategies to tell whether it can allocate the movement or not.
                  */
-                private bool CanAllocateMovement(Objects.Strategies.ObjectStrategy objectStrategy, Status status, Types.Direction direction, bool continuated = false)
+                private bool CanAllocateMovement(Entities.Objects.Strategies.ObjectStrategy objectStrategy, Status status, Types.Direction direction, bool continuated = false)
                 {
                     return Collect(delegate (Dictionary<Type, bool> collected, ObjectsManagementStrategy strategy)
                     {
@@ -525,7 +525,7 @@ namespace WindRose
                 /**
                  * Iterates all the strategies for the different stages of movement allocation.
                  */
-                private void DoAllocateMovement(Objects.Strategies.ObjectStrategy objectStrategy, Status status, Types.Direction direction, bool continuated, string stage)
+                private void DoAllocateMovement(Entities.Objects.Strategies.ObjectStrategy objectStrategy, Status status, Types.Direction direction, bool continuated, string stage)
                 {
                     Traverse(delegate (ObjectsManagementStrategy strategy)
                     {
@@ -545,9 +545,9 @@ namespace WindRose
                 /// <param name="objectStrategyHolder">The object['s strategy holder] to which cancel the current movement</param>
                 /// <returns>Whether the current movement could be cancelled</returns>
                 /// <remarks>It is an error to detach an object that is not attached. Also, the object must have a compatible strategy.</remarks>
-                public bool MovementCancel(Objects.ObjectStrategyHolder objectStrategyHolder)
+                public bool MovementCancel(Entities.Objects.ObjectStrategyHolder objectStrategyHolder)
                 {
-                    Objects.Strategies.ObjectStrategy objectStrategy = GetMainCompatible(objectStrategyHolder);
+                    Entities.Objects.Strategies.ObjectStrategy objectStrategy = GetMainCompatible(objectStrategyHolder);
 
                     // Require it attached to the map
                     RequireAttached(objectStrategy);
@@ -558,7 +558,7 @@ namespace WindRose
                 /**
                  * Executes the actual movement clearing.
                  */
-                private bool ClearMovement(Objects.Strategies.ObjectStrategy strategy, Status status)
+                private bool ClearMovement(Entities.Objects.Strategies.ObjectStrategy strategy, Status status)
                 {
                     if (CanClearMovement(strategy, status))
                     {
@@ -579,7 +579,7 @@ namespace WindRose
                 /**
                  * Iterates all the strategies to tell whether it can clear the movement or not.
                  */
-                private bool CanClearMovement(Objects.Strategies.ObjectStrategy objectStrategy, Status status)
+                private bool CanClearMovement(Entities.Objects.Strategies.ObjectStrategy objectStrategy, Status status)
                 {
                     return Collect(delegate (Dictionary<Type, bool> collected, ObjectsManagementStrategy strategy)
                     {
@@ -590,7 +590,7 @@ namespace WindRose
                 /**
                  * Iterates all the strategies for the different stages of movement clearing.
                  */
-                private void DoClearMovement(Objects.Strategies.ObjectStrategy objectStrategy, Status status, Types.Direction? formerMovement, string stage)
+                private void DoClearMovement(Entities.Objects.Strategies.ObjectStrategy objectStrategy, Status status, Types.Direction? formerMovement, string stage)
                 {
                     Traverse(delegate (ObjectsManagementStrategy strategy)
                     {
@@ -610,9 +610,9 @@ namespace WindRose
                 /// <param name="objectStrategyHolder">The object['s strategy holder] to which finish the movement</param>
                 /// <returns>Whether the current movement could be finished</returns>
                 /// <remarks>It is an error to detach an object that is not attached. Also, the object must have a compatible strategy.</remarks>
-                public bool MovementFinish(Objects.ObjectStrategyHolder objectStrategyHolder)
+                public bool MovementFinish(Entities.Objects.ObjectStrategyHolder objectStrategyHolder)
                 {
-                    Objects.Strategies.ObjectStrategy objectStrategy = GetMainCompatible(objectStrategyHolder);
+                    Entities.Objects.Strategies.ObjectStrategy objectStrategy = GetMainCompatible(objectStrategyHolder);
 
                     // Require it attached to the map
                     RequireAttached(objectStrategy);
@@ -654,7 +654,7 @@ namespace WindRose
                 /**
                  * Iterates all the strategies for the different stages of movement allocation.
                  */
-                private void DoConfirmMovement(Objects.Strategies.ObjectStrategy objectStrategy, Status status, Types.Direction? formerMovement, string stage)
+                private void DoConfirmMovement(Entities.Objects.Strategies.ObjectStrategy objectStrategy, Status status, Types.Direction? formerMovement, string stage)
                 {
                     Traverse(delegate (ObjectsManagementStrategy strategy)
                     {
@@ -676,9 +676,9 @@ namespace WindRose
                 /// <param name="x">The X position to teleport the object to</param>
                 /// <param name="y">The Y position to teleport the object to</param>
                 /// <remarks>It is an error to detach an object that is not attached. Also, the object must have a compatible strategy.</remarks>
-                public void Teleport(Objects.ObjectStrategyHolder objectStrategyHolder, uint x, uint y)
+                public void Teleport(Entities.Objects.ObjectStrategyHolder objectStrategyHolder, uint x, uint y)
                 {
-                    Objects.Strategies.ObjectStrategy objectStrategy = GetMainCompatible(objectStrategyHolder);
+                    Entities.Objects.Strategies.ObjectStrategy objectStrategy = GetMainCompatible(objectStrategyHolder);
 
                     RequireAttached(objectStrategy);
 
@@ -701,7 +701,7 @@ namespace WindRose
                 /**
                  * Iterates all the strategies for the different stages of teleportation.
                  */
-                private void DoTeleport(Objects.Strategies.ObjectStrategy objectStrategy, Status status, uint x, uint y, string stage)
+                private void DoTeleport(Entities.Objects.Strategies.ObjectStrategy objectStrategy, Status status, uint x, uint y, string stage)
                 {
                     Traverse(delegate (ObjectsManagementStrategy strategy)
                     {
@@ -724,7 +724,7 @@ namespace WindRose
                  *************************************************************************************************/
 
                 /// <summary>
-                ///   This method is invoked by an <see cref="Objects.ObjectStrategyHolder"/>. Object strategy
+                ///   This method is invoked by an <see cref="Entities.Objects.ObjectStrategyHolder"/>. Object strategy
                 ///     holders will call this method when one of their properties was updated in a meaningful
                 ///     way to the extent that this management strategy holder must be aware of that change.
                 /// </summary>
@@ -733,9 +733,9 @@ namespace WindRose
                 /// <param name="property">The property that changed</param>
                 /// <param name="oldValue">The old value</param>
                 /// <param name="newValue">The new value</param>
-                public void PropertyWasUpdated(Objects.ObjectStrategyHolder objectStrategyHolder, Objects.Strategies.ObjectStrategy objectStrategy, string property, object oldValue, object newValue)
+                public void PropertyWasUpdated(Entities.Objects.ObjectStrategyHolder objectStrategyHolder, Entities.Objects.Strategies.ObjectStrategy objectStrategy, string property, object oldValue, object newValue)
                 {
-                    Objects.Strategies.ObjectStrategy mainObjectStrategy = GetMainCompatible(objectStrategyHolder);
+                    Entities.Objects.Strategies.ObjectStrategy mainObjectStrategy = GetMainCompatible(objectStrategyHolder);
 
                     RequireAttached(mainObjectStrategy);
 

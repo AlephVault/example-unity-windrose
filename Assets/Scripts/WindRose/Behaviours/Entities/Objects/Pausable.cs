@@ -6,7 +6,7 @@ namespace WindRose
 {
     namespace Behaviours
     {
-        namespace Objects
+        namespace Entities.Objects
         {
             /// <summary>
             ///   This behaviour implements a broadcast for pause/resume methods, which will be

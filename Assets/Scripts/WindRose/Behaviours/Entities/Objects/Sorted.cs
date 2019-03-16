@@ -4,7 +4,7 @@ namespace WindRose
 {
     namespace Behaviours
     {
-        namespace Objects
+        namespace Entities.Objects
         {
             /// <summary>
             ///   Sorts the element by its X position. The element is already sorted by its Y position.

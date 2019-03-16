@@ -5,7 +5,7 @@ namespace WindRose
 {
     namespace Behaviours
     {
-        namespace Objects
+        namespace Entities.Objects
         {
             /// <summary>
             ///   Watchers instantiate their own vision range. Their range can be

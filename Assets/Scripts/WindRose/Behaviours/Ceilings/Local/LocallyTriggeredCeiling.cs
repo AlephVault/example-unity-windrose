@@ -13,7 +13,7 @@ namespace WindRose
             {
                 using World;
                 using World.Layers.Ceiling;
-                using Objects;
+                using Entities.Objects;
 
                 /// <summary>
                 ///   This subtype of ceiling layer is shown when no "allowed

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
-using WindRose.Behaviours.Objects.Strategies;
+using WindRose.Behaviours.Entities.Objects.Strategies;
 using WindRose.Types;
 
 namespace WindRose
@@ -21,7 +21,7 @@ namespace WindRose
                     ///       which forbids solid objects walking through occupied cells.
                     ///   </para>
                     ///   <para>
-                    ///     Its counterpart is <see cref="Objects.Strategies.Simple.SimpleObjectStrategy"/>.
+                    ///     Its counterpart is <see cref="Entities.Objects.Strategies.Simple.SimpleObjectStrategy"/>.
                     ///   </para> 
                     /// </summary>
                     [RequireComponent(typeof(Base.LayoutObjectsManagementStrategy))]
@@ -54,7 +54,7 @@ namespace WindRose
 
                         protected override Type GetCounterpartType()
                         {
-                            return typeof(Objects.Strategies.Simple.SimpleObjectStrategy);
+                            return typeof(Entities.Objects.Strategies.Simple.SimpleObjectStrategy);
                         }
                     }
                 }

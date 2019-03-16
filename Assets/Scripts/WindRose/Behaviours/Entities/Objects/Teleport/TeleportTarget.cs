@@ -6,7 +6,7 @@ namespace WindRose
 {
     namespace Behaviours
     {
-        namespace Objects
+        namespace Entities.Objects
         {
             namespace Teleport
             {

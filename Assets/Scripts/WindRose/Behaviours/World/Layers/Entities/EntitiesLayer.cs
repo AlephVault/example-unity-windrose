@@ -48,11 +48,11 @@ namespace WindRose
                         /// </summary>
                         /// <seealso cref="UnderlaysSubLayer"/>
                         /// <seealso cref="OverlaysSubLayer"/>
-                        public SortingSubLayer MainSubLayer { get; private set; }
+                        public SortingSubLayer ObjectsSubLayer { get; private set; }
 
                         /// <summary>
                         ///   This is the overlays sub-layer. Intended for head-level glows or
-                        ///     effects (e.g. lights from elsewhere, shadows of doors,...)/
+                        ///     effects (e.g. lights from elsewhere, shadows of doors,...).
                         /// </summary>
                         public SortingSubLayer OverlaysSubLayer { get; private set; }
 
@@ -71,7 +71,7 @@ namespace WindRose
                             base.Awake();
                             grid = GetComponent<Grid>();
                             UnderlaysSubLayer = AddSortingSubLayer("UnderlaysSubLayer", 0);
-                            MainSubLayer = AddSortingSubLayer("MainSubLayer", 10);
+                            ObjectsSubLayer = AddSortingSubLayer("MainSubLayer", 10);
                             OverlaysSubLayer = AddSortingSubLayer("OverlaysSubLayer", 20);
                         }
 

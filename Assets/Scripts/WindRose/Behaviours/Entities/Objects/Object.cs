@@ -245,7 +245,7 @@ namespace WindRose
 
                 void EnsureAppropriateVerticalSorting()
                 {
-                    transform.parent = parentMap.EntitiesLayer.MainSubLayer[(int)parentMap.Height - 1 - (int)Y].transform;
+                    transform.parent = parentMap.EntitiesLayer.ObjectsSubLayer[(int)parentMap.Height - 1 - (int)Y].transform;
                 }
 
                 void Update()

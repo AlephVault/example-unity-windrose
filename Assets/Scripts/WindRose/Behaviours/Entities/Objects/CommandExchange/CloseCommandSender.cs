@@ -32,7 +32,7 @@ namespace WindRose
                 ///     to avoid this case.
                 /// </remarks>
                 [RequireComponent(typeof(Oriented))]
-                class CloseCommandSender : MonoBehaviour, Pausable.IPausable
+                class CloseCommandSender : MonoBehaviour, Common.Pausable.IPausable
                 {
                     // The command currently being sent.
                     private Misc.Command command;

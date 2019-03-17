@@ -22,7 +22,7 @@ namespace WindRose
                 ///   </para>
                 /// </summary>
                 [RequireComponent(typeof(TriggerLive))]
-                class CommandReceiver : MonoBehaviour, Pausable.IPausable
+                class CommandReceiver : MonoBehaviour, Common.Pausable.IPausable
                 {
                     /// <summary>
                     ///   The stage of the command arrival (just entering,

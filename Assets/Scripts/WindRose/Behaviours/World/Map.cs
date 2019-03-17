@@ -200,7 +200,7 @@ namespace WindRose
                 /// <param name="fullFreeze">If true, it also pauses objects' animations</param>
                 public void Pause(bool fullFreeze)
                 {
-                    foreach (Pausable p in GetComponentsInChildren<Pausable>(true))
+                    foreach (Entities.Common.Pausable p in GetComponentsInChildren<Entities.Common.Pausable>(true))
                     {
                         p.Pause(fullFreeze);
                     }
@@ -211,7 +211,7 @@ namespace WindRose
                 /// </summary>
                 public void Resume()
                 {
-                    foreach (Pausable p in GetComponentsInChildren<Pausable>(true))
+                    foreach (Entities.Common.Pausable p in GetComponentsInChildren<Entities.Common.Pausable>(true))
                     {
                         p.Resume();
                     }

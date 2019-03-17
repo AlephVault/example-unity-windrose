@@ -32,7 +32,7 @@ namespace WindRose
             [ExecuteInEditMode]
             [RequireComponent(typeof(Pausable))]
             [RequireComponent(typeof(ObjectStrategyHolder))]
-            public class Object : MonoBehaviour, Pausable.IPausable
+            public class Object : Common.Entity
             {
                 /* *********************** Initial data *********************** */
 
@@ -61,7 +61,7 @@ namespace WindRose
                 /// <summary>
                 ///   See <see cref="parentMap"/>.
                 /// </summary>
-                public Map ParentMap { get { return parentMap; } }
+                public override Map ParentMap { get { return parentMap; } }
 
                 /// <summary>
                 ///   See <see cref="width"/>.
@@ -76,12 +76,12 @@ namespace WindRose
                 /// <summary>
                 ///   The current X position of the object inside the attached map.
                 /// </summary>
-                public uint X { get { return parentMap.StrategyHolder.StatusFor(StrategyHolder).X; } }
+                public override uint X { get { return parentMap.StrategyHolder.StatusFor(StrategyHolder).X; } }
 
                 /// <summary>
                 ///   The current Y position of the object inside the attached map.
                 /// </summary>
-                public uint Y { get { return parentMap.StrategyHolder.StatusFor(StrategyHolder).Y; } }
+                public override uint Y { get { return parentMap.StrategyHolder.StatusFor(StrategyHolder).Y; } }
 
                 /// <summary>
                 ///   The opposite X position of this object inside the attached map, with
@@ -101,7 +101,7 @@ namespace WindRose
                 ///   The current movement of the object inside the attached map.
                 ///   It will be <c>null</c> if the object is not moving.
                 /// </summary>
-                public Direction? Movement { get { return parentMap.StrategyHolder.StatusFor(StrategyHolder).Movement; } }
+                public override Direction? Movement { get { return parentMap.StrategyHolder.StatusFor(StrategyHolder).Movement; } }
 
                 /// <summary>
                 ///   The strategy holder of this object.
@@ -446,7 +446,7 @@ namespace WindRose
                 ///   Flags the object as paused.
                 /// </summary>
                 /// <param name="fullFreeze">If <c>true</c>, also flags the object animations as paused</param>
-                public void Pause(bool fullFreeze)
+                public override void Pause(bool fullFreeze)
                 {
                     Paused = true;
                     AnimationsPaused = fullFreeze;
@@ -455,7 +455,7 @@ namespace WindRose
                 /// <summary>
                 ///   Flags the object, and its animations, as unpaused.
                 /// </summary>
-                public void Resume()
+                public override void Resume()
                 {
                     Paused = false;
                     AnimationsPaused = false;

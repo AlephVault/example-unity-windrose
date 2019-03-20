@@ -10,7 +10,7 @@ namespace WindRose
         {
             namespace Layers
             {
-                namespace Objects
+                namespace Entities
                 {
                     using Support.Utils;
                     using Support.Behaviours;

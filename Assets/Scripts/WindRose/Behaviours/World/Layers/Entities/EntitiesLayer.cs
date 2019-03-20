@@ -12,7 +12,7 @@ namespace WindRose
         {
             namespace Layers
             {
-                namespace Objects
+                namespace Entities
                 {
                     /// <summary>
                     ///   <para>

@@ -11,7 +11,7 @@ namespace WindRose
         {
             using Types;
             using World;
-            using World.Layers.Objects;
+            using World.Layers.Entities;
 
             /// <summary>
             ///   <para>
@@ -59,7 +59,7 @@ namespace WindRose
                 /* *********************** Public properties *********************** */
 
                 /// <summary>
-                ///   See <see cref="parentMap"/>.
+                ///   Gets the parent map this object is attached to. See <see cref="parentMap"/>.
                 /// </summary>
                 public override Map ParentMap { get { return parentMap; } }
 
@@ -82,6 +82,17 @@ namespace WindRose
                 ///   The current Y position of the object inside the attached map.
                 /// </summary>
                 public override uint Y { get { return parentMap.StrategyHolder.StatusFor(StrategyHolder).Y; } }
+
+                /// <summary>
+                ///   Gets the appropriate sub-layer for this entity. For this one, the middle sub-layer is the
+                ///     appropriate.
+                /// </summary>
+                /// <param name="layer">The entities layer to take the sub-layer from</param>
+                /// <returns>The middle sub-layer</returns>
+                protected override SortingSubLayer GetSubLayerFrom(EntitiesLayer layer)
+                {
+                    return layer.ObjectsSubLayer;
+                }
 
                 /// <summary>
                 ///   The opposite X position of this object inside the attached map, with
@@ -243,25 +254,11 @@ namespace WindRose
                     startCallbacks();
                 }
 
-                void EnsureAppropriateVerticalSorting()
+                protected override void UpdatePipeline()
                 {
-                    transform.parent = parentMap.EntitiesLayer.ObjectsSubLayer[(int)parentMap.Height - 1 - (int)Y].transform;
-                }
-
-                void Update()
-                {
-                    // Run the update on other components.
-                    // Catch the null reference exception for when it is destroyed.
-                    try
-                    {
-                        if (parentMap)
-                        {
-                            EnsureAppropriateVerticalSorting();
-                        }
-                        if (!Paused) updateCallbacks();
-                        if (!AnimationsPaused) updateAnimationCallbacks();
-                    }
-                    catch (NullReferenceException) {}
+                    // Updates the local callbacks.
+                    if (!Paused) updateCallbacks();
+                    if (!AnimationsPaused) updateAnimationCallbacks();
                 }
 
                 void OnDestroy()

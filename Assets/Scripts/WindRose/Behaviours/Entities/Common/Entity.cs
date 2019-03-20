@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace WindRose
 {
@@ -48,7 +49,7 @@ namespace WindRose
                 public abstract void Resume();
 
                 /// <summary>
-                ///   Gets the parent map.
+                ///   Gets the parent map this entity is attached to.
                 /// </summary>
                 public abstract World.Map ParentMap { get; }
 
@@ -66,6 +67,43 @@ namespace WindRose
                 ///   Gets the in-map movement.
                 /// </summary>
                 public abstract Types.Direction? Movement { get; }
+
+                /// <summary>
+                ///   Gets the appropriate sub-layer for this entity.
+                /// </summary>
+                /// <param name="layer">The entities layer to take the sub-layer from</param>
+                /// <returns>The appropriate sub-layer</returns>
+                protected abstract World.Layers.Entities.SortingSubLayer GetSubLayerFrom(World.Layers.Entities.EntitiesLayer layer);
+
+                // Ensures the entity is appropriately positioned in the sub-layer's children for appropriate
+                //   vertical sorting.
+                protected void EnsureAppropriateVerticalSorting()
+                {
+                    transform.parent = GetSubLayerFrom(ParentMap.EntitiesLayer)[(int)ParentMap.Height - 1 - (int)Y].transform;
+                }
+
+                /// <summary>
+                ///   The update pipeline is intended to be executed sequentially. This method must be
+                ///     implemented to step-by-step control how the entity components must be updated.
+                ///     Think of this method as a local implementation of Entity-Component system, but
+                ///     right inside a single game object.
+                /// </summary>
+                protected abstract void UpdatePipeline();
+
+                void Update()
+                {
+                    // Run the inner update (it will usually involve other components).
+                    // Catch the null reference exception for when it is destroyed.
+                    try
+                    {
+                        if (ParentMap)
+                        {
+                            EnsureAppropriateVerticalSorting();
+                        }
+                        UpdatePipeline();
+                    }
+                    catch (NullReferenceException) { }
+                }
             }
         }
     }

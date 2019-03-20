@@ -99,7 +99,7 @@ namespace WindRose
                 ///     things of your game will happen: movable, oriented, staying
                 ///     and other types of objects will live in this layer.
                 /// </summary>
-                public Layers.Objects.EntitiesLayer EntitiesLayer { get; private set; }
+                public Layers.Entities.EntitiesLayer EntitiesLayer { get; private set; }
 
                 /// <summary>
                 ///   The ceilings layer will hold overlays floating that hide
@@ -142,7 +142,7 @@ namespace WindRose
                     // Requiring the layers - at most one of each them may exist per map
                     FloorLayer = ExpectOneLayerComponent<Layers.Floor.FloorLayer>(true);
                     DropLayer = ExpectOneLayerComponent<Layers.Drop.DropLayer>();
-                    EntitiesLayer = ExpectOneLayerComponent<Layers.Objects.EntitiesLayer>(true);
+                    EntitiesLayer = ExpectOneLayerComponent<Layers.Entities.EntitiesLayer>(true);
                     CeilingLayer = ExpectOneLayerComponent<Layers.Ceiling.CeilingLayer>();
                     Grid entitiesLayerGrid = EntitiesLayer.GetComponent<Grid>();
                     Grid floorLayerGrid = FloorLayer.GetComponent<Grid>();

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace WindRose
 {
@@ -13,7 +14,8 @@ namespace WindRose
             ///   Add-ons go inside <see cref="AddOnGroup"/> instances. They are mostly
             ///     graphic-only components, but they also may not be.
             /// </summary>
-            public class AddOn : MonoBehaviour, Common.Pausable.IPausable
+            [RequireComponent(typeof(Pausable))]
+            public class AddOn : MonoBehaviour
             {
                 // The renderer, if any.
                 private new SpriteRenderer renderer;
@@ -44,54 +46,24 @@ namespace WindRose
                     }
                 }
 
-                /// <summary>
-                ///   Pauses the add-on update.
-                /// </summary>
-                /// <param name="fullFreeze">Whether to also pause the animations or not</param>
-                public void Pause(bool fullFreeze)
-                {
-
-                }
+                public class GroupAttachedEvent : UnityEvent<AddOnGroup> {};
 
                 /// <summary>
-                ///   Resumes the add-on update and animations.
+                ///   Performs the actual add-on attachment logic. Triggered by the
+                ///     add-ons group.
                 /// </summary>
-                public void Resume()
-                {
-
-                }
+                public readonly GroupAttachedEvent onGroupAttached = new GroupAttachedEvent();
 
                 /// <summary>
-                ///   Executes all the enable logic here. A replacement of the Start() or the
-                ///     OnEnable() method.
-                ///   This will be run not at component start but instead at component attach
-                ///     to an <see cref="AddOnGroup"/>. This method will be invoked externally
-                ///     and it is not intended to be manually invoked by the user.
+                ///   Performs the actual add-on detachment logic. Triggered by the
+                ///     add-ons group.
                 /// </summary>
-                public void Attached(AddOnGroup group)
-                {
-
-                }
+                public readonly UnityEvent onGroupDetach = new UnityEvent();
 
                 /// <summary>
-                ///   Executes all the disable logic here. A replacement of the OnDestroy() or
-                ///     the OnDisable() method.
-                ///   This will be run not at component destroy but instead at component detach
-                ///     from an <see cref="AddOnGroup"/>. This method will be invoked externally
-                ///     and it is not intended to be manually invoked by the user.
+                ///   Performs the actual add-on update. Triggered by the add-ons group.
                 /// </summary>
-                public void Detached()
-                {
-
-                }
-
-                /// <summary>
-                ///   Performs the actual add-on update.
-                /// </summary>
-                public void UpdatePipeline()
-                {
-
-                }
+                public readonly UnityEvent onGroupUpdate = new UnityEvent();
             }
         }
     }

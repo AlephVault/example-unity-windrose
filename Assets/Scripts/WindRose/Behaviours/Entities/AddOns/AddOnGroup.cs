@@ -74,8 +74,7 @@ namespace WindRose
                 private HashSet<AddOn> addOns = new HashSet<AddOn>();
 
                 /// <summary>
-                ///   Adds an add-on that is not formerly present, and recomputes the
-                ///     sort orders of all the add-ons.
+                ///   Adds an add-on that is not formerly present.
                 /// </summary>
                 /// <param name="addOn">The add-on to add</param>
                 public void Add(AddOn addOn)
@@ -85,15 +84,14 @@ namespace WindRose
                         orderedAddOns.Add(addOn);
                         addOn.transform.parent = transform;
                         addOns.Add(addOn);
-                        ComputeAddOnsSortOrders();
-                        addOn.Attached(this);
+                        addOn.onGroupAttached.Invoke(this);
                     }
                 }
 
                 /// <summary>
-                ///   Adds an add-on that is not formerly present, and recomputes the
-                ///     sort orders of all the add-ons. The new add-on is pushed (this
-                ///     means: added the closest possible to the main object).
+                ///   Adds an add-on that is not formerly present. The new add-on
+                ///     is pushed (this means: added the closest possible to the
+                ///     main object).
                 /// </summary>
                 /// <param name="addOn">The add-on to add</param>
                 public void Push(AddOn addOn)
@@ -110,34 +108,22 @@ namespace WindRose
                         }
                         addOns.Add(addOn);
                         addOn.transform.parent = transform;
-                        ComputeAddOnsSortOrders();
-                        addOn.Attached(this);
+                        addOn.onGroupAttached.Invoke(this);
                     }
                 }
 
                 /// <summary>
-                ///   Removes an add-on that is present, and recomputes the sort orders
-                ///     of all the add-ons.
+                ///   Removes an add-on that is present.
                 /// </summary>
                 /// <param name="addOn">The add-on to remove</param>
                 public void Pop(AddOn addOn)
                 {
                     if (addOns.Contains(addOn))
                     {
+                        addOn.onGroupDetach.Invoke();
                         orderedAddOns.Remove(addOn);
                         addOns.Remove(addOn);
                         addOn.transform.parent = null;
-                        ComputeAddOnsSortOrders();
-                        addOn.Detached();
-                    }
-                }
-
-                // Updates the sort orders in the innser add-ons.
-                private void ComputeAddOnsSortOrders()
-                {
-                    for(int index = 0; index < addOns.Count; index++)
-                    {
-                        orderedAddOns[index].SortingOrder = index;
                     }
                 }
 
@@ -155,7 +141,7 @@ namespace WindRose
                     Paused = true;
                     foreach(AddOn addOn in orderedAddOns)
                     {
-                        addOn.Pause(fullFreeze);
+                        addOn.GetComponent<Common.Pausable>().Pause(fullFreeze);
                     }
                 }
 
@@ -166,7 +152,7 @@ namespace WindRose
                 {
                     foreach(AddOn addOn in addOns)
                     {
-                        addOn.Resume();
+                        addOn.GetComponent<Common.Pausable>().Resume();
                     }
                     Paused = false;
                 }
@@ -195,7 +181,7 @@ namespace WindRose
                     {
                         foreach(AddOn addOn in addOns)
                         {
-                            addOn.UpdatePipeline();
+                            addOn.onGroupUpdate.Invoke();
                         }
                     }
                 }

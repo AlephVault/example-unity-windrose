@@ -57,7 +57,6 @@ namespace WindRose
                 protected virtual void Start()
                 {
                     collider2D.isTrigger = true;
-                    SetupCollider(collider2D);
                 }
             }
         }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using Support.Utils;
@@ -48,12 +49,27 @@ namespace WindRose
                 [SerializeField]
                 private uint height = 1;
 
-                /* *********************** Additional data *********************** */
+                /// <summary>
+                ///   Initial add-ons for this object, if needed. These add-ons will
+                ///     be added above this object.
+                /// </summary>
+                [SerializeField]
+                private List<AddOns.AddOn> overlays;
+
+                /// <summary>
+                ///   Initial add-ons for this object, if needed. These add-ons will
+                ///     be added below this object.
+                /// </summary>
+                [SerializeField]
+                private List<AddOns.AddOn> underlays;
+
+                /* *********************** Additional data and state *********************** */
 
                 /// <summary>
                 ///   The map this object is currently attached to.
                 /// </summary>
                 private Map parentMap = null;
+
                 private bool initialized = false;
 
                 /* *********************** Public properties *********************** */
@@ -62,6 +78,16 @@ namespace WindRose
                 ///   Gets the parent map this object is attached to. See <see cref="parentMap"/>.
                 /// </summary>
                 public override Map ParentMap { get { return parentMap; } }
+
+                /// <summary>
+                ///   The object's overlays group.
+                /// </summary>
+                public AddOns.AddOnGroup OverlaysGroup { get; private set; }
+
+                /// <summary>
+                ///   The object's underlays group.
+                /// </summary>
+                public AddOns.AddOnGroup UnderlaysGroup { get; private set; }
 
                 /// <summary>
                 ///   See <see cref="width"/>.
@@ -147,9 +173,9 @@ namespace WindRose
                 public readonly UnityEvent onDetached = new UnityEvent();
 
                 [Serializable]
-                public class UnityMovementEvent : UnityEvent<Types.Direction> { }
+                public class UnityMovementEvent : UnityEvent<Direction> { }
                 [Serializable]
-                public class UnityOptionalMovementEvent : UnityEvent<Types.Direction?> { }
+                public class UnityOptionalMovementEvent : UnityEvent<Direction?> { }
 
                 /// <summary>
                 ///   Event that triggers when the object starts moving.
@@ -189,6 +215,32 @@ namespace WindRose
                 private Action updateCallbacks = delegate () { };
                 // These callbacks are run when this map object updates and animations are not paused.
                 private Action updateAnimationCallbacks = delegate () { };
+
+                private void InstantiateAddOnGroups()
+                {
+                    GameObject underlaysGroupObject = new GameObject("Underlays");
+                    GameObject overlaysGroupObject = new GameObject("Overlays");
+
+                    UnderlaysGroup = Layout.AddComponent<AddOns.AddOnGroup>(underlaysGroupObject, new Dictionary<string, object>()
+                    {
+                        { "addOnGroupType", AddOns.AddOnGroup.AddOnGroupType.Underlay },
+                        { "relatedObject", this }
+                    });
+                    OverlaysGroup = Layout.AddComponent<AddOns.AddOnGroup>(overlaysGroupObject, new Dictionary<string, object>()
+                    {
+                        { "addOnGroupType", AddOns.AddOnGroup.AddOnGroupType.Overlay },
+                        { "relatedObject", this }
+                    });
+
+                    foreach (AddOns.AddOn addOn in underlays)
+                    {
+                        UnderlaysGroup.Add(Instantiate(addOn.gameObject).GetComponent<AddOns.AddOn>());
+                    }
+                    foreach (AddOns.AddOn addOn in overlays)
+                    {
+                        OverlaysGroup.Add(Instantiate(addOn.gameObject).GetComponent<AddOns.AddOn>());
+                    }
+                }
 
                 private void Awake()
                 {
@@ -252,6 +304,11 @@ namespace WindRose
                     Initialize();
                     // Run the start on other components.
                     startCallbacks();
+                    // THEN instantiate all the overlays.
+                    if (Application.isPlaying)
+                    {
+                        InstantiateAddOnGroups();
+                    }
                 }
 
                 protected override void UpdatePipeline()
@@ -274,6 +331,11 @@ namespace WindRose
                     onMovementFinished.RemoveAllListeners();
                     onPropertyUpdated.RemoveAllListeners();
                     onTeleported.RemoveAllListeners();
+                    if (Application.isPlaying)
+                    {
+                        Destroy(OverlaysGroup);
+                        Destroy(UnderlaysGroup);
+                    }
                 }
 
                 /// <summary>
@@ -440,22 +502,28 @@ namespace WindRose
                 }
 
                 /// <summary>
-                ///   Flags the object as paused.
+                ///   Flags the object as paused. This also invokes <see cref="AddOns.AddOnGroup.Pause(bool)"/> on
+                ///     this object's <see cref="OverlaysGroup"/> and <see cref="UnderlaysGroup"/>.
                 /// </summary>
                 /// <param name="fullFreeze">If <c>true</c>, also flags the object animations as paused</param>
                 public override void Pause(bool fullFreeze)
                 {
                     Paused = true;
                     AnimationsPaused = fullFreeze;
+                    if (OverlaysGroup) OverlaysGroup.Pause(fullFreeze);
+                    if (UnderlaysGroup) UnderlaysGroup.Pause(fullFreeze);
                 }
 
                 /// <summary>
-                ///   Flags the object, and its animations, as unpaused.
+                ///   Flags the object, and its animations, as unpaused. This also invokes <see cref="AddOns.AddOnGroup.Resume"/> on
+                ///     this object's <see cref="OverlaysGroup"/> and <see cref="UnderlaysGroup"/>.
                 /// </summary>
                 public override void Resume()
                 {
                     Paused = false;
                     AnimationsPaused = false;
+                    if (OverlaysGroup) OverlaysGroup.Resume();
+                    if (UnderlaysGroup) UnderlaysGroup.Resume();
                 }
             }
         }

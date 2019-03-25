@@ -209,11 +209,15 @@ namespace WindRose
                     }
                     registeredCallbacks.Clear();
                     collider2D.enabled = false;
+
+                    enabled = false;
                 }
 
                 void Appear(Map map)
                 {
                     collider2D.enabled = true;
+                    enabled = true;
+                    RefreshDimensions();
                 }
 
                 void ExitAndDisconnect(TriggerLive sender)
@@ -247,6 +251,8 @@ namespace WindRose
                 void OnDestroy()
                 {
                     Withdraw();
+                    mapObject.onDetached.RemoveListener(Withdraw);
+                    mapObject.onAttached.RemoveListener(Appear);
                 }
 
                 /// <summary>

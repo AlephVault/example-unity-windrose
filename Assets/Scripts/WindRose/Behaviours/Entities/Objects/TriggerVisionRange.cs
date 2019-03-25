@@ -71,19 +71,20 @@ namespace WindRose
                 {
                     base.Awake();
                     oriented = mapObject.GetComponent<Oriented>();
+                    if (mapObject.Width % 2 == 0 || mapObject.Height % 2 == 0)
+                    {
+                        Destroy(gameObject);
+                        throw new Types.Exception("For a vision range to work appropriately, the related map object must have an odd width and height");
+                    }
+                    halfHeight = mapObject.Height / 2;
+                    halfWidth = mapObject.Width / 2;
                 }
 
                 protected override void Start()
                 {
                     base.Start();
-                    if (mapObject.Width % 2 == 0 || mapObject.Height % 2 == 0)
-                    {
-                        throw new Types.Exception("For a vision range to work appropriately, the related map object must have an odd width and height");
-                    }
-                    halfHeight = mapObject.Height / 2;
-                    halfWidth = mapObject.Width / 2;
                     // Forcing accurate position the first time
-                    Update();
+                    if (relatedObject.ParentMap) Update();
                 }
 
                 protected override void Update()

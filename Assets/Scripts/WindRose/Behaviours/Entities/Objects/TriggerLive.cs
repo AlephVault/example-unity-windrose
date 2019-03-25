@@ -34,6 +34,7 @@ namespace WindRose
                     mapObject.onAttached.AddListener(delegate (World.Map map)
                     {
                         collider2D.enabled = true;
+                        RefreshDimensions();
                     });
                     mapObject.onDetached.AddListener(delegate ()
                     {

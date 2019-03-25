@@ -23,11 +23,6 @@ namespace WindRose
                 [SerializeField]
                 private float innerMarginFactor = 0.25f;
 
-                protected override void Start()
-                {
-                    base.Start();
-                }
-
                 /// <summary>
                 ///   The delta X is the object's X position.
                 /// </summary>

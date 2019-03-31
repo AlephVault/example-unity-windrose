@@ -19,6 +19,11 @@ namespace WindRose
                 public abstract class VisualBehaviour : MonoBehaviour
                 {
                     /// <summary>
+                    ///   The visual this component is attached to.
+                    /// </summary>
+                    protected Visual visual;
+
+                    /// <summary>
                     ///   Triggered when the underlying visual is updated.
                     /// </summary>
                     public virtual void DoUpdate() { }
@@ -28,6 +33,11 @@ namespace WindRose
                     ///   This method should update data not related to what occurs in OnEnabled.
                     /// </summary>
                     public virtual void DoStart() { }
+
+                    protected virtual void Awake()
+                    {
+                        visual = GetComponent<Visual>();
+                    }
                 }
             }
         }

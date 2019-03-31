@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -163,23 +165,23 @@ namespace WindRose
                         }
                     }
 
-                    private void Update()
+                    private List<MonoBehaviour> visualBehaviours = new List<MonoBehaviour>();
+
+                    private void DoUpdate()
                     {
                         if (visibilityEnabled)
                         {
                             transform.localPosition = relatedObject.transform.localPosition;
-                            // TODO change to explicitly enumerate behaviours and iterate them
-                            foreach (VisualBehaviour behavioir in GetComponents<VisualBehaviour>())
+                            foreach (VisualBehaviour behavioir in visualBehaviours)
                             {
                                 behavioir.DoUpdate();
                             }
                         }
                     }
 
-                    private void Start()
+                    private void DoStart()
                     {
-                        // TODO change to explicitly enumerate behaviours and iterate them
-                        foreach (VisualBehaviour behavioir in GetComponents<VisualBehaviour>())
+                        foreach (VisualBehaviour behavioir in visualBehaviours)
                         {
                             behavioir.DoStart();
                         }
@@ -191,8 +193,15 @@ namespace WindRose
                         if (relatedObject.MainVisual == this) IsMain = true;
                         renderer = GetComponent<SpriteRenderer>();
                         UpdateVisibilityStatus();
+                        Animated animated = GetComponent<Animated>();
+                        RoseAnimated roseAnimated = GetComponent<RoseAnimated>();
+                        if (animated) visualBehaviours.Add(animated);
+                        if (roseAnimated) visualBehaviours.Add(roseAnimated);
                     }
 
+                    /// <summary>
+                    ///   Detaches this visual from its current owner.
+                    /// </summary>
                     public void Detach()
                     {
                         if (relatedObject) relatedObject.PopVisual(this);

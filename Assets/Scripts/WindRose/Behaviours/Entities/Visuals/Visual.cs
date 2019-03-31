@@ -38,7 +38,7 @@ namespace WindRose
                     ///   The depth level of this visual. This will rarely change.
                     /// </summary>
                     [SerializeField]
-                    private ushort level = 1 << 15;
+                    private ushort level = 1 << 14;
 
                     /// <summary>
                     ///   See <see cref="level"/>.

@@ -15,7 +15,7 @@ namespace WindRose
                 ///     will be given to its related <see cref="Animated"/> component.
                 /// </summary>
                 [RequireComponent(typeof(Animated))]
-                public abstract class RoseAnimated : VisualBehaviour
+                public class RoseAnimated : VisualBehaviour
                 {
                     private Animated animated;
 

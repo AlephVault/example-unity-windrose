@@ -168,10 +168,20 @@ namespace WindRose
                         if (visibilityEnabled)
                         {
                             transform.localPosition = relatedObject.transform.localPosition;
+                            // TODO change to explicitly enumerate behaviours and iterate them
                             foreach (VisualBehaviour behavioir in GetComponents<VisualBehaviour>())
                             {
                                 behavioir.DoUpdate();
                             }
+                        }
+                    }
+
+                    private void Start()
+                    {
+                        // TODO change to explicitly enumerate behaviours and iterate them
+                        foreach (VisualBehaviour behavioir in GetComponents<VisualBehaviour>())
+                        {
+                            behavioir.DoStart();
                         }
                     }
 

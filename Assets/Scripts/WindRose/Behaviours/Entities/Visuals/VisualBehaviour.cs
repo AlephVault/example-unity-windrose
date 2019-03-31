@@ -16,12 +16,18 @@ namespace WindRose
                 ///     one method that are documented: <see cref="DoUpdate"/>.
                 /// </summary>
                 [RequireComponent(typeof(Visual))]
-                public class VisualBehaviour : MonoBehaviour
+                public abstract class VisualBehaviour : MonoBehaviour
                 {
                     /// <summary>
                     ///   Triggered when the underlying visual is updated.
                     /// </summary>
                     public virtual void DoUpdate() { }
+
+                    /// <summary>
+                    ///   Triggered when the underlying visual is started.
+                    ///   This method should update data not related to what occurs in OnEnabled.
+                    /// </summary>
+                    public virtual void DoStart() { }
                 }
             }
         }

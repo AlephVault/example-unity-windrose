@@ -71,7 +71,7 @@ namespace WindRose
                     private StateType idleState;
 
                     /// <summary>
-                    ///   The key of the animation being rendered. It will be grabbed from
+                    ///   The key of the state being rendered. It will be grabbed from
                     ///     a <see cref="Objects.StatePicker"/> component.
                     /// </summary>
                     private string selectedKey = IDLE;
@@ -100,7 +100,7 @@ namespace WindRose
                         }
                         catch (KeyNotFoundException)
                         {
-                            // Key IDLE_ANIMATION will always be available
+                            // Key IDLE will always be available
                             selectedKey = IDLE;
                         }
                     }
@@ -132,7 +132,7 @@ namespace WindRose
                     /// </summary>
                     /// <param name="key">The key of the state being replaced</param>
                     /// <param name="state">The new state to use, or null to undo the replacement</param>
-                    public void ReplaceAnimationSet(string key, StateType state)
+                    public void ReplaceState(string key, StateType state)
                     {
                         if (states.ContainsKey(key))
                         {
@@ -152,6 +152,19 @@ namespace WindRose
                         }
                     }
 
+                    /// <summary>
+                    ///   Adds a fallback value, so when a state is not found given a source key, a
+                    ///     destination key will be used instead.
+                    /// </summary>
+                    public void AddFallback(string key, string fallback)
+                    {
+                        if (fallbacks.ContainsKey(key))
+                        {
+                            throw new Types.Exception("state key for fallback already in use: " + key);
+                        }
+                        fallbacks[key] = fallback;
+                    }
+                    
                     // The current state picker (belongs to the related object)
                     private Objects.StatePicker picker;
 

@@ -16,6 +16,7 @@ namespace WindRose
                 ///   MultiRoseAnimated state managers involve a rose animated behavior and
                 ///     will give them the state in form of an <see cref="AnimationRose"/>.
                 /// </summary>
+                [RequireComponent(typeof(RoseAnimated))]
                 public class MultiRoseAnimated : MultiState<AnimationRose>
                 {
                     private RoseAnimated roseAnimated;

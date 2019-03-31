@@ -24,17 +24,17 @@ namespace WindRose
                 private ScriptableObjects.Animations.AnimationRose defaultAnimationRose;
 
                 /// <summary>
-                ///   The orientation to consider. Will be tracked for changes as well.
+                ///   The current orientation. Different behaviours will set this value
+                ///     in different moments, likely related to the <see cref="Objects.Oriented"/>
+                ///     behaviour subscription.
                 /// </summary>
-                /// <seealso cref="Orientation"/>
-                [SerializeField]
-                private Types.Direction orientation = Types.Direction.FRONT;
+                protected Types.Direction orientation = Types.Direction.FRONT;
 
                 // Track the current state to not update unnecessarily the animation later.
                 private ScriptableObjects.Animations.AnimationRose animationRose;
 
                 // Refreshes the underlying animation.
-                private void RefreshAnimation()
+                protected void RefreshAnimation()
                 {
                     animated.Animation = animationRose.GetForDirection(orientation);
                 }
@@ -56,22 +56,6 @@ namespace WindRose
                 }
 
                 /// <summary>
-                ///   Gets or sets the current orientation, and updates the animation (on set).
-                /// </summary>
-                public Types.Direction Orientation
-                {
-                    get { return orientation; }
-                    set
-                    {
-                        if (orientation != value)
-                        {
-                            orientation = value;
-                            RefreshAnimation();
-                        }
-                    }
-                }
-
-                /// <summary>
                 ///   Sets the current animation rose to the default one.
                 /// </summary>
                 public void SetDefaultAnimationRose()
@@ -82,11 +66,6 @@ namespace WindRose
                 private void Awake()
                 {
                     animated = GetComponent<Animated>();
-                }
-
-                private void DoStart()
-                {
-                    SetDefaultAnimationRose();
                 }
             }
         }

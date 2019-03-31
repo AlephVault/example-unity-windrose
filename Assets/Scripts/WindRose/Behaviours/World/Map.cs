@@ -99,7 +99,14 @@ namespace WindRose
                 ///     things of your game will happen: movable, oriented, staying
                 ///     and other types of objects will live in this layer.
                 /// </summary>
-                public Layers.Entities.EntitiesLayer EntitiesLayer { get; private set; }
+                public Layers.Entities.ObjectsLayer ObjectsLayer { get; private set; }
+
+                /// <summary>
+                ///   The map's visuals layer. Visuals are the visible part of objects,
+                ///     and will render at many level depths. They will have no logic,
+                ///     but they will exist on top of objects layer.
+                /// </summary>
+                public Layers.Visuals.VisualsLayer VisualsLayer { get; private set; }
 
                 /// <summary>
                 ///   The ceilings layer will hold overlays floating that hide
@@ -142,11 +149,11 @@ namespace WindRose
                     // Requiring the layers - at most one of each them may exist per map
                     FloorLayer = ExpectOneLayerComponent<Layers.Floor.FloorLayer>(true);
                     DropLayer = ExpectOneLayerComponent<Layers.Drop.DropLayer>();
-                    EntitiesLayer = ExpectOneLayerComponent<Layers.Entities.EntitiesLayer>(true);
+                    ObjectsLayer = ExpectOneLayerComponent<Layers.Entities.ObjectsLayer>(true);
+                    VisualsLayer = ExpectOneLayerComponent<Layers.Visuals.VisualsLayer>(true);
                     CeilingLayer = ExpectOneLayerComponent<Layers.Ceiling.CeilingLayer>();
-                    Grid entitiesLayerGrid = EntitiesLayer.GetComponent<Grid>();
                     Grid floorLayerGrid = FloorLayer.GetComponent<Grid>();
-                    CopyGridProperties(entitiesLayerGrid, floorLayerGrid);
+                    CopyGridProperties(ObjectsLayer.GetComponent<Grid>(), floorLayerGrid);
                     if (CeilingLayer != null) CopyGridProperties(CeilingLayer.GetComponent<Grid>(), floorLayerGrid);
                     // Fetching strategy - needed
                     StrategyHolder = GetComponent<ObjectsManagementStrategyHolder>();

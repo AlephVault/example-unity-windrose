@@ -59,20 +59,6 @@ namespace WindRose
                     spriteRenderer.enabled = false;
                 }
 
-                /// <summary>
-                ///   <para>
-                ///     This is a callback for the Start of the map object. It is
-                ///       not intended to be called directly.
-                ///   </para>
-                ///   <para>
-                ///     Initializes the default animation.
-                ///   </para>
-                /// </summary>
-                public void DoStart()
-                {
-                    SetDefaultAnimation();
-                }
-
                 private void Reset()
                 {
                     currentTime = 0;
@@ -80,7 +66,11 @@ namespace WindRose
                     frameInterval = 1.0f / animation.FPS;
                 }
 
-                private Sprite Tick()
+                /// <summary>
+                ///   Updates the current image. To be invoked, in different moments, by
+                ///     the different subclasses.
+                /// </summary>
+                protected void Frame()
                 {
                     currentTime += Time.deltaTime;
                     if (currentTime > frameInterval)
@@ -88,21 +78,7 @@ namespace WindRose
                         currentTime -= frameInterval;
                         currentAnimationIndex = ((currentAnimationIndex + 1) % Animation.Sprites.Length);
                     }
-                    return Animation.Sprites[currentAnimationIndex];
-                }
-
-                /// <summary>
-                ///   <para>
-                ///     This is a callback for the Update of the map object. It is
-                ///       not intended to be called directly.
-                ///   </para>
-                ///   <para>
-                ///     Updates the current animation frame on the object.
-                ///   </para>
-                /// </summary>
-                public void DoUpdate()
-                {
-                    spriteRenderer.sprite = Tick();
+                    spriteRenderer.sprite = Animation.Sprites[currentAnimationIndex];
                 }
             }
         }

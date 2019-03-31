@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.Rendering;
-using System.Collections.Generic;
+using Support.Utils;
 
 namespace WindRose
 {
@@ -10,21 +10,17 @@ namespace WindRose
         {
             namespace Layers
             {
-                namespace Entities
+                namespace Visuals
                 {
-                    using Support.Utils;
-                    using Support.Behaviours;
-
                     /// <summary>
                     ///   <para>
-                    ///     Sorting sub-layers depend on the map and create several children
+                    ///     Visual depth-levels depend on the map and create several children
                     ///       holding a <see cref="SortingGroup"/> component each one. Since
                     ///       the number of sorting groups being created depends on the map
                     ///       this object belongs to, this implies this object is required
-                    ///       to be inside a map (it will be usually bound to a layer), but
-                    ///       it will actually be inside a map's <see cref="ObjectsLayer"/>
-                    ///       (actually, this component will be attached to a newly
-                    ///       instantiated object by an <see cref="ObjectsLayer"/>).
+                    ///       to be inside a map (actually, inside a <see cref="VisualsLayer"/>,
+                    ///       (this component will be attached to a newly nstantiated object
+                    ///       when requesting access to a particular level).
                     ///   </para>
                     ///   <para>
                     ///     Related to those groups, this class provides methods to get any
@@ -32,18 +28,17 @@ namespace WindRose
                     ///       Such group objects will be ready right on Awake.
                     ///   </para>
                     /// </summary>
-                    [RequireComponent(typeof(Normalized))]
                     [RequireComponent(typeof(SortingGroup))]
-                    public class SortingSubLayer : MonoBehaviour
+                    public class VisualsDepthLevel : MonoBehaviour
                     {
                         private SortingGroup[] sortingGroups;
 
                         void Awake()
                         {
-                            ObjectsLayer ObjectsLayer = Layout.RequireComponentInParent<ObjectsLayer>(this);
-                            uint height = Layout.RequireComponentInParent<Map>(ObjectsLayer).Height;
+                            VisualsLayer visualsLayer = Layout.RequireComponentInParent<VisualsLayer>(this);
+                            uint height = Layout.RequireComponentInParent<Map>(visualsLayer).Height;
                             sortingGroups = new SortingGroup[height];
-                            for(uint index = 0; index < height; index++)
+                            for (uint index = 0; index < height; index++)
                             {
                                 GameObject newGameObject = new GameObject(string.Format("SubLayer{0}", index));
                                 newGameObject.transform.parent = transform;
@@ -69,7 +64,7 @@ namespace WindRose
                             {
                                 return sortingGroups[index];
                             }
-                        } 
+                        }
                     }
                 }
             }

@@ -1,0 +1,194 @@
+﻿using System;
+using UnityEngine;
+using UnityEngine.Events;
+
+namespace WindRose
+{
+    namespace Behaviours
+    {
+        namespace Entities
+        {
+            namespace Visuals
+            {
+                /// <summary>
+                ///   A visual is the basic visual component to be rendered
+                ///     that is related to in-map objects. Visuals are intended
+                ///     to be awaken from inside <see cref="Objects.Object"/>
+                ///     in-map objects, but they are unparented from them and
+                ///     added into the <see cref="World.Layers.Visuals.VisualsLayer"/>
+                ///     when the object is attached to a <see cref="World.Map"/>. More
+                ///     behaviours (involved with sprites and animations) will be
+                ///     added on top of this one.
+                /// </summary>
+                [RequireComponent(typeof(Common.Pausable))]
+                [RequireComponent(typeof(SpriteRenderer))]
+                public class Visual : MonoBehaviour
+                {
+                    private SpriteRenderer renderer;
+
+                    /// <summary>
+                    ///   Tells whether this visual is the main visual of an
+                    ///     in-map object. This one will be set only once.
+                    /// </summary>
+                    public bool IsMain { get; private set; }
+
+                    /// <summary>
+                    ///   The depth level of this visual. This will rarely change.
+                    /// </summary>
+                    [SerializeField]
+                    private ushort level = 1 << 15;
+
+                    /// <summary>
+                    ///   See <see cref="level"/>.
+                    /// </summary>
+                    public ushort Level
+                    {
+                        get
+                        {
+                            return level;
+                        }
+                        set
+                        {
+                            level = value;
+                            Resort();
+                        }
+                    }
+
+                    /// <summary>
+                    ///   The object this visual is attached to. This object is set on
+                    ///     runtime, either on awake or when explicitly attached to an
+                    ///     object.
+                    /// </summary>
+                    private Objects.Object relatedObject;
+
+                    /// <summary>
+                    ///   See <see cref="relatedObject"/>.
+                    /// </summary>
+                    public Objects.Object RelatedObject { get { return relatedObject; } }
+
+                    /// <summary>
+                    ///   Tracks the current status of the visibility.
+                    /// </summary>
+                    private bool visibilityEnabled = false;
+
+                    private void OnEnable()
+                    {
+                        UpdateVisibilityStatus();
+                    }
+
+                    private void OnDisable()
+                    {
+                        UpdateVisibilityStatus();
+                    }
+
+                    // These are handlers for the owner object's events - they will perform simple updates
+                    private void OwnerOnAttached(World.Map map) { UpdateVisibilityStatus(); }
+                    private void OwnerOnDetached() { UpdateVisibilityStatus(); }
+                    private void OwnerOnTeleported(uint x, uint y) { Resort(); }
+                    private void OwnerMandatoryDirectionEvent(Types.Direction direction) { Resort(); }
+                    private void OwnerOptionalDirectionEvent(Types.Direction? direction) { Resort(); }
+                    private void OwnerPropertyUpdated(string p, object o, object n) { Resort(); }
+
+                    /// <summary>
+                    ///   Invoked by new owner <see cref="Objects.Object"/> when attaching
+                    ///     this visual. Attaches handlers to all the events.
+                    /// </summary>
+                    /// <param name="owner">The new owner</param>
+                    public void OnAttached(Objects.Object owner)
+                    {
+                        relatedObject = owner;
+                        owner.onAttached.AddListener(OwnerOnAttached);
+                        owner.onDetached.AddListener(OwnerOnDetached);
+                        owner.onTeleported.AddListener(OwnerOnTeleported);
+                        owner.onMovementStarted.AddListener(OwnerMandatoryDirectionEvent);
+                        owner.onMovementFinished.AddListener(OwnerMandatoryDirectionEvent);
+                        owner.onMovementCancelled.AddListener(OwnerOptionalDirectionEvent);
+                        owner.onPropertyUpdated.AddListener(OwnerPropertyUpdated);
+                        UpdateVisibilityStatus();
+                        Resort();
+                    }
+
+                    /// <summary>
+                    ///   Invoked by former owner <see cref="Objects.Object"/> when detaching
+                    ///     this visual.
+                    /// </summary>
+                    /// <param name="owner">The former owner</param>
+                    public void OnDetached(Objects.Object formerOwner)
+                    {
+                        relatedObject = null;
+                        formerOwner.onAttached.RemoveListener(OwnerOnAttached);
+                        formerOwner.onDetached.RemoveListener(OwnerOnDetached);
+                        formerOwner.onTeleported.RemoveListener(OwnerOnTeleported);
+                        formerOwner.onMovementStarted.RemoveListener(OwnerMandatoryDirectionEvent);
+                        formerOwner.onMovementFinished.RemoveListener(OwnerMandatoryDirectionEvent);
+                        formerOwner.onMovementCancelled.RemoveListener(OwnerOptionalDirectionEvent);
+                        formerOwner.onPropertyUpdated.RemoveListener(OwnerPropertyUpdated);
+                        UpdateVisibilityStatus();
+                    }
+
+                    private void UpdateVisibilityStatus()
+                    {
+                        bool newVisibilityStatus = gameObject.activeInHierarchy && enabled && relatedObject && relatedObject.ParentMap;
+                        if (newVisibilityStatus != visibilityEnabled)
+                        {
+                            visibilityEnabled = newVisibilityStatus;
+                            if (visibilityEnabled)
+                            {
+                                renderer.enabled = true;
+                                Resort();
+                                foreach (VisualBehaviour behavioir in GetComponents<VisualBehaviour>())
+                                {
+                                    behavioir.enabled = true;
+                                }
+                            }
+                            else
+                            {
+                                renderer.enabled = false;
+                                foreach (VisualBehaviour behavioir in GetComponents<VisualBehaviour>())
+                                {
+                                    behavioir.enabled = false;
+                                }
+                            }
+                        }
+                    }
+
+                    private void Resort()
+                    {
+                        if (level > 32767) level = 32767;
+                        if (visibilityEnabled)
+                        {
+                            // give sorting order just by Y position, and give perspective layer according to level
+                            transform.parent = relatedObject.ParentMap.VisualsLayer[level].transform;
+                            renderer.sortingOrder = (int)(relatedObject.ParentMap.Height - relatedObject.Y - 1);
+                        }
+                    }
+
+                    private void Update()
+                    {
+                        if (visibilityEnabled)
+                        {
+                            transform.localPosition = relatedObject.transform.localPosition;
+                            foreach (VisualBehaviour behavioir in GetComponents<VisualBehaviour>())
+                            {
+                                behavioir.DoUpdate();
+                            }
+                        }
+                    }
+
+                    private void Awake()
+                    {
+                        relatedObject = transform.parent ? transform.parent.GetComponent<Objects.Object>() : null;
+                        if (relatedObject.MainVisual == this) IsMain = true;
+                        renderer = GetComponent<SpriteRenderer>();
+                        UpdateVisibilityStatus();
+                    }
+
+                    public void Detach()
+                    {
+                        if (relatedObject) relatedObject.PopVisual(this);
+                    }
+                }
+            }
+        }
+    }
+}

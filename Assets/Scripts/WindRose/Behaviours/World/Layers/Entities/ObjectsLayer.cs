@@ -31,7 +31,7 @@ namespace WindRose
                     ///   </para>
                     /// </summary>
                     [RequireComponent(typeof(Grid))]
-                    public class EntitiesLayer : MapLayer
+                    public class ObjectsLayer : MapLayer
                     {
                         private Grid grid;
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
@@ -33,7 +34,7 @@ namespace WindRose
             [ExecuteInEditMode]
             [RequireComponent(typeof(Pausable))]
             [RequireComponent(typeof(ObjectStrategyHolder))]
-            public class Object : Common.Entity
+            public class Object : MonoBehaviour, Common.Pausable.IPausable
             {
                 /* *********************** Initial data *********************** */
 
@@ -50,18 +51,12 @@ namespace WindRose
                 private uint height = 1;
 
                 /// <summary>
-                ///   Initial add-ons for this object, if needed. These add-ons will
-                ///     be added above this object.
+                ///   Map objects MAY have a visual considered the MAIN one. This
+                ///     is not mandatory but, if done, it will ensure the main visual
+                ///     is forevert tied to this object.
                 /// </summary>
                 [SerializeField]
-                private List<AddOns.AddOn> overlays;
-
-                /// <summary>
-                ///   Initial add-ons for this object, if needed. These add-ons will
-                ///     be added below this object.
-                /// </summary>
-                [SerializeField]
-                private List<AddOns.AddOn> underlays;
+                private Visuals.Visual mainVisual;
 
                 /* *********************** Additional data and state *********************** */
 
@@ -70,6 +65,9 @@ namespace WindRose
                 /// </summary>
                 private Map parentMap = null;
 
+                // The visual objects that are attached to this object.
+                private HashSet<Visuals.Visual> visuals = new HashSet<Visuals.Visual>();
+
                 private bool initialized = false;
 
                 /* *********************** Public properties *********************** */
@@ -77,17 +75,23 @@ namespace WindRose
                 /// <summary>
                 ///   Gets the parent map this object is attached to. See <see cref="parentMap"/>.
                 /// </summary>
-                public override Map ParentMap { get { return parentMap; } }
+                public Map ParentMap { get { return parentMap; } }
 
                 /// <summary>
-                ///   The object's overlays group.
+                ///   See <see cref="mainVisual"/>.
                 /// </summary>
-                public AddOns.AddOnGroup OverlaysGroup { get; private set; }
+                public Visuals.Visual MainVisual { get { return mainVisual; } }
 
                 /// <summary>
-                ///   The object's underlays group.
+                ///   Returns the visual objects currently attached to this object.
                 /// </summary>
-                public AddOns.AddOnGroup UnderlaysGroup { get; private set; }
+                public IEnumerator<Visuals.Visual> Visuals
+                {
+                    get
+                    {
+                        return visuals.GetEnumerator();
+                    }
+                }
 
                 /// <summary>
                 ///   See <see cref="width"/>.
@@ -102,23 +106,12 @@ namespace WindRose
                 /// <summary>
                 ///   The current X position of the object inside the attached map.
                 /// </summary>
-                public override uint X { get { return parentMap.StrategyHolder.StatusFor(StrategyHolder).X; } }
+                public uint X { get { return parentMap.StrategyHolder.StatusFor(StrategyHolder).X; } }
 
                 /// <summary>
                 ///   The current Y position of the object inside the attached map.
                 /// </summary>
-                public override uint Y { get { return parentMap.StrategyHolder.StatusFor(StrategyHolder).Y; } }
-
-                /// <summary>
-                ///   Gets the appropriate sub-layer for this entity. For this one, the middle sub-layer is the
-                ///     appropriate.
-                /// </summary>
-                /// <param name="layer">The entities layer to take the sub-layer from</param>
-                /// <returns>The middle sub-layer</returns>
-                protected override SortingSubLayer GetSubLayerFrom(EntitiesLayer layer)
-                {
-                    return layer.ObjectsSubLayer;
-                }
+                public uint Y { get { return parentMap.StrategyHolder.StatusFor(StrategyHolder).Y; } }
 
                 /// <summary>
                 ///   The opposite X position of this object inside the attached map, with
@@ -138,7 +131,7 @@ namespace WindRose
                 ///   The current movement of the object inside the attached map.
                 ///   It will be <c>null</c> if the object is not moving.
                 /// </summary>
-                public override Direction? Movement { get { return parentMap.StrategyHolder.StatusFor(StrategyHolder).Movement; } }
+                public Direction? Movement { get { return parentMap.StrategyHolder.StatusFor(StrategyHolder).Movement; } }
 
                 /// <summary>
                 ///   The strategy holder of this object.
@@ -216,49 +209,40 @@ namespace WindRose
                 // These callbacks are run when this map object updates and animations are not paused.
                 private Action updateAnimationCallbacks = delegate () { };
 
-                private void InstantiateAddOnGroups()
+                // Gets all the children visual objects.
+                private IEnumerable<Visuals.Visual> GetChildVisuals()
                 {
-                    GameObject underlaysGroupObject = new GameObject("Underlays");
-                    GameObject overlaysGroupObject = new GameObject("Overlays");
-
-                    UnderlaysGroup = Layout.AddComponent<AddOns.AddOnGroup>(underlaysGroupObject, new Dictionary<string, object>()
-                    {
-                        { "addOnGroupType", AddOns.AddOnGroup.AddOnGroupType.Underlay },
-                        { "relatedObject", this }
-                    });
-                    OverlaysGroup = Layout.AddComponent<AddOns.AddOnGroup>(overlaysGroupObject, new Dictionary<string, object>()
-                    {
-                        { "addOnGroupType", AddOns.AddOnGroup.AddOnGroupType.Overlay },
-                        { "relatedObject", this }
-                    });
-
-                    foreach (AddOns.AddOn addOn in underlays)
-                    {
-                        UnderlaysGroup.Add(Instantiate(addOn.gameObject).GetComponent<AddOns.AddOn>());
-                    }
-                    foreach (AddOns.AddOn addOn in overlays)
-                    {
-                        OverlaysGroup.Add(Instantiate(addOn.gameObject).GetComponent<AddOns.AddOn>());
-                    }
+                    return from component in (
+                      from index in Enumerable.Range(0, transform.childCount)
+                      select transform.GetChild(index).GetComponent<Visuals.Visual>()
+                    )
+                    where component != null
+                    select component;
                 }
 
                 private void Awake()
                 {
+                    // Cleans the initial value of mainVisual
+                    if (!new HashSet<Visuals.Visual>(GetChildVisuals()).Contains(mainVisual))
+                    {
+                        mainVisual = null;
+                    }
+
                     StrategyHolder = GetComponent<ObjectStrategyHolder>();
                     onAttached.AddListener(delegate (Map newParentMap)
                     {
                         /*
                          * Attaching to a map involves:
-                         * 1. The actual "parent" of the object will be a child of the RelatedMap being an EntitiesLayer.
-                         * 2. We set the parent transform of the object to such EntitiesLayer's transform.
+                         * 1. The actual "parent" of the object will be a child of the RelatedMap being an ObjectsLayer.
+                         * 2. We set the parent transform of the object to such ObjectsLayer's transform.
                          * 3. Finally we must ensure the transform.localPosition be updated accordingly (i.e. forcing a snap).
                          */
-                        parentMap = newParentMap; 
-                        EntitiesLayer entitiesLayer = parentMap.GetComponentInChildren<EntitiesLayer>();
-                        EnsureAppropriateVerticalSorting();
+                        parentMap = newParentMap;
+                        ObjectsLayer ObjectsLayer = parentMap.GetComponentInChildren<ObjectsLayer>();
+                        transform.parent = newParentMap.ObjectsLayer.transform;
                         transform.localPosition = new Vector3(
-                            X * entitiesLayer.GetCellWidth(),
-                            Y * entitiesLayer.GetCellHeight(),
+                            X * ObjectsLayer.GetCellWidth(),
+                            Y * ObjectsLayer.GetCellHeight(),
                             0
                         );
                     });
@@ -299,6 +283,15 @@ namespace WindRose
                     }
                 }
 
+                // Attaches all the visuals that are direct children.
+                private void InitVisuals()
+                {
+                    foreach (Visuals.Visual visual in GetChildVisuals())
+                    {
+                        AddVisual(visual);
+                    }
+                }
+
                 void Start()
                 {
                     Initialize();
@@ -307,11 +300,11 @@ namespace WindRose
                     // THEN instantiate all the overlays.
                     if (Application.isPlaying)
                     {
-                        InstantiateAddOnGroups();
+                        InitVisuals();
                     }
                 }
 
-                protected override void UpdatePipeline()
+                private void Update()
                 {
                     // Updates the local callbacks.
                     if (!Paused) updateCallbacks();
@@ -331,11 +324,6 @@ namespace WindRose
                     onMovementFinished.RemoveAllListeners();
                     onPropertyUpdated.RemoveAllListeners();
                     onTeleported.RemoveAllListeners();
-                    if (Application.isPlaying)
-                    {
-                        Destroy(OverlaysGroup);
-                        Destroy(UnderlaysGroup);
-                    }
                 }
 
                 /// <summary>
@@ -346,7 +334,7 @@ namespace WindRose
                 ///   </para>
                 ///   <para>
                 ///     For this method to succeed, this object must be a child object of one
-                ///       holding a <see cref="EntitiesLayer"/> which in turn must be inside a
+                ///       holding a <see cref="ObjectsLayer"/> which in turn must be inside a
                 ///       <see cref="Map"/>, and the map must have dimensions that allow this
                 ///       object considering its size and initial position.
                 ///   </para>
@@ -372,7 +360,7 @@ namespace WindRose
 
                     try
                     {
-                        // We find the parent map like this: (current) -> EntitiesLayer -> map
+                        // We find the parent map like this: (current) -> ObjectsLayer -> map
                         if (transform.parent != null && transform.parent.parent != null)
                         {
                             parentMap = transform.parent.parent.GetComponent<Map>();
@@ -392,7 +380,7 @@ namespace WindRose
                             //   we would not necessarily know the appropriate dimensions.
                             if (!parentMap.Initialized) return;
                             // And we also keep its objects layer
-                            Layout.RequireComponentInParent<EntitiesLayer>(gameObject);
+                            Layout.RequireComponentInParent<ObjectsLayer>(gameObject);
                             // Then we calculate the cell position from the grid in the layer.
                             Grid grid = Layout.RequireComponentInParent<Grid>(gameObject);
                             Vector3Int cellPosition = grid.WorldToCell(transform.position);
@@ -484,46 +472,89 @@ namespace WindRose
                 }
 
                 /// <summary>
-                ///   See <see cref="EntitiesLayer.GetCellWidth"/>.
+                ///   See <see cref="ObjectsLayer.GetCellWidth"/>.
                 /// </summary>
                 /// <returns>The width of the cells of its parent Objects Layer</returns>
                 public float GetCellWidth()
                 {
-                    return GetComponentInParent<EntitiesLayer>().GetCellWidth();
+                    return GetComponentInParent<ObjectsLayer>().GetCellWidth();
                 }
 
                 /// <summary>
-                ///   See <see cref="EntitiesLayer.GetCellHeight"/>.
+                ///   See <see cref="ObjectsLayer.GetCellHeight"/>.
                 /// </summary>
                 /// <returns>The height of the cells of its parent Objects Layers</returns>
                 public float GetCellHeight()
                 {
-                    return GetComponentInParent<EntitiesLayer>().GetCellHeight();
+                    return GetComponentInParent<ObjectsLayer>().GetCellHeight();
                 }
 
                 /// <summary>
-                ///   Flags the object as paused. This also invokes <see cref="AddOns.AddOnGroup.Pause(bool)"/> on
-                ///     this object's <see cref="OverlaysGroup"/> and <see cref="UnderlaysGroup"/>.
+                ///   Flags the object, and its animations, as unpaused. This also invokes <see cref="Common.Pausable.Pause(bool)"/>
+                ///     on the pausable components of each attached visual.
                 /// </summary>
                 /// <param name="fullFreeze">If <c>true</c>, also flags the object animations as paused</param>
-                public override void Pause(bool fullFreeze)
+                public void Pause(bool fullFreeze)
                 {
                     Paused = true;
                     AnimationsPaused = fullFreeze;
-                    if (OverlaysGroup) OverlaysGroup.Pause(fullFreeze);
-                    if (UnderlaysGroup) UnderlaysGroup.Pause(fullFreeze);
+                    foreach(Visuals.Visual visual in visuals)
+                    {
+                        visual.GetComponent<Common.Pausable>().Pause(fullFreeze);
+                    }
                 }
 
                 /// <summary>
-                ///   Flags the object, and its animations, as unpaused. This also invokes <see cref="AddOns.AddOnGroup.Resume"/> on
-                ///     this object's <see cref="OverlaysGroup"/> and <see cref="UnderlaysGroup"/>.
+                ///   Flags the object, and its animations, as unpaused. This also invokes <see cref="Common.Pausable.Resume"/>
+                ///     on the pausable components of each attached visual.
                 /// </summary>
-                public override void Resume()
+                public void Resume()
                 {
                     Paused = false;
                     AnimationsPaused = false;
-                    if (OverlaysGroup) OverlaysGroup.Resume();
-                    if (UnderlaysGroup) UnderlaysGroup.Resume();
+                    foreach (Visuals.Visual visual in visuals)
+                    {
+                        visual.GetComponent<Common.Pausable>().Resume();
+                    }
+                }
+
+                /// <summary>
+                ///   Attaches the visual to this object, if it is not
+                ///     attached. Raises an exception if the visual is
+                ///     the main visual in another object, and fails
+                ///     silently if the visual is null.
+                /// </summary>
+                /// <param name="visual">The visual to add</param>
+                /// <returns>Whether the visual was just added</returns>
+                public bool AddVisual(Visuals.Visual visual)
+                {
+                    if (!visual || visuals.Contains(visual)) return false;
+                    if (visual.IsMain && visual.RelatedObject != this)
+                    {
+                        throw new Exception("The visual object trying to add is the main visual in another object");
+                    }
+                    visual.Detach();
+                    visuals.Add(visual);
+                    visual.OnAttached(this);
+                    return true;
+                }
+
+                /// <summary>
+                ///   Detaches the visual from this object, if it is
+                ///     attached.
+                /// </summary>
+                /// <param name="visual">The visual to remove</param>
+                /// <returns>Whether the visual was just removed</returns>
+                public bool PopVisual(Visuals.Visual visual)
+                {
+                    if (!visuals.Contains(visual)) return false;
+                    if (visual.IsMain)
+                    {
+                        throw new Exception("The visual object trying to remove is the main visual in this object");
+                    }
+                    visuals.Remove(visual);
+                    visual.OnDetached(this);
+                    return true;
                 }
             }
         }

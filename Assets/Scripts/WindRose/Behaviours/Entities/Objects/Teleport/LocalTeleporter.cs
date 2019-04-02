@@ -120,7 +120,7 @@ namespace WindRose
                         Oriented objectToBeOriented = objectToBeTeleported.GetComponent<Oriented>();
                         if (objectToBeOriented && teleportTarget.ForceOrientation)
                         {
-                            objectToBeOriented.orientation = teleportTarget.NewOrientation;
+                            objectToBeOriented.Orientation = teleportTarget.NewOrientation;
                         }
                     }
 

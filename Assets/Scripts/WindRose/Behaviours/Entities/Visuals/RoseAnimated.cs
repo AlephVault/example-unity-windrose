@@ -71,6 +71,34 @@ namespace WindRose
                         animated = GetComponent<Animated>();
                     }
 
+                    private Objects.Oriented relatedOriented;
+
+                    private void OrientationChanged(Types.Direction newOrientation)
+                    {
+                        orientation = newOrientation;
+                        // Remember that OnEnable* may be triggered before Start(). In such
+                        //   scenario, animationRose will not be set. In such case, we
+                        //   ignore this call.
+                        // (*OnEnable triggers this function)
+                        if (animationRose) RefreshAnimation();
+                    }
+
+                    private void OnEnable()
+                    {
+                        relatedOriented = visual.RelatedObject.GetComponent<Objects.Oriented>();
+                        if (relatedOriented)
+                        {
+                            relatedOriented.onOrientationChanged.AddListener(OrientationChanged);
+                            // After setting the event, force the call.
+                            OrientationChanged(relatedOriented.Orientation);
+                        }
+                    }
+
+                    private void OnDisable()
+                    {
+                        if (relatedOriented) relatedOriented.onOrientationChanged.RemoveListener(OrientationChanged);
+                    }
+
                     /// <summary>
                     ///   Triggered when the underlying visual is started.
                     ///   Ensures the default animation rose to be selected.

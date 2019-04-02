@@ -52,7 +52,7 @@ namespace WindRose
                     relatedVisionRange = Support.Utils.Layout.AddComponent<TriggerVisionRange>(aNewGameObject, new System.Collections.Generic.Dictionary<string, object>()
                     {
                         { "relatedObject", mapObject },
-                        { "direction", oriented.orientation },
+                        { "direction", oriented.Orientation },
                         { "visionSize", visionSize },
                         { "visionLength", visionLength }
                     });

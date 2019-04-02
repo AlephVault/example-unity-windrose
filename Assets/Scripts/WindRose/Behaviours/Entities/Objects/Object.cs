@@ -13,7 +13,7 @@ namespace WindRose
         {
             using Types;
             using World;
-            using World.Layers.Entities;
+            using World.Layers.Objects;
 
             /// <summary>
             ///   <para>
@@ -33,6 +33,7 @@ namespace WindRose
             /// </summary>
             [ExecuteInEditMode]
             [RequireComponent(typeof(Pausable))]
+            [RequireComponent(typeof(Snapped))]
             [RequireComponent(typeof(ObjectStrategyHolder))]
             public class Object : MonoBehaviour, Common.Pausable.IPausable
             {
@@ -252,34 +253,20 @@ namespace WindRose
                     });
 
                     // Get related components that need to run in a particular order
-                    Oriented oriented = GetComponent<Oriented>();
                     Movable movable = GetComponent<Movable>();
                     Snapped snapped = GetComponent<Snapped>();
-                    Sorted sorted = GetComponent<Sorted>();
-                    Animated animated = GetComponent<Animated>();
 
                     // Add them to start, update, and animationUpdate callbacks
-                    if (oriented != null)
+                    if (Application.isPlaying)
                     {
-                        startCallbacks += oriented.DoStart;
-                        updateCallbacks += oriented.DoUpdate;
-                    }
-                    if (movable != null)
-                    {
-                        updateCallbacks += movable.DoUpdate;
-                    }
-                    if (snapped != null)
-                    {
-                        updateCallbacks += snapped.DoUpdate;
-                    }
-                    if (sorted != null)
-                    {
-                        updateCallbacks += sorted.DoUpdate;
-                    }
-                    if (animated != null)
-                    {
-                        startCallbacks += animated.DoStart;
-                        updateAnimationCallbacks += animated.DoUpdate;
+                        if (movable != null)
+                        {
+                            updateCallbacks += movable.DoUpdate;
+                        }
+                        if (snapped != null)
+                        {
+                            updateCallbacks += snapped.DoUpdate;
+                        }
                     }
                 }
 
@@ -289,6 +276,7 @@ namespace WindRose
                     foreach (Visuals.Visual visual in GetChildVisuals())
                     {
                         AddVisual(visual);
+                        visual.DoStart();
                     }
                 }
 
@@ -308,7 +296,7 @@ namespace WindRose
                 {
                     // Updates the local callbacks.
                     if (!Paused) updateCallbacks();
-                    if (!AnimationsPaused) updateAnimationCallbacks();
+                    foreach (Visuals.Visual visual in visuals) visual.DoUpdate(); 
                 }
 
                 void OnDestroy()
@@ -360,6 +348,7 @@ namespace WindRose
 
                     try
                     {
+                        Map parentMap;
                         // We find the parent map like this: (current) -> ObjectsLayer -> map
                         if (transform.parent != null && transform.parent.parent != null)
                         {

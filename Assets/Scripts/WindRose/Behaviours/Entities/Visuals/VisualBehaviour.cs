@@ -37,6 +37,7 @@ namespace WindRose
                     protected virtual void Awake()
                     {
                         visual = GetComponent<Visual>();
+                        enabled = false;
                     }
                 }
             }

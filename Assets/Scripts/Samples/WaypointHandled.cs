@@ -61,7 +61,7 @@ class WaypointHandled : MonoBehaviour
             }
 
             // Orienting the character to look in the same direction
-            oriented.orientation = currentStep.movementDirection;
+            oriented.Orientation = currentStep.movementDirection;
 
             // Starting a movement
             if (!currentStep.onlyLook)

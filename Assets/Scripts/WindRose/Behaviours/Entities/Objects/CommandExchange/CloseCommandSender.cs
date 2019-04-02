@@ -49,7 +49,7 @@ namespace WindRose
                     private void FixCommandPosition()
                     {
                         float x, y;
-                        switch (oriented.orientation)
+                        switch (oriented.Orientation)
                         {
                             case Types.Direction.DOWN:
                                 x = mapObject.transform.position.x + (mapObject.Width / 2f) * mapObject.GetCellWidth();

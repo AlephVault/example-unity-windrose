@@ -57,19 +57,19 @@ namespace WindRose
                             Oriented senderOriented = sender.GetComponent<Oriented>();
                             if (senderOriented)
                             {
-                                switch (senderOriented.orientation)
+                                switch (senderOriented.Orientation)
                                 {
                                     case Types.Direction.DOWN:
-                                        oriented.orientation = Types.Direction.UP;
+                                        oriented.Orientation = Types.Direction.UP;
                                         break;
                                     case Types.Direction.UP:
-                                        oriented.orientation = Types.Direction.DOWN;
+                                        oriented.Orientation = Types.Direction.DOWN;
                                         break;
                                     case Types.Direction.LEFT:
-                                        oriented.orientation = Types.Direction.RIGHT;
+                                        oriented.Orientation = Types.Direction.RIGHT;
                                         break;
                                     case Types.Direction.RIGHT:
-                                        oriented.orientation = Types.Direction.LEFT;
+                                        oriented.Orientation = Types.Direction.LEFT;
                                         break;
                                 }
                                 yield return new WaitForSeconds(0f);

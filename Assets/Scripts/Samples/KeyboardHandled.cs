@@ -34,46 +34,46 @@ public class KeyboardHandled : MonoBehaviour {
         {
             if (upHeld)
             {
-                if (oriented.orientation == Direction.UP)
+                if (oriented.Orientation == Direction.UP)
                 {
                     movable.StartMovement(Direction.UP);
                 }
-                else
+                else if (!movable.IsMoving)
                 {
-                    oriented.orientation = Direction.UP;
+                    oriented.Orientation = Direction.UP;
                 }
             }
             else if (downHeld)
             {
-                if (oriented.orientation == Direction.DOWN)
+                if (oriented.Orientation == Direction.DOWN)
                 {
                     movable.StartMovement(Direction.DOWN);
                 }
-                else
+                else if (!movable.IsMoving)
                 {
-                    oriented.orientation = Direction.DOWN;
+                    oriented.Orientation = Direction.DOWN;
                 }
             }
             else if (leftHeld)
             {
-                if (oriented.orientation == Direction.LEFT)
+                if (oriented.Orientation == Direction.LEFT)
                 {
                     movable.StartMovement(Direction.LEFT);
                 }
-                else
+                else if (!movable.IsMoving)
                 {
-                    oriented.orientation = Direction.LEFT;
+                    oriented.Orientation = Direction.LEFT;
                 }
             }
             else if(rightHeld) // rightHeld
             {
-                if (oriented.orientation == Direction.RIGHT)
+                if (oriented.Orientation == Direction.RIGHT)
                 {
                     movable.StartMovement(Direction.RIGHT);
                 }
-                else
+                else if (!movable.IsMoving)
                 {
-                    oriented.orientation = Direction.RIGHT;
+                    oriented.Orientation = Direction.RIGHT;
                 }
             }
             if (spacebarJustPressed)

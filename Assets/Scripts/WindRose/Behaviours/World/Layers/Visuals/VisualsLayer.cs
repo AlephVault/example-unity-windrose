@@ -47,7 +47,7 @@ namespace WindRose
                                 VisualsDepthLevel levelObj;
                                 if (!levels.TryGetValue(level, out levelObj))
                                 {
-                                    GameObject gameObj = new GameObject();
+                                    GameObject gameObj = new GameObject("Depth Level " + level);
                                     gameObj.transform.parent = transform;
                                     SortingGroup sortingGroup = gameObj.AddComponent<SortingGroup>();
                                     sortingGroup.sortingOrder = level;

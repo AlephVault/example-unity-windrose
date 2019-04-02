@@ -167,7 +167,7 @@ namespace WindRose
 
                     private List<MonoBehaviour> visualBehaviours = new List<MonoBehaviour>();
 
-                    private void DoUpdate()
+                    public void DoUpdate()
                     {
                         if (visibilityEnabled)
                         {
@@ -179,7 +179,7 @@ namespace WindRose
                         }
                     }
 
-                    private void DoStart()
+                    public void DoStart()
                     {
                         foreach (VisualBehaviour behavioir in visualBehaviours)
                         {

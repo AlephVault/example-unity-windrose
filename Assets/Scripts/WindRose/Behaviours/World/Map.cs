@@ -99,7 +99,7 @@ namespace WindRose
                 ///     things of your game will happen: movable, oriented, staying
                 ///     and other types of objects will live in this layer.
                 /// </summary>
-                public Layers.Entities.ObjectsLayer ObjectsLayer { get; private set; }
+                public Layers.Objects.ObjectsLayer ObjectsLayer { get; private set; }
 
                 /// <summary>
                 ///   The map's visuals layer. Visuals are the visible part of objects,
@@ -149,7 +149,7 @@ namespace WindRose
                     // Requiring the layers - at most one of each them may exist per map
                     FloorLayer = ExpectOneLayerComponent<Layers.Floor.FloorLayer>(true);
                     DropLayer = ExpectOneLayerComponent<Layers.Drop.DropLayer>();
-                    ObjectsLayer = ExpectOneLayerComponent<Layers.Entities.ObjectsLayer>(true);
+                    ObjectsLayer = ExpectOneLayerComponent<Layers.Objects.ObjectsLayer>(true);
                     VisualsLayer = ExpectOneLayerComponent<Layers.Visuals.VisualsLayer>(true);
                     CeilingLayer = ExpectOneLayerComponent<Layers.Ceiling.CeilingLayer>();
                     Grid floorLayerGrid = FloorLayer.GetComponent<Grid>();

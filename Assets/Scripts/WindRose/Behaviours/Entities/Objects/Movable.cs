@@ -8,32 +8,28 @@ namespace WindRose
         {
             /// <summary>
             ///   <para>
-            ///     Movable components exist on top of <see cref="Oriented"/> components
-            ///       and add the moving animation set. They also have the means to
-            ///       start and cancel a movement on any direction.
+            ///     Moving components exist on regular objects also having a
+            ///       <see cref="StatePicker"/> component. These components
+            ///       add a "moving" state they will interact with. To do so,
+            ///       they also have the means to start and cancel a movement
+            ///       on any direction.
             ///   </para>
             /// </summary>
-            [RequireComponent(typeof(Oriented))]
+            [RequireComponent(typeof(StatePicker))]
             public class Movable : MonoBehaviour
             {
                 /// <summary>
-                ///   The default animation key provided by Movable components.
+                ///   The default state key provided by Movable components.
                 /// </summary>
-                public const string MOVE_ANIMATION = "move";
+                public const string MOVING_STATE = "moving";
 
                 // Dependencies
-                private Oriented oriented;
+                private StatePicker statePicker;
                 private Object mapObject;
 
                 // Origin and target of movement. This has to do with the min/max values
                 //   of Snapped, but specified for the intended movement.
                 private Vector2 origin = Vector2.zero, target = Vector2.zero;
-
-                /// <summary>
-                ///   The animation to use for the object being moved.
-                /// </summary>
-                [SerializeField]
-                private ScriptableObjects.Animations.AnimationRose movingAnimationSet;
 
                 /// <summary>
                 ///   The movement speed, in game units per second.
@@ -58,28 +54,12 @@ namespace WindRose
                 public Types.Direction? Movement { get { return mapObject.Movement; } }
 
                 /// <summary>
-                ///   <para>
-                ///     By setting this value to a non-null string, this value will be
-                ///       used instead of <see cref="MOVE_ANIMATION"/> to choose the
-                ///       animation to be used when moving.
-                ///   </para>
-                ///   <para>
-                ///     This is not a matter of animation replacement, but a matter of
-                ///       different logic in handling (e.g. changing this behaviour
-                ///       to use the "run" animation key (state) instead of the
-                ///       "move" animation key (state) without screwing either animation).
-                ///   </para>
-                /// </summary>
-                [HideInInspector]
-                public string overriddenKeyForMoveAnimation = null;
-
-                /// <summary>
-                ///   Sets the current animation to the movement animation registered
+                ///   Sets the current state to the movement state registered
                 ///     in this component.
                 /// </summary>
-                public void SetMovingAnimation()
+                public void SetMovingState()
                 {
-                    oriented.animationKey = (overriddenKeyForMoveAnimation == null) ? MOVE_ANIMATION : overriddenKeyForMoveAnimation;
+                    statePicker.SelectedKey = MOVING_STATE;
                 }
 
                 /// <summary>
@@ -140,12 +120,8 @@ namespace WindRose
 
                 void Awake()
                 {
-                    oriented = GetComponent<Oriented>();
+                    statePicker = GetComponent<StatePicker>();
                     mapObject = GetComponent<Object>();
-                    // I DON'T KNOW WHY HIDDEN PROPERTIES FROM INSPECTOR ALSO AVOID NULL VALUES.
-                    // So I'm adding this code to ensure this particular field starts as null in Awake().
-                    overriddenKeyForMoveAnimation = null;
-                    oriented.AddAnimationSet(MOVE_ANIMATION, movingAnimationSet);
                     mapObject.onAttached.AddListener(delegate (World.Map parentMap)
                     {
                         // Avoid inheriting former value of origin.
@@ -186,7 +162,7 @@ namespace WindRose
                         {
                             origin = transform.localPosition;
                             target = origin + targetOffset;
-                            SetMovingAnimation();
+                            SetMovingState();
                         }
 
                         // We calculate the movement offset
@@ -261,7 +237,7 @@ namespace WindRose
                     }
                     else
                     {
-                        oriented.SetIdleAnimation();
+                        statePicker.SelectedKey = "";
                     }
 
                     wasMoving = IsMoving;

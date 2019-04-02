@@ -67,6 +67,11 @@ namespace WindRose
                 private uint halfWidth;
                 private uint halfHeight;
 
+                private void OrientationChanged(Types.Direction orientation)
+                {
+                    if (mapObject.ParentMap) RefreshDimensions();
+                }
+
                 protected override void Awake()
                 {
                     base.Awake();
@@ -78,24 +83,22 @@ namespace WindRose
                     }
                     halfHeight = mapObject.Height / 2;
                     halfWidth = mapObject.Width / 2;
+                    if (oriented) oriented.onOrientationChanged.AddListener(OrientationChanged);
+                }
+
+                private void OnDestroy()
+                {
+                    if (oriented)
+                    {
+                        oriented.onOrientationChanged.RemoveListener(OrientationChanged);
+                    }
                 }
 
                 protected override void Start()
                 {
                     base.Start();
                     // Forcing accurate position the first time
-                    if (relatedObject.ParentMap) Update();
-                }
-
-                protected override void Update()
-                {
-                    Types.Direction formerDirection = direction;
-                    if (oriented != null) direction = oriented.orientation;
-                    if (formerDirection != direction)
-                    {
-                        RefreshDimensions();
-                    }
-                    base.Update();
+                    if (mapObject.ParentMap) Update();
                 }
 
                 protected override int GetDeltaX()

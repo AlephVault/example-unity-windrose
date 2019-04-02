@@ -41,7 +41,7 @@ namespace WindRose
                             if (animation != value)
                             {
                                 animation = value;
-                                Reset();
+                                if (animation) Reset();
                             }
                         }
                     }

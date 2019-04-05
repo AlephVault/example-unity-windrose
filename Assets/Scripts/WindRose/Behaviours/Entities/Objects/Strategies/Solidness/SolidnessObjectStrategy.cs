@@ -19,6 +19,7 @@ namespace WindRose
                     ///     <see cref="Solidness"/> property and
                     ///     <see cref="solidness"/> field for more details.
                     /// </summary>
+                    [RequireComponent(typeof(Base.BaseObjectStrategy))]
                     public class SolidnessObjectStrategy : ObjectStrategy
                     {
                         /// <summary>

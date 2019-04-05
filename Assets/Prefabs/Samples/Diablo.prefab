@@ -58,9 +58,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   width: 1
   height: 1
-  initialX: 1
-  initialY: 1
-  initialSolidness: 2
+  mainVisual: {fileID: 0}
 --- !u!114 &114099831494430252
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -72,26 +70,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03942de37db743040a679af8cfa7f3ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  idleAnimationSet:
-    up:
-      sprites:
-      - {fileID: 21300020, guid: f158ee7f2113d2b449039bad2f783e99, type: 3}
-      fps: 1
-    down:
-      sprites:
-      - {fileID: 21300002, guid: f158ee7f2113d2b449039bad2f783e99, type: 3}
-      fps: 1
-    left:
-      sprites:
-      - {fileID: 21300008, guid: f158ee7f2113d2b449039bad2f783e99, type: 3}
-      fps: 1
-    right:
-      sprites:
-      - {fileID: 21300014, guid: f158ee7f2113d2b449039bad2f783e99, type: 3}
-      fps: 1
   orientation: 0
-  animationKey: 
-  overriddenKeyForIdleAnimation: 
 --- !u!114 &114121299827776052
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -129,37 +108,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a7d43842d7f4eb34988602366065df48, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  movingAnimationSet:
-    up:
-      sprites:
-      - {fileID: 21300018, guid: f158ee7f2113d2b449039bad2f783e99, type: 3}
-      - {fileID: 21300020, guid: f158ee7f2113d2b449039bad2f783e99, type: 3}
-      - {fileID: 21300022, guid: f158ee7f2113d2b449039bad2f783e99, type: 3}
-      - {fileID: 21300020, guid: f158ee7f2113d2b449039bad2f783e99, type: 3}
-      fps: 8
-    down:
-      sprites:
-      - {fileID: 21300000, guid: f158ee7f2113d2b449039bad2f783e99, type: 3}
-      - {fileID: 21300002, guid: f158ee7f2113d2b449039bad2f783e99, type: 3}
-      - {fileID: 21300004, guid: f158ee7f2113d2b449039bad2f783e99, type: 3}
-      - {fileID: 21300002, guid: f158ee7f2113d2b449039bad2f783e99, type: 3}
-      fps: 8
-    left:
-      sprites:
-      - {fileID: 21300006, guid: f158ee7f2113d2b449039bad2f783e99, type: 3}
-      - {fileID: 21300008, guid: f158ee7f2113d2b449039bad2f783e99, type: 3}
-      - {fileID: 21300010, guid: f158ee7f2113d2b449039bad2f783e99, type: 3}
-      - {fileID: 21300008, guid: f158ee7f2113d2b449039bad2f783e99, type: 3}
-      fps: 8
-    right:
-      sprites:
-      - {fileID: 21300012, guid: f158ee7f2113d2b449039bad2f783e99, type: 3}
-      - {fileID: 21300014, guid: f158ee7f2113d2b449039bad2f783e99, type: 3}
-      - {fileID: 21300016, guid: f158ee7f2113d2b449039bad2f783e99, type: 3}
-      - {fileID: 21300014, guid: f158ee7f2113d2b449039bad2f783e99, type: 3}
-      fps: 8
   speed: 3
-  overriddenKeyForMovingAnimation: 
 --- !u!212 &212864582632502772
 SpriteRenderer:
   m_ObjectHideFlags: 1

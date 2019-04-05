@@ -82,7 +82,7 @@ namespace WindRose
                         {
                             base.Start();
                             int index = 0;
-                            foreach (Tilemap tilemap in tilemaps)
+                            foreach (Tilemap tilemap in Tilemaps)
                             {
                                 TilemapRenderer renderer = tilemap.GetComponent<TilemapRenderer>();
                                 renderer.sortingLayerID = 0;

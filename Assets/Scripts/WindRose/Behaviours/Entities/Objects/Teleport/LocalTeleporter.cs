@@ -75,7 +75,7 @@ namespace WindRose
                                     DoTeleport(delegate ()
                                     {
                                         ObjectTeleportOperation(objectToBeTeleported, Target, tgObject);
-                                    });
+                                    }, objectToBeTeleported, Target, tgObject);
                                 }
                             }
                         }
@@ -131,7 +131,10 @@ namespace WindRose
                     ///     ONCE.
                     /// </summary>
                     /// <param name="teleport">The callback to invoke. IT MUST BE INVOKED SOMEWHERE IN THE IMPLEMENTATION.</param>
-                    protected virtual void DoTeleport(Action teleport)
+                    /// <param name="objectToBeTeleported">The object being teleported.</param>
+                    /// <param name="teleportTarget">The target of the teleport.</param>
+                    /// <param name="teleportTargetObject">The underlying object of that target.</param>
+                    protected virtual void DoTeleport(Action teleport, Object objectToBeTeleported, TeleportTarget teleportTarget, Object teleportTargetObject)
                     {
                         teleport();
                     }

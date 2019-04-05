@@ -207,8 +207,6 @@ namespace WindRose
                 private Action startCallbacks = delegate() {};
                 // These callbacks are run when this map object updates and is not paused.
                 private Action updateCallbacks = delegate () { };
-                // These callbacks are run when this map object updates and animations are not paused.
-                private Action updateAnimationCallbacks = delegate () { };
 
                 // Gets all the children visual objects.
                 private IEnumerable<Visuals.Visual> GetChildVisuals()
@@ -304,7 +302,6 @@ namespace WindRose
                     Detach();
                     startCallbacks = delegate () {};
                     updateCallbacks = delegate () {};
-                    updateAnimationCallbacks = delegate () {};
                     onAttached.RemoveAllListeners();
                     onDetached.RemoveAllListeners();
                     onMovementStarted.RemoveAllListeners();

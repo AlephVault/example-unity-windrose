@@ -18,7 +18,7 @@ namespace WindRose
                     ///   Its counterpart type is
                     ///   <see cref="World.ObjectsManagementStrategies.Simple.SimpleObjectsManagementStrategy"/>.
                     /// </summary>
-                    [RequireComponent(typeof(Base.BaseObjectStrategy))]
+                    [RequireComponent(typeof(Base.LayoutObjectStrategy))]
                     [RequireComponent(typeof(Solidness.SolidnessObjectStrategy))]
                     class SimpleObjectStrategy : ObjectStrategy
                     {

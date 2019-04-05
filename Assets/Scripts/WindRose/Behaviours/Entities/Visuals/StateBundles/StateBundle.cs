@@ -33,6 +33,7 @@ namespace WindRose
                         /// <summary>
                         ///   The fallback to use, if value is null.
                         /// </summary>
+                        [SerializeField]
                         private string fallback;
 
                         private void Awake()

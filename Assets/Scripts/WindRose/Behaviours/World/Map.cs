@@ -15,6 +15,7 @@ namespace WindRose
             ///   Everything happens here. A map is essentially the place where movement and
             ///     interaction can occur.
             /// </summary>
+            [ExecuteInEditMode]
             [RequireComponent(typeof(SortingGroup))]
             public class Map : MonoBehaviour
             {
@@ -78,6 +79,7 @@ namespace WindRose
                 /// </summary>
                 [SerializeField]
                 private Vector3 cellSize = Vector3.one;
+                public Vector3 CellSize { get { return cellSize; } }
 
                 /// <summary>
                 ///   The map's floor layer. It will hold a lot of children of type
@@ -169,6 +171,10 @@ namespace WindRose
 
                 private void Start()
                 {
+#if UNITY_EDITOR
+                    if (!Application.isPlaying) return;
+#endif
+
                     // Initializing strategy
                     if (StrategyHolder == null)
                     {
@@ -223,6 +229,84 @@ namespace WindRose
                         p.Resume();
                     }
                 }
+
+#if UNITY_EDITOR
+                // Normalizes all the tilemaps, grids, and layers.
+                private void NormalizeTilemapsAndGrids()
+                {
+                    foreach (Transform child in transform)
+                    {
+                        Grid grid = transform.GetComponent<Grid>();
+                        child.localScale = Vector2.one;
+                        child.localPosition = Vector2.zero;
+                        child.localRotation = Quaternion.identity;
+
+                        if (grid)
+                        {
+                            foreach (Transform grandchild in child)
+                            {
+                                grandchild.localScale = Vector2.one;
+                                grandchild.localPosition = Vector2.zero;
+                                grandchild.localRotation = Quaternion.identity;
+                            }
+                        }
+                    }
+                }
+
+                // Normalizes grid properties in ceilings, from floors, which in turn
+                //   comes from cellSize.
+                private void NormalizeCeilingWithFloor()
+                {
+                    Layers.Floor.FloorLayer floorLayer = ExpectOneLayerComponent<Layers.Floor.FloorLayer>();
+                    Layers.Ceiling.CeilingLayer ceilingLayer = ExpectOneLayerComponent<Layers.Ceiling.CeilingLayer>();
+                    if (floorLayer)
+                    {
+                        Grid floorGrid = floorLayer.GetComponent<Grid>();
+                        if (floorGrid)
+                        {
+                            floorGrid.cellSize = cellSize;
+                            if (ceilingLayer)
+                            {
+                                Grid ceilingGrid = ceilingLayer.GetComponent<Grid>();
+                                if (ceilingLayer) CopyGridProperties(ceilingGrid, floorGrid);
+                            }
+                        }
+                    }
+                }
+
+                // Ensures the highlight layer being present. The highlight by itself will
+                //   know how to update, and to remove on application run.
+                private Layers.Highlight.HighlightLayer EnsureBackgroundHighlight()
+                {
+                    Layers.Highlight.HighlightLayer highlightLayer = null;
+                    foreach(Transform child in transform)
+                    {
+                        highlightLayer = child.GetComponent<Layers.Highlight.HighlightLayer>();
+                        if (highlightLayer) {
+                            highlightLayer.ForceUpdate();
+                            return highlightLayer;
+                        };
+                    }
+
+                    GameObject highlightObject = new GameObject("Highlight");
+                    highlightObject.SetActive(false);
+                    highlightLayer = highlightObject.AddComponent<Layers.Highlight.HighlightLayer>();
+                    highlightObject.transform.parent = transform;
+                    highlightObject.SetActive(true);
+                    highlightLayer.ForceUpdate();
+                    return highlightLayer;
+                }
+
+                private void Update()
+                {
+                    if (!Application.isPlaying)
+                    {
+                        NormalizeTilemapsAndGrids();
+                        NormalizeCeilingWithFloor();
+                        EnsureBackgroundHighlight();
+                    }
+                }
+#endif
             }
         }
     }

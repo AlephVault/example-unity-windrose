@@ -80,6 +80,7 @@ namespace WindRose
                         Tilemap tilemap = GetComponent<Tilemap>();
                         tilemap.orientation = Tilemap.Orientation.XY;
                         tilemapRenderer = GetComponent<TilemapRenderer>();
+                        tilemapRenderer.sortOrder = TilemapRenderer.SortOrder.BottomLeft;
                     }
                     catch (Exception)
                     {

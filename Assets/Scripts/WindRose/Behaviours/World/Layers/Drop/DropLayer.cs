@@ -51,7 +51,7 @@ namespace WindRose
 
                         protected override int GetSortingOrder()
                         {
-                            return 10;
+                            return 20;
                         }
 
                         protected override void Awake()

@@ -37,8 +37,10 @@ namespace WindRose
                         // TODO in version 2018.x+ I have to require RECTANGULAR tilemap, or explode.
                         Tilemap tilemap = GetComponent<Tilemap>();
                         tilemap.orientation = Tilemap.Orientation.XY;
+                        TilemapRenderer tilemapRenderer = GetComponent<TilemapRenderer>();
+                        tilemapRenderer.sortOrder = TilemapRenderer.SortOrder.BottomLeft;
                     }
-                    catch(Types.Exception)
+                    catch (Types.Exception)
                     {
                         Destroy(gameObject);
                         throw new ParentMustBeFloorLayerException();

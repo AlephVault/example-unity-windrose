@@ -20,6 +20,7 @@ namespace WindRose
                 /// </summary>
                 [RequireComponent(typeof(Support.Behaviours.Normalized))]
                 [RequireComponent(typeof(SortingGroup))]
+                [ExecuteInEditMode]
                 public abstract class MapLayer : MonoBehaviour
                 {
                     /// <summary>
@@ -47,14 +48,26 @@ namespace WindRose
                         {
                             Map = Support.Utils.Layout.RequireComponentInParent<Map>(this);
                         }
-                        catch (Types.Exception)
+                        catch (Support.Types.Exception)
                         {
                             Destroy(gameObject);
                             throw new ParentMustBeMapException();
                         }
                     }
 
+                    /// <summary>
+                    ///   Appropriately refreshes the sort order.
+                    /// </summary>
                     protected virtual void Start()
+                    {
+                        sortingGroup.sortingLayerID = 0;
+                        sortingGroup.sortingOrder = GetSortingOrder();
+                    }
+
+                    /// <summary>
+                    ///   Executed only in editor mode, this refreshes the sort order as does Start().
+                    /// </summary>
+                    protected virtual void Update()
                     {
                         sortingGroup.sortingLayerID = 0;
                         sortingGroup.sortingOrder = GetSortingOrder();

@@ -25,7 +25,7 @@ namespace WindRose
                     {
                         protected override int GetSortingOrder()
                         {
-                            return 30;
+                            return 40;
                         }
 
                         private Dictionary<ushort, VisualsDepthLevel> levels = new Dictionary<ushort, VisualsDepthLevel>();

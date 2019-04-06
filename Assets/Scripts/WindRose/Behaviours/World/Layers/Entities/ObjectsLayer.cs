@@ -38,7 +38,7 @@ namespace WindRose
 
                         protected override int GetSortingOrder()
                         {
-                            return 20;
+                            return 30;
                         }
 
                         /// <summary>

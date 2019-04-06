@@ -23,7 +23,7 @@ namespace WindRose
                     {
                         protected override int GetSortingOrder()
                         {
-                            return 40;
+                            return 50;
                         }
 
                         protected override void Awake()

@@ -74,7 +74,7 @@ namespace WindRose
 
                         protected override int GetSortingOrder()
                         {
-                            return 0;
+                            return 10;
                         }
 
                         /**

@@ -25,6 +25,14 @@ namespace WindRose
                         {
                             return 40;
                         }
+
+                        protected override void Awake()
+                        {
+                            base.Awake();
+                            // We sort the layers accordingly - please use different sorting orders explicitly.
+                            Grid grid = GetComponent<Grid>();
+                            grid.cellSwizzle = GridLayout.CellSwizzle.XYZ;
+                        }
                     }
                 }
             }

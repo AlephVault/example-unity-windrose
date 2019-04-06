@@ -68,6 +68,8 @@ namespace WindRose
                         {
                             base.Awake();
                             // We sort the layers accordingly - please use different sorting orders explicitly.
+                            Grid grid = GetComponent<Grid>();
+                            grid.cellSwizzle = GridLayout.CellSwizzle.XYZ;
                         }
 
                         protected override int GetSortingOrder()

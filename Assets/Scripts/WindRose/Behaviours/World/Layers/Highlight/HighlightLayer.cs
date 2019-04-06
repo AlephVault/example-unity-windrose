@@ -33,6 +33,7 @@ namespace WindRose
 
                         protected override void Start()
                         {
+#if UNITY_EDITOR
                             if (Application.isPlaying)
                             {
                                 Destroy(gameObject);
@@ -41,6 +42,9 @@ namespace WindRose
                             {
                                 base.Start();
                             }
+#else
+                            Destroy(gameObject);
+#endif
                         }
 
                         // Checks if the parent map has another highlight layer
@@ -92,6 +96,7 @@ namespace WindRose
                             quadMesh.material = tiledMaterial;
                         }
 
+#if UNITY_EDITOR
                         // This one will only be executed in Editor mode.
                         protected override void Update()
                         {
@@ -128,6 +133,7 @@ namespace WindRose
                             {
                                 renderer.enabled = false;
                             }
+#endif
                         }
 
                         public void ForceUpdate()

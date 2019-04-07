@@ -1,0 +1,37 @@
+﻿using System;
+using UnityEngine;
+using UnityEditor;
+
+namespace WindRose
+{
+    namespace MenuActions
+    {
+        public static class MenuActionUtils
+        {
+            public static GUIStyle GetWordWrappingStyle()
+            {
+                GUIStyle style = new GUIStyle();
+                style.wordWrap = true;
+                return style;
+            }
+
+            public static GUIStyle GetSingleLabelStyle()
+            {
+                GUIStyle style = GetWordWrappingStyle();
+                style.wordWrap = true;
+                style.margin.left = 6;
+                style.margin.right = 6;
+                style.margin.bottom = 3;
+                style.margin.top = 3;
+                return style;
+            }
+
+            public static GUIStyle GetCaptionLabelStyle()
+            {
+                GUIStyle style = GetSingleLabelStyle();
+                style.fontStyle = FontStyle.Bold;
+                return style;
+            }
+        }
+    }
+}

@@ -41,7 +41,18 @@ namespace WindRose
                     T[] components = GetComponentsInChildren<T>();
                     if (require ? (components.Length != 1) : (components.Length > 1))
                     {
+#if UNITY_EDITOR
+                        if (Application.isPlaying)
+                        {
+                            Destroy(gameObject);
+                        }
+                        else
+                        {
+                            Debug.LogWarning(string.Format("One {0} component of type {1} is expected on this object. This object will be destroyed on play.", require ? "mandatory" : "optional", typeof(T).FullName));
+                        }
+#else
                         Destroy(gameObject);
+#endif
                         throw new OneComponentIsNeeded(string.Format("One {0} component of type {1} is expected on this object", require ? "mandatory" : "optional", typeof(T).FullName));
                     }
                     else if (components.Length == 0)
@@ -62,13 +73,13 @@ namespace WindRose
                 }
 
                 /// <summary>
-                ///   The width of the map. It will be clamped to be between 1 and 100.
+                ///   The width of the map. It will be clamped to be between 1 and 32767.
                 /// </summary>
                 [SerializeField]
                 private uint width;
 
                 /// <summary>
-                ///   The height of the map. It will be clamped to be between 1 and 100.
+                ///   The height of the map. It will be clamped to be between 1 and 32767.
                 /// </summary>
                 [SerializeField]
                 private uint height;

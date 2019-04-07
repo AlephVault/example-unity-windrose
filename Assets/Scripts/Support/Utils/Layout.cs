@@ -200,10 +200,11 @@ namespace Support
                 }
                 else
                 {
+                    bool active = gameObject.activeSelf;
                     gameObject.SetActive(false);
                     T component = gameObject.AddComponent<T>();
                     SetObjectFieldValues(component, data);
-                    gameObject.SetActive(true);
+                    gameObject.SetActive(active);
                     return component;
                 }
             }

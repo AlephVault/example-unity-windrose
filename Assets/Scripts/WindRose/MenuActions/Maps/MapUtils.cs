@@ -12,10 +12,13 @@ namespace WindRose
         namespace Maps
         {
             using Support.Utils;
-            using System.Text.RegularExpressions;
 
             public static class MapUtils
             {
+                /// <summary>
+                ///   Utility window used to create a Map. It fills its properties, adds optional layers,
+                ///     and allows setting the names of the floors.
+                /// </summary>
                 public class CreateMapWindow : EditorWindow
                 {
                     private Vector2Int mapSize = new Vector2Int(8, 6);
@@ -37,7 +40,8 @@ namespace WindRose
                         // Now the update cycles must run
                         for (int i = 0; i < newFloorsLength; i++)
                         {
-                            newFloors[i] = EditorGUILayout.TextField(string.Format("Floor {0} name", i), newFloors[i]);
+                            newFloors[i] = MenuActionUtils.SimplifySpaces(EditorGUILayout.TextField(string.Format("Floor {0} name", i), newFloors[i]));
+                            if (newFloors[i] == "") newFloors[i] = "Floor " + i;
                         }
                         return newFloors;
                     }
@@ -46,6 +50,9 @@ namespace WindRose
                     {
                         GUIStyle longLabelStyle = MenuActionUtils.GetSingleLabelStyle();
                         GUIStyle captionLabelStyle = MenuActionUtils.GetCaptionLabelStyle();
+
+                        minSize = new Vector2(643, 250);
+                        maxSize = new Vector2(643, 300);
 
                         // General settings start here.
 
@@ -63,7 +70,7 @@ namespace WindRose
 
                         EditorGUILayout.LabelField("This is the name the game object will have when added to the hierarchy.", longLabelStyle);
                         mapObjectName = EditorGUILayout.TextField("Object name", mapObjectName);
-                        mapObjectName = Regex.Replace(mapObjectName, @"\s{2,}", " ").Trim();
+                        mapObjectName = MenuActionUtils.SimplifySpaces(mapObjectName);
                         if (mapObjectName == "") mapObjectName = "New Map";
 
                         EditorGUILayout.LabelField("These are the map properties in the editor. Can be changed later.", longLabelStyle);
@@ -97,6 +104,8 @@ namespace WindRose
                         // Call to action.
 
                         if (GUILayout.Button("Create Map")) Execute();
+
+                        Debug.Log("Position: " + position);
                     }
 
                     private void Execute()
@@ -179,10 +188,16 @@ namespace WindRose
                     }
                 }
 
+                /// <summary>
+                ///   This method is used in a menu action: GameObject > Wind Rose > Maps > Create Map.
+                ///   It creates a map inside the selected object in the hierarchy.
+                /// </summary>
                 [MenuItem("GameObject/Wind Rose/Maps/Create Map", false, 11)]
                 public static void CreateMap()
                 {
-                    ScriptableObject.CreateInstance<CreateMapWindow>().ShowUtility();
+                    CreateMapWindow window = ScriptableObject.CreateInstance<CreateMapWindow>();
+                    window.position = new Rect(new Vector2(110, 250), new Vector2(643, 250));
+                    window.ShowUtility();
                 }
             }
         }

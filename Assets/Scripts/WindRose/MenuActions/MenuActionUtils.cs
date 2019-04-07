@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEngine;
 using UnityEditor;
+using System.Text.RegularExpressions;
 
 namespace WindRose
 {
@@ -31,6 +32,11 @@ namespace WindRose
                 GUIStyle style = GetSingleLabelStyle();
                 style.fontStyle = FontStyle.Bold;
                 return style;
+            }
+
+            public static string SimplifySpaces(string source)
+            {
+                return Regex.Replace(source, @"\s{2,}", " ").Trim();
             }
         }
     }

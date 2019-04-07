@@ -34,6 +34,13 @@ namespace WindRose
                 return style;
             }
 
+            public static GUIStyle GetIndentedStyle()
+            {
+                GUIStyle style = GetSingleLabelStyle();
+                style.margin.left = 10;
+                return style;
+            }
+
             public static string SimplifySpaces(string source)
             {
                 return Regex.Replace(source, @"\s{2,}", " ").Trim();

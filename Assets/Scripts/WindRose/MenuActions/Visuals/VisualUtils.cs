@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Tilemaps;
 using UnityEditor;
@@ -10,7 +9,7 @@ namespace WindRose
 {
     namespace MenuActions
     {
-        namespace Maps
+        namespace Visuals
         {
             using Support.Utils;
             using ScriptableObjects.Animations;

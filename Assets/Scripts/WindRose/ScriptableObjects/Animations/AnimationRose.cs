@@ -18,7 +18,7 @@ namespace WindRose
             ///   An animation rose consist of 4 animations: one for each direction.
             ///   Intended for animations in orientable or moving objects.
             /// </summary>
-            [CreateAssetMenu(fileName = "NewAnimationRose", menuName = "Wind Rose/Objects/Animation Rose", order = 201)]
+            [CreateAssetMenu(fileName = "NewAnimationRose", menuName = "Wind Rose/Animations/Animation Rose", order = 201)]
             public class AnimationRose : ScriptableObject
             {
                 private delegate void AnimationRoseInitializationCallback(string path, AnimationRose rose, Animation down, Animation left, Animation right, Animation up);
@@ -48,7 +48,7 @@ namespace WindRose
                 private Animation right;
 
 #if UNITY_EDITOR
-                [MenuItem("Assets/Create/Wind Rose/Objects/Animation Rose (with Moving animations)")]
+                [MenuItem("Assets/Create/Wind Rose/Animations/Animation Rose (with Moving animations)")]
                 public static void CreateMovingInstanceWithChildSpecs()
                 {
                     CreateInstanceWithChildSpecs(delegate (string path, AnimationRose rose, Animation down, Animation left, Animation right, Animation up)
@@ -88,7 +88,7 @@ namespace WindRose
                                         break;
                                     }
                                 }
-                                else
+                                else if (sourceImagePath.StartsWith(Application.dataPath))
                                 {
                                     sourceImagePath = sourceImagePath.Substring(Path.GetDirectoryName(Application.dataPath).Length+1);
                                     Sprite[] sprites = AssetDatabase.LoadAllAssetRepresentationsAtPath(sourceImagePath).OfType<Sprite>().ToArray();
@@ -145,12 +145,16 @@ namespace WindRose
                                         }
                                     }
                                 }
+                                else
+                                {
+                                    EditorUtility.DisplayDialog("Invalid path", "The chosen path is not inside project's data.", "OK");
+                                }
                             }
                         }
                     });
                 }
 
-                [MenuItem("Assets/Create/Wind Rose/Objects/Animation Rose (with Staying animations)")]
+                [MenuItem("Assets/Create/Wind Rose/Animations/Animation Rose (with Staying animations)")]
                 public static void CreateStayingInstanceWithChildSpecs()
                 {
                     CreateInstanceWithChildSpecs(delegate (string path, AnimationRose rose, Animation down, Animation left, Animation right, Animation up)
@@ -191,7 +195,7 @@ namespace WindRose
                                         break;
                                     }
                                 }
-                                else
+                                else if (sourceImagePath.StartsWith(Application.dataPath))
                                 {
                                     sourceImagePath = sourceImagePath.Substring(Path.GetDirectoryName(Application.dataPath).Length+1);
                                     Sprite[] sprites = AssetDatabase.LoadAllAssetRepresentationsAtPath(sourceImagePath).OfType<Sprite>().ToArray();
@@ -248,12 +252,16 @@ namespace WindRose
                                         }
                                     }
                                 }
+                                else
+                                {
+                                    EditorUtility.DisplayDialog("Invalid path", "The chosen path is not inside project's data.", "OK");
+                                }
                             }
                         }
                     });
                 }
 
-                [MenuItem("Assets/Create/Wind Rose/Objects/Animation Rose (with empty animations)")]
+                [MenuItem("Assets/Create/Wind Rose/Animations/Animation Rose (with empty animations)")]
                 public static void CreateInstanceWithNoChildSpecs()
                 {
                     CreateInstanceWithChildSpecs(delegate (string path, AnimationRose rose, Animation down, Animation left, Animation right, Animation up)

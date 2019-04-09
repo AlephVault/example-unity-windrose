@@ -160,7 +160,10 @@ namespace WindRose
                                 Debug.LogWarning("A map is being just created with no main strategy. This map will be destroyed on play if no main strategy is set.");
                                 break;
                         }
-                        Behaviours.World.ObjectsManagementStrategyHolder holder = Layout.AddComponent<Behaviours.World.ObjectsManagementStrategyHolder>(mapObject, new Dictionary<string, object>() {
+                        // On the existing current holder, set the strategy=mainStrategy.
+                        Behaviours.World.ObjectsManagementStrategyHolder currentHolder = mapObject.GetComponent<Behaviours.World.ObjectsManagementStrategyHolder>();
+                        Layout.SetObjectFieldValues(currentHolder, new Dictionary<string, object>()
+                        {
                             { "strategy", mainStrategy }
                         });
                         // Now, creating the layers as children AND the floors.
@@ -223,7 +226,6 @@ namespace WindRose
                         }
                         // Ok. Now activate the object.
                         mapObject.SetActive(true);
-                        mapObject.AddComponent<Behaviours.World.Map>();
                         Close();
                     }
                 }

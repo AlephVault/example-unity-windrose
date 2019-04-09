@@ -20,10 +20,12 @@ namespace WindRose
                 public class CreateDropContainerRendererPrefabWindow : EditorWindow
                 {
                     private int imagesCount = 3;
+                    private string prefabName = "DropDisplay";
+                    public string prefabPath;
 
                     private void OnGUI()
                     {
-                        minSize = new Vector2(360, 100);
+                        minSize = new Vector2(360, 110);
                         maxSize = minSize;
 
                         GUIStyle longLabelStyle = MenuActionUtils.GetSingleLabelStyle();
@@ -31,6 +33,7 @@ namespace WindRose
                         titleContent = new GUIContent("Wind Rose - Creating a new drop container renderer prefab");
                         EditorGUILayout.LabelField("This wizard will create a simple drop container renderer prefab, which is used in DropLayer's rendering strategy.", longLabelStyle);
                         EditorGUILayout.Separator();
+                        prefabName = EditorGUILayout.TextField("Name", prefabName);
                         imagesCount = Values.Clamp(1, EditorGUILayout.IntField("Slots [1 to 32767]", imagesCount), 32767);
                         EditorGUILayout.Separator();
                         if (GUILayout.Button("Save"))
@@ -41,29 +44,20 @@ namespace WindRose
 
                     private void Execute()
                     {
-                        string path = EditorUtility.SaveFilePanel("Save Prefab", Path.Combine(Application.dataPath, "Prefabs"), "DropDisplay", "prefab");
-                        if (path != "")
+                        string relativePrefabPath = string.Format("{0}/{1}.prefab", prefabPath, prefabName);
+                        GameObject prefab = new GameObject(prefabName);
+                        prefab.AddComponent<SortingGroup>();
+                        prefab.AddComponent<SimpleDropContainerRenderer>();
+                        for(int i = 0; i < imagesCount; i++)
                         {
-                            if (!path.StartsWith(Application.dataPath))
-                            {
-                                EditorUtility.DisplayDialog("Invalid path", "The chosen path is not inside project's data.", "OK");
-                                return;
-                            }
-                            path = path.Substring(Path.GetDirectoryName(Application.dataPath).Length + 1);
-                            GameObject prefab = new GameObject("DropDisplay");
-                            prefab.AddComponent<SortingGroup>();
-                            prefab.AddComponent<SimpleDropContainerRenderer>();
-                            for(int i = 0; i < imagesCount; i++)
-                            {
-                                GameObject image = new GameObject("Img" + i);
-                                image.AddComponent<SpriteRenderer>();
-                                image.transform.parent = prefab.transform;
-                            }
-                            PrefabUtility.CreatePrefab(path, prefab);
-                            DestroyImmediate(prefab);
-                            Close();
-                            EditorUtility.DisplayDialog("Save Successful", "The drop container prefab was successfully saved. However, it can be configured to add/remove slots and/or set a background image.", "OK");
+                            GameObject image = new GameObject("Img" + i);
+                            image.AddComponent<SpriteRenderer>();
+                            image.transform.parent = prefab.transform;
                         }
+                        PrefabUtility.CreatePrefab(relativePrefabPath, prefab);
+                        DestroyImmediate(prefab);
+                        Close();
+                        EditorUtility.DisplayDialog("Save Successful", "The drop container prefab was successfully saved. However, it can be configured to add/remove slots and/or set a background image.", "OK");
                     }
                 }
 
@@ -74,7 +68,19 @@ namespace WindRose
                 public static void CreateVisual()
                 {
                     CreateDropContainerRendererPrefabWindow window = ScriptableObject.CreateInstance<CreateDropContainerRendererPrefabWindow>();
-                    window.position = new Rect(new Vector2(230, 350), new Vector2(360, 100));
+                    window.position = new Rect(new Vector2(230, 350), new Vector2(360, 110));
+                    string newAssetPath = AssetDatabase.GetAssetPath(Selection.activeObject);
+                    if (newAssetPath == "")
+                    {
+                        newAssetPath = Path.Combine("Assets", "Prefabs");
+                    }
+                    string projectPath = Path.GetDirectoryName(Application.dataPath);
+                    if (!Directory.Exists(Path.Combine(projectPath, newAssetPath)))
+                    {
+                        newAssetPath = Path.GetDirectoryName(newAssetPath);
+                    }
+                    Debug.Log("Using path: " + newAssetPath);
+                    window.prefabPath = newAssetPath;
                     window.ShowUtility();
                 }
             }

@@ -17,6 +17,7 @@ namespace WindRose
             /// </summary>
             [ExecuteInEditMode]
             [RequireComponent(typeof(SortingGroup))]
+            [RequireComponent(typeof(ObjectsManagementStrategyHolder))]
             public class Map : MonoBehaviour
             {
                 /// <summary>

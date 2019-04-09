@@ -17,6 +17,9 @@ namespace WindRose
             using Behaviours.Entities.Visuals.StateBundles.Moving;
             using Behaviours.Entities.Common;
 
+            /// <summary>
+            ///   Menu actions to create a visual inside an object in the scene.
+            /// </summary>
             public static class VisualUtils
             {
                 public class CreateVisualWindow : EditorWindow
@@ -120,7 +123,7 @@ namespace WindRose
                 }
 
                 /// <summary>
-                ///   This method is used in the menu action: GameObject > Wind Rose > visuals > Create Visual.
+                ///   This method is used in the menu action: GameObject > Wind Rose > Visuals > Create Visual.
                 ///   It creates a <see cref="Behaviours.Entities.Visuals.Visual"/> under the selected transform,
                 ///     in the scene editor, that has a <see cref="Behaviours.Entities.Objects.Object"/> component.
                 /// </summary>
@@ -133,7 +136,7 @@ namespace WindRose
                 }
 
                 /// <summary>
-                ///   Validates the menu item GameObject > Wind Rose > visuals > Create Visual.
+                ///   Validates the menu item GameObject > Wind Rose > Visuals > Create Visual.
                 ///   It enables such menu option when an <see cref="Behaviours.Entities.Objects.Object"/>
                 ///     is selected in the scene editor.
                 /// </summary>

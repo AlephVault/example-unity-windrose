@@ -17,6 +17,9 @@ namespace WindRose
             using Behaviours.World.Layers.Drop;
             using Behaviours.Inventory;
 
+            /// <summary>
+            ///   Menu actions to create a map in the scene.
+            /// </summary>
             public static class MapUtils
             {
                 /// <summary>

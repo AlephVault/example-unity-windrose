@@ -15,6 +15,9 @@ namespace WindRose
             using Support.Utils;
             using Behaviours.Drops;
 
+            /// <summary>
+            ///   Menu actions to create inventory-related assets.
+            /// </summary>
             public static class InventoryUtils
             {
                 public class CreateDropContainerRendererPrefabWindow : EditorWindow
@@ -62,7 +65,7 @@ namespace WindRose
                 }
 
                 /// <summary>
-                ///   This method is used in the menu action: GameObject > Wind Rose > visuals > Create Visual.
+                ///   This method is used in the assets menu action: Create > Wind Rose > Inventory > Drop Container Renderer Prefab.
                 /// </summary>
                 [MenuItem("Assets/Create/Wind Rose/Inventory/Drop Container Renderer Prefab")]
                 public static void CreateVisual()

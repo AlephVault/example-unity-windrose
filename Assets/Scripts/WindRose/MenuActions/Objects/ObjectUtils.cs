@@ -25,7 +25,7 @@ namespace WindRose
 
                     public Transform selectedTransform;
                     // Basic properties.
-                    private string mapObjectName = "New Object";
+                    private string objectName = "New Object";
                     private Vector2Int objectSize = new Vector2Int(1, 1);
                     // Optional behaviours for movement, animation, orientation.
                     private bool addOriented = false;
@@ -49,9 +49,7 @@ namespace WindRose
 
                     private void OnGUI()
                     {
-                        // TODO all the UI.
                         GUIStyle longLabelStyle = MenuActionUtils.GetSingleLabelStyle();
-                        GUIStyle captionLabelStyle = MenuActionUtils.GetCaptionLabelStyle();
                         GUIStyle indentedStyle = MenuActionUtils.GetIndentedStyle();
 
                         // minSize = new Vector2(643, 250);
@@ -66,9 +64,9 @@ namespace WindRose
                         // Object properties.
 
                         EditorGUILayout.LabelField("This is the name the game object will have when added to the hierarchy.", longLabelStyle);
-                        mapObjectName = EditorGUILayout.TextField("Object name", mapObjectName);
-                        mapObjectName = MenuActionUtils.SimplifySpaces(mapObjectName);
-                        if (mapObjectName == "") mapObjectName = "New Object";
+                        objectName = EditorGUILayout.TextField("Object name", objectName);
+                        objectName = MenuActionUtils.SimplifySpaces(objectName);
+                        if (objectName == "") objectName = "New Object";
 
                         EditorGUILayout.LabelField("These are the object properties in the editor. Can be changed later.", longLabelStyle);
                         objectSize = EditorGUILayout.Vector2IntField("Map width (X) and height (Y) [1 to 32767]", objectSize);
@@ -133,12 +131,13 @@ namespace WindRose
 
                     private void Execute()
                     {
-                        GameObject gameObject = new GameObject(mapObjectName);
+                        GameObject gameObject = new GameObject(objectName);
                         gameObject.transform.parent = selectedTransform;
                         gameObject.SetActive(false);
-                        Layout.AddComponent<Behaviours.Entities.Common.Pausable>(gameObject);
-                        Layout.AddComponent<Behaviours.Entities.Objects.Snapped>(gameObject);
-                        Layout.AddComponent<Behaviours.Entities.Objects.Object>(gameObject);
+                        Layout.AddComponent<Behaviours.Entities.Objects.Object>(gameObject, new Dictionary<string, object>() {
+                            { "width", (uint)objectSize.x },
+                            { "height", (uint)objectSize.y }
+                        });
                         if (addOriented)
                         {
                             Layout.AddComponent<Behaviours.Entities.Objects.Oriented>(gameObject);
@@ -207,8 +206,11 @@ namespace WindRose
                         });
                         if (addBag)
                         {
-                            Layout.AddComponent<Behaviours.Entities.Objects.Bags.InventorySinglePositioningManagementStrategy>(gameObject);
-                            Layout.AddComponent<Behaviours.Entities.Objects.Bags.InventorySimpleBagRenderingManagementStrategy>(gameObject);
+                            Behaviours.Inventory.ManagementStrategies.UsageStrategies.InventoryNullUsageManagementStrategy usageStrategy =
+                                Layout.AddComponent<Behaviours.Inventory.ManagementStrategies.UsageStrategies.InventoryNullUsageManagementStrategy>(gameObject);
+                            Layout.AddComponent<Behaviours.Inventory.InventoryManagementStrategyHolder>(gameObject, new Dictionary<string, object>() {
+                                { "mainUsageStrategy", usageStrategy }
+                            });
                             if (finiteBag)
                             {
                                 Layout.AddComponent<Behaviours.Inventory.ManagementStrategies.SpatialStrategies.InventoryFiniteSimpleSpatialManagementStrategy>(gameObject, new Dictionary<string, object>()
@@ -220,7 +222,6 @@ namespace WindRose
                             {
                                 Layout.AddComponent<Behaviours.Inventory.ManagementStrategies.SpatialStrategies.InventoryInfiniteSimpleSpatialManagementStrategy>(gameObject);
                             }
-                            Layout.AddComponent<Behaviours.Inventory.InventoryManagementStrategyHolder>(gameObject);
                             Layout.AddComponent<Behaviours.Entities.Objects.Bags.SimpleBag>(gameObject);
                         }
                         gameObject.SetActive(true);
@@ -234,7 +235,7 @@ namespace WindRose
                 ///     layer, in the scene editor.
                 /// </summary>
                 [MenuItem("GameObject/Wind Rose/Objects/Create Object", false, 11)]
-                public static void CreateVisual()
+                public static void CreateObject()
                 {
                     CreateObjectWindow window = ScriptableObject.CreateInstance<CreateObjectWindow>();
                     window.position = new Rect(60, 180, 700, 468);
@@ -251,7 +252,7 @@ namespace WindRose
                 ///     is selected in the scene editor.
                 /// </summary>
                 [MenuItem("GameObject/Wind Rose/Objects/Create Object", true)]
-                public static bool CanCreateVisual()
+                public static bool CanCreateObject()
                 {
                     return Selection.activeTransform && Selection.activeTransform.GetComponent<Behaviours.World.Layers.Objects.ObjectsLayer>();
                 }

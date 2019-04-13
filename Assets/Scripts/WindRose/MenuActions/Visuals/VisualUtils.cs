@@ -22,7 +22,7 @@ namespace WindRose
             /// </summary>
             public static class VisualUtils
             {
-                public class CreateVisualWindow : EditorWindow
+                private class CreateVisualWindow : EditorWindow
                 {
                     private static int[] visualTypes = new int[] { 0, 1, 2, 3, 4, 5 };
                     private static string[] visualTypeLabels = new string[] {
@@ -38,6 +38,7 @@ namespace WindRose
                     private int visualType = 0;
                     private ushort visualLevel = 1 << 14;
                     private bool addMovingBundle = false;
+                    public Transform selectedTransform;
 
                     private void OnGUI()
                     {
@@ -77,7 +78,7 @@ namespace WindRose
                     private void Execute()
                     {
                         GameObject gameObject = new GameObject(visualObjectName);
-                        gameObject.transform.parent = Selection.activeTransform;
+                        gameObject.transform.parent = selectedTransform;
                         gameObject.SetActive(false);
                         Layout.AddComponent<Pausable>(gameObject);
                         Layout.AddComponent<SpriteRenderer>(gameObject);
@@ -132,6 +133,7 @@ namespace WindRose
                 {
                     CreateVisualWindow window = ScriptableObject.CreateInstance<CreateVisualWindow>();
                     window.position = new Rect(new Vector2(57, 336), new Vector2(689, 138));
+                    window.selectedTransform = Selection.activeTransform;
                     window.ShowUtility();
                 }
 

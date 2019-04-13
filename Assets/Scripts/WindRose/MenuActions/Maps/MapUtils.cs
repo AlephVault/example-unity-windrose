@@ -194,7 +194,7 @@ namespace WindRose
                             Layout.AddComponent<InventoryInfiniteSimpleSpatialManagementStrategy>(dropLayer);
                             Layout.AddComponent<InventoryMapSizedPositioningManagementStrategy>(dropLayer);
                             InventoryNullUsageManagementStrategy usageStrategy = Layout.AddComponent<InventoryNullUsageManagementStrategy>(dropLayer);
-                            InventoryDropLayerRenderingManagementStrategy renderingStrategy = Layout.AddComponent<InventoryDropLayerRenderingManagementStrategy>(dropLayer);
+                            Layout.AddComponent<InventoryDropLayerRenderingManagementStrategy>(dropLayer);
                             Layout.AddComponent<InventoryManagementStrategyHolder>(dropLayer, new Dictionary<string, object>() {
                                 { "mainUsageStrategy", usageStrategy }
                             });

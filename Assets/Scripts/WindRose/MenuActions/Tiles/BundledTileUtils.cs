@@ -31,7 +31,7 @@ namespace WindRose
                 {
                     foreach(TileBase tileBase in GetSelectedNonBundledTiles())
                     {
-                        string path = AssetDatabase.GetAssetPath(tileBase.GetInstanceID());
+                        string path = AssetDatabase.GetAssetPath(tileBase);
                         string parentPath = Path.GetDirectoryName(path);
                         string fileName = Path.GetFileName(path);
                         string bundledPath = Path.Combine(parentPath, "Bundled");

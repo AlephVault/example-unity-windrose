@@ -5,28 +5,28 @@ using System.Text;
 using UnityEngine;
 using CamJam.Behaviours;
 
-[RequireComponent(typeof(StalkerEye))]
+[RequireComponent(typeof(WindRose.Behaviours.PlaySpace))]
 class SampleCharacterSwapping : MonoBehaviour
 {
     /**
-     * Speed for transitions.
+     * Delay for transitions.
      */
     [SerializeField]
-    private float speed = 0;
+    private float delay = 0;
 
     /**
      * Index of objects to rotate among.
      */
     [SerializeField]
-    private GameObject[] targets;
+    private WindRose.Behaviours.Entities.Objects.Object[] targets;
 
-    private StalkerEye stalkerEye;
+    private WindRose.Behaviours.PlaySpace playSpace;
 
     private int currentTarget = 0;
 
     private void Start()
     {
-        stalkerEye = GetComponent<StalkerEye>();
+        playSpace = GetComponent<WindRose.Behaviours.PlaySpace>();
         TrackTarget();
     }
 
@@ -47,10 +47,7 @@ class SampleCharacterSwapping : MonoBehaviour
     {
         if (targets.Length != 0)
         {
-            stalkerEye.Seek(targets[currentTarget], speed, true, delegate ()
-            {
-                //Debug//.Log("Stalking target " + currentTarget + "...");
-            });
+            playSpace.Focus(targets[currentTarget], delay, true);
         }
     }
 }

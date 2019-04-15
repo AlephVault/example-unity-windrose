@@ -31,7 +31,6 @@ namespace WindRose
             ///       ...).
             ///   </para>
             /// </summary>
-            [ExecuteInEditMode]
             [RequireComponent(typeof(Pausable))]
             [RequireComponent(typeof(Snapped))]
             [RequireComponent(typeof(ObjectStrategyHolder))]

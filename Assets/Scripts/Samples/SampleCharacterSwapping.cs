@@ -5,7 +5,7 @@ using System.Text;
 using UnityEngine;
 using CamJam.Behaviours;
 
-[RequireComponent(typeof(WindRose.Behaviours.PlaySpace))]
+[RequireComponent(typeof(WindRose.Behaviours.World.PlaySpace))]
 class SampleCharacterSwapping : MonoBehaviour
 {
     /**
@@ -20,13 +20,13 @@ class SampleCharacterSwapping : MonoBehaviour
     [SerializeField]
     private WindRose.Behaviours.Entities.Objects.MapObject[] targets;
 
-    private WindRose.Behaviours.PlaySpace playSpace;
+    private WindRose.Behaviours.World.PlaySpace playSpace;
 
     private int currentTarget = 0;
 
     private void Start()
     {
-        playSpace = GetComponent<WindRose.Behaviours.PlaySpace>();
+        playSpace = GetComponent<WindRose.Behaviours.World.PlaySpace>();
         TrackTarget();
     }
 

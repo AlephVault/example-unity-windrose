@@ -7,8 +7,9 @@ namespace WindRose
 {
     namespace Behaviours
     {
+        namespace World
+        {
             using Entities.Objects;
-            using World;
 
             /// <summary>
             ///   <para>
@@ -52,7 +53,7 @@ namespace WindRose
                 ///   Perhaps this behaviour should be changed to require the user explicitly select
                 ///     an interactive interface among the components.
                 /// </remarks>
-                public InteractiveInterface InteractionTab { get { return interactionTab;  } }
+                public InteractiveInterface InteractionTab { get { return interactionTab; } }
 
                 // All the instances and the cameras they are bound to.
                 private static Dictionary<Camera, PlaySpace> camerasMapping = new Dictionary<Camera, PlaySpace>();
@@ -189,7 +190,7 @@ namespace WindRose
                     if (!camera)
                     {
                         // An empty coroutine.
-                        return StartCoroutine(new MapObject[] {}.GetEnumerator());
+                        return StartCoroutine(new MapObject[] { }.GetEnumerator());
                     }
                     else
                     {
@@ -256,7 +257,7 @@ namespace WindRose
                             else
                             {
                                 timeFraction = timeDelta / remainingTransitioningTime;
-                                remainingTransitioningTime -= timeDelta;                                
+                                remainingTransitioningTime -= timeDelta;
                             }
                             camera.transform.position = Vector3.MoveTowards(camera.transform.position, targetPosition, (targetPosition - camera.transform.position).magnitude * timeFraction);
                         }
@@ -291,5 +292,6 @@ namespace WindRose
                     }
                 }
             }
+        }
     }
 }

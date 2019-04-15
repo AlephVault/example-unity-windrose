@@ -7,6 +7,8 @@ namespace WindRose
     {
         namespace Entities.Objects
         {
+            using World;
+
             /// <summary>
             ///   <para>
             ///     This component's sole purpose is to retrieve the topmost

@@ -12,6 +12,8 @@ namespace WindRose
         {
             namespace Teleport
             {
+                using World;
+
                 /// <summary>
                 ///   <para>
                 ///     A local teleporter will ensure that an object that enters

@@ -186,7 +186,7 @@ namespace WindRose
                 /// <returns>The new coroutine</returns>
                 public Coroutine Focus(MapObject newTarget, float delay = 0f, bool noWait = false)
                 {
-                    if (camera)
+                    if (!camera)
                     {
                         // An empty coroutine.
                         return StartCoroutine(new MapObject[] {}.GetEnumerator());
@@ -238,9 +238,10 @@ namespace WindRose
                      */
                     if (Target && camera)
                     {
+                        Vector3 targetPosition = new Vector3(Target.transform.position.x, Target.transform.position.y, camera.transform.position.z);
                         if (Status == FocusStatus.Focusing)
                         {
-                            camera.transform.position = Target.transform.position;
+                            camera.transform.position = targetPosition;
                         }
                         else // FocusStatus.Transitioning
                         {
@@ -256,8 +257,8 @@ namespace WindRose
                             {
                                 timeFraction = timeDelta / remainingTransitioningTime;
                                 remainingTransitioningTime -= timeDelta;                                
-                            }                            
-                            camera.transform.position = Vector3.MoveTowards(camera.transform.position, Target.transform.position, (Target.transform.position - camera.transform.position).magnitude * timeFraction);
+                            }
+                            camera.transform.position = Vector3.MoveTowards(camera.transform.position, targetPosition, (targetPosition - camera.transform.position).magnitude * timeFraction);
                         }
                     }
                     else

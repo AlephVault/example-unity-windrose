@@ -103,7 +103,7 @@ namespace WindRose
                 /// <summary>
                 ///   The object being followed.
                 /// </summary>
-                public Object Target { get; private set; }
+                public MapObject Target { get; private set; }
 
                 // The remaining time of the transition.
                 private float remainingTransitioningTime = 0f;
@@ -184,12 +184,12 @@ namespace WindRose
                 /// <param name="delay">The delay to take transitioning to the new object</param>
                 /// <param name="noWait">Tells whether waiting the current transition or not</param>
                 /// <returns>The new coroutine</returns>
-                public Coroutine Focus(Object newTarget, float delay = 0f, bool noWait = false)
+                public Coroutine Focus(MapObject newTarget, float delay = 0f, bool noWait = false)
                 {
                     if (camera)
                     {
                         // An empty coroutine.
-                        return StartCoroutine(new Object[] {}.GetEnumerator());
+                        return StartCoroutine(new MapObject[] {}.GetEnumerator());
                     }
                     else
                     {
@@ -197,7 +197,7 @@ namespace WindRose
                     }
                 }
 
-                private IEnumerator DoFocus(Object newTarget, float delay = 0f, bool noWait = false)
+                private IEnumerator DoFocus(MapObject newTarget, float delay = 0f, bool noWait = false)
                 {
                     if (noWait)
                     {

@@ -18,7 +18,7 @@ class SampleCharacterSwapping : MonoBehaviour
      * Index of objects to rotate among.
      */
     [SerializeField]
-    private WindRose.Behaviours.Entities.Objects.Object[] targets;
+    private WindRose.Behaviours.Entities.Objects.MapObject[] targets;
 
     private WindRose.Behaviours.PlaySpace playSpace;
 

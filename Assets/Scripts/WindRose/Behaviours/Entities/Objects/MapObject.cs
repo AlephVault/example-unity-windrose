@@ -34,7 +34,7 @@ namespace WindRose
             [RequireComponent(typeof(Pausable))]
             [RequireComponent(typeof(Snapped))]
             [RequireComponent(typeof(ObjectStrategyHolder))]
-            public class Object : MonoBehaviour, Common.Pausable.IPausable
+            public class MapObject : MonoBehaviour, Common.Pausable.IPausable
             {
                 /* *********************** Initial data *********************** */
 

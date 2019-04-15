@@ -52,7 +52,7 @@ namespace WindRose
                         GameObject gameObject = new GameObject(objectName);
                         gameObject.transform.parent = selectedTransform;
                         gameObject.SetActive(false);
-                        Layout.AddComponent<Behaviours.Entities.Objects.Object>(gameObject, new Dictionary<string, object>() {
+                        Layout.AddComponent<Behaviours.Entities.Objects.MapObject>(gameObject, new Dictionary<string, object>() {
                             { "width", (uint)objectSize.x },
                             { "height", (uint)objectSize.y }
                         });

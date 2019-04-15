@@ -25,7 +25,7 @@ namespace WindRose
 
                 // Dependencies
                 private StatePicker statePicker;
-                private Object mapObject;
+                private MapObject mapObject;
 
                 // Origin and target of movement. This has to do with the min/max values
                 //   of Snapped, but specified for the intended movement.
@@ -121,7 +121,7 @@ namespace WindRose
                 void Awake()
                 {
                     statePicker = GetComponent<StatePicker>();
-                    mapObject = GetComponent<Object>();
+                    mapObject = GetComponent<MapObject>();
                     mapObject.onAttached.AddListener(delegate (World.Map parentMap)
                     {
                         // Avoid inheriting former value of origin.

@@ -93,7 +93,7 @@ namespace WindRose
                     private void OnTriggerEnter2D(Collider2D collider)
                     {
                         GameObject gameObject = collider.gameObject;
-                        Object mapObject = gameObject.GetComponent<Object>();
+                        MapObject mapObject = gameObject.GetComponent<MapObject>();
                         if (mapObject.ParentMap == map && triggeringObjectsSet.Contains(gameObject))
                         {
                             currentStayingTriggers.Add(gameObject);

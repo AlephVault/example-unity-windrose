@@ -30,7 +30,7 @@ class WaypointHandled : MonoBehaviour
     {
         movable = GetComponent<Movable>();
         oriented = GetComponent<Oriented>();
-        WindRose.Behaviours.Entities.Objects.Object mapObject = GetComponent<WindRose.Behaviours.Entities.Objects.Object>();
+        WindRose.Behaviours.Entities.Objects.MapObject mapObject = GetComponent<WindRose.Behaviours.Entities.Objects.MapObject>();
         mapObject.onAttached.AddListener(delegate (Map map)
         {
             if (waySteps.Length != 0)

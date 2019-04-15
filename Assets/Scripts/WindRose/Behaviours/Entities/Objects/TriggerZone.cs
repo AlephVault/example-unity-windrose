@@ -27,12 +27,12 @@ namespace WindRose
                 // I will add, perhaps, more triggers later.
                 private class MapTriggerCallbacks
                 {
-                    private UnityAction<Object> OnMapTriggerPositionChanged;
-                    private Object mapObject;
+                    private UnityAction<MapObject> OnMapTriggerPositionChanged;
+                    private MapObject mapObject;
                     private uint previousX;
                     private uint previousY;
 
-                    public MapTriggerCallbacks(Object target, UnityAction<Object> onMapTriggerPositionChanged, uint x, uint y)
+                    public MapTriggerCallbacks(MapObject target, UnityAction<MapObject> onMapTriggerPositionChanged, uint x, uint y)
                     {
                         OnMapTriggerPositionChanged = onMapTriggerPositionChanged;
                         mapObject = target;
@@ -55,7 +55,7 @@ namespace WindRose
                 /// <summary>
                 ///   The fetched related map object. See <see cref="GetRelatedObject"/> for more details.
                 /// </summary>
-                protected Object mapObject;
+                protected MapObject mapObject;
 
                 /// <summary>
                 ///   A zone event. It will take as argument the triggering object, the map object returned
@@ -63,7 +63,7 @@ namespace WindRose
                 ///     returned by subtracting (<see cref="GetDeltaX"/>, <see cref="GetDeltaY"/>).
                 /// </summary>
                 [Serializable]
-                public class UnityMapTriggerEvent : UnityEvent<Object, Object, int, int> { }
+                public class UnityMapTriggerEvent : UnityEvent<MapObject, MapObject, int, int> { }
 
                 /// <summary>
                 ///   Event triggered when an object enters this zone.
@@ -113,7 +113,7 @@ namespace WindRose
                 /// <returns>The X to use as delta</returns>
                 protected abstract int GetDeltaY();
 
-                private void InvokeEventCallback(Object senderObject, UnityMapTriggerEvent targetEvent)
+                private void InvokeEventCallback(MapObject senderObject, UnityMapTriggerEvent targetEvent)
                 {
                     // When trying to call GetDeltaX() and GetDeltaY() an exception may occur if everything is being destroyed.
                     // That exception occurs because the objects, maps, and strategies are being also destroyed, and now the
@@ -137,7 +137,7 @@ namespace WindRose
                 ///   Notifies that an object has entered this zone.
                 /// </summary>
                 /// <param name="senderObject">The object entering this zone</param>
-                protected void CallOnMapTriggerEnter(Object senderObject)
+                protected void CallOnMapTriggerEnter(MapObject senderObject)
                 {
                     InvokeEventCallback(senderObject, onMapTriggerEnter);
                 }
@@ -146,7 +146,7 @@ namespace WindRose
                 ///   Notifies that an object is still in this zone.
                 /// </summary>
                 /// <param name="senderObject">The object staying in this zone</param>
-                protected void CallOnMapTriggerStay(Object senderObject)
+                protected void CallOnMapTriggerStay(MapObject senderObject)
                 {
                     InvokeEventCallback(senderObject, onMapTriggerStay);
                 }
@@ -155,7 +155,7 @@ namespace WindRose
                 ///   Notifies that an object has left this zone.
                 /// </summary>
                 /// <param name="senderObject">The object leaving this zone</param>
-                protected void CallOnMapTriggerExit(Object senderObject)
+                protected void CallOnMapTriggerExit(MapObject senderObject)
                 {
                     InvokeEventCallback(senderObject, onMapTriggerExit);
                 }
@@ -164,7 +164,7 @@ namespace WindRose
                 ///   Notifies that an object has been placed in this zone.
                 /// </summary>
                 /// <param name="senderObject">The object being placed in this zone</param>
-                protected void CallOnMapTriggerPlaced(Object senderObject)
+                protected void CallOnMapTriggerPlaced(MapObject senderObject)
                 {
                     InvokeEventCallback(senderObject, onMapTriggerPlaced);
                     InvokeEventCallback(senderObject, onMapTriggerMoved);
@@ -174,7 +174,7 @@ namespace WindRose
                 ///   Notifies that an object walked one step in this zone.
                 /// </summary>
                 /// <param name="senderObject">The object walking one step in this zone</param>
-                protected void CallOnMapTriggerWalked(Object senderObject)
+                protected void CallOnMapTriggerWalked(MapObject senderObject)
                 {
                     InvokeEventCallback(senderObject, onMapTriggerWalked);
                     InvokeEventCallback(senderObject, onMapTriggerMoved);
@@ -183,7 +183,7 @@ namespace WindRose
                 // Register a new sender, and add their callbacks
                 void Register(TriggerLive sender)
                 {
-                    Object mapObject = sender.GetComponent<Object>();
+                    MapObject mapObject = sender.GetComponent<MapObject>();
                     registeredCallbacks[sender] = new MapTriggerCallbacks(mapObject, CallOnMapTriggerWalked, mapObject.X, mapObject.Y);
                 }
 
@@ -222,14 +222,14 @@ namespace WindRose
 
                 void ExitAndDisconnect(TriggerLive sender)
                 {
-                    CallOnMapTriggerExit(sender.GetComponent<Object>());
+                    CallOnMapTriggerExit(sender.GetComponent<MapObject>());
                     UnRegister(sender);
                 }
 
                 void ConnectAndEnter(TriggerLive sender)
                 {
                     Register(sender);
-                    Object mapObject = sender.GetComponent<Object>();
+                    MapObject mapObject = sender.GetComponent<MapObject>();
                     CallOnMapTriggerEnter(mapObject);
                     // We also should account for other ways of entering the trigger here.
                     // One is the trigger has moved, and not the object.
@@ -261,7 +261,7 @@ namespace WindRose
                 ///     will be the second argument of each event.
                 /// </summary>
                 /// <returns>The reference map object</returns>
-                protected abstract Object GetRelatedObject();
+                protected abstract MapObject GetRelatedObject();
 
                 void OnTriggerEnter2D(Collider2D collision)
                 {
@@ -276,7 +276,7 @@ namespace WindRose
                     TriggerLive sender = collision.GetComponent<TriggerLive>();
                     if (sender == null) return;
 
-                    Object senderMapObject = sender.GetComponent<Object>();
+                    MapObject senderMapObject = sender.GetComponent<MapObject>();
                     if (mapObject.ParentMap != senderMapObject.ParentMap) return;
 
                     // I will also accept a new entry only if the sender is not already
@@ -326,7 +326,7 @@ namespace WindRose
                         if (registeredCallbacks.ContainsKey(key))
                         {
                             MapTriggerCallbacks value = registeredCallbacks[key];
-                            CallOnMapTriggerStay(key.GetComponent<Object>());
+                            CallOnMapTriggerStay(key.GetComponent<MapObject>());
                             value.CheckPosition();
                         }
                     }

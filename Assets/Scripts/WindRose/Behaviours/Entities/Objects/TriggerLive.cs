@@ -21,7 +21,7 @@ namespace WindRose
             ///   </para>
             /// </summary>
             [RequireComponent(typeof(Rigidbody2D))]
-            [RequireComponent(typeof(Object))]
+            [RequireComponent(typeof(MapObject))]
             [RequireComponent(typeof(BoxCollider2D))]
             public class TriggerLive : TriggerHolder
             {
@@ -30,7 +30,7 @@ namespace WindRose
                 {
                     base.Awake();
                     collider2D.enabled = false;
-                    Object mapObject = GetComponent<Object>();
+                    MapObject mapObject = GetComponent<MapObject>();
                     mapObject.onAttached.AddListener(delegate (World.Map map)
                     {
                         collider2D.enabled = true;
@@ -60,7 +60,7 @@ namespace WindRose
                 protected override void SetupCollider(Collider2D collider2D)
                 {
                     BoxCollider2D boxCollider2D = (BoxCollider2D)collider2D;
-                    Object mapObject = GetComponent<Object>();
+                    MapObject mapObject = GetComponent<MapObject>();
                     // collision mask will have certain width and height
                     boxCollider2D.size = new Vector2(mapObject.Width * mapObject.GetCellWidth(), mapObject.Height * mapObject.GetCellHeight());
                     // and starting with those dimensions, we compute the offset as >>> and vvv

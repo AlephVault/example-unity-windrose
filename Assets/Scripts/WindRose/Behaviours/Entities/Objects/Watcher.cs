@@ -45,7 +45,7 @@ namespace WindRose
 
                 void Start()
                 {
-                    Object mapObject = GetComponent<Object>();
+                    MapObject mapObject = GetComponent<MapObject>();
                     Oriented oriented = GetComponent<Oriented>();
                     GameObject aNewGameObject = new GameObject("WatcherVisionRange");
                     Support.Utils.Layout.AddComponent<BoxCollider2D>(aNewGameObject);

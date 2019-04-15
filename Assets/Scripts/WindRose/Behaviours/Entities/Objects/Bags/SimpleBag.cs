@@ -31,7 +31,7 @@ namespace WindRose
                 ///       and <see cref="InventorySimpleBagRenderingManagementStrategy"/>.
                 ///   </para>
                 /// </summary>
-                [RequireComponent(typeof(Objects.Object))]
+                [RequireComponent(typeof(Objects.MapObject))]
                 [RequireComponent(typeof(InventorySinglePositioningManagementStrategy))]
                 [RequireComponent(typeof(InventorySimpleSpatialManagementStrategy))]
                 [RequireComponent(typeof(InventoryManagementStrategyHolder))]
@@ -39,7 +39,7 @@ namespace WindRose
                 public class SimpleBag : MonoBehaviour
                 {
                     private InventoryManagementStrategyHolder inventoryHolder;
-                    private Objects.Object mapObject;
+                    private Objects.MapObject mapObject;
 
                     /**
                      * Awake/Start pre-register the renderers (if they are set).
@@ -48,7 +48,7 @@ namespace WindRose
                     void Awake()
                     {
                         inventoryHolder = GetComponent<InventoryManagementStrategyHolder>();
-                        mapObject = GetComponent<Objects.Object>();
+                        mapObject = GetComponent<Objects.MapObject>();
                     }
 
                     /**

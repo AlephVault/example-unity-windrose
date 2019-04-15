@@ -37,13 +37,13 @@ namespace WindRose
                     // The command currently being sent.
                     private Misc.Command command;
                     private Oriented oriented;
-                    private Object mapObject;
+                    private MapObject mapObject;
                     private bool paused = false;
 
                     private void Start()
                     {
                         oriented = GetComponent<Oriented>();
-                        mapObject = GetComponent<Object>();
+                        mapObject = GetComponent<MapObject>();
                     }
 
                     private void FixCommandPosition()

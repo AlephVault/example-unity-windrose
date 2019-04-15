@@ -19,7 +19,7 @@ namespace WindRose
                 ///       <see cref="PropertyWasUpdated(string, object, object)"/>.
                 ///   </para>
                 /// </summary>
-                [RequireComponent(typeof(Object))]
+                [RequireComponent(typeof(MapObject))]
                 public abstract class ObjectStrategy : MonoBehaviour
                 {
                     private static Type baseCounterpartStrategyType = typeof(World.ObjectsManagementStrategies.ObjectsManagementStrategy);
@@ -54,7 +54,7 @@ namespace WindRose
                     /// <summary>
                     ///   The related object.
                     /// </summary>
-                    public Object Object { get; private set; }
+                    public MapObject Object { get; private set; }
 
                     /**
                      * Initializes the related data and the counterpart type.
@@ -68,7 +68,7 @@ namespace WindRose
                             Destroy(gameObject);
                             throw new UnsupportedTypeException(string.Format("The type returned by CounterpartType must be a subclass of {0}", baseCounterpartStrategyType.FullName));
                         }
-                        Object = GetComponent<Object>();
+                        Object = GetComponent<MapObject>();
                     }
 
                     /// <summary>

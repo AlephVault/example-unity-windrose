@@ -37,7 +37,7 @@ namespace WindRose
                         {
                             if (status.Movement != null) return false;
 
-                            Entities.Objects.Object mapObject = strategy.StrategyHolder.Object;
+                            Entities.Objects.MapObject mapObject = strategy.StrategyHolder.Object;
 
                             switch (direction)
                             {

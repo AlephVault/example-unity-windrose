@@ -12,7 +12,7 @@ namespace WindRose
             ///     but considering an "inner margin" factor to avoid collisions when objects are
             ///     not there but immediately adjacent in any axis.
             /// </summary>
-            [RequireComponent(typeof(Object))]
+            [RequireComponent(typeof(MapObject))]
             [RequireComponent(typeof(BoxCollider2D))]
             public class TriggerPlatform : TriggerZone
             {
@@ -45,9 +45,9 @@ namespace WindRose
                 ///   The related map object is itself.
                 /// </summary>
                 /// <returns></returns>
-                protected override Object GetRelatedObject()
+                protected override MapObject GetRelatedObject()
                 {
-                    return GetComponent<Object>();
+                    return GetComponent<MapObject>();
                 }
 
                 /// <summary>

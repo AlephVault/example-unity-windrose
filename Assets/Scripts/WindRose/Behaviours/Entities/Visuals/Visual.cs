@@ -15,7 +15,7 @@ namespace WindRose
                 /// <summary>
                 ///   A visual is the basic visual component to be rendered
                 ///     that is related to in-map objects. Visuals are intended
-                ///     to be awaken from inside <see cref="Objects.Object"/>
+                ///     to be awaken from inside <see cref="Objects.MapObject"/>
                 ///     in-map objects, but they are unparented from them and
                 ///     added into the <see cref="World.Layers.Visuals.VisualsLayer"/>
                 ///     when the object is attached to a <see cref="World.Map"/>. More
@@ -61,12 +61,12 @@ namespace WindRose
                     ///     runtime, either on awake or when explicitly attached to an
                     ///     object.
                     /// </summary>
-                    private Objects.Object relatedObject;
+                    private Objects.MapObject relatedObject;
 
                     /// <summary>
                     ///   See <see cref="relatedObject"/>.
                     /// </summary>
-                    public Objects.Object RelatedObject { get { return relatedObject; } }
+                    public Objects.MapObject RelatedObject { get { return relatedObject; } }
 
                     /// <summary>
                     ///   Tracks the current status of the visibility.
@@ -92,11 +92,11 @@ namespace WindRose
                     private void OwnerPropertyUpdated(string p, object o, object n) { Resort(); }
 
                     /// <summary>
-                    ///   Invoked by new owner <see cref="Objects.Object"/> when attaching
+                    ///   Invoked by new owner <see cref="Objects.MapObject"/> when attaching
                     ///     this visual. Attaches handlers to all the events.
                     /// </summary>
                     /// <param name="owner">The new owner</param>
-                    public void OnAttached(Objects.Object owner)
+                    public void OnAttached(Objects.MapObject owner)
                     {
                         relatedObject = owner;
                         owner.onAttached.AddListener(OwnerOnAttached);
@@ -111,11 +111,11 @@ namespace WindRose
                     }
 
                     /// <summary>
-                    ///   Invoked by former owner <see cref="Objects.Object"/> when detaching
+                    ///   Invoked by former owner <see cref="Objects.MapObject"/> when detaching
                     ///     this visual.
                     /// </summary>
                     /// <param name="owner">The former owner</param>
-                    public void OnDetached(Objects.Object formerOwner)
+                    public void OnDetached(Objects.MapObject formerOwner)
                     {
                         relatedObject = null;
                         formerOwner.onAttached.RemoveListener(OwnerOnAttached);
@@ -189,7 +189,7 @@ namespace WindRose
 
                     private void Awake()
                     {
-                        relatedObject = transform.parent ? transform.parent.GetComponent<Objects.Object>() : null;
+                        relatedObject = transform.parent ? transform.parent.GetComponent<Objects.MapObject>() : null;
                         if (relatedObject.MainVisual == this) IsMain = true;
                         renderer = GetComponent<SpriteRenderer>();
                         UpdateVisibilityStatus();

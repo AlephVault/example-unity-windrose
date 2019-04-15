@@ -17,7 +17,7 @@ namespace WindRose
             ///     attached to the object. Also, when paused, they cannot change their
             ///     orientation.
             /// </summary>
-            [RequireComponent(typeof(Object))]
+            [RequireComponent(typeof(MapObject))]
             public class Oriented : MonoBehaviour, Common.Pausable.IPausable
             {
                 public class OrientationEvent : UnityEvent<Types.Direction> { }

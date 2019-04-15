@@ -25,7 +25,7 @@ namespace WindRose
             ///       will involve dependencies to ther strategies (and their states).
             ///   </para>
             /// </summary>
-            [RequireComponent(typeof(Object))]
+            [RequireComponent(typeof(MapObject))]
             public class ObjectStrategyHolder : MonoBehaviour
             {
                 /// <summary>
@@ -40,9 +40,9 @@ namespace WindRose
                 }
 
                 /// <summary>
-                ///   The related <see cref="Objects.Object"/> (the in-map object).
+                ///   The related <see cref="Objects.MapObject"/> (the in-map object).
                 /// </summary>
-                public Object Object { get; private set; }
+                public MapObject Object { get; private set; }
 
                 /// <summary>
                 ///   The main strategy of this object.
@@ -82,7 +82,7 @@ namespace WindRose
                     */
                 protected virtual void Awake()
                 {
-                    Object = GetComponent<Object>();
+                    Object = GetComponent<MapObject>();
                     if (objectStrategy == null || !(new HashSet<ObjectStrategy>(GetComponents<ObjectStrategy>()).Contains(objectStrategy))) {
                         Destroy(gameObject);
                         throw new InvalidStrategyComponentException("The selected strategy component must be non-null and present among the current object's components");

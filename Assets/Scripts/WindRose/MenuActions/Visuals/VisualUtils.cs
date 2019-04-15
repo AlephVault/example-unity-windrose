@@ -126,7 +126,7 @@ namespace WindRose
                 /// <summary>
                 ///   This method is used in the menu action: GameObject > Wind Rose > Visuals > Create Visual.
                 ///   It creates a <see cref="Behaviours.Entities.Visuals.Visual"/> under the selected transform,
-                ///     in the scene editor, that has a <see cref="Behaviours.Entities.Objects.Object"/> component.
+                ///     in the scene editor, that has a <see cref="Behaviours.Entities.Objects.MapObject"/> component.
                 /// </summary>
                 [MenuItem("GameObject/Wind Rose/Visuals/Create Visual", false, 11)]
                 public static void CreateVisual()
@@ -139,13 +139,13 @@ namespace WindRose
 
                 /// <summary>
                 ///   Validates the menu item GameObject > Wind Rose > Visuals > Create Visual.
-                ///   It enables such menu option when an <see cref="Behaviours.Entities.Objects.Object"/>
+                ///   It enables such menu option when an <see cref="Behaviours.Entities.Objects.MapObject"/>
                 ///     is selected in the scene editor.
                 /// </summary>
                 [MenuItem("GameObject/Wind Rose/Visuals/Create Visual", true)]
                 public static bool CanCreateVisual()
                 {
-                    return Selection.activeTransform && Selection.activeTransform.GetComponent<Behaviours.Entities.Objects.Object>();
+                    return Selection.activeTransform && Selection.activeTransform.GetComponent<Behaviours.Entities.Objects.MapObject>();
                 }
             }
         }

@@ -175,7 +175,7 @@ namespace WindRose
                     ///     <item>
                     ///       <term>After</term>
                     ///       <description>
-                    ///         After the whole allocation (including <see cref="Entities.Objects.Object.onMovementStarted"/>
+                    ///         After the whole allocation (including <see cref="Entities.Objects.MapObject.onMovementStarted"/>
                     ///           event handlers).
                     ///       </description>
                     ///     </item>
@@ -225,7 +225,7 @@ namespace WindRose
                     ///     <item>
                     ///       <term>After</term>
                     ///       <description>
-                    ///         After the whole clear (including <see cref="Entities.Objects.Object.onMovementCancelled"/>
+                    ///         After the whole clear (including <see cref="Entities.Objects.MapObject.onMovementCancelled"/>
                     ///           event handlers).
                     ///       </description>
                     ///     </item>
@@ -260,7 +260,7 @@ namespace WindRose
                     ///     <item>
                     ///       <term>After</term>
                     ///       <description>
-                    ///         After the whole movement (including <see cref="Entities.Objects.Object.onMovementFinished"/>
+                    ///         After the whole movement (including <see cref="Entities.Objects.MapObject.onMovementFinished"/>
                     ///           event handlers).
                     ///       </description>
                     ///     </item>
@@ -291,7 +291,7 @@ namespace WindRose
                     ///     <item>
                     ///       <term>After</term>
                     ///       <description>
-                    ///         After the whole teleport (including <see cref="Entities.Objects.Object.onTeleported"/>
+                    ///         After the whole teleport (including <see cref="Entities.Objects.MapObject.onTeleported"/>
                     ///           event handlers).
                     ///       </description>
                     ///     </item>

@@ -16,7 +16,7 @@ namespace WindRose
             ///     components and every component attending the key change event.
             ///     Also, when paused, their state cannot be changed.
             /// </summary>
-            [RequireComponent(typeof(Object))]
+            [RequireComponent(typeof(MapObject))]
             public class StatePicker : MonoBehaviour, Common.Pausable.IPausable
             {
                 public class StateKeyEvent : UnityEvent<string> {}

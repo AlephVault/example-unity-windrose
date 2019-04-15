@@ -134,7 +134,7 @@ namespace WindRose
                         GameObject gameObject = new GameObject(objectName);
                         gameObject.transform.parent = selectedTransform;
                         gameObject.SetActive(false);
-                        Layout.AddComponent<Behaviours.Entities.Objects.Object>(gameObject, new Dictionary<string, object>() {
+                        Layout.AddComponent<Behaviours.Entities.Objects.MapObject>(gameObject, new Dictionary<string, object>() {
                             { "width", (uint)objectSize.x },
                             { "height", (uint)objectSize.y }
                         });
@@ -231,7 +231,7 @@ namespace WindRose
 
                 /// <summary>
                 ///   This method is used in the menu action: GameObject > Wind Rose > Objects > Create Object.
-                ///   It creates a <see cref="Behaviours.Entities.Objects.Object"/> under the selected objects
+                ///   It creates a <see cref="Behaviours.Entities.Objects.MapObject"/> under the selected objects
                 ///     layer, in the scene editor.
                 /// </summary>
                 [MenuItem("GameObject/Wind Rose/Objects/Create Object", false, 11)]

@@ -16,15 +16,15 @@ namespace WindRose
             ///     When the object is moving, the movement axis will not be snapped.
             ///   </para>
             /// </summary>
-            [RequireComponent(typeof(Object))]
+            [RequireComponent(typeof(MapObject))]
             public class Snapped : MonoBehaviour
             {
-                private Object mapObject;
+                private MapObject mapObject;
 
                 // Use this for initialization
                 void Awake()
                 {
-                    mapObject = GetComponent<Object>();
+                    mapObject = GetComponent<MapObject>();
                     mapObject.onAttached.AddListener(delegate (World.Map map)
                     {
                         // Forcing this to avoid a blink.

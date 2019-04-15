@@ -36,7 +36,7 @@ namespace WindRose
                 ///   The related map object. It is mandatory.
                 /// </summary>
                 [SerializeField]
-                private Object relatedObject;
+                private MapObject relatedObject;
 
                 // Perhaps the related object has an Oriented component. We will make use of it.
                 private Oriented oriented;
@@ -143,7 +143,7 @@ namespace WindRose
                 ///   The related map object is the specified in <see cref="relatedObject"/>.
                 /// </summary>
                 /// <returns>The related map object</returns>
-                protected override Object GetRelatedObject()
+                protected override MapObject GetRelatedObject()
                 {
                     return relatedObject;
                 }

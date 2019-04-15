@@ -35,7 +35,7 @@ namespace WindRose
                 /// </summary>
                 /// <remarks>
                 ///   You may subclass this component to customize the
-                ///     <see cref="CanTeleport(Object, TeleportTarget)"/> and
+                ///     <see cref="CanTeleport(MapObject, TeleportTarget)"/> and
                 ///     <see cref="DoTeleport(Action)"/> methods if you want to run
                 ///     asynchronous code or add fade effects.
                 /// </remarks>
@@ -54,11 +54,11 @@ namespace WindRose
                         platform.onMapTriggerWalked.AddListener(OnWalkedIntoTeleporter);
                     }
 
-                    private void OnWalkedIntoTeleporter(Object objectToBeTeleported, Object thisTeleporter, int x, int y)
+                    private void OnWalkedIntoTeleporter(MapObject objectToBeTeleported, MapObject thisTeleporter, int x, int y)
                     {
                         if (enabled && Target)
                         {
-                            Object tgObject = Target.GetComponent<Object>();
+                            MapObject tgObject = Target.GetComponent<MapObject>();
                             if (tgObject.ParentMap)
                             {
                                 uint thisWidth = thisTeleporter.Width;
@@ -90,12 +90,12 @@ namespace WindRose
                     /// <param name="objectToBeTeleported">The object intending to be teleported</param>
                     /// <param name="teleportTarget">The teleport target</param>
                     /// <returns>Whether the teleport can occur</returns>
-                    protected virtual bool CanTeleport(Object objectToBeTeleported, TeleportTarget teleportTarget)
+                    protected virtual bool CanTeleport(MapObject objectToBeTeleported, TeleportTarget teleportTarget)
                     {
                         return true;
                     }
 
-                    private PlaySpace GetPlaySpaceFor(Object objectToBeTeleported)
+                    private PlaySpace GetPlaySpaceFor(MapObject objectToBeTeleported)
                     {
                         if (!objectToBeTeleported) return null;
                         if (!objectToBeTeleported.ParentMap) return null;
@@ -107,7 +107,7 @@ namespace WindRose
                      *   callback of a process that can be deferred by the user (DoTeleport). Also updates the camera appropriately,
                      *   if now using different providers.
                      */
-                    private void ObjectTeleportOperation(Object objectToBeTeleported, TeleportTarget teleportTarget, Object teleportTargetObject)
+                    private void ObjectTeleportOperation(MapObject objectToBeTeleported, TeleportTarget teleportTarget, MapObject teleportTargetObject)
                     {
                         uint tgX = teleportTargetObject.X;
                         uint tgY = teleportTargetObject.Y;
@@ -162,7 +162,7 @@ namespace WindRose
                     /// <param name="objectToBeTeleported">The object being teleported.</param>
                     /// <param name="teleportTarget">The target of the teleport.</param>
                     /// <param name="teleportTargetObject">The underlying object of that target.</param>
-                    protected virtual void DoTeleport(Action teleport, Object objectToBeTeleported, TeleportTarget teleportTarget, Object teleportTargetObject)
+                    protected virtual void DoTeleport(Action teleport, MapObject objectToBeTeleported, TeleportTarget teleportTarget, MapObject teleportTargetObject)
                     {
                         teleport();
                     }

@@ -92,9 +92,12 @@ namespace WindRose
                             if (value != null)
                             {
                                 camerasMapping.Add(value, this);
-                                Canvas interactorCanvas = interactionTab.GetComponentInParent<Canvas>();
-                                interactorCanvas.renderMode = RenderMode.ScreenSpaceCamera;
-                                interactorCanvas.worldCamera = value;
+                                if (interactionTab)
+                                {
+                                    Canvas interactorCanvas = interactionTab.GetComponentInParent<Canvas>();
+                                    interactorCanvas.renderMode = RenderMode.ScreenSpaceCamera;
+                                    interactorCanvas.worldCamera = value;
+                                }
                             }
                             camera = value;
                         }
@@ -104,7 +107,13 @@ namespace WindRose
                 /// <summary>
                 ///   The object being followed.
                 /// </summary>
-                public MapObject Target { get; private set; }
+                [SerializeField]
+                private MapObject target;
+
+                /// <summary>
+                ///   The object being followed.
+                /// </summary>
+                public MapObject Target { get { return target; } }
 
                 // The remaining time of the transition.
                 private float remainingTransitioningTime = 0f;
@@ -214,8 +223,8 @@ namespace WindRose
                     }
 
                     // Set the object and move to its position or start a new transition to it.
-                    Target = newTarget;
-                    if (Target == null)
+                    target = newTarget;
+                    if (target == null)
                     {
                         Status = FocusStatus.NotFocusing;
                     }
@@ -237,9 +246,9 @@ namespace WindRose
                      *   fraction and the object's distance to the camera. When the transition ends, the <see cref="Status"/>
                      *   will be changed to <see cref="FocusStatus.Focusing"/>.
                      */
-                    if (Target && camera)
+                    if (target && camera)
                     {
-                        Vector3 targetPosition = new Vector3(Target.transform.position.x, Target.transform.position.y, camera.transform.position.z);
+                        Vector3 targetPosition = new Vector3(target.transform.position.x, target.transform.position.y, camera.transform.position.z);
                         if (Status == FocusStatus.Focusing)
                         {
                             camera.transform.position = targetPosition;
@@ -264,7 +273,7 @@ namespace WindRose
                     }
                     else
                     {
-                        Target = null;
+                        target = null;
                         Status = FocusStatus.NotFocusing;
                     }
                 }

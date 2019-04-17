@@ -97,13 +97,6 @@ namespace WindRose
                         return true;
                     }
 
-                    private PlaySpace GetPlaySpaceFor(MapObject objectToBeTeleported)
-                    {
-                        if (!objectToBeTeleported) return null;
-                        if (!objectToBeTeleported.ParentMap) return null;
-                        return objectToBeTeleported.ParentMap.GetComponentInParent<PlaySpace>();
-                    }
-
                     /**
                      * This method will only be invoked in the context of a callback. This only has the use to work as the internal
                      *   callback of a process that can be deferred by the user (DoTeleport). Also updates the camera appropriately,
@@ -121,26 +114,7 @@ namespace WindRose
                         // Choose between an in-map teleport or a full-force-attach to a new map.
                         if (teleportTargetObject.ParentMap != objectToBeTeleported.ParentMap)
                         {
-                            PlaySpace currentSpace = GetPlaySpaceFor(objectToBeTeleported);
-                            PlaySpace newSpace = GetPlaySpaceFor(teleportTargetObject);
-
-                            Camera camera = null;
-                            if (currentSpace != newSpace)
-                            {
-                                if (currentSpace)
-                                {
-                                    camera = currentSpace.Camera;
-                                    currentSpace.Camera = null;
-                                }
-                            }
                             objectToBeTeleported.Attach(teleportTargetObject.ParentMap, x, y, true);
-                            if (currentSpace != newSpace)
-                            {
-                                if (newSpace)
-                                {
-                                    newSpace.Camera = camera;
-                                }
-                            }
                         }
                         else
                         {

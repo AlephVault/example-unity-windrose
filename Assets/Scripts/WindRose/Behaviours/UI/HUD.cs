@@ -1,31 +1,34 @@
-﻿using System.Collections;
+﻿using System;
+using System.Linq;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using GabTab.Behaviours;
 
 namespace WindRose
 {
     namespace Behaviours
     {
-        namespace World
+        namespace UI
         {
+            using World;
             using Entities.Objects;
+            using GabTab.Behaviours.Interactors;
 
             /// <summary>
             ///   <para>
-            ///     Wraps all the map in the scene and links to a <see cref="InteractiveInterface"/>
-            ///       that is available somewhere.
+            ///     A Heads Up Display makes use of a <see cref="Canvas"/> and its related
+            ///       camera (when using <see cref="RenderMode.ScreenSpaceCamera"/> rendering
+            ///       mode in the canvas) and allows tracking an object and also starting an
+            ///       interaction if the canvas contains an <see cref="InteractiveInterface"/>.
+            ///       It provides a wrapper for object following and running an interaction.
             ///   </para>
             ///   <para>
-            ///     The wrapped interactive interface will also have two listeners to,
-            ///       perhaps, pause/release the maps. This interface will be available for
-            ///       any child that would need it (e.g. to start an interaction).
-            ///   </para>
-            ///   <para>
-            ///     This behaviour will also may make use od a camera.
+            ///     This behaviour also allows pausing every map currently alive at top-level.
             ///   </para>
             /// </summary>
-            public class PlaySpace : MonoBehaviour
+            public class HUD : MonoBehaviour
             {
                 /// <summary>
                 ///   Criteria to pause the map while the interaction is running: don't pause,
@@ -40,78 +43,24 @@ namespace WindRose
                 private PauseType pauseType = PauseType.FREEZE;
 
                 /// <summary>
-                ///   The related <see cref="InteractiveInterface"/> to provide/trigger.
-                ///   It may not need to be right inside this object's hierarchy.
+                ///   The related <see cref="Canvas"/> to work with. If omitted,
+                ///     it will be sought as another component in the same object.
                 /// </summary>
                 [SerializeField]
-                private InteractiveInterface interactionTab;
+                private Canvas canvas;
+
+                // The interactive interface of the current canvas.
+                private InteractiveInterface interactiveInterface;
 
                 /// <summary>
-                ///   The interactive interface. It must be present among children.
+                ///   The object being followed, if any.
                 /// </summary>
-                /// <remarks>
-                ///   Perhaps this behaviour should be changed to require the user explicitly select
-                ///     an interactive interface among the components.
-                /// </remarks>
-                public InteractiveInterface InteractionTab { get { return interactionTab; } }
-
-                // All the instances and the cameras they are bound to.
-                private static Dictionary<Camera, PlaySpace> camerasMapping = new Dictionary<Camera, PlaySpace>();
-
-                /// <summary>
-                ///   The camera this PlaySpace is tied to.
-                /// </summary>
-                [SerializeField]
-                public Camera camera;
-
-                /// <summary>
-                ///   Gets or sets the current camera. On set, if camera is in use by another component, it will fail.
-                /// </summary>
-                public Camera Camera
-                {
-                    get
-                    {
-                        return camera;
-                    }
-                    set
-                    {
-                        // If there new camera is in use by another playspace, it is an error.
-                        // Otherwise, lets process the property change.
-                        PlaySpace otherPS;
-                        bool newCameraInUse = camerasMapping.TryGetValue(value, out otherPS);
-                        if (newCameraInUse)
-                        {
-                            if (otherPS != null) throw new Types.Exception("The camera being assigned to this playspace is already being used by another playspace");
-                        }
-                        else
-                        {
-                            if (camera != null)
-                            {
-                                camerasMapping.Remove(camera);
-                            }
-                            if (value != null)
-                            {
-                                camerasMapping.Add(value, this);
-                                if (interactionTab)
-                                {
-                                    Canvas interactorCanvas = interactionTab.GetComponentInParent<Canvas>();
-                                    interactorCanvas.renderMode = RenderMode.ScreenSpaceCamera;
-                                    interactorCanvas.worldCamera = value;
-                                }
-                            }
-                            camera = value;
-                        }
-                    }
-                }
-
-                /// <summary>
-                ///   The object being followed.
-                /// </summary>
+                /// <seealso cref="Focus(MapObject, float, bool)"/>
                 [SerializeField]
                 private MapObject target;
 
                 /// <summary>
-                ///   The object being followed.
+                ///   See <see cref="target"/>.
                 /// </summary>
                 public MapObject Target { get { return target; } }
 
@@ -145,30 +94,15 @@ namespace WindRose
 
                 private void Awake()
                 {
-                    // Redundant init of camera.
-                    try
-                    {
-                        Camera = camera;
-                    }
-                    catch
-                    {
-                        Destroy(gameObject);
-                        throw;
-                    }
+                    if (!canvas) canvas = GetComponent<Canvas>();
+                    canvas.renderMode = RenderMode.ScreenSpaceCamera;
+                    interactiveInterface = canvas.GetComponentInChildren<InteractiveInterface>();
                 }
 
                 // Use this for initialization
                 private void Start()
                 {
-                    interactionTab.beforeRunningInteraction.AddListener(OnAcquire);
-                    interactionTab.afterRunningInteraction.AddListener(OnRelease);
-                }
-
-                private void OnDestroy()
-                {
-                    if (camera) camerasMapping.Remove(camera);
-                    interactionTab.beforeRunningInteraction.RemoveListener(OnAcquire);
-                    interactionTab.afterRunningInteraction.RemoveListener(OnRelease);
+                    canvas.worldCamera.orthographic = true;
                 }
 
                 /// <summary>
@@ -196,7 +130,7 @@ namespace WindRose
                 /// <returns>The new coroutine</returns>
                 public Coroutine Focus(MapObject newTarget, float delay = 0f, bool noWait = false)
                 {
-                    if (!camera)
+                    if (!canvas.worldCamera)
                     {
                         // An empty coroutine.
                         return StartCoroutine(new MapObject[] { }.GetEnumerator());
@@ -246,6 +180,7 @@ namespace WindRose
                      *   fraction and the object's distance to the camera. When the transition ends, the <see cref="Status"/>
                      *   will be changed to <see cref="FocusStatus.Focusing"/>.
                      */
+                    Camera camera = canvas.worldCamera;
                     if (target && camera)
                     {
                         Vector3 targetPosition = new Vector3(target.transform.position.x, target.transform.position.y, camera.transform.position.z);
@@ -283,9 +218,9 @@ namespace WindRose
                     if (pauseType != PauseType.NO)
                     {
                         bool fullFreeze = pauseType == PauseType.FREEZE;
-                        foreach (Map map in GetComponentsInChildren<Map>())
+                        foreach (Map map in (from obj in SceneManager.GetActiveScene().GetRootGameObjects() select obj.GetComponent<Map>()))
                         {
-                            map.Pause(fullFreeze);
+                            if (map) map.Pause(fullFreeze);
                         }
                     }
                 }
@@ -294,10 +229,30 @@ namespace WindRose
                 {
                     if (pauseType != PauseType.NO)
                     {
-                        foreach (Map map in GetComponentsInChildren<Map>())
+                        foreach (Map map in (from obj in SceneManager.GetActiveScene().GetRootGameObjects() select obj.GetComponent<Map>()))
                         {
-                            map.Resume();
+                            if (map) map.Resume();
                         }
+                    }
+                }
+
+                /// <summary>
+                ///   Executes an interaction, as described in <see cref="InteractiveInterface.RunInteraction(Func{InteractorsManager, InteractiveMessage, IEnumerator})"/>.
+                ///     However the behaviour is wrapped in pausing/unpausing context, depending on the value of <see cref="pauseType"/>.
+                /// </summary>
+                /// <param name="interaction">The interaction to run</param>
+                public void RunInteraction(Func<InteractorsManager, InteractiveMessage, IEnumerator> interaction)
+                {
+                    if (interactiveInterface.IsRunningAnInteraction) return;
+
+                    try
+                    {
+                        OnAcquire();
+                        interactiveInterface.RunInteraction(interaction);
+                    }
+                    finally
+                    {
+                        OnRelease();
                     }
                 }
             }

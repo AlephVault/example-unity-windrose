@@ -5,7 +5,7 @@ using System.Text;
 using UnityEngine;
 using CamJam.Behaviours;
 
-[RequireComponent(typeof(WindRose.Behaviours.World.PlaySpace))]
+[RequireComponent(typeof(WindRose.Behaviours.UI.HUD))]
 class SampleCharacterSwapping : MonoBehaviour
 {
     /**
@@ -20,13 +20,13 @@ class SampleCharacterSwapping : MonoBehaviour
     [SerializeField]
     private WindRose.Behaviours.Entities.Objects.MapObject[] targets;
 
-    private WindRose.Behaviours.World.PlaySpace playSpace;
+    private WindRose.Behaviours.UI.HUD hud;
 
     private int currentTarget = 0;
 
     private void Start()
     {
-        playSpace = GetComponent<WindRose.Behaviours.World.PlaySpace>();
+        hud = GetComponent<WindRose.Behaviours.UI.HUD>();
         TrackTarget();
     }
 
@@ -47,7 +47,7 @@ class SampleCharacterSwapping : MonoBehaviour
     {
         if (targets.Length != 0)
         {
-            playSpace.Focus(targets[currentTarget], delay, true);
+            hud.Focus(targets[currentTarget], delay, true);
         }
     }
 }

@@ -69,7 +69,7 @@ namespace GabTab
             [SerializeField]
             private InteractiveMessage interactiveMessage;
             private Interactors.InteractorsManager interactorsManager;
-            private bool interactionRunning = false;
+            public bool IsRunningAnInteraction { get; private set; }
             private Hideable hideable;
 
             /// <summary>
@@ -90,7 +90,7 @@ namespace GabTab
 
             void Update()
             {
-                hideable.Hidden = !interactionRunning;
+                hideable.Hidden = !IsRunningAnInteraction;
             }
 
             /// <summary>
@@ -157,15 +157,15 @@ namespace GabTab
 
             private IEnumerator WrappedInteraction(IEnumerator innerInteraction)
             {
-                if (interactionRunning)
+                if (IsRunningAnInteraction)
                 {
                     throw new Types.Exception("Cannot run the interaction: A previous interaction is already running");
                 }
-                interactionRunning = true;
+                IsRunningAnInteraction = true;
                 beforeRunningInteraction.Invoke();
                 yield return StartCoroutine(innerInteraction);
                 afterRunningInteraction.Invoke();
-                interactionRunning = false;
+                IsRunningAnInteraction = false;
             }
         }
     }

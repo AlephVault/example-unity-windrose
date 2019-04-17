@@ -5,23 +5,15 @@ using GabTab.Behaviours.Interactors;
 using WindRose.Behaviours.Entities.Objects;
 using WindRose.Behaviours.Entities.Objects.CommandExchange.Talk;
 
-[RequireComponent(typeof(InteractionLauncher))]
 [RequireComponent(typeof(TalkReceiver))]
 class SampleMeaninglessTalk : MonoBehaviour
 {
-    InteractionLauncher interactionLauncher;
-
     void Awake()
     {
         GetComponent<TalkReceiver>().onTalkReceived.AddListener(delegate (GameObject sender)
         {
-            interactionLauncher.InteractionTab.RunInteraction(MeaninglessInteraction);
+            sender.GetComponent<MapObject>().RunInteraction(MeaninglessInteraction);
         });
-    }
-
-    void Start()
-    {
-        interactionLauncher = GetComponent<InteractionLauncher>();
     }
 
     IEnumerator MeaninglessInteraction(InteractorsManager manager, InteractiveMessage interactiveMessage)

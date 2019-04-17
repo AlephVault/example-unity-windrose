@@ -97,6 +97,7 @@ namespace WindRose
                     if (!canvas) canvas = GetComponent<Canvas>();
                     canvas.renderMode = RenderMode.ScreenSpaceCamera;
                     interactiveInterface = canvas.GetComponentInChildren<InteractiveInterface>();
+                    if (transform.parent) Debug.LogWarning("Warning!!! A HUD must be a root object in the scene (i.e. have no parent transform) to be properly recognized by an object looking for the default one!!!");
                 }
 
                 // Use this for initialization

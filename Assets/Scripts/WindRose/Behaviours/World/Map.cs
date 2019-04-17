@@ -171,6 +171,7 @@ namespace WindRose
                     if (CeilingLayer != null) CopyGridProperties(CeilingLayer.GetComponent<Grid>(), floorLayerGrid);
                     // Fetching strategy - needed
                     StrategyHolder = GetComponent<ObjectsManagementStrategyHolder>();
+                    if (transform.parent) Debug.LogWarning("Warning!!! A Map must be a root object in the scene (i.e. have no parent transform) to be properly recognized by a HUD pausing all the maps!!!");
                 }
 
                 void CopyGridProperties(Grid dst, Grid src)

@@ -14,8 +14,16 @@ namespace WindRose
         {
             using Support.Utils;
 
+            /// <summary>
+            ///   Menu actions to create standard tiles from sprites.
+            /// </summary>
             public static class StandardTileUtils
             {
+                /// <summary>
+                ///   This method is used in the menu action: Assets > Create > Wind Rose > Tiles > Tiles (From 1+ selected sprites).
+                ///   For each sprite being selected, it creates a tile under the new /Tiles subdirectory, in the same directory,
+                ///     for each individual sprite and keeping the sprite name.
+                /// </summary>
                 [MenuItem("Assets/Create/Wind Rose/Tiles/Tiles (From 1+ selected sprites)", false, priority = 101)]
                 public static void CreateTiles()
                 {
@@ -35,12 +43,22 @@ namespace WindRose
                     }
                 }
 
+                /// <summary>
+                ///   Validates the menu item Assets > Create > Wind Rose > Tiles > Tiles (From 1+ selected sprites).
+                ///   It enables such menu option when 1 or more <see cref="Sprite"/> objects are selected in
+                ///     the project explorer.
+                /// </summary>
                 [MenuItem("Assets/Create/Wind Rose/Tiles/Tiles (From 1+ selected sprites)", true)]
                 public static bool CanCreateTiles()
                 {
                     return TileUtils.GetSelectedAssets<Sprite>().Count() >= 1;
                 }
 
+                /// <summary>
+                ///   This method is used in the menu action: Assets > Create > Wind Rose > Tiles > Random Tile (From 2+ selected sprites).
+                ///   Taking all the selected sprites, creates a new random tile storing it in the /Tiles subdirectory in
+                ///     the same folder of (and also using the filename taken from) the first sprite selected.
+                /// </summary>
                 [MenuItem("Assets/Create/Wind Rose/Tiles/Random Tile (From 2+ selected sprites)", false, priority = 102)]
                 public static void CreateRandomTile()
                 {
@@ -60,6 +78,11 @@ namespace WindRose
                     AssetDatabase.CreateAsset(randomTile, Path.Combine(bundledPath, fileName));
                 }
 
+                /// <summary>
+                ///   Validates the menu item Assets > Create > Wind Rose > Tiles > Random Tile (From 2+ selected sprites).
+                ///   It enables such menu option when 2 or more <see cref="Sprite"/> objects are selected in
+                ///     the project explorer.
+                /// </summary>
                 [MenuItem("Assets/Create/Wind Rose/Tiles/Random Tile (From 2+ selected sprites)", true)]
                 public static bool CanCreateRandomTile()
                 {

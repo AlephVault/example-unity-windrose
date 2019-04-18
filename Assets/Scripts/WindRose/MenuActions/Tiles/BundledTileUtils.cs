@@ -16,7 +16,7 @@ namespace WindRose
             using ScriptableObjects.Tiles;
 
             /// <summary>
-            ///   Menu actions to create bundled tiles from regular ones.
+            ///   Menu actions to create bundled tiles from non-bundled ones.
             /// </summary>
             public static class BundledTileUtils
             {
@@ -50,7 +50,7 @@ namespace WindRose
                 /// <summary>
                 ///   Validates the menu item Assets > Create > Wind Rose > Tiles > Bundled Tiles (From 1+ selected non-bundled tiles).
                 ///   It enables such menu option when 1 or more <see cref="Tile"/> or <see cref="TileBase"/> objects are selected in
-                ///     the scene editor.
+                ///     the project explorer.
                 /// </summary>
                 [MenuItem("Assets/Create/Wind Rose/Tiles/Bundled Tiles (From 1+ selected non-bundled tiles)", true)]
                 public static bool CanWrapIntoBundledTiles()

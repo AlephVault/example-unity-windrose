@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using UnityEngine.Tilemaps;
+using UnityEditor;
 using UnityEngine.Rendering;
 using Support.Utils;
 
@@ -92,6 +92,10 @@ namespace WindRose
                 [SerializeField]
                 private Vector3 cellSize = Vector3.one;
                 public Vector3 CellSize { get { return cellSize; } }
+
+#if UNITY_EDITOR
+                public Color gizmoColor = Color.yellow;
+#endif
 
                 /// <summary>
                 ///   The map's floor layer. It will hold a lot of children of type
@@ -287,37 +291,28 @@ namespace WindRose
                     }
                 }
 
-                // Ensures the highlight layer being present. The highlight by itself will
-                //   know how to update, and to remove on application run.
-                private Layers.Highlight.HighlightLayer EnsureBackgroundHighlight()
-                {
-                    Layers.Highlight.HighlightLayer highlightLayer = null;
-                    foreach(Transform child in transform)
-                    {
-                        highlightLayer = child.GetComponent<Layers.Highlight.HighlightLayer>();
-                        if (highlightLayer) {
-                            highlightLayer.ForceUpdate();
-                            return highlightLayer;
-                        };
-                    }
-
-                    GameObject highlightObject = new GameObject("Highlight");
-                    highlightObject.SetActive(false);
-                    highlightLayer = highlightObject.AddComponent<Layers.Highlight.HighlightLayer>();
-                    highlightObject.transform.parent = transform;
-                    highlightObject.SetActive(true);
-                    highlightLayer.ForceUpdate();
-                    return highlightLayer;
-                }
-
                 private void Update()
                 {
                     if (!Application.isPlaying)
                     {
                         NormalizeTilemapsAndGrids();
                         NormalizeCeilingWithFloor();
-                        EnsureBackgroundHighlight();
                     }
+                }
+
+                [DrawGizmo(GizmoType.Selected | GizmoType.NonSelected)]
+                public static void DrawContour(Map map, GizmoType gizmoType)
+                {
+                    Vector3 bottomLeft = map.transform.position;
+                    Vector3 bottomRight = bottomLeft + Vector3.right * map.CellSize.x * map.Width;
+                    Vector3 topLeft = bottomLeft + Vector3.up * map.CellSize.y * map.Height;
+                    Vector3 topRight = bottomLeft + Vector3.up * map.CellSize.y * map.Height + Vector3.right * map.CellSize.x * map.Width;
+
+                    Gizmos.color = map.gizmoColor;
+                    Gizmos.DrawLine(bottomLeft, bottomRight);
+                    Gizmos.DrawLine(bottomLeft, topLeft);
+                    Gizmos.DrawLine(topRight, bottomRight);
+                    Gizmos.DrawLine(topRight, topLeft);
                 }
 #endif
             }

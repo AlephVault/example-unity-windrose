@@ -138,7 +138,7 @@ namespace WindRose
                 }
 
                 /// <summary>
-                ///   Validates the menu item GameObject > Wind Rose > Visuals > Create Visual.
+                ///   Validates the menu item: GameObject > Wind Rose > Visuals > Create Visual.
                 ///   It enables such menu option when an <see cref="Behaviours.Entities.Objects.MapObject"/>
                 ///     is selected in the scene editor.
                 /// </summary>

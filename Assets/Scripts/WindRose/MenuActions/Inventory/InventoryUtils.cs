@@ -68,7 +68,7 @@ namespace WindRose
                 ///   This method is used in the assets menu action: Create > Wind Rose > Inventory > Drop Container Renderer Prefab.
                 /// </summary>
                 [MenuItem("Assets/Create/Wind Rose/Inventory/Drop Container Renderer Prefab")]
-                public static void CreateVisual()
+                public static void CreatePrefab()
                 {
                     CreateDropContainerRendererPrefabWindow window = ScriptableObject.CreateInstance<CreateDropContainerRendererPrefabWindow>();
                     window.position = new Rect(new Vector2(230, 350), new Vector2(360, 110));

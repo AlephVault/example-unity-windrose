@@ -123,7 +123,7 @@ namespace WindRose
                 }
 
                 /// <summary>
-                ///   Validates the menu item GameObject > Wind Rose > UI > Create HUD.
+                ///   Validates the menu item: GameObject > Wind Rose > UI > Create HUD.
                 ///   It enables such menu option when no transform is selected in the scene
                 ///     hierarchy.
                 /// </summary>

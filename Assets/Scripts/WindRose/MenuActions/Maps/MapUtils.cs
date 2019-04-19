@@ -241,6 +241,17 @@ namespace WindRose
                     window.position = new Rect(new Vector2(110, 250), new Vector2(643, 250));
                     window.ShowUtility();
                 }
+
+                /// <summary>
+                ///   Validates the menu item: GameObject > Wind Rose > Maps > Create Map.
+                ///   It enables such menu option when no transform is selected in the scene
+                ///     hierarchy.
+                /// </summary>
+                [MenuItem("GameObject/Wind Rose/Maps/Create Map", true)]
+                public static bool CanCreateHUD()
+                {
+                    return Selection.activeTransform == null;
+                }
             }
         }
     }

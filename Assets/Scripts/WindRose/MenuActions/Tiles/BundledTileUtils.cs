@@ -48,7 +48,7 @@ namespace WindRose
                 }
 
                 /// <summary>
-                ///   Validates the menu item Assets > Create > Wind Rose > Tiles > Bundled Tiles (From 1+ selected non-bundled tiles).
+                ///   Validates the menu item: Assets > Create > Wind Rose > Tiles > Bundled Tiles (From 1+ selected non-bundled tiles).
                 ///   It enables such menu option when 1 or more <see cref="Tile"/> or <see cref="TileBase"/> objects are selected in
                 ///     the project explorer.
                 /// </summary>

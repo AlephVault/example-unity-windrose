@@ -44,7 +44,7 @@ namespace WindRose
                 }
 
                 /// <summary>
-                ///   Validates the menu item Assets > Create > Wind Rose > Tiles > Tiles (From 1+ selected sprites).
+                ///   Validates the menu item: Assets > Create > Wind Rose > Tiles > Tiles (From 1+ selected sprites).
                 ///   It enables such menu option when 1 or more <see cref="Sprite"/> objects are selected in
                 ///     the project explorer.
                 /// </summary>
@@ -79,7 +79,7 @@ namespace WindRose
                 }
 
                 /// <summary>
-                ///   Validates the menu item Assets > Create > Wind Rose > Tiles > Random Tile (From 2+ selected sprites).
+                ///   Validates the menu item: Assets > Create > Wind Rose > Tiles > Random Tile (From 2+ selected sprites).
                 ///   It enables such menu option when 2 or more <see cref="Sprite"/> objects are selected in
                 ///     the project explorer.
                 /// </summary>

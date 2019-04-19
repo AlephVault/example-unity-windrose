@@ -247,7 +247,7 @@ namespace WindRose
                 }
 
                 /// <summary>
-                ///   Validates the menu item GameObject > Wind Rose > Objects > Create Object.
+                ///   Validates the menu item: GameObject > Wind Rose > Objects > Create Object.
                 ///   It enables such menu option when an <see cref="Behaviours.World.Layers.Objects.ObjectsLayer"/>
                 ///     is selected in the scene editor.
                 /// </summary>

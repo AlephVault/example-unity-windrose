@@ -100,7 +100,7 @@ namespace WindRose
                         newCanvasComponent.renderMode = RenderMode.ScreenSpaceCamera;
 
                         GameObject newHudObject = useSameObjectForCanvasAndHUD ? newCanvasObject : new GameObject(hudObjectName);
-                        HUD newHudComponent = Layout.AddComponent<HUD>(newHudObject, new Dictionary<string, object>()
+                        Layout.AddComponent<HUD>(newHudObject, new Dictionary<string, object>()
                         {
                             { "canvas", useSameObjectForCanvasAndHUD ? null : newCanvasComponent }
                         });
@@ -128,7 +128,7 @@ namespace WindRose
                 ///     hierarchy.
                 /// </summary>
                 [MenuItem("GameObject/Wind Rose/UI/Create HUD", true)]
-                public static bool CanCreateObject()
+                public static bool CanCreateHUD()
                 {
                     return Selection.activeTransform == null;
                 }

@@ -35,7 +35,7 @@ namespace WindRose
                         GUIStyle longLabelStyle = MenuActionUtils.GetSingleLabelStyle();
                         GUIStyle indentedStyle = MenuActionUtils.GetIndentedStyle();
 
-                        titleContent = new GUIContent("Wind Rose - Creating an Interactive Interface");
+                        titleContent = new GUIContent("Wind Rose - Creating a new Interactive Interface");
 
                         EditorGUILayout.BeginVertical();
 
@@ -80,7 +80,7 @@ namespace WindRose
                         interactiveInterfaceRectTransform.pivot = new Vector2(0.5f, 0);
                         interactiveInterfaceRectTransform.sizeDelta = Vector2.zero;
                         interactiveInterfaceRectTransform.localScale = Vector3.one;
-                        InteractiveInterface interactiveInterfaceComponent = Layout.AddComponent<InteractiveInterface>(interactiveInterfaceObject);
+                        GabTab.Behaviours.InteractiveInterface interactiveInterfaceComponent = Layout.AddComponent<GabTab.Behaviours.InteractiveInterface>(interactiveInterfaceObject);
                         
                         // Create the interactive message
                         GameObject interactiveMessageObject = new GameObject("Message");

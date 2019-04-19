@@ -48,8 +48,7 @@ namespace WindRose
                         // Now the update cycles must run
                         for (int i = 0; i < newFloorsLength; i++)
                         {
-                            newFloors[i] = MenuActionUtils.SimplifySpaces(EditorGUILayout.TextField(string.Format("Floor {0} name", i), newFloors[i]));
-                            if (newFloors[i] == "") newFloors[i] = "Floor " + i;
+                            newFloors[i] = MenuActionUtils.EnsureNonEmpty(EditorGUILayout.TextField(string.Format("Floor {0} name", i), newFloors[i]), "Floor " + i);
                         }
                         return newFloors;
                     }
@@ -78,9 +77,7 @@ namespace WindRose
                         EditorGUILayout.LabelField("Map properties", captionLabelStyle);
 
                         EditorGUILayout.LabelField("This is the name the game object will have when added to the hierarchy.", longLabelStyle);
-                        mapObjectName = EditorGUILayout.TextField("Object name", mapObjectName);
-                        mapObjectName = MenuActionUtils.SimplifySpaces(mapObjectName);
-                        if (mapObjectName == "") mapObjectName = "New Map";
+                        mapObjectName = MenuActionUtils.EnsureNonEmpty(EditorGUILayout.TextField("Object name", mapObjectName), "New Map");
 
                         EditorGUILayout.LabelField("These are the map properties in the editor. Can be changed later.", longLabelStyle);
                         mapSize = EditorGUILayout.Vector2IntField("Map width (X) and height (Y) [1 to 32767]", mapSize);

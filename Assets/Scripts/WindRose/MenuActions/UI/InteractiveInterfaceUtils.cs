@@ -42,9 +42,7 @@ namespace WindRose
                         EditorGUILayout.LabelField("This wizard will create an Interactive Interface inside a HUD, at the bottom.", longLabelStyle);
 
                         EditorGUILayout.LabelField("This is the name the Interactive Interface game object will have when added to the hierarchy.", longLabelStyle);
-                        interactiveInterfaceObjectName = EditorGUILayout.TextField("Int. Interface name", interactiveInterfaceObjectName);
-                        interactiveInterfaceObjectName = MenuActionUtils.SimplifySpaces(interactiveInterfaceObjectName);
-                        if (interactiveInterfaceObjectName == "") interactiveInterfaceObjectName = "New HUD";
+                        interactiveInterfaceObjectName = MenuActionUtils.EnsureNonEmpty(EditorGUILayout.TextField("Int. Interface name", interactiveInterfaceObjectName), "New Interactive Interface");
 
                         EditorGUILayout.LabelField("Interactive Interface height is a fraction of the height of the parent canvas.", longLabelStyle);
                         interfaceHeight = EditorGUILayout.Slider("Int. Interface height", interfaceHeight, 0f, 1f);

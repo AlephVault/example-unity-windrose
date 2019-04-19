@@ -45,6 +45,12 @@ namespace WindRose
             {
                 return Regex.Replace(source, @"\s{2,}", " ").Trim();
             }
+
+            public static string EnsureNonEmpty(string source, string defaultValue)
+            {
+                string simplified = SimplifySpaces(source);
+                return simplified != "" ? simplified : defaultValue;
+            }
         }
     }
 }

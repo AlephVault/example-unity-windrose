@@ -56,9 +56,7 @@ namespace WindRose
                         // Visual properties.
 
                         EditorGUILayout.LabelField("This is the name the game object will have when added to the hierarchy.", longLabelStyle);
-                        visualObjectName = EditorGUILayout.TextField("Object name", visualObjectName);
-                        visualObjectName = MenuActionUtils.SimplifySpaces(visualObjectName);
-                        if (visualObjectName == "") visualObjectName = "New Visual";
+                        visualObjectName = MenuActionUtils.EnsureNonEmpty(EditorGUILayout.TextField("Object name", visualObjectName), "New Visual");
 
                         EditorGUILayout.LabelField("Visual type", captionLabelStyle);
                         visualType = EditorGUILayout.IntPopup(visualType, visualTypeLabels, visualTypes);

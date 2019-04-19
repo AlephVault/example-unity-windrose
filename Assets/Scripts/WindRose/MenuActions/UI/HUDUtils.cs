@@ -47,24 +47,18 @@ namespace WindRose
                         addANewCamera = EditorGUILayout.ToggleLeft("Add a new camera", addANewCamera);
 
                         EditorGUILayout.LabelField("This is the name the HUD game object will have when added to the hierarchy.", longLabelStyle);
-                        hudObjectName = EditorGUILayout.TextField("HUD name", hudObjectName);
-                        hudObjectName = MenuActionUtils.SimplifySpaces(hudObjectName);
-                        if (hudObjectName == "") hudObjectName = "New HUD";
+                        hudObjectName = MenuActionUtils.EnsureNonEmpty(EditorGUILayout.TextField("HUD name", hudObjectName), "New HUD");
 
                         if (!useSameObjectForCanvasAndHUD)
                         {
                             EditorGUILayout.LabelField("This is the name the Canvas game object for the HUD will have when added to the hierarchy.", longLabelStyle);
-                            canvasObjectName = EditorGUILayout.TextField("Canvas name", canvasObjectName);
-                            canvasObjectName = MenuActionUtils.SimplifySpaces(canvasObjectName);
-                            if (canvasObjectName == "") canvasObjectName = "New HUD";
+                            canvasObjectName = MenuActionUtils.EnsureNonEmpty(EditorGUILayout.TextField("Canvas name", canvasObjectName), "New HUD");
                         }
 
                         if (addANewCamera)
                         {
                             EditorGUILayout.LabelField("This is the name the Canvas game object for the HUD will have when added to the hierarchy.", longLabelStyle);
-                            newCameraObjectName = EditorGUILayout.TextField("Camera name", newCameraObjectName);
-                            newCameraObjectName = MenuActionUtils.SimplifySpaces(newCameraObjectName);
-                            if (newCameraObjectName == "") newCameraObjectName = "New HUD";
+                            newCameraObjectName = MenuActionUtils.EnsureNonEmpty(EditorGUILayout.TextField("Camera name", newCameraObjectName), "New HUD Camera");
 
                             orthographicSize = EditorGUILayout.IntField("Orthographic size", orthographicSize);
                             EditorGUILayout.LabelField("If lower than (or equal to) zero, the orthographic size will be set to 1.", longLabelStyle);

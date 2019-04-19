@@ -32,9 +32,7 @@ namespace WindRose
                         EditorGUILayout.LabelField("This wizard will create a local teleporter object in the hierarchy of the current scene, under the selected objects layer in the hierarchy.", longLabelStyle);
 
                         EditorGUILayout.LabelField("This is the name the game object will have when added to the hierarchy.", longLabelStyle);
-                        objectName = EditorGUILayout.TextField("Object name", objectName);
-                        objectName = MenuActionUtils.SimplifySpaces(objectName);
-                        if (objectName == "") objectName = "New Teleporter";
+                        objectName = MenuActionUtils.EnsureNonEmpty(EditorGUILayout.TextField("Object name", objectName), "New Teleporter");
 
                         EditorGUILayout.LabelField("These are the object properties in the editor. Can be changed later.", longLabelStyle);
                         objectSize = EditorGUILayout.Vector2IntField("Map width (X) and height (Y) [1 to 32767]", objectSize);

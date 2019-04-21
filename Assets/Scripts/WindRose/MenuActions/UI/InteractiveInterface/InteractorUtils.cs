@@ -32,7 +32,7 @@ namespace WindRose
                     /// <param name="objectName">The name of the new object</param>
                     /// <param name="addBackground">Whether the background will be set, or empty</param>
                     /// <param name="backgroundTint">The tint to apply in the background</param>
-                    public static GameObject AddBackground(InteractiveInterface parent, string objectName, bool addBackground, Color backgroundTint)
+                    public static GameObject AddBaseInteractorLayout(InteractiveInterface parent, string objectName, bool addBackground, Color backgroundTint)
                     {
                         GameObject interactorObject = new GameObject(objectName);
                         interactorObject.transform.parent = parent.transform;
@@ -44,6 +44,7 @@ namespace WindRose
                             interactorImage.sprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd");
                             interactorImage.type = Image.Type.Sliced;
                             interactorImage.color = backgroundTint;
+                            interactorImage.fillCenter = true;
                             interactorImage.enabled = true;
                         }
                         else
@@ -59,6 +60,9 @@ namespace WindRose
                         interactorRectTransformComponent.anchorMax = new Vector2(1f, 0.3f);
                         interactorRectTransformComponent.offsetMin = Vector2.one * interactorOffset;
                         interactorRectTransformComponent.offsetMax = new Vector2(-interactorOffset, 0);
+
+                        Hideable hideable = Layout.AddComponent<Hideable>(interactorObject);
+                        hideable.Hidden = false;
 
                         return interactorObject;
                     }

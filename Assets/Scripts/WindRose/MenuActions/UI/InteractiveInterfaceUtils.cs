@@ -138,10 +138,10 @@ namespace WindRose
                 }
 
                 /// <summary>
-                ///   This method is used in the menu action: GameObject > Wind Rose > UI > HUD > Interactive Interface > Create Interactive Interface.
+                ///   This method is used in the menu action: GameObject > Wind Rose > UI > HUD > Create Interactive Interface.
                 ///   It creates an <see cref="InteractiveInterface"/>, with their inner message component, in the scene.
                 /// </summary>
-                [MenuItem("GameObject/Wind Rose/UI/HUD/Interactive Interface/Create Interactive Interface", false, 11)]
+                [MenuItem("GameObject/Wind Rose/UI/HUD/Create Interactive Interface", false, 11)]
                 public static void CreateInteractiveInterface()
                 {
                     CreateInteractiveInterfaceWindow window = ScriptableObject.CreateInstance<CreateInteractiveInterfaceWindow>();
@@ -151,10 +151,10 @@ namespace WindRose
                 }
 
                 /// <summary>
-                ///   Validates the menu item: GameObject > Wind Rose > UI > HUD > Interactive Interface > Create Interactive Interface.
+                ///   Validates the menu item: GameObject > Wind Rose > UI > HUD > Create Interactive Interface.
                 ///   It enables such menu option when a canvas is selected in the scene hierarchy.
                 /// </summary>
-                [MenuItem("GameObject/Wind Rose/UI/HUD/Interactive Interface/Create Interactive Interface", true)]
+                [MenuItem("GameObject/Wind Rose/UI/HUD/Create Interactive Interface", true)]
                 public static bool CanCreateInteractiveInterface()
                 {
                     return Selection.activeTransform != null && Selection.activeTransform.GetComponent<Canvas>();

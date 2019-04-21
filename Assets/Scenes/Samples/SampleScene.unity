@@ -1672,12 +1672,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c0faa278782dc943b7d5f18e940d977, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  highlightColor1:
-    serializedVersion: 2
-    rgba: 4294967295
-  highlightColor2:
-    serializedVersion: 2
-    rgba: 4286545791
 --- !u!114 &405328365
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9258,12 +9252,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c0faa278782dc943b7d5f18e940d977, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  highlightColor1:
-    serializedVersion: 2
-    rgba: 4294967295
-  highlightColor2:
-    serializedVersion: 2
-    rgba: 4286545791
 --- !u!114 &942445547
 MonoBehaviour:
   m_ObjectHideFlags: 0

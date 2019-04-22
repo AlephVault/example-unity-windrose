@@ -17,46 +17,27 @@ namespace WindRose
                 using Support.Utils;
                 using GabTab.Behaviours;
                 using GabTab.Behaviours.Interactors;
-                using System.Reflection;
 
                 /// <summary>
                 ///   Menu actions to create button sets (1, 2 or 3 buttons) to be used
                 ///     inside an <see cref="InteractiveInterface"/>.
                 /// </summary>
-                public static class ButtonsUtils
+                public static class ButtonsInteractorUtils
                 {
-                    private class ButtonSettings
-                    {
-                        public string key = "";
-                        public string caption = "Button";
-                        public ColorBlock colors;
-                        public Color textColor = Color.black;
-
-                        public ButtonSettings(string key, string caption)
-                        {
-                            this.key = key;
-                            this.caption = caption;
-                            colors.normalColor = new Color32(255, 255, 255, 255);
-                            colors.highlightedColor = new Color32(245, 245, 245, 255);
-                            colors.pressedColor = new Color32(200, 200, 200, 255);
-                            colors.disabledColor = new Color32(200, 200, 200, 255);
-                            colors.fadeDuration = 0.1f;
-                            colors.colorMultiplier = 1f;
-                        }
-                    }
-
                     private class CreateButtonsInteractorWindow : EditorWindow
                     {
                         private string buttonsInteractorName = "New Buttons Interactor";
-                        private ButtonSettings[] buttonsSettings = new ButtonSettings[] {
-                            new ButtonSettings("button-1", "Button 1"), new ButtonSettings("button-2", "Button 2"), new ButtonSettings("button-3", "Button 3")
+                        private InteractorUtils.ButtonSettings[] buttonsSettings = new InteractorUtils.ButtonSettings[] {
+                            new InteractorUtils.ButtonSettings("button-1", "Button 1"),
+                            new InteractorUtils.ButtonSettings("button-2", "Button 2"),
+                            new InteractorUtils.ButtonSettings("button-3", "Button 3")
                         };
                         private int buttonsCount = 1;
                         private bool withBackground = false;
                         private Color backgroundTint = Color.white;
                         public Transform selectedTransform = null;
 
-                        private void ButtonsSettingsGUI(int index, ButtonSettings settings, GUIStyle style)
+                        private void ButtonsSettingsGUI(int index, InteractorUtils.ButtonSettings settings, GUIStyle style)
                         {
                             settings.key = MenuActionUtils.EnsureNonEmpty(EditorGUILayout.TextField("Button key", settings.key), "button-" + index);
                             EditorGUILayout.BeginVertical(style);
@@ -112,7 +93,7 @@ namespace WindRose
                             }
                         }
 
-                        private void AddButton(ButtonsInteractor.ButtonKeyDictionary buttons, int index, RectTransform parent, ButtonSettings settings, float buttonsOffset, Rect interactorRect)
+                        private void AddButton(ButtonsInteractor.ButtonKeyDictionary buttons, int index, RectTransform parent, InteractorUtils.ButtonSettings settings, float buttonsOffset, Rect interactorRect)
                         {
                             GameObject buttonObject = new GameObject(settings.key);
                             buttonObject.transform.parent = parent;
@@ -166,13 +147,13 @@ namespace WindRose
                             {
                                 if (buttonsCount > index) AddButton(buttons, index, interactorRectTransformComponent, buttonsSettings[index], buttonsOffset, interactorRect);
                             }
-                            // Close();
+                            Close();
                         }
                     }
 
                     /// <summary>
                     ///   This method is used in the menu action: GameObject > Wind Rose > UI > HUD > Interactive Interface > Create Buttons Interactor.
-                    ///   It creates a <see cref="InteractiveInterface"/>, with their inner message component, in the scene.
+                    ///   It creates a <see cref="ButtonsInteractor"/>, with their inner buttons, in the scene.
                     /// </summary>
                     [MenuItem("GameObject/Wind Rose/UI/HUD/Interactive Interface/Create Buttons Interactor", false, 11)]
                     public static void CreateInteractiveInterface()

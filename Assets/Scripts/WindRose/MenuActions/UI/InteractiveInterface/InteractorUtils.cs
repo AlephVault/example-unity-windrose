@@ -22,6 +22,26 @@ namespace WindRose
                 /// </summary>
                 static class InteractorUtils
                 {
+                    public class ButtonSettings
+                    {
+                        public string key = "";
+                        public string caption = "Button";
+                        public ColorBlock colors;
+                        public Color textColor = Color.black;
+
+                        public ButtonSettings(string key, string caption)
+                        {
+                            this.key = key;
+                            this.caption = caption;
+                            colors.normalColor = new Color32(255, 255, 255, 255);
+                            colors.highlightedColor = new Color32(245, 245, 245, 255);
+                            colors.pressedColor = new Color32(200, 200, 200, 255);
+                            colors.disabledColor = new Color32(200, 200, 200, 255);
+                            colors.fadeDuration = 0.1f;
+                            colors.colorMultiplier = 1f;
+                        }
+                    }
+
                     /// <summary>
                     ///   Creates a background that uses to be common to most interactors.
                     ///   The background may be visible or invisible, but it is always

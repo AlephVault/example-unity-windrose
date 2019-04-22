@@ -33,6 +33,12 @@ namespace WindRose
                     {
                         private SolidMask solidMask;
 
+                        /// <summary>
+                        ///   The step type to use when processing objects' movements.
+                        /// </summary>
+                        [SerializeField]
+                        private StepType stepType = StepType.Safe;
+
                         protected override Type GetCounterpartType()
                         {
                             return typeof(Entities.Objects.Strategies.Solidness.SolidnessObjectStrategy);
@@ -125,7 +131,15 @@ namespace WindRose
                             {
                                 case "AfterMovementAllocation":
                                     SolidnessStatus solidness = ((Entities.Objects.Strategies.Solidness.SolidnessObjectStrategy)strategy).Solidness;
-                                    IncrementAdjacent(strategy, status, solidness);
+                                    if (stepType == StepType.Safe)
+                                    {
+                                        IncrementAdjacent(strategy, status, solidness);
+                                    }
+                                    else if (stepType == StepType.Optimistic)
+                                    {
+                                        DecrementBackSide(strategy, status, solidness);
+                                        IncrementAdjacent(strategy, status, solidness);
+                                    }
                                     break;
                             }
                         }
@@ -146,7 +160,15 @@ namespace WindRose
                             {
                                 case "Before":
                                     SolidnessStatus solidness = ((Entities.Objects.Strategies.Solidness.SolidnessObjectStrategy)strategy).Solidness;
-                                    DecrementAdjacent(strategy, status, solidness);
+                                    if (stepType == StepType.Safe)
+                                    {
+                                        DecrementAdjacent(strategy, status, solidness);
+                                    }
+                                    else if (stepType == StepType.Optimistic)
+                                    {
+                                        IncrementBackSide(strategy, status, solidness);
+                                        DecrementAdjacent(strategy, status, solidness);
+                                    }
                                     break;
                             }
                         }
@@ -167,7 +189,14 @@ namespace WindRose
                             {
                                 case "AfterPositionChange":
                                     SolidnessStatus solidness = ((Entities.Objects.Strategies.Solidness.SolidnessObjectStrategy)strategy).Solidness;
-                                    DecrementOppositeAdjacent(strategy, status, solidness);
+                                    if (stepType == StepType.Safe)
+                                    {
+                                        DecrementOppositeAdjacent(strategy, status, solidness);
+                                    }
+                                    else
+                                    {
+                                        // Nothing to do here
+                                    }
                                     break;
                             }
                         }
@@ -272,6 +301,30 @@ namespace WindRose
                             }
                         }
 
+                        private void IncrementBackSide(Entities.Objects.Strategies.ObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status, SolidnessStatus solidness)
+                        {
+                            if (solidness.Occupies())
+                            {
+                                IncrementBackSide(status.X, status.Y, strategy.StrategyHolder.Object.Width, strategy.StrategyHolder.Object.Height, status.Movement);
+                            }
+                            else if (solidness.Carves())
+                            {
+                                DecrementBackSide(status.X, status.Y, strategy.StrategyHolder.Object.Width, strategy.StrategyHolder.Object.Height, status.Movement);
+                            }
+                        }
+
+                        private void DecrementBackSide(Entities.Objects.Strategies.ObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status, SolidnessStatus solidness)
+                        {
+                            if (solidness.Occupies())
+                            {
+                                DecrementBackSide(status.X, status.Y, strategy.StrategyHolder.Object.Width, strategy.StrategyHolder.Object.Height, status.Movement);
+                            }
+                            else if (solidness.Carves())
+                            {
+                                IncrementBackSide(status.X, status.Y, strategy.StrategyHolder.Object.Width, strategy.StrategyHolder.Object.Height, status.Movement);
+                            }
+                        }
+
                         private void DecrementOppositeAdjacent(Entities.Objects.Strategies.ObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status, SolidnessStatus solidness)
                         {
                             if (solidness.Occupies())
@@ -373,6 +426,50 @@ namespace WindRose
                                         break;
                                     case Direction.UP:
                                         solidMask.DecRow(x, y + height, width);
+                                        break;
+                                }
+                            }
+                        }
+
+                        private void IncrementBackSide(uint x, uint y, uint width, uint height, Direction? direction)
+                        {
+                            if (!IsHittingEdge(x, y, width, height, direction))
+                            {
+                                switch (direction)
+                                {
+                                    case Direction.RIGHT:
+                                        solidMask.IncColumn(x, y, height);
+                                        break;
+                                    case Direction.UP:
+                                        solidMask.IncRow(x, y, width);
+                                        break;
+                                    case Direction.LEFT:
+                                        solidMask.IncColumn(x + width - 1, y, height);
+                                        break;
+                                    case Direction.DOWN:
+                                        solidMask.IncRow(x, y + height - 1, width);
+                                        break;
+                                }
+                            }
+                        }
+
+                        private void DecrementBackSide(uint x, uint y, uint width, uint height, Direction? direction)
+                        {
+                            if (!IsHittingEdge(x, y, width, height, direction))
+                            {
+                                switch (direction)
+                                {
+                                    case Direction.RIGHT:
+                                        solidMask.DecColumn(x, y, height);
+                                        break;
+                                    case Direction.UP:
+                                        solidMask.DecRow(x, y, width);
+                                        break;
+                                    case Direction.LEFT:
+                                        solidMask.DecColumn(x + width - 1, y, height);
+                                        break;
+                                    case Direction.DOWN:
+                                        solidMask.DecRow(x, y + height - 1, width);
                                         break;
                                 }
                             }

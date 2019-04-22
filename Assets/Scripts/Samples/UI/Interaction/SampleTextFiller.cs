@@ -3,8 +3,10 @@ using System.Collections;
 using UnityEngine;
 using GabTab.Behaviours;
 using GabTab.Behaviours.Interactors;
+using WindRose.Behaviours.UI;
 using Support.Utils;
 
+[RequireComponent(typeof(HUD))]
 public class SampleTextFiller : MonoBehaviour
 {
     const string INTRO = "An unknown evil lurks in the outerspace and threatens our universe and God knows what other worlds.";
@@ -20,11 +22,11 @@ public class SampleTextFiller : MonoBehaviour
     const string THANKYOU = "{0}, if our world survives I will ensure your name will be remembered for centuries.";
     const string FUCKOFF = "Then go home and eat a bag of d*cks, you f*cking lame. Our world is doomed.";
 
-    private InteractiveInterface ui;
+    private HUD hud;
 
     void Awake()
     {
-        ui = Layout.RequireComponentInChildren<InteractiveInterface>(gameObject);
+        hud = gameObject.GetComponent<HUD>();
     }
 
     // Use this for initialization
@@ -38,7 +40,7 @@ public class SampleTextFiller : MonoBehaviour
         //         of this stuff was run in Awake(), but this method is Start() and the method that
         //         initializes the sprites is also Start() or Update().
         yield return new WaitForSeconds(0f);
-        ui.RunInteraction(StartSampleMessages);
+        hud.RunInteraction(StartSampleMessages);
 	}
 
     IEnumerator StartSampleMessages(InteractorsManager manager, InteractiveMessage interactiveMessage)

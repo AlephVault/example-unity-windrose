@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace WindRose
 {
@@ -6,6 +7,7 @@ namespace WindRose
     {
         namespace Entities.Objects
         {
+
             /// <summary>
             ///   <para>
             ///     Moving components exist on regular objects also having a
@@ -73,7 +75,7 @@ namespace WindRose
                 /// <returns>Whether the movement could be started</returns>
                 public bool StartMovement(Types.Direction movement, bool queueIfMoving = true)
                 {
-                    if (mapObject.ParentMap == null) return false;
+                    if (mapObject.ParentMap == null || mapObject.Paused) return false;
 
                     if (IsMoving)
                     {
@@ -96,7 +98,7 @@ namespace WindRose
                 /// </summary>
                 public void CancelMovement()
                 {
-                    if (mapObject.ParentMap == null) return;
+                    if (mapObject.ParentMap == null || mapObject.Paused) return;
 
                     mapObject.CancelMovement();
                 }
@@ -149,7 +151,7 @@ namespace WindRose
                 /// </summary>
                 public void DoUpdate()
                 {
-                    if (mapObject.ParentMap == null) return;
+                    if (mapObject.ParentMap == null || mapObject.Paused) return;
 
                     if (IsMoving)
                     {

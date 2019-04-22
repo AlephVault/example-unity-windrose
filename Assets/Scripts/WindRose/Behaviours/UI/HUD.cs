@@ -221,7 +221,10 @@ namespace WindRose
                         bool fullFreeze = pauseType == PauseType.FREEZE;
                         foreach (Map map in (from obj in SceneManager.GetActiveScene().GetRootGameObjects() select obj.GetComponent<Map>()))
                         {
-                            if (map) map.Pause(fullFreeze);
+                            if (map)
+                            {
+                                map.Pause(fullFreeze);
+                            }
                         }
                     }
                 }
@@ -232,7 +235,10 @@ namespace WindRose
                     {
                         foreach (Map map in (from obj in SceneManager.GetActiveScene().GetRootGameObjects() select obj.GetComponent<Map>()))
                         {
-                            if (map) map.Resume();
+                            if (map)
+                            {
+                                map.Resume();
+                            }
                         }
                     }
                 }
@@ -244,12 +250,15 @@ namespace WindRose
                 /// <param name="interaction">The interaction to run</param>
                 public void RunInteraction(Func<InteractorsManager, InteractiveMessage, IEnumerator> interaction)
                 {
-                    if (interactiveInterface.IsRunningAnInteraction) return;
+                    if (!interactiveInterface.IsRunningAnInteraction) StartCoroutine(WrappedInteraction(interaction));
+                }
 
+                private IEnumerator WrappedInteraction(Func<InteractorsManager, InteractiveMessage, IEnumerator> interaction)
+                {
                     try
                     {
                         OnAcquire();
-                        interactiveInterface.RunInteraction(interaction);
+                        yield return interactiveInterface.RunInteraction(interaction);
                     }
                     finally
                     {

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace WindRose
 {
@@ -11,7 +12,7 @@ namespace WindRose
                 /// <summary>
                 ///   Handles the object's ability to animate, given a sequence of sprites.
                 /// </summary>
-                public class Animated : VisualBehaviour
+                public class Animated : VisualBehaviour, Common.Pausable.IPausable
                 {
                     protected SpriteRenderer spriteRenderer;
 
@@ -29,6 +30,7 @@ namespace WindRose
                     private float currentTime;
                     private float frameInterval;
                     private int currentAnimationIndex;
+                    private bool paused;
 
                     /// <summary>
                     ///   Gets or sets the current animation, and resets it (on set).
@@ -59,6 +61,7 @@ namespace WindRose
                         base.Awake();
                         spriteRenderer = GetComponent<SpriteRenderer>();
                         spriteRenderer.enabled = false;
+                        paused = false;
                     }
 
                     private void Reset()
@@ -98,7 +101,17 @@ namespace WindRose
                     /// </summary>
                     public override void DoUpdate()
                     {
-                        Frame();
+                        if (!paused) Frame();
+                    }
+
+                    public void Pause(bool fullFreeze)
+                    {
+                        paused = fullFreeze;
+                    }
+
+                    public void Resume()
+                    {
+                        paused = false;
                     }
                 }
             }

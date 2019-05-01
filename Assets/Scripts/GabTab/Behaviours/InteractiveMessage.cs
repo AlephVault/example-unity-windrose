@@ -3,6 +3,9 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 using Support.Utils;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace GabTab
 {
@@ -332,5 +335,28 @@ namespace GabTab
                 }
             }
         }
+
+#if UNITY_EDITOR
+        [CustomEditor(typeof(InteractiveMessage), true)]
+        [CanEditMultipleObjects]
+        public class InteractiveMessageEditor : Editor
+        {
+            SerializedProperty m_Content;
+
+            protected virtual void OnEnable()
+            {
+                m_Content = serializedObject.FindProperty("messageContent");
+            }
+
+            public override void OnInspectorGUI()
+            {
+                serializedObject.Update();
+
+                EditorGUILayout.PropertyField(m_Content);
+
+                serializedObject.ApplyModifiedProperties();
+            }
+        }
+#endif
     }
 }

@@ -7,6 +7,6 @@ namespace GabTab
     {
         [CustomPropertyDrawer(typeof(Interactors.InteractorsManager.InteractorsDictionary))]
         [CustomPropertyDrawer(typeof(Interactors.ButtonsInteractor.ButtonKeyDictionary))]
-        public class WindRoseDictionaryPropertyDrawer : SerializableDictionaryPropertyDrawer {}
+        public class DictionaryPropertyDrawer : SerializableDictionaryPropertyDrawer {}
     }
 }

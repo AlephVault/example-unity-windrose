@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace WindRose
 {
@@ -744,6 +747,35 @@ namespace WindRose
                     mainObjectStrategy.Object.onPropertyUpdated.Invoke(property, oldValue, newValue);
                 }
             }
+
+#if UNITY_EDITOR
+            [CustomEditor(typeof(ObjectsManagementStrategyHolder))]
+            [CanEditMultipleObjects]
+            public class ObjectsManagementStrategyHolderEditor : Editor
+            {
+                SerializedProperty strategy;
+
+                protected virtual void OnEnable()
+                {
+                    strategy = serializedObject.FindProperty("strategy");
+                }
+
+                public override void OnInspectorGUI()
+                {
+                    serializedObject.Update();
+
+                    ObjectsManagementStrategyHolder underlyingObject = (serializedObject.targetObject as ObjectsManagementStrategyHolder);
+                    ObjectsManagementStrategy[] strategies = underlyingObject.GetComponents<ObjectsManagementStrategy>();
+                    GUIContent[] strategyNames = (from strategy in strategies select new GUIContent(strategy.GetType().Name)).ToArray();
+
+                    int index = ArrayUtility.IndexOf(strategies, strategy.objectReferenceValue as ObjectsManagementStrategy);
+                    index = EditorGUILayout.Popup(new GUIContent("Main Strategy"), index, strategyNames);
+                    strategy.objectReferenceValue = index >= 0 ? strategies[index] : null;
+
+                    serializedObject.ApplyModifiedProperties();
+                }
+            }
+#endif
         }
     }
 }

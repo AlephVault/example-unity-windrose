@@ -310,9 +310,19 @@ namespace WindRose
 
                     Gizmos.color = map.gizmoColor;
                     Gizmos.DrawLine(bottomLeft, bottomRight);
+                    for(uint y = 1; y <= map.height; y++)
+                    {
+                        Vector3 rowLeft = bottomLeft + Vector3.up * map.CellSize.y * y;
+                        Vector3 rowRight = bottomLeft + Vector3.up * map.CellSize.y * y + Vector3.right * map.CellSize.x * map.Width;
+                        Gizmos.DrawLine(rowLeft, rowRight);
+                    }
                     Gizmos.DrawLine(bottomLeft, topLeft);
-                    Gizmos.DrawLine(topRight, bottomRight);
-                    Gizmos.DrawLine(topRight, topLeft);
+                    for(uint x = 1; x <= map.width; x++)
+                    {
+                        Vector3 columnBottom = bottomLeft + Vector3.right * map.CellSize.x * x;
+                        Vector3 columnTop = bottomLeft + Vector3.up * map.CellSize.y * map.Height + Vector3.right * map.CellSize.x * x;
+                        Gizmos.DrawLine(columnBottom, columnTop);
+                    }
                 }
 #endif
             }

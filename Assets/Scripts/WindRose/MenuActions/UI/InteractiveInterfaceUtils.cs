@@ -23,7 +23,6 @@ namespace WindRose
             {
                 private class CreateInteractiveInterfaceWindow : EditorWindow
                 {
-                    public Transform selectedTransform;
                     private string interactiveInterfaceObjectName = "New Interactive Interface";
                     private float interfaceHeight = 0.3f;
                     private Color interfaceTint = Color.white;

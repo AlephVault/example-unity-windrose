@@ -1776,7 +1776,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4005363198018378, guid: 82eef48316d2a4e45997a37868a97d21, type: 2}
       propertyPath: m_RootOrder
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1122780924300796, guid: 82eef48316d2a4e45997a37868a97d21, type: 2}
       propertyPath: m_IsActive
@@ -1879,6 +1879,10 @@ Prefab:
       value: 
       objectReference: {fileID: 11400000, guid: b791a2b0f99dcf24c884de03b1f40d99,
         type: 2}
+    - target: {fileID: 4005363198018378, guid: 82eef48316d2a4e45997a37868a97d21, type: 2}
+      propertyPath: m_LocalScale.z
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 114401396265092770, guid: 82eef48316d2a4e45997a37868a97d21, type: 2}
     - {fileID: 212519944110782088, guid: 82eef48316d2a4e45997a37868a97d21, type: 2}
@@ -7408,6 +7412,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   solidness: 0
+  traversesOtherSolids: 0
 --- !u!114 &850159759
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8203,6 +8208,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   solidness: 1
+  traversesOtherSolids: 0
 --- !u!114 &934075508
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10692,6 +10698,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   solidness: 1
+  traversesOtherSolids: 0
 --- !u!114 &1186038024
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13653,7 +13660,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9788dff5669555c4380bb41cab3029bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  solidness: 3
+  solidness: 2
+  traversesOtherSolids: 0
 --- !u!114 &1358881527
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14075,7 +14083,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4722627370234942, guid: 4d49ab3f52c28d44c93e06dc49b8ea0c, type: 2}
       propertyPath: m_RootOrder
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: followerCamera
@@ -14516,7 +14524,7 @@ Transform:
   m_Children:
   - {fileID: 1011434632}
   m_Father: {fileID: 1764234093}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1514043977
 MonoBehaviour:
@@ -14630,6 +14638,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   solidness: 1
+  traversesOtherSolids: 0
 --- !u!114 &1514043988
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14983,7 +14992,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9788dff5669555c4380bb41cab3029bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  solidness: 3
+  solidness: 2
+  traversesOtherSolids: 0
 --- !u!114 &1597479059
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16397,7 +16407,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9788dff5669555c4380bb41cab3029bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  solidness: 3
+  solidness: 2
+  traversesOtherSolids: 0
 --- !u!114 &1680133216
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17010,7 +17021,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9788dff5669555c4380bb41cab3029bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  solidness: 3
+  solidness: 2
+  traversesOtherSolids: 0
 --- !u!114 &1732828878
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17193,9 +17205,9 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 0}
   m_Children:
+  - {fileID: 1903621716}
   - {fileID: 1514043975}
   - {fileID: 1680133232}
-  - {fileID: 1903621716}
   - {fileID: 850159750}
   - {fileID: 1186038010}
   - {fileID: 1358881513}
@@ -18570,7 +18582,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9788dff5669555c4380bb41cab3029bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  solidness: 3
+  solidness: 2
+  traversesOtherSolids: 0
 --- !u!114 &1903621705
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19528,7 +19541,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9788dff5669555c4380bb41cab3029bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  solidness: 3
+  solidness: 2
+  traversesOtherSolids: 0
 --- !u!114 &2061497678
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19821,7 +19835,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9788dff5669555c4380bb41cab3029bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  solidness: 3
+  solidness: 2
+  traversesOtherSolids: 0
 --- !u!114 &2062477417
 MonoBehaviour:
   m_ObjectHideFlags: 0

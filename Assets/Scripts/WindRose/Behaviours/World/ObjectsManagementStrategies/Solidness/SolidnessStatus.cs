@@ -10,13 +10,12 @@
                 {
                     /// <summary>
                     ///   Solidness status involves the ability of objects to be completely solid (i.e. not traverse anything,
-                    ///     but also not allow other solid objects to traverse them), solid-for-others (i.e. objects that
-                    ///     do not allow other strictly solid objects to traverse them, but they can traverse anything),
-                    ///     ghost objects (they can traverse and be traversed), and "hole" objects: they occupy negative
-                    ///     space, so when overlapping with solid objects, those solid objects become traversable in the
-                    ///     overlapped area.
+                    ///     but also not allow other solid objects to traverse them), ghost objects (they can traverse and be
+                    ///     traversed), and "hole" objects: they occupy negative space, so when overlapping with solid objects,
+                    ///     those solid objects become traversable in the overlapped area. A 4th style is the MASK one, that
+                    ///     allows us to specify an irregular pattern for the object's solidness.
                     /// </summary>
-                    public enum SolidnessStatus { Hole, Ghost, SolidForOthers, Solid };
+                    public enum SolidnessStatus { Hole, Ghost, Solid, Mask };
 
                     static class SolidnessStatusMethods
                     {
@@ -46,7 +45,6 @@
                             switch (status)
                             {
                                 case SolidnessStatus.Solid:
-                                case SolidnessStatus.SolidForOthers:
                                     return true;
                                 default:
                                     return false;

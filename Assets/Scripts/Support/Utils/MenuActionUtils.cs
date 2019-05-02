@@ -3,9 +3,9 @@ using UnityEngine;
 using UnityEditor;
 using System.Text.RegularExpressions;
 
-namespace WindRose
+namespace Support
 {
-    namespace MenuActions
+    namespace Utils
     {
         public static class MenuActionUtils
         {

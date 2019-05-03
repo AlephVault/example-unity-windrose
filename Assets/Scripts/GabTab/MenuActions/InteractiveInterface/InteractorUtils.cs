@@ -20,6 +20,9 @@ namespace GabTab
             /// </summary>
             static class InteractorUtils
             {
+                /// <summary>
+                ///   This structure holds the data for the buttons.
+                /// </summary>
                 public class ButtonSettings
                 {
                     public string key = "";
@@ -31,13 +34,25 @@ namespace GabTab
                     {
                         this.key = key;
                         this.caption = caption;
-                        colors.normalColor = new Color32(255, 255, 255, 255);
-                        colors.highlightedColor = new Color32(245, 245, 245, 255);
-                        colors.pressedColor = new Color32(200, 200, 200, 255);
-                        colors.disabledColor = new Color32(200, 200, 200, 255);
-                        colors.fadeDuration = 0.1f;
-                        colors.colorMultiplier = 1f;
+                        colors = DefaultColors();
                     }
+                }
+
+                /// <summary>
+                ///   Returns the default colors to be used in any color transition.
+                ///   These colors are just a suggestion and can be changed.
+                /// </summary>
+                /// <returns>A <see cref="ColorBlock"/> with default colors.</returns>
+                public static ColorBlock DefaultColors()
+                {
+                    ColorBlock colors = new ColorBlock();
+                    colors.normalColor = new Color32(255, 255, 255, 255);
+                    colors.highlightedColor = new Color32(245, 245, 245, 255);
+                    colors.pressedColor = new Color32(200, 200, 200, 255);
+                    colors.disabledColor = new Color32(200, 200, 200, 255);
+                    colors.fadeDuration = 0.1f;
+                    colors.colorMultiplier = 1f;
+                    return colors;
                 }
 
                 /// <summary>
@@ -85,16 +100,36 @@ namespace GabTab
                     return interactorObject;
                 }
 
-                public static void ButtonsSettingsGUI(int index, InteractorUtils.ButtonSettings settings, GUIStyle style)
+                /// <summary>
+                ///   Generates the UI to change a specific color set.
+                /// </summary>
+                /// <param name="source">The input colors</param>
+                /// <returns>The new colors</returns>
+                public static ColorBlock ColorsGUI(ColorBlock source)
+                {
+                    ColorBlock colors = new ColorBlock();
+                    colors.normalColor = EditorGUILayout.ColorField("Normal color", source.normalColor);
+                    colors.highlightedColor = EditorGUILayout.ColorField("Highlighted color", source.highlightedColor);
+                    colors.pressedColor = EditorGUILayout.ColorField("Pressed color", source.pressedColor);
+                    colors.disabledColor = EditorGUILayout.ColorField("Disabled color", source.disabledColor);
+                    colors.fadeDuration = source.fadeDuration;
+                    colors.colorMultiplier = source.colorMultiplier;
+                    return colors;
+                }
+
+                /// <summary>
+                ///   Generates the UI to change a specific button setting.
+                /// </summary>
+                /// <param name="index">The button index (intended to be used on a multi-button setting)</param>
+                /// <param name="settings">The button settings object being affected</param>
+                /// <param name="style">Style to apply to this object's UI group</param>
+                public static void ButtonsSettingsGUI(int index, ButtonSettings settings, GUIStyle style)
                 {
                     settings.key = MenuActionUtils.EnsureNonEmpty(EditorGUILayout.TextField("Button key", settings.key), "button-" + index);
                     EditorGUILayout.BeginVertical(style);
                     settings.caption = MenuActionUtils.EnsureNonEmpty(EditorGUILayout.TextField("Caption", settings.caption), "Button " + index);
                     if (settings.caption == "") settings.caption = "Button " + index;
-                    settings.colors.normalColor = EditorGUILayout.ColorField("Normal color", settings.colors.normalColor);
-                    settings.colors.highlightedColor = EditorGUILayout.ColorField("Highlighted color", settings.colors.highlightedColor);
-                    settings.colors.pressedColor = EditorGUILayout.ColorField("Pressed color", settings.colors.pressedColor);
-                    settings.colors.disabledColor = EditorGUILayout.ColorField("Disabled color", settings.colors.disabledColor);
+                    settings.colors = ColorsGUI(settings.colors);
                     settings.textColor = EditorGUILayout.ColorField("Text color", settings.textColor);
                     EditorGUILayout.EndVertical();
                 }

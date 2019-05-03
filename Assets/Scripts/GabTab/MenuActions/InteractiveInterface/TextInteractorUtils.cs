@@ -31,7 +31,7 @@ namespace GabTab
                     private InteractorUtils.ButtonSettings continueButton = new InteractorUtils.ButtonSettings("ok", "OK");
                     private InteractorUtils.ButtonSettings cancelButton = new InteractorUtils.ButtonSettings("cancel", "Cancel");
                     private bool withCancelButton = false;
-                    private Color inputTint = new Color(15 / 16f, 15 / 16f, 15 / 16f);
+                    private ColorBlock inputSettings = InteractorUtils.DefaultColors();
                     private Color inputContentColor = Color.black;
                     private Color inputPlaceholderColor = new Color(7 / 16f, 7 / 16f, 7 / 16f);
 
@@ -65,7 +65,7 @@ namespace GabTab
                             backgroundTint = EditorGUILayout.ColorField("Background tint", backgroundTint);
                             EditorGUILayout.EndVertical();
                         }
-                        inputTint = EditorGUILayout.ColorField("Input tint", inputTint);
+                        inputSettings = InteractorUtils.ColorsGUI(inputSettings);
                         inputContentColor = EditorGUILayout.ColorField("Input content color", inputContentColor);
                         inputPlaceholderColor = EditorGUILayout.ColorField("Input placeholder color", inputPlaceholderColor);
 
@@ -152,7 +152,6 @@ namespace GabTab
                         textImageComponent.sprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd");
                         textImageComponent.type = Image.Type.Sliced;
                         textImageComponent.fillCenter = true;
-                        textImageComponent.color = inputTint;
                         GameObject childTextObject = new GameObject("Text");
                         childTextObject.transform.parent = textInputObject.transform;
                         Text childTextComponent = AddRectTransformAndTextComponents(childTextObject, buttonsOffset);
@@ -166,6 +165,8 @@ namespace GabTab
                         InputField inputFieldComponent = Layout.AddComponent<InputField>(textInputObject);
                         inputFieldComponent.placeholder = childPlaceholderTextComponent;
                         inputFieldComponent.textComponent = childTextComponent;
+                        inputFieldComponent.transition = Selectable.Transition.ColorTint;
+                        inputFieldComponent.colors = inputSettings;
                         return inputFieldComponent;
                     }
 

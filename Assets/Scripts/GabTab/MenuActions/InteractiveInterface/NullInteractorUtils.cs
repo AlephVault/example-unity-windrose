@@ -51,7 +51,7 @@ namespace GabTab
                 ///   It creates a <see cref="NullInteractor"/> in the scene.
                 /// </summary>
                 [MenuItem("GameObject/Gab Tab/Interactive Interface/Create Null Interactor", false, 11)]
-                public static void CreateInteractiveInterface()
+                public static void CreateNullInteractor()
                 {
                     CreateNullInteractorWindow window = ScriptableObject.CreateInstance<CreateNullInteractorWindow>();
                     window.maxSize = new Vector2(522, 63);
@@ -65,7 +65,7 @@ namespace GabTab
                 ///   It enables such menu option when an <see cref="InteractiveInterface"/> is selected in the scene hierarchy.
                 /// </summary>
                 [MenuItem("GameObject/Gab Tab/Interactive Interface/Create Null Interactor", true)]
-                public static bool CanCreateInteractiveInterface()
+                public static bool CanCreateNullInteractor()
                 {
                     return Selection.activeTransform != null && Selection.activeTransform.GetComponent<InteractiveInterface>();
                 }

@@ -38,10 +38,10 @@ namespace GabTab
                     private void AllButtonsSettingsGUI(GUIStyle style)
                     {
                         withCancelButton = EditorGUILayout.ToggleLeft("Add a 'Cancel' button", withCancelButton);
-                        InteractorUtils.ButtonsSettingsGUI(0, continueButton, style);
+                        InteractorUtils.ButtonSettingsGUI(0, continueButton, style);
                         if (withCancelButton)
                         {
-                            InteractorUtils.ButtonsSettingsGUI(1, cancelButton, style);
+                            InteractorUtils.ButtonSettingsGUI(1, cancelButton, style);
                         }
                     }
 
@@ -84,39 +84,7 @@ namespace GabTab
 
                     private Button AddButton(int index, RectTransform parent, InteractorUtils.ButtonSettings settings, float buttonsOffset, Rect interactorRect)
                     {
-                        GameObject buttonObject = new GameObject(settings.key);
-                        buttonObject.transform.parent = parent;
-                        float buttonWidth = (interactorRect.width - 5 * buttonsOffset) / 4;
-                        float buttonHeight = (interactorRect.height - 2 * buttonsOffset);
-                        RectTransform rectTransformComponent = Layout.AddComponent<RectTransform>(buttonObject);
-                        rectTransformComponent.pivot = Vector2.zero;
-                        rectTransformComponent.anchorMin = Vector2.zero;
-                        rectTransformComponent.anchorMax = Vector2.zero;
-                        int position = 4 - index;
-                        rectTransformComponent.offsetMin = new Vector2(position * buttonsOffset + (position - 1) * buttonWidth, buttonsOffset);
-                        rectTransformComponent.offsetMax = rectTransformComponent.offsetMin;
-                        rectTransformComponent.sizeDelta = new Vector2(buttonWidth, buttonHeight);
-                        Image buttonImageComponent = Layout.AddComponent<Image>(buttonObject);
-                        buttonImageComponent.sprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd");
-                        buttonImageComponent.type = Image.Type.Sliced;
-                        buttonImageComponent.fillCenter = true;
-                        Button buttonComponent = Layout.AddComponent<Button>(buttonObject);
-                        buttonComponent.colors = settings.colors;
-                        buttonComponent.targetGraphic = buttonImageComponent;
-                        GameObject textObject = new GameObject("Text");
-                        textObject.transform.parent = buttonObject.transform;
-                        Text textComponent = Layout.AddComponent<Text>(textObject);
-                        textComponent.text = settings.caption;
-                        textComponent.fontSize = (int)(buttonHeight / 2);
-                        textComponent.alignment = TextAnchor.MiddleCenter;
-                        textComponent.color = settings.textColor;
-                        RectTransform textRectTransform = textObject.GetComponent<RectTransform>();
-                        textRectTransform.pivot = Vector2.one / 2f;
-                        textRectTransform.anchorMin = Vector2.zero;
-                        textRectTransform.anchorMax = Vector2.one;
-                        textRectTransform.offsetMin = Vector2.zero;
-                        textRectTransform.offsetMax = Vector2.zero;
-                        return buttonComponent;
+                        return InteractorUtils.AddButtonAtPosition(parent, index, 4, buttonsOffset, interactorRect.height - 2 * buttonsOffset, settings);
                     }
 
                     private Text AddRectTransformAndTextComponents(GameObject newObject, float buttonsOffset)
@@ -178,11 +146,11 @@ namespace GabTab
                         GameObject interactorObject = InteractorUtils.AddBaseInteractorLayout(selectedTransform.GetComponent<InteractiveInterface>(), textInteractorName, withBackground, backgroundTint);
                         Rect interactorRect = interactorObject.GetComponent<RectTransform>().rect;
                         RectTransform interactorRectTransformComponent = interactorObject.GetComponent<RectTransform>();
-                        Button continueButtonComponent = AddButton(0, interactorRectTransformComponent, continueButton, buttonsOffset, interactorRect);
+                        Button continueButtonComponent = AddButton(withCancelButton ? 2 : 3, interactorRectTransformComponent, continueButton, buttonsOffset, interactorRect);
                         Button cancelButtonComponent = null;
                         if (withCancelButton)
                         {
-                            cancelButtonComponent = AddButton(1, interactorRectTransformComponent, cancelButton, buttonsOffset, interactorRect);
+                            cancelButtonComponent = AddButton(3, interactorRectTransformComponent, cancelButton, buttonsOffset, interactorRect);
                         }
                         InputField textInput = AddInputField(interactorRectTransformComponent, cancelButton, buttonsOffset, interactorRect, withCancelButton ? 2 : 3);
                         TextInteractor buttonsInteractorComponent = Layout.AddComponent<TextInteractor>(interactorObject, new Dictionary<string, object>()
@@ -200,7 +168,7 @@ namespace GabTab
                 ///   It creates a <see cref="TextInteractor"/>, with their inner buttons, in the scene.
                 /// </summary>
                 [MenuItem("GameObject/Gab Tab/Interactive Interface/Create Text Interactor", false, 11)]
-                public static void CreateInteractiveInterface()
+                public static void CreateTextInteractor()
                 {
                     CreateTextInteractorWindow window = ScriptableObject.CreateInstance<CreateTextInteractorWindow>();
                     window.maxSize = new Vector2(400, 176);
@@ -214,7 +182,7 @@ namespace GabTab
                 ///   It enables such menu option when an <see cref="InteractiveInterface"/> is selected in the scene hierarchy.
                 /// </summary>
                 [MenuItem("GameObject/Gab Tab/Interactive Interface/Create Text Interactor", true)]
-                public static bool CanCreateInteractiveInterface()
+                public static bool CanCreateTextInteractor()
                 {
                     return Selection.activeTransform != null && Selection.activeTransform.GetComponent<InteractiveInterface>();
                 }

@@ -40,7 +40,7 @@ namespace GabTab
                         buttonsCount = EditorGUILayout.IntSlider("Buttons #", buttonsCount, 1, 3);
                         for(int i = 0; i < buttonsCount; i++)
                         {
-                            InteractorUtils.ButtonsSettingsGUI(i, buttonsSettings[i], style);
+                            InteractorUtils.ButtonSettingsGUI(i, buttonsSettings[i], style);
                         }
                     }
 
@@ -79,39 +79,11 @@ namespace GabTab
 
                     private void AddButton(ButtonsInteractor.ButtonKeyDictionary buttons, int index, RectTransform parent, InteractorUtils.ButtonSettings settings, float buttonsOffset, Rect interactorRect)
                     {
-                        GameObject buttonObject = new GameObject(settings.key);
-                        buttonObject.transform.parent = parent;
-                        float buttonWidth = (interactorRect.width - 5 * buttonsOffset) / 4;
-                        float buttonHeight = (interactorRect.height - 2 * buttonsOffset);
-                        RectTransform rectTransformComponent = Layout.AddComponent<RectTransform>(buttonObject);
-                        rectTransformComponent.pivot = Vector2.zero;
-                        rectTransformComponent.anchorMin = Vector2.zero;
-                        rectTransformComponent.anchorMax = Vector2.zero;
-                        int position = 4 - index;
-                        rectTransformComponent.offsetMin = new Vector2(position * buttonsOffset + (position - 1) * buttonWidth, buttonsOffset);
-                        rectTransformComponent.offsetMax = rectTransformComponent.offsetMin;
-                        rectTransformComponent.sizeDelta = new Vector2(buttonWidth, buttonHeight);
-                        Image buttonImageComponent = Layout.AddComponent<Image>(buttonObject);
-                        buttonImageComponent.sprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd");
-                        buttonImageComponent.type = Image.Type.Sliced;
-                        buttonImageComponent.fillCenter = true;
-                        Button buttonComponent = Layout.AddComponent<Button>(buttonObject);
-                        buttonComponent.colors = settings.colors;
-                        buttonComponent.targetGraphic = buttonImageComponent;
-                        GameObject textObject = new GameObject("Text");
-                        textObject.transform.parent = buttonObject.transform;
-                        Text textComponent = Layout.AddComponent<Text>(textObject);
-                        textComponent.text = settings.caption;
-                        textComponent.fontSize = (int)(buttonHeight / 2);
-                        textComponent.alignment = TextAnchor.MiddleCenter;
-                        textComponent.color = settings.textColor;
-                        RectTransform textRectTransform = textObject.GetComponent<RectTransform>();
-                        textRectTransform.pivot = Vector2.one / 2f;
-                        textRectTransform.anchorMin = Vector2.zero;
-                        textRectTransform.anchorMax = Vector2.one;
-                        textRectTransform.offsetMin = Vector2.zero;
-                        textRectTransform.offsetMax = Vector2.zero;
-                        buttons.Add(buttonComponent, settings.key);
+                        Button button = InteractorUtils.AddButtonAtPosition(parent, 3 - index, 4, buttonsOffset, interactorRect.height - 2 * buttonsOffset, settings);
+                        if (button)
+                        {
+                            buttons.Add(button, settings.key);
+                        }
                     }
 
                     private void Execute()
@@ -140,7 +112,7 @@ namespace GabTab
                 ///   It creates a <see cref="ButtonsInteractor"/>, with their inner buttons, in the scene.
                 /// </summary>
                 [MenuItem("GameObject/Gab Tab/Interactive Interface/Create Buttons Interactor", false, 11)]
-                public static void CreateInteractiveInterface()
+                public static void CreateButtonsInteractor()
                 {
                     CreateButtonsInteractorWindow window = ScriptableObject.CreateInstance<CreateButtonsInteractorWindow>();
                     window.maxSize = new Vector2(400, 176);
@@ -154,7 +126,7 @@ namespace GabTab
                 ///   It enables such menu option when an <see cref="InteractiveInterface"/> is selected in the scene hierarchy.
                 /// </summary>
                 [MenuItem("GameObject/Gab Tab/Interactive Interface/Create Buttons Interactor", true)]
-                public static bool CanCreateInteractiveInterface()
+                public static bool CanCreateButtonsInteractor()
                 {
                     return Selection.activeTransform != null && Selection.activeTransform.GetComponent<InteractiveInterface>();
                 }

@@ -74,7 +74,7 @@ namespace GabTab
 
                     if (addBackground)
                     {
-                        interactorImage.sprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd");
+                        interactorImage.sprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/Background.psd");
                         interactorImage.type = Image.Type.Sliced;
                         interactorImage.color = backgroundTint;
                         interactorImage.fillCenter = true;
@@ -118,20 +118,88 @@ namespace GabTab
                 }
 
                 /// <summary>
-                ///   Generates the UI to change a specific button setting.
+                ///   Generates the UI to change a specific indexed button setting.
                 /// </summary>
                 /// <param name="index">The button index (intended to be used on a multi-button setting)</param>
                 /// <param name="settings">The button settings object being affected</param>
                 /// <param name="style">Style to apply to this object's UI group</param>
-                public static void ButtonsSettingsGUI(int index, ButtonSettings settings, GUIStyle style)
+                public static void ButtonSettingsGUI(int index, ButtonSettings settings, GUIStyle style)
                 {
-                    settings.key = MenuActionUtils.EnsureNonEmpty(EditorGUILayout.TextField("Button key", settings.key), "button-" + index);
+                    ButtonSettingsGUI(settings, "button-" + index, "Button " + index, style);
+                }
+
+                /// <summary>
+                ///   Generates the UI to change a specific button setting.
+                /// </summary>
+                /// <param name="settings">The button settings object being affected</param>
+                /// <param name="defaultKey">The default key for the button, if blank</param>
+                /// <param name="defaultCaption">The default caption for the button, if blank</param>
+                /// <param name="style">Style to apply to this object's UI group</param>
+                public static void ButtonSettingsGUI(ButtonSettings settings, string defaultKey, string defaultCaption, GUIStyle style)
+                {
+                    EditorGUILayout.BeginVertical();
+                    settings.key = MenuActionUtils.EnsureNonEmpty(EditorGUILayout.TextField("Button key", settings.key), defaultKey);
                     EditorGUILayout.BeginVertical(style);
-                    settings.caption = MenuActionUtils.EnsureNonEmpty(EditorGUILayout.TextField("Caption", settings.caption), "Button " + index);
-                    if (settings.caption == "") settings.caption = "Button " + index;
+                    settings.caption = MenuActionUtils.EnsureNonEmpty(EditorGUILayout.TextField("Caption", settings.caption), defaultCaption);
                     settings.colors = ColorsGUI(settings.colors);
                     settings.textColor = EditorGUILayout.ColorField("Text color", settings.textColor);
                     EditorGUILayout.EndVertical();
+                    EditorGUILayout.EndVertical();
+                }
+
+                /// <summary>
+                ///   Adds a button at the bottom of the specified parent, and at a specific position.
+                ///   The position is calculated given an offset between buttons (and boundaries) and
+                ///     the specified number of expected elements.
+                /// </summary>
+                /// <param name="parent">The parent under which the button will be located</param>
+                /// <param name="position">The 0-based position of the button</param>
+                /// <param name="expectedElements">The number of expected button positions</param>
+                /// <param name="buttonsOffset">The buttons' offset/margin</param>
+                /// <param name="buttonHeight">The buttons' height</param>
+                /// <param name="settings">The current button's settings</param>
+                /// <returns>The button being created, or <c>null</c> if arguments are negative or somehow inconsistent</returns>
+                public static Button AddButtonAtPosition(RectTransform parent, int position, int expectedElements, float buttonsOffset, float buttonHeight, ButtonSettings settings)
+                {
+                    if (position < 0 || expectedElements < 1 || position >= expectedElements || buttonHeight <= 0 || buttonsOffset < 0)
+                    {
+                        return null;
+                    }
+                    GameObject buttonObject = new GameObject(settings.key);
+                    buttonObject.transform.parent = parent;
+                    float buttonWidth = (parent.rect.width - (expectedElements + 1) * buttonsOffset) / expectedElements;
+                    if (buttonWidth < 0)
+                    {
+                        return null;
+                    }
+                    RectTransform rectTransformComponent = Layout.AddComponent<RectTransform>(buttonObject);
+                    rectTransformComponent.pivot = Vector2.zero;
+                    rectTransformComponent.anchorMin = Vector2.zero;
+                    rectTransformComponent.anchorMax = Vector2.zero;
+                    rectTransformComponent.offsetMin = new Vector2(position * (buttonsOffset + buttonWidth) + buttonsOffset, buttonsOffset);
+                    rectTransformComponent.offsetMax = rectTransformComponent.offsetMin;
+                    rectTransformComponent.sizeDelta = new Vector2(buttonWidth, buttonHeight);
+                    Image buttonImageComponent = Layout.AddComponent<Image>(buttonObject);
+                    buttonImageComponent.sprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd");
+                    buttonImageComponent.type = Image.Type.Sliced;
+                    buttonImageComponent.fillCenter = true;
+                    Button buttonComponent = Layout.AddComponent<Button>(buttonObject);
+                    buttonComponent.colors = settings.colors;
+                    buttonComponent.targetGraphic = buttonImageComponent;
+                    GameObject textObject = new GameObject("Text");
+                    textObject.transform.parent = buttonObject.transform;
+                    Text textComponent = Layout.AddComponent<Text>(textObject);
+                    textComponent.text = settings.caption;
+                    textComponent.fontSize = (int)(buttonHeight / 2);
+                    textComponent.alignment = TextAnchor.MiddleCenter;
+                    textComponent.color = settings.textColor;
+                    RectTransform textRectTransform = textObject.GetComponent<RectTransform>();
+                    textRectTransform.pivot = Vector2.one / 2f;
+                    textRectTransform.anchorMin = Vector2.zero;
+                    textRectTransform.anchorMax = Vector2.one;
+                    textRectTransform.offsetMin = Vector2.zero;
+                    textRectTransform.offsetMax = Vector2.zero;
+                    return buttonComponent;
                 }
             }
         }

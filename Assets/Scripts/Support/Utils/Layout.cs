@@ -221,11 +221,27 @@ namespace Support
             public static void SetObjectFieldValues(UnityEngine.Object target, Dictionary<string, object> data)
             {
                 Type targetType = target.GetType();
-                BindingFlags all = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static;
+                BindingFlags all = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
                 foreach (KeyValuePair<string, object> pair in data)
                 {
-                    FieldInfo field = targetType.GetField(pair.Key, all);
-                    if (field != null && !field.IsStatic && (field.IsPublic || field.IsDefined(typeof(SerializeField), true)))
+                    FieldInfo field = null;
+                    // TODO: fix this check to iterate on targetType = targetType.BaseType until targetType becomes null.
+                    // TODO:   in the meantime, checking whether one of those types implements a property in these conditions
+                    Type currentType = targetType;
+                    while (field == null && currentType != null)
+                    {
+                        field = currentType.GetField(pair.Key, all);
+                        if (field != null && (field.IsPublic || field.IsDefined(typeof(SerializeField), true)))
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            field = null;
+                            currentType = currentType.BaseType;
+                        }
+                    }
+                    if (field != null)
                     {
                         field.SetValue(target, pair.Value);
                     }

@@ -158,8 +158,9 @@ namespace GabTab
                 /// <param name="buttonsOffset">The buttons' offset/margin</param>
                 /// <param name="buttonHeight">The buttons' height</param>
                 /// <param name="settings">The current button's settings</param>
+                /// <param name="fontSize">Optional font size. Will default to half the height</param>
                 /// <returns>The button being created, or <c>null</c> if arguments are negative or somehow inconsistent</returns>
-                public static Button AddButtonAtPosition(RectTransform parent, int position, int expectedElements, float buttonsOffset, float buttonHeight, ButtonSettings settings)
+                public static Button AddButtonAtPosition(RectTransform parent, int position, int expectedElements, float buttonsOffset, float buttonHeight, ButtonSettings settings, int fontSize = 0)
                 {
                     if (position < 0 || expectedElements < 1 || position >= expectedElements || buttonHeight <= 0 || buttonsOffset < 0)
                     {
@@ -171,7 +172,7 @@ namespace GabTab
                         return null;
                     }
 
-                    return AddButton(parent, new Vector2(position * (buttonsOffset + buttonWidth) + buttonsOffset, buttonsOffset), new Vector2(buttonWidth, buttonHeight), settings);
+                    return AddButton(parent, new Vector2(position * (buttonsOffset + buttonWidth) + buttonsOffset, buttonsOffset), new Vector2(buttonWidth, buttonHeight), settings, fontSize);
                 }
 
                 /// <summary>
@@ -181,8 +182,9 @@ namespace GabTab
                 /// <param name="position">The button's from-top-bottom position</param>
                 /// <param name="size">The button's size</param>
                 /// <param name="settings">The button's settings</param>
+                /// <param name="fontSize">Optional font size. Will default to half the height</param>
                 /// <returns>The button being created, or <c>null</c> if arguments are negative or somehow inconsistent</returns>
-                public static Button AddButton(RectTransform parent, Vector2 position, Vector2 size, ButtonSettings settings)
+                public static Button AddButton(RectTransform parent, Vector2 position, Vector2 size, ButtonSettings settings, int fontSize = 0)
                 {
                     if (size.x <= 0 || size.y <= 0 || position.x < 0 || position.y < 0)
                     {
@@ -208,7 +210,7 @@ namespace GabTab
                     textObject.transform.parent = buttonObject.transform;
                     Text textComponent = Layout.AddComponent<Text>(textObject);
                     textComponent.text = settings.caption;
-                    textComponent.fontSize = (int)(size.y / 2);
+                    textComponent.fontSize = (fontSize >= 0) ? fontSize : (int)(size.y / 2);
                     textComponent.alignment = TextAnchor.MiddleCenter;
                     textComponent.color = settings.textColor;
                     RectTransform textRectTransform = textObject.GetComponent<RectTransform>();

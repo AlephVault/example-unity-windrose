@@ -193,20 +193,44 @@ namespace GabTab
                             return new GameObject[0];
                         }
 
-                        private void AddNavigationButtons(Transform parent, float buttonsOffset, float controlHeight, bool fillSpace, out Button prevButton, out Button nextButton)
+                        private void AddNavigationButtons(RectTransform parent, float buttonsOffset, float controlHeight, bool fillSpace, out Button prevButton, out Button nextButton)
                         {
-                            // TODO
-                            // using: slowNavigationButtonsSettings
-                            prevButton = null;
-                            nextButton = null;
+                            float y = (withContinueButton || withCancelButton) ? controlHeight + 2 * buttonsOffset : buttonsOffset;
+                            float xPrev = fillSpace ? buttonsOffset : (2 * buttonsOffset + controlHeight);
+                            float xNext = parent.rect.width - (fillSpace ? 1 : 2) * (buttonsOffset + controlHeight);
+                            string key = slowNavigationButtonsSettings.key;
+                            string caption = slowNavigationButtonsSettings.caption;
+                            // set prev button settings
+                            slowNavigationButtonsSettings.key = key + "-prev";
+                            slowNavigationButtonsSettings.caption = "◀";
+                            prevButton = InteractorUtils.AddButton(parent, new Vector2(xPrev, y), Vector2.one * controlHeight, slowNavigationButtonsSettings, (int)controlHeight / 3);
+                            // set next button settings
+                            slowNavigationButtonsSettings.key = key + "-next";
+                            slowNavigationButtonsSettings.caption = "▶";
+                            nextButton = InteractorUtils.AddButton(parent, new Vector2(xNext, y), Vector2.one * controlHeight, slowNavigationButtonsSettings, (int)controlHeight / 3);
+                            // reset
+                            slowNavigationButtonsSettings.key = key;
+                            slowNavigationButtonsSettings.caption = caption;
                         }
 
-                        private void AddFastNavigationButtons(Transform parent, float buttonsOffset, float controlHeight, out Button prevPageButton, out Button nextPageButton)
+                        private void AddFastNavigationButtons(RectTransform parent, float buttonsOffset, float controlHeight, out Button prevPageButton, out Button nextPageButton)
                         {
-                            // TODO
-                            // using: fastNavigationButtonsSettings
-                            prevPageButton = null;
-                            nextPageButton = null;
+                            float y = (withContinueButton || withCancelButton) ? controlHeight + 2 * buttonsOffset : buttonsOffset;
+                            float xPrev = buttonsOffset;
+                            float xNext = parent.rect.width - buttonsOffset - controlHeight;
+                            string key = fastNavigationButtonsSettings.key;
+                            string caption = fastNavigationButtonsSettings.caption;
+                            // set prev button settings
+                            fastNavigationButtonsSettings.key = key + "-prev";
+                            fastNavigationButtonsSettings.caption = "◀◀";
+                            prevPageButton = InteractorUtils.AddButton(parent, new Vector2(xPrev, y), Vector2.one * controlHeight, fastNavigationButtonsSettings, (int)controlHeight / 3);
+                            // set next button settings
+                            fastNavigationButtonsSettings.key = key + "-next";
+                            fastNavigationButtonsSettings.caption = "▶▶";
+                            nextPageButton = InteractorUtils.AddButton(parent, new Vector2(xNext, y), Vector2.one * controlHeight, fastNavigationButtonsSettings, (int)controlHeight / 3);
+                            // reset
+                            fastNavigationButtonsSettings.key = key;
+                            fastNavigationButtonsSettings.caption = caption;
                         }
 
                         private void Execute()
@@ -225,8 +249,8 @@ namespace GabTab
                             Button cancelButton = null;
                             Button prevButton = null, nextButton = null;
                             Button prevPageButton = null, nextPageButton = null;
-                            AddNavigationButtons(listInteractorObject.transform, interactorOffset, standardControlHeight, occupyFreeSpace && !withFastNavigationButtons, out prevButton, out nextButton);
-                            if (withFastNavigationButtons) AddFastNavigationButtons(listInteractorObject.transform, interactorOffset, standardControlHeight, out prevPageButton, out nextPageButton);
+                            AddNavigationButtons(listInteractorRectTransform, interactorOffset, standardControlHeight, occupyFreeSpace && !withFastNavigationButtons, out prevButton, out nextButton);
+                            if (withFastNavigationButtons) AddFastNavigationButtons(listInteractorRectTransform, interactorOffset, standardControlHeight, out prevPageButton, out nextPageButton);
                             if (withContinueButton) continueButton = InteractorUtils.AddButtonAtPosition(listInteractorRectTransform, withCancelButton ? 2 : 3, 4, interactorOffset, standardControlHeight, continueButtonSettings);
                             if (withCancelButton) cancelButton = InteractorUtils.AddButtonAtPosition(listInteractorRectTransform, 3, 4, interactorOffset, standardControlHeight, cancelButtonSettings);
                             GameObject[] itemDisplays = AddOptionLabels(listInteractorObject.transform, interactorOffset, standardControlHeight, occupyFreeSpace && !withFastNavigationButtons);

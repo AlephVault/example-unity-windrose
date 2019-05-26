@@ -306,8 +306,6 @@ namespace WindRose
                     Vector3 bottomLeft = map.transform.position;
                     Vector3 bottomRight = bottomLeft + Vector3.right * map.CellSize.x * map.Width;
                     Vector3 topLeft = bottomLeft + Vector3.up * map.CellSize.y * map.Height;
-                    Vector3 topRight = bottomLeft + Vector3.up * map.CellSize.y * map.Height + Vector3.right * map.CellSize.x * map.Width;
-
                     Gizmos.color = map.gizmoColor;
                     Gizmos.DrawLine(bottomLeft, bottomRight);
                     for(uint y = 1; y <= map.height; y++)

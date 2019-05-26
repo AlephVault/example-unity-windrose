@@ -186,11 +186,20 @@ namespace GabTab
                             return interactorObject;
                         }
 
-                        private GameObject[] AddOptionLabels(Transform parent, float buttonsOffset, float controlHeight, bool fillSpace)
+                        private GameObject[] AddOptionLabels(RectTransform parent, float buttonsOffset, float controlHeight, bool fillSpace)
                         {
-                            // TODO
-                            // using: labelContentColor
-                            return new GameObject[0];
+                            GameObject[] labels = new GameObject[3];
+                            float leftX = (fillSpace ? 1 : 2) * (controlHeight + buttonsOffset);
+                            float rightX = (fillSpace ? (2 * buttonsOffset + controlHeight) : (3 * buttonsOffset + 2 * controlHeight));
+                            float y = (withContinueButton || withCancelButton) ? (2 * buttonsOffset + controlHeight) : buttonsOffset;
+                            float innerWidth = parent.rect.width - leftX - rightX;
+                            float labelWidth = innerWidth / 3 - buttonsOffset;
+                            for(int index = 0; index < 3; index++)
+                            {                                
+                                Button button = InteractorUtils.AddButton(parent, new Vector2(leftX + buttonsOffset + index * (buttonsOffset + labelWidth), y), new Vector2(labelWidth, controlHeight), new InteractorUtils.ButtonSettings("", ""), (int)(controlHeight / 1.2));
+                                button.transition = Selectable.Transition.None;
+                            }
+                            return labels;
                         }
 
                         private void AddNavigationButtons(RectTransform parent, float buttonsOffset, float controlHeight, bool fillSpace, out Button prevButton, out Button nextButton)
@@ -253,14 +262,14 @@ namespace GabTab
                             if (withFastNavigationButtons) AddFastNavigationButtons(listInteractorRectTransform, interactorOffset, standardControlHeight, out prevPageButton, out nextPageButton);
                             if (withContinueButton) continueButton = InteractorUtils.AddButtonAtPosition(listInteractorRectTransform, withCancelButton ? 2 : 3, 4, interactorOffset, standardControlHeight, continueButtonSettings);
                             if (withCancelButton) cancelButton = InteractorUtils.AddButtonAtPosition(listInteractorRectTransform, 3, 4, interactorOffset, standardControlHeight, cancelButtonSettings);
-                            GameObject[] itemDisplays = AddOptionLabels(listInteractorObject.transform, interactorOffset, standardControlHeight, occupyFreeSpace && !withFastNavigationButtons);
+                            GameObject[] itemDisplays = AddOptionLabels(listInteractorRectTransform, interactorOffset, standardControlHeight, occupyFreeSpace && !withFastNavigationButtons);
 
                             /**
                              * Annoying-to-configure properties are being set here (other ones, which belong
                              * exclusively to the simple-string subclass, can be edited later -as normal- in
                              * the inspector) for the to-create interactor.
                              */
-                            SimpleStringListInteractor listInteractorComponent = Layout.AddComponent<SimpleStringListInteractor>(listInteractorObject, new Dictionary<string, object>()
+                            Layout.AddComponent<SimpleStringListInteractor>(listInteractorObject, new Dictionary<string, object>()
                             {
                                 { "multiSelect", multiSelect },
                                 { "continueButton", continueButton },

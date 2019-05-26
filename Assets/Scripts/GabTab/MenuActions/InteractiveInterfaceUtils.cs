@@ -30,7 +30,6 @@ namespace GabTab
                 private void OnGUI()
                 {
                     GUIStyle longLabelStyle = MenuActionUtils.GetSingleLabelStyle();
-                    GUIStyle indentedStyle = MenuActionUtils.GetIndentedStyle();
 
                     titleContent = new GUIContent("Gab Tab - Creating a new Interactive Interface");
 
@@ -55,9 +54,7 @@ namespace GabTab
                 {
                     Canvas selectedCanvas = Selection.activeTransform.GetComponent<Canvas>();
                     Rect canvasRect = selectedCanvas.GetComponent<RectTransform>().rect;
-                    float interactiveInterfaceHeight = canvasRect.height * interfaceHeight;
                     float messageOffset = Values.Max(canvasRect.height, canvasRect.width) * 0.01f;
-                    float messageSidePadding = messageOffset / 2;
                     Sprite background = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/Background.psd");
 
                     // Creating the object

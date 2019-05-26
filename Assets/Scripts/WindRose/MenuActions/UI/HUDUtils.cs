@@ -31,7 +31,6 @@ namespace WindRose
                     private void OnGUI()
                     {
                         GUIStyle longLabelStyle = MenuActionUtils.GetSingleLabelStyle();
-                        GUIStyle indentedStyle = MenuActionUtils.GetIndentedStyle();
 
                         titleContent = new GUIContent("Wind Rose - Creating a new HUD");
 

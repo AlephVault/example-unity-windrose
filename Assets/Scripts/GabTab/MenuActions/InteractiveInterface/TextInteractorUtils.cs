@@ -153,7 +153,7 @@ namespace GabTab
                             cancelButtonComponent = AddButton(3, interactorRectTransformComponent, cancelButton, buttonsOffset, interactorRect);
                         }
                         InputField textInput = AddInputField(interactorRectTransformComponent, cancelButton, buttonsOffset, interactorRect, withCancelButton ? 2 : 3);
-                        TextInteractor buttonsInteractorComponent = Layout.AddComponent<TextInteractor>(interactorObject, new Dictionary<string, object>()
+                        Layout.AddComponent<TextInteractor>(interactorObject, new Dictionary<string, object>()
                         {
                             { "continueButton", continueButtonComponent },
                             { "cancelButton", cancelButtonComponent },

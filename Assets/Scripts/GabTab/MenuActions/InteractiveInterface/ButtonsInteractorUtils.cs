@@ -95,7 +95,7 @@ namespace GabTab
                         Rect interactorRect = interactorObject.GetComponent<RectTransform>().rect;
                         ButtonsInteractor.ButtonKeyDictionary buttons = new ButtonsInteractor.ButtonKeyDictionary();
                         RectTransform interactorRectTransformComponent = interactorObject.GetComponent<RectTransform>();
-                        ButtonsInteractor buttonsInteractorComponent = Layout.AddComponent<ButtonsInteractor>(interactorObject, new Dictionary<string, object>()
+                        Layout.AddComponent<ButtonsInteractor>(interactorObject, new Dictionary<string, object>()
                         {
                             { "buttons", buttons }
                         });

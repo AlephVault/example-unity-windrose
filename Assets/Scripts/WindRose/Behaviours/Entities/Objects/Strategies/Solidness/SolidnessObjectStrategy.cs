@@ -65,7 +65,7 @@ namespace WindRose
                         }
 
                         // Clamps the mask from the initial text
-                        private void ClampMaskFromText()
+                        private void InitMaskFromText()
                         {
                             string[] lines = initialMask.Split('\n');
                             uint linesCount = Values.Min(Object.Height, (uint)lines.Length);
@@ -155,6 +155,12 @@ namespace WindRose
                             mask = newMask;
                         }
 
+                        protected override void Awake()
+                        {
+                            base.Awake();
+                            InitMaskFromText();
+                        }
+
                         /// <summary>
                         ///   Upon initialization, if this object is also a <see cref="TriggerPlatform"/>
                         ///     then the solidness will be changed to <see cref="SolidnessStatus.Ghost"/> unless
@@ -165,7 +171,6 @@ namespace WindRose
                             TriggerPlatform triggerPlatform = StrategyHolder.GetComponent<TriggerPlatform>();
                             isPlatform = triggerPlatform != null;
                             ClampSolidness();
-                            ClampMaskFromText();
                         }
 
                         /// <summary>
@@ -247,7 +252,7 @@ namespace WindRose
                         {
                             solidness = serializedObject.FindProperty("solidness");
                             traversesOtherSolids = serializedObject.FindProperty("traversesOtherSolids");
-                            mask = serializedObject.FindProperty("mask");
+                            mask = serializedObject.FindProperty("initialMask");
                         }
 
                         public override void OnInspectorGUI()

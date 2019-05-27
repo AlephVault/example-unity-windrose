@@ -742,7 +742,7 @@ namespace WindRose
 
                     RequireAttached(mainObjectStrategy);
 
-                    (GetComponent(objectStrategy.CounterpartType) as ObjectsManagementStrategy).DoProcessPropertyUpdate(mainObjectStrategy, attachedStrategies[mainObjectStrategy], property, oldValue, newValue);
+                    (GetComponent(objectStrategy.CounterpartType) as ObjectsManagementStrategy).DoProcessPropertyUpdate(objectStrategy, attachedStrategies[mainObjectStrategy], property, oldValue, newValue);
 
                     mainObjectStrategy.Object.onPropertyUpdated.Invoke(property, oldValue, newValue);
                 }

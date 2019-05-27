@@ -65,7 +65,7 @@ namespace WindRose
                         {
                             Entities.Objects.Strategies.Solidness.SolidnessObjectStrategy solidnessStrategy = ((Entities.Objects.Strategies.Solidness.SolidnessObjectStrategy)strategy);
                             SolidnessStatus solidness = solidnessStrategy.Solidness;
-                            IncrementBody(solidnessStrategy, status, solidness);
+                            IncrementBody(solidnessStrategy, status, solidness, solidnessStrategy.Mask);
                         }
 
                         /// <summary>
@@ -76,7 +76,7 @@ namespace WindRose
                         {
                             Entities.Objects.Strategies.Solidness.SolidnessObjectStrategy solidnessStrategy = ((Entities.Objects.Strategies.Solidness.SolidnessObjectStrategy)strategy);
                             SolidnessStatus solidness = solidnessStrategy.Solidness;
-                            DecrementBody(solidnessStrategy, status, solidness);
+                            DecrementBody(solidnessStrategy, status, solidness, solidnessStrategy.Mask);
                         }
 
                         /*****************************************************************************
@@ -221,12 +221,21 @@ namespace WindRose
                         /// </summary>
                         public override void DoProcessPropertyUpdate(Entities.Objects.Strategies.ObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status, string property, object oldValue, object newValue)
                         {
+                            Debug.LogFormat("Type of strategy: {0} - strategy {1}", strategy.GetType().FullName, strategy);
                             Entities.Objects.Strategies.Solidness.SolidnessObjectStrategy solidnessStrategy = ((Entities.Objects.Strategies.Solidness.SolidnessObjectStrategy)strategy);
-                            if (property == "solidness" || property == "traversesOtherSolids" || property == "mask")
+                            // Please note: we condition the retrieval of the mask, since the retrieval COPIES the mask value! And would not be needed
+                            //   if the solidness was NOT the Mask one.
+                            if (property == "solidness")
                             {
                                 StrategyHolder.MovementCancel(strategy.StrategyHolder);
-                                DecrementBody(solidnessStrategy, status, (SolidnessStatus)oldValue);
-                                IncrementBody(solidnessStrategy, status, (SolidnessStatus)newValue);
+                                DecrementBody(solidnessStrategy, status, (SolidnessStatus)oldValue, (SolidnessStatus)oldValue == SolidnessStatus.Mask ? solidnessStrategy.Mask : null);
+                                IncrementBody(solidnessStrategy, status, (SolidnessStatus)newValue, (SolidnessStatus)newValue == SolidnessStatus.Mask ? solidnessStrategy.Mask : null);
+                            }
+                            else if (property == "mask")
+                            {
+                                StrategyHolder.MovementCancel(strategy.StrategyHolder);
+                                DecrementBody(solidnessStrategy, status, solidnessStrategy.Solidness, solidnessStrategy.Solidness == SolidnessStatus.Mask ? (SolidnessStatus[,])oldValue : null);
+                                IncrementBody(solidnessStrategy, status, solidnessStrategy.Solidness, solidnessStrategy.Solidness == SolidnessStatus.Mask ? (SolidnessStatus[,])newValue : null);
                             }
                         }
 
@@ -247,10 +256,10 @@ namespace WindRose
                             switch (stage)
                             {
                                 case "Before":
-                                    DecrementBody(solidnessStrategy, status, solidness);
+                                    DecrementBody(solidnessStrategy, status, solidness, solidnessStrategy.Mask);
                                     break;
                                 case "AfterPositionChange":
-                                    IncrementBody(solidnessStrategy, status, solidness);
+                                    IncrementBody(solidnessStrategy, status, solidness, solidnessStrategy.Mask);
                                     break;
                             }
                         }
@@ -262,11 +271,11 @@ namespace WindRose
                          * 
                          */
 
-                        private void IncrementBody(Entities.Objects.Strategies.Solidness.SolidnessObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status, SolidnessStatus solidness)
+                        private void IncrementBody(Entities.Objects.Strategies.Solidness.SolidnessObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status, SolidnessStatus solidness, SolidnessStatus[,] mask)
                         {
                             if (solidness.Irregular())
                             {
-                                UpdateIrregularBody(strategy.Mask, status.X, status.Y, strategy.StrategyHolder.Object.Width, strategy.StrategyHolder.Object.Height);
+                                UpdateIrregularBody(mask, status.X, status.Y, strategy.StrategyHolder.Object.Width, strategy.StrategyHolder.Object.Height);
                             }
                             else if (solidness.Occupies())
                             {
@@ -278,11 +287,11 @@ namespace WindRose
                             }
                         }
 
-                        private void DecrementBody(Entities.Objects.Strategies.Solidness.SolidnessObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status, SolidnessStatus solidness)
+                        private void DecrementBody(Entities.Objects.Strategies.Solidness.SolidnessObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status, SolidnessStatus solidness, SolidnessStatus[,] mask)
                         {
                             if (solidness.Irregular())
                             {
-                                UpdateIrregularBody(strategy.Mask, status.X, status.Y, strategy.StrategyHolder.Object.Width, strategy.StrategyHolder.Object.Height, -1);
+                                UpdateIrregularBody(mask, status.X, status.Y, strategy.StrategyHolder.Object.Width, strategy.StrategyHolder.Object.Height, -1);
                             }
                             else if (solidness.Occupies())
                             {

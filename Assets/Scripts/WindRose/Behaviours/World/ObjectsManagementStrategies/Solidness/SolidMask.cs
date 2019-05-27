@@ -51,6 +51,17 @@ namespace WindRose
                         }
 
                         /// <summary>
+                        ///   Tells whether a cell's value cannot by incremented/decremented (by an
+                        ///     arbitrary amount) due to overflow.
+                        /// </summary>
+                        public class CannotChangeException : Types.Exception
+                        {
+                            public CannotChangeException() { }
+                            public CannotChangeException(string message) : base(message) { }
+                            public CannotChangeException(string message, Exception inner) : base(message, inner) { }
+                        }
+
+                        /// <summary>
                         ///   Mask dimensions.
                         /// </summary>
                         public readonly uint width, height;
@@ -223,6 +234,24 @@ namespace WindRose
                         public bool EmptyColumn(uint x, uint y, uint height)
                         {
                             return EmptySquare(x, y, 1, height);
+                        }
+
+                        /// <summary>
+                        ///   Changes a given cell's value by the given (positive or negative)
+                        ///     amount.
+                        /// </summary>
+                        /// <param name="x">The X coordinate of the cell to change</param>
+                        /// <param name="y">The Y coordinate of the cell to change</param>
+                        /// <param name="amount">The amount to change the ccell by</param>
+                        public void ChangeCellBy(uint x, uint y, short amount)
+                        {
+                            uint offset = y * width + x;
+                            short current = positions[offset];
+                            if (amount > (short.MaxValue - current) || amount < (short.MinValue - current))
+                            {
+                                throw new CannotChangeException("Cannot increment position (" + x + ", " + y + ") beyond its boundaries");
+                            }
+                            positions[offset] += amount;
                         }
 
                         /// <summary>

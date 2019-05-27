@@ -68,6 +68,22 @@
                         }
 
                         /// <summary>
+                        ///   Masks are irregular. They cannot move.
+                        /// </summary>
+                        /// <param name="status"></param>
+                        /// <returns></returns>
+                        public static bool Irregular(this SolidnessStatus status)
+                        {
+                            switch (status)
+                            {
+                                case SolidnessStatus.Mask:
+                                    return true;
+                                default:
+                                    return false;
+                            }
+                        }
+
+                        /// <summary>
                         ///   Tells whether the occupancy/carving quality of the compared values
                         ///     is different or not.
                         /// </summary>

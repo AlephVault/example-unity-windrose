@@ -103,6 +103,7 @@ namespace WindRose
                             if (!otherComponentsResults[typeof(Base.BaseObjectsManagementStrategy)]) return false;
                             Entities.Objects.Strategies.Solidness.SolidnessObjectStrategy solidnessStrategy = ((Entities.Objects.Strategies.Solidness.SolidnessObjectStrategy)strategy);
                             SolidnessStatus solidness = solidnessStrategy.Solidness;
+                            if (solidness.Irregular()) return false;
                             return solidness.Traverses() || solidnessStrategy.TraversesOtherSolids || IsAdjacencyFree(status.X, status.Y, strategy.StrategyHolder.Object.Width, strategy.StrategyHolder.Object.Height, direction);
                         }
 
@@ -221,7 +222,7 @@ namespace WindRose
                         public override void DoProcessPropertyUpdate(Entities.Objects.Strategies.ObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status, string property, object oldValue, object newValue)
                         {
                             Entities.Objects.Strategies.Solidness.SolidnessObjectStrategy solidnessStrategy = ((Entities.Objects.Strategies.Solidness.SolidnessObjectStrategy)strategy);
-                            if (property == "solidness" || property == "traversesOtherSolids")
+                            if (property == "solidness" || property == "traversesOtherSolids" || property == "mask")
                             {
                                 StrategyHolder.MovementCancel(strategy.StrategyHolder);
                                 DecrementBody(solidnessStrategy, status, (SolidnessStatus)oldValue);
@@ -263,7 +264,11 @@ namespace WindRose
 
                         private void IncrementBody(Entities.Objects.Strategies.Solidness.SolidnessObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status, SolidnessStatus solidness)
                         {
-                            if (solidness.Occupies())
+                            if (solidness.Irregular())
+                            {
+                                UpdateIrregularBody(strategy.Mask, status.X, status.Y, strategy.StrategyHolder.Object.Width, strategy.StrategyHolder.Object.Height);
+                            }
+                            else if (solidness.Occupies())
                             {
                                 IncrementBody(status.X, status.Y, strategy.StrategyHolder.Object.Width, strategy.StrategyHolder.Object.Height);
                             }
@@ -275,7 +280,11 @@ namespace WindRose
 
                         private void DecrementBody(Entities.Objects.Strategies.Solidness.SolidnessObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status, SolidnessStatus solidness)
                         {
-                            if (solidness.Occupies())
+                            if (solidness.Irregular())
+                            {
+                                UpdateIrregularBody(strategy.Mask, status.X, status.Y, strategy.StrategyHolder.Object.Width, strategy.StrategyHolder.Object.Height, -1);
+                            }
+                            else if (solidness.Occupies())
                             {
                                 DecrementBody(status.X, status.Y, strategy.StrategyHolder.Object.Width, strategy.StrategyHolder.Object.Height);
                             }
@@ -350,6 +359,27 @@ namespace WindRose
                          * Private methods of this particular strategy.
                          * 
                          *****************************************************************************/
+
+                        private void UpdateIrregularBody(SolidnessStatus[,] mask, uint x, uint y, uint width, uint height, short factor = 1)
+                        {
+                            for(uint i = 0; i < width; i++)
+                            {
+                                for(uint j = 0; j < height; j++)
+                                {
+                                    short amount = 0;
+                                    switch(mask[i, j])
+                                    {
+                                        case SolidnessStatus.Hole:
+                                            amount = -1;
+                                            break;
+                                        case SolidnessStatus.Solid:
+                                            amount = 1;
+                                            break;
+                                    }
+                                    solidMask.ChangeCellBy(i + x, j + y, (short)(amount * factor));
+                                }
+                            }
+                        }
 
                         private void IncrementBody(uint x, uint y, uint width, uint height)
                         {

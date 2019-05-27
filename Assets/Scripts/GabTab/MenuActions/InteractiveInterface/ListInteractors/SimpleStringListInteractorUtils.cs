@@ -196,8 +196,9 @@ namespace GabTab
                             float labelWidth = innerWidth / 3 - buttonsOffset;
                             for(int index = 0; index < 3; index++)
                             {                                
-                                Button button = InteractorUtils.AddButton(parent, new Vector2(leftX + buttonsOffset + index * (buttonsOffset + labelWidth), y), new Vector2(labelWidth, controlHeight), new InteractorUtils.ButtonSettings("", ""), (int)(controlHeight / 1.2));
+                                Button button = InteractorUtils.AddButton(parent, new Vector2(leftX + buttonsOffset + index * (buttonsOffset + labelWidth), y), new Vector2(labelWidth, controlHeight), new InteractorUtils.ButtonSettings("label-" + index, ""), (int)(controlHeight / 1.2));
                                 button.transition = Selectable.Transition.None;
+                                labels[index] = button.gameObject;
                             }
                             return labels;
                         }

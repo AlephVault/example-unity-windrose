@@ -14,25 +14,6 @@ namespace GabTab
             namespace DefaultLists
             {
                 /// <summary>
-                ///   One of the selectable items. It will have a code-friendly key,
-                ///     a user-friendly label, and a flag telling whether it will
-                ///     be enabled (selectable) or not.
-                /// </summary>
-                public class SimpleStringModel
-                {
-                    public readonly string Key;
-                    public readonly string Value;
-                    public bool Enabled;
-
-                    public SimpleStringModel(string key, string value, bool enabled = true)
-                    {
-                        Key = key;
-                        Value = value;
-                        Enabled = enabled;
-                    }
-                }
-                
-                /// <summary>
                 ///   A simple implementation of list interactor mapping a dictionary of
                 ///     string keys to string labels. Optionally, many string keys may
                 ///     be selected as "invalid" (they will count as disabled items).
@@ -60,6 +41,16 @@ namespace GabTab
                     public Color disabledBackgroundColor = new Color(0, 0, 0, 0);
 
                     /// <summary>
+                    ///   The text color for when the option is selected.
+                    /// </summary>
+                    public Color selectedTextColor = Color.blue;
+
+                    /// <summary>
+                    ///   The background color for when the option is selected.
+                    /// </summary>
+                    public Color selectedBackgroundColor = new Color(0, 0, 0, 0);
+
+                    /// <summary>
                     ///   The text for when an invalid option is selected. You can use {0} placeholder
                     ///     to interpolate the label of the selected option.
                     /// </summary>
@@ -75,16 +66,17 @@ namespace GabTab
                     /// <param name="selectionStatus">Tells whether the item is selected, unselected, or selected AND active</param>
                     protected override void RenderItem(SimpleStringModel source, GameObject destination, bool isSelectable, SelectionStatus selectionStatus)
                     {
-                        Text label = destination.GetComponent<Text>();
+                        Text label = destination.GetComponentInChildren<Text>();
                         Image image = destination.GetComponent<Image>();
                         if (image)
                         {
-                            image.color = isSelectable ? enabledBackgroundColor : disabledBackgroundColor;
+                            image.color = isSelectable ? (selectionStatus != SelectionStatus.NO ? selectedBackgroundColor : enabledBackgroundColor) : disabledBackgroundColor;
                         }
 
                         if (label)
                         {
-                            label.color = isSelectable ? enabledTextColor : disabledTextColor;
+                            label.color = isSelectable ? (selectionStatus != SelectionStatus.NO ? selectedTextColor : enabledTextColor) : disabledTextColor;
+                            label.text = source.Value;
                         }
                     }
 

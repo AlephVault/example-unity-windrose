@@ -42,16 +42,11 @@ namespace WindRose
                         private bool traversesOtherSolids = false;
 
                         /// <summary>
-                        ///   Defines the mask of the object, which is specified as a
-                        ///     paragraph of (height) lines, each having (width) characters
-                        ///     being S (solid), G (Ghost) or H (Hole), case-insensitive.
+                        ///   The solidness mask for this object. Only meaningful
+                        ///     when using <see cref="SolidnessStatus.Mask"/> status. 
                         /// </summary>
                         [SerializeField]
-                        [TextArea(5, 5)]
-                        private string initialMask = "";
-
-                        // This is the parsed mask, after proper clamping.
-                        private SolidnessStatus[,] mask;
+                        private SolidObjectMask mask;
 
                         // Tells whether this object is also a TriggerPlatform.
                         private bool isPlatform;
@@ -64,101 +59,19 @@ namespace WindRose
                             }
                         }
 
-                        // Clamps the mask from the initial text
-                        private void InitMaskFromText()
-                        {
-                            string[] lines = initialMask.Split('\n');
-                            uint linesCount = Values.Min(Object.Height, (uint)lines.Length);
-
-                            mask = new SolidnessStatus[Object.Width, Object.Height];
-
-                            for(uint lineIdx = 0; lineIdx < linesCount; lineIdx++)
-                            {
-                                string line = lines[lineIdx].ToLower();
-                                uint lineSize = Values.Min(Object.Width, (uint)line.Length);
-                                for(uint colIdx = 0; colIdx < lineSize; colIdx++)
-                                {
-                                    char currentChar = line[(int)colIdx];
-                                    switch(currentChar)
-                                    {
-                                        case 's':
-                                            mask[colIdx, lineIdx] = SolidnessStatus.Solid;
-                                            break;
-                                        case 'h':
-                                            mask[colIdx, lineIdx] = SolidnessStatus.Hole;
-                                            break;
-                                        default:
-                                            mask[colIdx, lineIdx] = SolidnessStatus.Ghost;
-                                            break;
-                                    }
-                                }
-                                for(uint colIdx = lineSize; colIdx < Object.Width; colIdx++)
-                                {
-                                    mask[colIdx, lineIdx] = SolidnessStatus.Ghost;
-                                }
-                            }
-                            for(uint lineIdx = linesCount; lineIdx < Object.Height; lineIdx++)
-                            {
-                                for(uint colIdx = 0; colIdx < Object.Width; colIdx++)
-                                {
-                                    mask[colIdx, lineIdx] = SolidnessStatus.Ghost;
-                                }
-                            }
-                        }
-
-                        // Clamps the mask from the current one
-                        private void ClampMask()
-                        {
-                            if (mask == null)
-                            {
-                                mask = new SolidnessStatus[Object.Width, Object.Height];
-                                for(uint i = 0; i < Object.Width; i++)
-                                {
-                                    for(uint j = 0; j < Object.Height; j++)
-                                    {
-                                        mask[i, j] = SolidnessStatus.Ghost;
-                                    }
-                                }
-                                return;
-                            }
-
-                            SolidnessStatus[,] newMask = new SolidnessStatus[Object.Width, Object.Height];
-
-                            uint linesCount = Values.Min(Object.Height, (uint)mask.GetLength(1));
-                            for (uint lineIdx = 0; lineIdx < linesCount; lineIdx++)
-                            {
-                                uint lineSize = Values.Min(Object.Width, (uint)mask.GetLength(0));
-                                for (uint colIdx = 0; colIdx < lineSize; colIdx++)
-                                {
-                                    if (mask[colIdx, lineIdx] == SolidnessStatus.Mask)
-                                    {
-                                        newMask[colIdx, lineIdx] = SolidnessStatus.Ghost;
-                                    }
-                                    else
-                                    {
-                                        newMask[colIdx, lineIdx] = mask[colIdx, lineIdx];
-                                    }
-                                }
-                                for (uint colIdx = lineSize; colIdx < Object.Width; colIdx++)
-                                {
-                                    newMask[colIdx, lineIdx] = SolidnessStatus.Ghost;
-                                }
-                            }
-                            for (uint lineIdx = linesCount; lineIdx < Object.Height; lineIdx++)
-                            {
-                                for (uint colIdx = 0; colIdx < Object.Width; colIdx++)
-                                {
-                                    newMask[colIdx, lineIdx] = SolidnessStatus.Ghost;
-                                }
-                            }
-
-                            mask = newMask;
-                        }
-
                         protected override void Awake()
                         {
                             base.Awake();
-                            InitMaskFromText();
+
+                            // Init & Clamp the just-deserialized mask.
+                            if (mask == null)
+                            {
+                                mask = new SolidObjectMask();
+                            }
+                            if (mask.Width != Object.Width || mask.Height != Object.Height)
+                            {
+                                mask = mask.Resized(Object.Width, Object.Height);
+                            }
                         }
 
                         /// <summary>
@@ -210,15 +123,21 @@ namespace WindRose
                         ///   The new mask will be clamped and filled (with "ghost" values)
                         ///     appropriately.
                         /// </summary>
-                        public SolidnessStatus[,] Mask
+                        public SolidObjectMask Mask
                         {
-                            get { return (SolidnessStatus[,])mask.Clone(); }
+                            get { return mask; }
                             set
                             {
                                 if (mask == value) return;
                                 var oldValue = mask;
-                                mask = value;
-                                ClampMask();
+                                if (value.Width != Object.Width || value.Height != Object.Height)
+                                {
+                                    mask = value.Resized(Object.Width, Object.Height);
+                                }
+                                else
+                                {
+                                    mask = value;
+                                }
                                 PropertyWasUpdated("mask", oldValue, mask);
                             }
                         }

@@ -12,34 +12,22 @@ using WindRose.Behaviours.Entities.Objects.Strategies.Solidness;
 [RequireComponent(typeof(SimpleObjectStrategy))]
 [RequireComponent(typeof(SpriteRenderer))]
 public class Rotator : MonoBehaviour {
-    private static SolidnessStatus[,] mask1 = new SolidnessStatus[,]
-    {
-        // SG
-        // SG
-        { SolidnessStatus.Solid, SolidnessStatus.Solid },
-        { SolidnessStatus.Ghost, SolidnessStatus.Ghost },
-    };
-    private static SolidnessStatus[,] mask4 = new SolidnessStatus[,]
-    {
-        // SS
-        // GG
-        { SolidnessStatus.Ghost, SolidnessStatus.Solid },
-        { SolidnessStatus.Ghost, SolidnessStatus.Solid },
-    };
-    private static SolidnessStatus[,] mask3 = new SolidnessStatus[,]
-    {
-        // GS
-        // GS
-        { SolidnessStatus.Ghost, SolidnessStatus.Ghost },
-        { SolidnessStatus.Solid, SolidnessStatus.Solid },
-    };
-    private static SolidnessStatus[,] mask2 = new SolidnessStatus[,]
-    {
-        // GG
-        // SS
-        { SolidnessStatus.Solid, SolidnessStatus.Ghost },
-        { SolidnessStatus.Solid, SolidnessStatus.Ghost },
-    };
+    private static SolidObjectMask mask1 = new SolidObjectMask(2, 2, new SolidnessStatus[] {
+        SolidnessStatus.Solid, SolidnessStatus.Ghost,
+        SolidnessStatus.Solid, SolidnessStatus.Ghost
+    });
+    private static SolidObjectMask mask2 = new SolidObjectMask(2, 2, new SolidnessStatus[] {
+        SolidnessStatus.Solid, SolidnessStatus.Solid,
+        SolidnessStatus.Ghost, SolidnessStatus.Ghost
+    });
+    private static SolidObjectMask mask3 = new SolidObjectMask(2, 2, new SolidnessStatus[] {
+        SolidnessStatus.Ghost, SolidnessStatus.Solid,
+        SolidnessStatus.Ghost, SolidnessStatus.Solid
+    });
+    private static SolidObjectMask mask4 = new SolidObjectMask(2, 2, new SolidnessStatus[] {
+        SolidnessStatus.Ghost, SolidnessStatus.Ghost,
+        SolidnessStatus.Solid, SolidnessStatus.Solid
+    });
 
     [SerializeField]
     private Sprite sprite1;

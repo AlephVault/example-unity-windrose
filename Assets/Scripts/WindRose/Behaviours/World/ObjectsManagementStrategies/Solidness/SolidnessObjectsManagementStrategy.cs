@@ -221,7 +221,7 @@ namespace WindRose
                         /// </summary>
                         public override void DoProcessPropertyUpdate(Entities.Objects.Strategies.ObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status, string property, object oldValue, object newValue)
                         {
-                            Debug.LogFormat("Type of strategy: {0} - strategy {1}", strategy.GetType().FullName, strategy);
+                            // Debug.LogFormat("Type of strategy: {0} - strategy {1}", strategy.GetType().FullName, strategy);
                             Entities.Objects.Strategies.Solidness.SolidnessObjectStrategy solidnessStrategy = ((Entities.Objects.Strategies.Solidness.SolidnessObjectStrategy)strategy);
                             // Please note: we condition the retrieval of the mask, since the retrieval COPIES the mask value! And would not be needed
                             //   if the solidness was NOT the Mask one.
@@ -234,8 +234,8 @@ namespace WindRose
                             else if (property == "mask")
                             {
                                 StrategyHolder.MovementCancel(strategy.StrategyHolder);
-                                DecrementBody(solidnessStrategy, status, solidnessStrategy.Solidness, solidnessStrategy.Solidness == SolidnessStatus.Mask ? (SolidnessStatus[,])oldValue : null);
-                                IncrementBody(solidnessStrategy, status, solidnessStrategy.Solidness, solidnessStrategy.Solidness == SolidnessStatus.Mask ? (SolidnessStatus[,])newValue : null);
+                                DecrementBody(solidnessStrategy, status, solidnessStrategy.Solidness, solidnessStrategy.Solidness == SolidnessStatus.Mask ? (SolidObjectMask)oldValue : null);
+                                IncrementBody(solidnessStrategy, status, solidnessStrategy.Solidness, solidnessStrategy.Solidness == SolidnessStatus.Mask ? (SolidObjectMask)newValue : null);
                             }
                         }
 
@@ -271,7 +271,7 @@ namespace WindRose
                          * 
                          */
 
-                        private void IncrementBody(Entities.Objects.Strategies.Solidness.SolidnessObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status, SolidnessStatus solidness, SolidnessStatus[,] mask)
+                        private void IncrementBody(Entities.Objects.Strategies.Solidness.SolidnessObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status, SolidnessStatus solidness, SolidObjectMask mask)
                         {
                             if (solidness.Irregular())
                             {
@@ -287,7 +287,7 @@ namespace WindRose
                             }
                         }
 
-                        private void DecrementBody(Entities.Objects.Strategies.Solidness.SolidnessObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status, SolidnessStatus solidness, SolidnessStatus[,] mask)
+                        private void DecrementBody(Entities.Objects.Strategies.Solidness.SolidnessObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status, SolidnessStatus solidness, SolidObjectMask mask)
                         {
                             if (solidness.Irregular())
                             {
@@ -369,7 +369,7 @@ namespace WindRose
                          * 
                          *****************************************************************************/
 
-                        private void UpdateIrregularBody(SolidnessStatus[,] mask, uint x, uint y, uint width, uint height, short factor = 1)
+                        private void UpdateIrregularBody(SolidObjectMask mask, uint x, uint y, uint width, uint height, short factor = 1)
                         {
                             for(uint i = 0; i < width; i++)
                             {

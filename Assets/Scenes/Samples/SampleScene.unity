@@ -2048,7 +2048,7 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 460658310}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2ad1223c08c64434a925ee607a54e149, type: 3}
   m_Name: 
@@ -2093,9 +2093,9 @@ MonoBehaviour:
   solidness: 3
   traversesOtherSolids: 0
   mask:
-    cells: 
-    width: 0
-    height: 0
+    cells: 01000000020000000200000001000000
+    width: 2
+    height: 2
 --- !u!114 &460658316
 MonoBehaviour:
   m_ObjectHideFlags: 0

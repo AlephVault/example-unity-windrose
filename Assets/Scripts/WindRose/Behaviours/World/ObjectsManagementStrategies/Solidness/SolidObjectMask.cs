@@ -161,37 +161,75 @@ namespace WindRose
                                 return new SolidObjectMask();
                             }
 
+                            return new SolidObjectMask(width, height, ResizeAndFill(this.cells, this.width, this.height, width, height, fill));
+                        }
+
+                        // Resizes the given source mask contents, given their dimensions, new dimensions and fill.
+                        // A new mask contents array is returned. The original is unaffected.
+                        private static SolidnessStatus[] ResizeAndFill(SolidnessStatus[] source, uint sourceWidth, uint sourceHeight, uint width, uint height, SolidnessStatus fill)
+                        {
                             SolidnessStatus[] newCells = new SolidnessStatus[width * height];
                             uint targetIndex = 0;
                             uint sourceVOffset = 0;
-                            uint minWidth = Values.Min(width, this.width);
-                            uint minHeight = Values.Min(height, this.height);
-                            for(int y = 0; y < minHeight; y++)
+                            uint minWidth = Values.Min(width, sourceWidth);
+                            uint minHeight = Values.Min(height, sourceHeight);
+                            for (int y = 0; y < minHeight; y++)
                             {
-                                for(uint x = 0; x < minWidth; x++)
+                                for (uint x = 0; x < minWidth; x++)
                                 {
-                                    SolidnessStatus status = cells[sourceVOffset + x];
+                                    SolidnessStatus status = source[sourceVOffset + x];
                                     newCells[targetIndex++] = status == SolidnessStatus.Mask ? SolidnessStatus.Ghost : status;
                                 }
-                                for(uint x = minWidth; x < width; x++)
+                                for (uint x = minWidth; x < width; x++)
                                 {
                                     newCells[targetIndex++] = fill;
                                 }
-                                sourceVOffset += this.width;
+                                sourceVOffset += sourceWidth;
                             }
-                            for(uint y = minHeight; y < height; y++)
+                            for (uint y = minHeight; y < height; y++)
                             {
-                                for(uint x = 0; x < width; x++)
+                                for (uint x = 0; x < width; x++)
                                 {
                                     newCells[targetIndex++] = fill;
                                 }
-                                sourceVOffset += this.width;
+                                sourceVOffset += sourceHeight;
                             }
-                            SolidObjectMask newMask = new SolidObjectMask();
-                            newMask.width = width;
-                            newMask.height = height;
-                            newMask.cells = newCells;
-                            return newMask;
+                            return newCells;
+                        }
+
+                        /// <summary>
+                        ///   Performs a resize of a given mask contents given its size, new size, and fill options. While the mask is 1-dimensional,
+                        ///   its source width and height must also be specified to compute it appropriately.
+                        /// </summary>
+                        /// <param name="source">The mask contents to resize.</param>
+                        /// <param name="sourceWidth">The width of the content.</param>
+                        /// <param name="sourceHeight">The height of the content.</param>
+                        /// <param name="width">The new width.</param>
+                        /// <param name="height">The new height.</param>
+                        /// <param name="fill">The fill for the new cells.</param>
+                        /// <returns></returns>
+                        public static SolidnessStatus[] Resized(SolidnessStatus[] source, uint sourceWidth, uint sourceHeight, uint width, uint height, SolidnessStatus fill)
+                        {
+                            if (width == 0 || height == 0)
+                            {
+                                return null;
+                            }
+
+                            if (sourceWidth * sourceHeight != source.Length)
+                            {
+                                throw new ArgumentException("Source dimensions do not match the source array");
+                            }
+
+                            return ResizeAndFill(source, sourceWidth, sourceHeight, width, height, fill);
+                        }
+
+                        /// <summary>
+                        ///   Clones the mask into a given one.
+                        /// </summary>
+                        /// <returns>The cloned mask</returns>
+                        public SolidObjectMask Clone()
+                        {
+                            return new SolidObjectMask(width, height, Dump());
                         }
                     }
 
@@ -245,8 +283,8 @@ namespace WindRose
                             // The actual involved property.
                             private FieldInfo property;
 
-                            // The input value (it will be replaced by a new one on submit).
-                            private SolidObjectMask mask;
+                            // The dumped mask to be edited.
+                            private SolidnessStatus[] contents;
 
                             // Adds a toggle state to the style depending on the toggle value.
                             // The result is the same style if the toggle value is false, while
@@ -259,6 +297,157 @@ namespace WindRose
                                     style.normal.background = style.active.background;
                                 }
                                 return style;
+                            }
+
+                            private void DimensionsUI()
+                            {
+                                EditorGUI.BeginDisabledGroup(withFixedDimensions);
+                                EditorGUILayout.BeginHorizontal();
+                                EditorGUI.BeginChangeCheck();
+                                uint newMaskWidth = (uint)Values.Clamp(1, EditorGUILayout.LongField(new GUIContent("Width:"), maskWidth), 32767);
+                                uint newMaskHeight = (uint)Values.Clamp(1, EditorGUILayout.LongField(new GUIContent("Height:"), maskHeight), 32767);
+                                if (EditorGUI.EndChangeCheck())
+                                {
+                                    if (maskHeight == 0 || maskWidth == 0)
+                                    {
+                                        contents = null;
+                                    }
+                                    else
+                                    {
+                                        contents = SolidObjectMask.Resized(contents, maskWidth, maskHeight, newMaskWidth, newMaskHeight, fillWith);
+                                    }
+                                    maskWidth = newMaskWidth;
+                                    maskHeight = newMaskHeight;
+                                }
+                                EditorGUILayout.EndHorizontal();
+                                EditorGUI.EndDisabledGroup();
+                            }
+
+                            private void PaletteUI()
+                            {
+                                EditorGUILayout.BeginHorizontal();
+                                EditorGUILayout.LabelField("Paint (and fill) cells with mode:");
+                                if (GUILayout.Button(new GUIContent("Solid", solidCellImage), withToggle(EditorStyles.miniButtonLeft, fillWith == SolidnessStatus.Solid), GUILayout.Height(16)))
+                                {
+                                    fillWith = SolidnessStatus.Solid;
+                                }
+                                if (GUILayout.Button(new GUIContent("Traversable", ghostCellImage), withToggle(EditorStyles.miniButtonMid, fillWith == SolidnessStatus.Ghost), GUILayout.Height(16)))
+                                {
+                                    fillWith = SolidnessStatus.Ghost;
+                                }
+                                if (GUILayout.Button(new GUIContent("Hole", holeCellImage), withToggle(EditorStyles.miniButtonRight, fillWith == SolidnessStatus.Hole), GUILayout.Height(16)))
+                                {
+                                    fillWith = SolidnessStatus.Hole;
+                                }
+                                EditorGUILayout.EndHorizontal();
+                            }
+
+                            private void TopCornerUI()
+                            {
+                                EditorGUILayout.LabelField(
+                                    string.Format("({0}, {1})", Values.Min(offsetX + 7, maskWidth - 1), Values.Min(offsetY + 7, maskHeight - 1)),
+                                    new GUIStyle() { margin = new RectOffset(8, 0, 0, 0), alignment = TextAnchor.MiddleRight }, GUILayout.Width(256)
+                                );
+                            }
+
+                            // Given a cell's coordinate pair, returns its value and ensures it is
+                            // solid, ghost or hole (filling cell with the value of fillWith if the
+                            // value is not among them).
+                            private SolidnessStatus GetCellContent(uint x, uint y)
+                            {
+                                Debug.LogFormat("Getting ({0}, {1}) ...", x, y);
+                                uint index = y * maskWidth + x;
+                                SolidnessStatus value = contents[index];
+                                if (value != SolidnessStatus.Solid && value != SolidnessStatus.Ghost && value != SolidnessStatus.Hole)
+                                {
+                                    value = fillWith;
+                                    contents[index] = value;
+                                }
+                                return value;
+                            }
+
+                            // Given a cell's coordinate pair, sets its content to a new status.
+                            private void SetCellContent(uint x, uint y, SolidnessStatus status)
+                            {
+                                uint index = y * maskWidth + x;
+                                contents[index] = status;
+                            }
+
+                            // Gets the appropriate image according to the state.
+                            private Texture GetStatusImage(SolidnessStatus status)
+                            {
+                                switch(status)
+                                {
+                                    case SolidnessStatus.Solid:
+                                        return solidCellImage;
+                                    case SolidnessStatus.Ghost:
+                                        return ghostCellImage;
+                                    case SolidnessStatus.Hole:
+                                        return holeCellImage;
+                                    default:
+                                        return null;
+                                }
+                            }
+
+                            private void GridUI(uint maxX, uint maxY)
+                            {
+                                GUIStyle label = new GUIStyle(GUI.skin.label) { padding = new RectOffset(0, 0, 0, 0), margin = new RectOffset(0, 0, 0, 0) };
+                                EditorGUILayout.BeginHorizontal();
+                                offsetY = (uint)GUILayout.VerticalScrollbar(offsetY, maxY, 0, maxY, new GUIStyle() { fixedWidth = 8, fixedHeight = 256 });
+                                EditorGUILayout.BeginVertical();
+                                for(uint y = 0; y < 8; y++)
+                                {
+                                    EditorGUILayout.BeginHorizontal();
+                                    uint mappedY = offsetY + 7 - y;
+                                    if (mappedY >= maskHeight)
+                                    {
+                                        for (uint x = 0; x < 8; x++)
+                                        {
+                                            GUILayout.Label(invalidCellImage, label, GUILayout.Width(32), GUILayout.Height(32));
+                                        }
+                                    }
+                                    else
+                                    {
+                                        for (uint x = 0; x < 8; x++)
+                                        {
+                                            uint mappedX = offsetX + x;
+                                            if (mappedX >= maskWidth)
+                                            {
+                                                GUILayout.Label(invalidCellImage, label, GUILayout.Width(32), GUILayout.Height(32));
+                                            }
+                                            else
+                                            {
+                                                SolidnessStatus status = GetCellContent(mappedX, mappedY);
+                                                Texture image = GetStatusImage(status);
+                                                if (GUILayout.Button(new GUIContent(image), label, GUILayout.Width(32), GUILayout.Width(32)))
+                                                {
+                                                    SetCellContent(mappedX, mappedY, fillWith);
+                                                }
+                                            }
+                                        }
+                                    }
+                                    EditorGUILayout.EndHorizontal();
+                                }
+                                EditorGUILayout.EndVertical();
+                                EditorGUILayout.EndHorizontal();
+                                offsetY = (uint)GUILayout.VerticalScrollbar(offsetX, maxX, 0, maxX, new GUIStyle() { fixedHeight = 8, fixedWidth = 256, margin = new RectOffset(8, 0, 0, 0) });
+                            }
+
+                            private void BottomCornerUI()
+                            {
+                                EditorGUILayout.LabelField(
+                                    string.Format("({0}, {1})", offsetX, offsetY),
+                                    new GUIStyle() { margin = new RectOffset(8, 0, 0, 0) }, GUILayout.Width(256)
+                                );
+                            }
+
+                            private void MainUI(uint maxX, uint maxY)
+                            {
+                                EditorGUILayout.BeginVertical(new GUIStyle() { padding = new RectOffset(20, 20, 20, 20)  });
+                                TopCornerUI();
+                                GridUI(maxX, maxY);
+                                BottomCornerUI();
+                                EditorGUILayout.EndVertical();
                             }
 
                             // Renders a grid to edit the mask with 3 states per cell: solid, ghost, hole.
@@ -278,34 +467,20 @@ namespace WindRose
                                     message += "\nMask dimensions can be freely changed, although they are constrained between 1 and 32767.";
                                 }
                                 EditorGUILayout.LabelField(message, longLabelStyle);
-                                EditorGUI.BeginDisabledGroup(withFixedDimensions);
-                                EditorGUILayout.BeginHorizontal();
-                                maskWidth = (uint)Values.Clamp(1, EditorGUILayout.LongField(new GUIContent("Width:"), maskWidth), 32767);
-                                maskHeight = (uint)Values.Clamp(1, EditorGUILayout.LongField(new GUIContent("Height:"), maskHeight), 32767);
-                                EditorGUILayout.EndHorizontal();
-                                EditorGUI.EndDisabledGroup();
+                                DimensionsUI();
+                                PaletteUI();
                                 EditorGUILayout.EndVertical();
-                                EditorGUILayout.BeginHorizontal();
-                                EditorGUILayout.LabelField("Paint (and fill) cells with mode:");
-                                if (GUILayout.Button(new GUIContent("Solid", solidCellImage), withToggle(EditorStyles.miniButtonLeft, fillWith == SolidnessStatus.Solid), GUILayout.Height(16)))
-                                {
-                                    fillWith = SolidnessStatus.Solid;
-                                }
-                                if (GUILayout.Button(new GUIContent("Traversable", ghostCellImage), withToggle(EditorStyles.miniButtonMid, fillWith == SolidnessStatus.Ghost), GUILayout.Height(16)))
-                                {
-                                    fillWith = SolidnessStatus.Ghost;
-                                }
-                                if (GUILayout.Button(new GUIContent("Hole", holeCellImage), withToggle(EditorStyles.miniButtonRight, fillWith == SolidnessStatus.Hole), GUILayout.Height(16)))
-                                {
-                                    fillWith = SolidnessStatus.Hole;
-                                }
-                                EditorGUILayout.EndHorizontal();
+                                uint maxX = maskWidth >= 8 ? maskWidth - 8 : 0;
+                                uint maxY = maskHeight >= 9 ? maskHeight - 8 : 0;
+                                offsetX = Values.Min(maxX, offsetX);
+                                offsetY = Values.Max(maxY, offsetY);
                                 EditorGUILayout.LabelField("This grid is a display of 8x8 mask cells which may contain any state among: Solid, Traversable or Hole.\n" +
                                                            "Scrollbars will appear accordingly if the width or height is greater than 8.\n" +
                                                            "Cells will be invalidated accordingly when width or height is lower than 8.", longLabelStyle);
+                                MainUI(maxX, maxY);
                                 if (GUILayout.Button("Update mask"))
                                 {
-                                    property.SetValue(owner, mask);
+                                    property.SetValue(owner, new SolidObjectMask(maskWidth, maskHeight, contents));
                                     Close();
                                 }
                             }
@@ -339,7 +514,12 @@ namespace WindRose
                                     }
                                 }
                                 SolidObjectMaskEditorWindow window = ScriptableObject.CreateInstance<SolidObjectMaskEditorWindow>();
-                                window.mask = mask;
+                                if (mask.Width != maskWidth || mask.Height != maskHeight)
+                                {
+                                    mask = mask.Resized(maskWidth, maskHeight, SolidnessStatus.Ghost);
+                                }
+                                window.contents = mask.Dump();
+                                Debug.LogFormat("Contents length: {0}, width: {1}, height: {2}", window.contents.Length, maskWidth, maskHeight);
                                 window.withFixedDimensions = withFixedDimensions;
                                 window.maskHeight = maskHeight;
                                 window.maskWidth = maskWidth;

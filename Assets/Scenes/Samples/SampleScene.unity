@@ -2018,8 +2018,8 @@ GameObject:
   - component: {fileID: 460658318}
   - component: {fileID: 460658317}
   - component: {fileID: 460658316}
-  - component: {fileID: 460658315}
   - component: {fileID: 460658314}
+  - component: {fileID: 460658315}
   - component: {fileID: 460658313}
   - component: {fileID: 460658312}
   m_Layer: 0
@@ -2090,9 +2090,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9788dff5669555c4380bb41cab3029bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  solidness: 2
+  solidness: 3
   traversesOtherSolids: 0
-  initialMask: 
+  mask:
+    cells: 
+    width: 0
+    height: 0
 --- !u!114 &460658316
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7606,7 +7609,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   solidness: 0
   traversesOtherSolids: 0
-  initialMask: 
+  mask:
+    cells: 
+    width: 0
+    height: 0
 --- !u!114 &850159759
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8403,7 +8409,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   solidness: 1
   traversesOtherSolids: 0
-  initialMask: 
+  mask:
+    cells: 
+    width: 0
+    height: 0
 --- !u!114 &934075508
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10894,7 +10903,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   solidness: 1
   traversesOtherSolids: 0
-  initialMask: 
+  mask:
+    cells: 
+    width: 0
+    height: 0
 --- !u!114 &1186038024
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13858,7 +13870,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   solidness: 2
   traversesOtherSolids: 0
-  initialMask: 
+  mask:
+    cells: 
+    width: 0
+    height: 0
 --- !u!114 &1358881527
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14836,7 +14851,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   solidness: 1
   traversesOtherSolids: 0
-  initialMask: 
+  mask:
+    cells: 
+    width: 0
+    height: 0
 --- !u!114 &1514043988
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15192,7 +15210,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   solidness: 2
   traversesOtherSolids: 0
-  initialMask: 
+  mask:
+    cells: 
+    width: 0
+    height: 0
 --- !u!114 &1597479059
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16608,7 +16629,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   solidness: 2
   traversesOtherSolids: 0
-  initialMask: 
+  mask:
+    cells: 
+    width: 0
+    height: 0
 --- !u!114 &1680133216
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17223,7 +17247,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   solidness: 2
   traversesOtherSolids: 0
-  initialMask: 
+  mask:
+    cells: 
+    width: 0
+    height: 0
 --- !u!114 &1732828878
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18786,7 +18813,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   solidness: 2
   traversesOtherSolids: 0
-  initialMask: 
+  mask:
+    cells: 
+    width: 0
+    height: 0
 --- !u!114 &1903621705
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19746,7 +19776,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   solidness: 2
   traversesOtherSolids: 0
-  initialMask: 
+  mask:
+    cells: 
+    width: 0
+    height: 0
 --- !u!114 &2061497678
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -20041,7 +20074,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   solidness: 2
   traversesOtherSolids: 0
-  initialMask: 
+  mask:
+    cells: 
+    width: 0
+    height: 0
 --- !u!114 &2062477417
 MonoBehaviour:
   m_ObjectHideFlags: 0

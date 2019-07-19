@@ -45,6 +45,7 @@ namespace WindRose
                         ///   The solidness mask for this object. Only meaningful
                         ///     when using <see cref="SolidnessStatus.Mask"/> status. 
                         /// </summary>
+                        [SolidObjectMask.AutoClamped]
                         [SerializeField]
                         private SolidObjectMask mask;
 
@@ -171,7 +172,7 @@ namespace WindRose
                         {
                             solidness = serializedObject.FindProperty("solidness");
                             traversesOtherSolids = serializedObject.FindProperty("traversesOtherSolids");
-                            mask = serializedObject.FindProperty("initialMask");
+                            mask = serializedObject.FindProperty("mask");
                         }
 
                         public override void OnInspectorGUI()

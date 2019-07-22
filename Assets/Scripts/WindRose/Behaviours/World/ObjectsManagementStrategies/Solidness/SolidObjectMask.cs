@@ -239,318 +239,314 @@ namespace WindRose
                     [CustomPropertyDrawer(typeof(SolidObjectMask))]
                     public class SolidObjectMaskDrawer : PropertyDrawer
                     {
-                        // Editor window for solid object masks.
-                        private class SolidObjectMaskEditorWindow : EditorWindow
+                        private SolidnessStatus fillWith = SolidnessStatus.Ghost;
+                        private SerializedProperty widthProperty;
+                        private SerializedProperty heightProperty;
+                        private SerializedProperty cellsProperty;
+                        private Texture2D invalidSquare;
+                        private Texture2D ghostSquare;
+                        private Texture2D holeSquare;
+                        private Texture2D solidSquare;
+                        private uint scrollX = 0;
+                        private uint scrollY = 0;
+                        private Entities.Objects.MapObject clampAgainst = null;
+                        private bool initialized = false;
+                        private SerializedProperty[,] cellElementProperties;
+
+                        private Texture2D MakeSolidIcon(Color color, int height = 0)
                         {
-                            // Tells whether the dimensions have to be unchanged or
-                            // may be changed. Dimensions will be unchangeable if the
-                            // underlying object is a behaviour whose underlying game
-                            // object is a WindRose MapObject.
-                            private bool withFixedDimensions = false;
+                            if (height <= 0) height = (int)EditorGUIUtility.singleLineHeight - 2;
+                            int size = height * height;
+                            Color[] content = new Color[size];
+                            for (int index = 0; index < size; index++) content[index] = color;
+                            Texture2D texture = new Texture2D(height, height, TextureFormat.ARGB32, false);
+                            texture.SetPixels(content);
+                            texture.Apply();
+                            return texture;
+                        }
 
-                            // This is the paint mode when clicking a (valid) cell.
-                            // Also when not fixed dimensions, this is the value to
-                            // fill new cells when resizing the mask.
-                            private SolidnessStatus fillWith = SolidnessStatus.Ghost;
-
-                            // Texture for solid cells.
-                            private Texture solidCellImage;
-
-                            // Texture for ghost cells.
-                            private Texture ghostCellImage;
-
-                            // Texture for hole cells.
-                            private Texture holeCellImage;
-
-                            // Texture for invalid cells.
-                            private Texture invalidCellImage;
-
-                            // The mask width.
-                            private uint maskWidth = 1;
-
-                            // The mask height.
-                            private uint maskHeight = 1;
-
-                            // The mask editor's X offset.
-                            private uint offsetX = 0;
-
-                            // The mask editor's Y offset.
-                            private uint offsetY = 0;
-
-                            // The current owner.
-                            private UnityEngine.Object owner;
-
-                            // The actual involved property.
-                            private FieldInfo property;
-
-                            // The dumped mask to be edited.
-                            private SolidnessStatus[] contents;
-
-                            // Adds a toggle state to the style depending on the toggle value.
-                            // The result is the same style if the toggle value is false, while
-                            // will have an active background if true.
-                            private GUIStyle withToggle(GUIStyle style, bool toggle)
+                        private void Initialize(SerializedProperty property)
+                        {
+                            if (!initialized)
                             {
-                                if (toggle)
+                                widthProperty = property.FindPropertyRelative("width");
+                                heightProperty = property.FindPropertyRelative("height");
+                                cellsProperty = property.FindPropertyRelative("cells");
+                                invalidSquare = MakeSolidIcon(Color.black);
+                                ghostSquare = MakeSolidIcon(new Color(0, 0.5f, 0, 1));
+                                holeSquare = MakeSolidIcon(new Color(0.5f, 0, 0, 1));
+                                solidSquare = MakeSolidIcon(Color.grey);
+                                bool withClampingAttribute = Attribute.IsDefined(fieldInfo, typeof(SolidObjectMask.AutoClampedAttribute));
+                                bool ownerIsBehaviour = property.serializedObject.targetObject is MonoBehaviour;
+                                if (withClampingAttribute && ownerIsBehaviour)
                                 {
-                                    style = new GUIStyle(style);
-                                    style.normal.background = style.active.background;
+                                    clampAgainst = (property.serializedObject.targetObject as MonoBehaviour).GetComponent<Entities.Objects.MapObject>();
                                 }
-                                return style;
-                            }
-
-                            private void DimensionsUI()
-                            {
-                                EditorGUI.BeginDisabledGroup(withFixedDimensions);
-                                EditorGUILayout.BeginHorizontal();
-                                EditorGUI.BeginChangeCheck();
-                                uint newMaskWidth = (uint)Values.Clamp(1, EditorGUILayout.LongField(new GUIContent("Width:"), maskWidth), 32767);
-                                uint newMaskHeight = (uint)Values.Clamp(1, EditorGUILayout.LongField(new GUIContent("Height:"), maskHeight), 32767);
-                                if (EditorGUI.EndChangeCheck())
+                                int width = widthProperty.intValue;
+                                int height = heightProperty.intValue;
+                                if (cellsProperty.arraySize != width * height)
                                 {
-                                    if (maskHeight == 0 || maskWidth == 0)
+                                    cellsProperty.arraySize = width * height;
+                                }
+                                cellElementProperties = new SerializedProperty[widthProperty.intValue, heightProperty.intValue];
+                                int index = 0;
+                                for (uint y = 0; y < height; y++)
+                                {
+                                    for (uint x = 0; x < width; x++)
                                     {
-                                        contents = null;
-                                    }
-                                    else
-                                    {
-                                        contents = SolidObjectMask.Resized(contents, maskWidth, maskHeight, newMaskWidth, newMaskHeight, fillWith);
-                                    }
-                                    maskWidth = newMaskWidth;
-                                    maskHeight = newMaskHeight;
-                                }
-                                EditorGUILayout.EndHorizontal();
-                                EditorGUI.EndDisabledGroup();
-                            }
-
-                            private void PaletteUI()
-                            {
-                                EditorGUILayout.BeginHorizontal();
-                                EditorGUILayout.LabelField("Paint (and fill) cells with mode:");
-                                if (GUILayout.Button(new GUIContent("Solid", solidCellImage), withToggle(EditorStyles.miniButtonLeft, fillWith == SolidnessStatus.Solid), GUILayout.Height(16)))
-                                {
-                                    fillWith = SolidnessStatus.Solid;
-                                }
-                                if (GUILayout.Button(new GUIContent("Traversable", ghostCellImage), withToggle(EditorStyles.miniButtonMid, fillWith == SolidnessStatus.Ghost), GUILayout.Height(16)))
-                                {
-                                    fillWith = SolidnessStatus.Ghost;
-                                }
-                                if (GUILayout.Button(new GUIContent("Hole", holeCellImage), withToggle(EditorStyles.miniButtonRight, fillWith == SolidnessStatus.Hole), GUILayout.Height(16)))
-                                {
-                                    fillWith = SolidnessStatus.Hole;
-                                }
-                                EditorGUILayout.EndHorizontal();
-                            }
-
-                            // Given a cell's coordinate pair, returns its value and ensures it is
-                            // solid, ghost or hole (filling cell with the value of fillWith if the
-                            // value is not among them).
-                            private SolidnessStatus GetCellContent(uint x, uint y)
-                            {
-                                uint index = y * maskWidth + x;
-                                SolidnessStatus value = contents[index];
-                                if (value != SolidnessStatus.Solid && value != SolidnessStatus.Ghost && value != SolidnessStatus.Hole)
-                                {
-                                    value = fillWith;
-                                    contents[index] = value;
-                                }
-                                return value;
-                            }
-
-                            // Given a cell's coordinate pair, sets its content to a new status.
-                            private void SetCellContent(uint x, uint y, SolidnessStatus status)
-                            {
-                                uint index = y * maskWidth + x;
-                                contents[index] = status;
-                            }
-
-                            // Gets the appropriate image according to the state.
-                            private Texture GetStatusImage(SolidnessStatus status)
-                            {
-                                switch(status)
-                                {
-                                    case SolidnessStatus.Solid:
-                                        return solidCellImage;
-                                    case SolidnessStatus.Ghost:
-                                        return ghostCellImage;
-                                    case SolidnessStatus.Hole:
-                                        return holeCellImage;
-                                    default:
-                                        return null;
-                                }
-                            }
-
-                            private void GridUI(Vector2 basePosition, uint maxX, uint maxY)
-                            {
-                                Vector2 size = Vector2.one * 32;
-                                GUIStyle label = new GUIStyle(GUI.skin.label) { padding = new RectOffset(0, 0, 0, 0), margin = new RectOffset(0, 0, 0, 0) };
-                                for(uint y = 0; y < 8; y++)
-                                {
-                                    uint mappedY = offsetY + 7 - y;
-                                    if (mappedY >= maskHeight)
-                                    {
-                                        for (uint x = 0; x < 8; x++)
-                                        {
-                                            GUI.Label(new Rect(basePosition + new Vector2(x, y) * 32, size), invalidCellImage, label);
-                                        }
-                                    }
-                                    else
-                                    {
-                                        for (uint x = 0; x < 8; x++)
-                                        {
-                                            uint mappedX = offsetX + x;
-                                            if (mappedX >= maskWidth)
-                                            {
-                                                GUI.Label(new Rect(basePosition + new Vector2(x, y) * 32, size), invalidCellImage, label);
-                                            }
-                                            else
-                                            {
-                                                SolidnessStatus status = GetCellContent(mappedX, mappedY);
-                                                Texture image = GetStatusImage(status);
-                                                if (GUI.Button(new Rect(basePosition + new Vector2(x, y) * 32, size), new GUIContent(image), label))
-                                                {
-                                                    SetCellContent(mappedX, mappedY, fillWith);
-                                                }
-                                            }
-                                        }
+                                        cellElementProperties[x, y] = cellsProperty.GetArrayElementAtIndex((int)index++);
                                     }
                                 }
-                                // offsetX = (uint)GUILayout.HorizontalScrollbar(offsetX, 3, 0, maxX + 3, new GUIStyle() { fixedHeight = 8, fixedWidth = 256, margin = new RectOffset(8, 0, 0, 0) });
+                                initialized = true;
                             }
+                        }
 
-                            private void MainUI(uint maxX, uint maxY)
+                        private void Resize(uint oldWidth, uint oldHeight, uint newWidth, uint newHeight)
+                        {
+                            SolidnessStatus[] statuses = (SolidnessStatus[])Enum.GetValues(typeof(SolidnessStatus));
+                            SolidnessStatus[] oldStatuses = new SolidnessStatus[oldWidth * oldHeight];
+                            uint index = 0;
+                            for (uint y = 0; y < oldHeight; y++)
                             {
-                                Debug.LogFormat("Max coordinates: ({0}, {1})", maxX, maxY);
-                                Rect mainRect = EditorGUILayout.BeginHorizontal();
-                                Vector2 mainPosition = mainRect.position + new Vector2(16, 16);
-                                EditorGUI.LabelField(
-                                    new Rect(mainPosition + new Vector2(16, 0), new Vector2(256, 16)), string.Format("({0}, {1})", Values.Min(offsetX + 7, maskWidth - 1), Values.Min(offsetY + 7, maskHeight - 1)),
-                                    new GUIStyle() { alignment = TextAnchor.MiddleRight }
-                                );
-                                EditorGUI.LabelField(
-                                    new Rect(mainPosition + new Vector2(16, 288), new Vector2(256, 16)), string.Format("({0}, {1})", offsetX, offsetY)
-                                );
-                                EditorGUI.BeginDisabledGroup(maxX == 0);
-                                offsetX = (uint)GUI.HorizontalScrollbar(new Rect(mainPosition + new Vector2(16, 272), new Vector2(256, 16)), offsetX, 1, 0, maxX + 1, GUI.skin.horizontalScrollbar);
-                                EditorGUI.EndDisabledGroup();
-                                EditorGUI.BeginDisabledGroup(maxY == 0);
-                                offsetY = (uint)GUI.VerticalScrollbar(new Rect(mainPosition + new Vector2(0, 16), new Vector2(16, 256)), offsetY, 1, maxY + 1, 0, GUI.skin.verticalScrollbar);
-                                EditorGUI.EndDisabledGroup();
-                                GridUI(new Vector2(32, 32) + mainRect.position, maxX, maxY);
-                            }
-
-                            // Renders a grid to edit the mask with 3 states per cell: solid, ghost, hole.
-                            private void OnGUI()
-                            {
-                                GUIStyle longLabelStyle = MenuActionUtils.GetSingleLabelStyle();
-                                GUIStyle indentedStyle = MenuActionUtils.GetIndentedStyle();
-
-                                EditorGUILayout.BeginVertical();
-                                string message = "A solidness mask is being edited.";
-                                if (withFixedDimensions)
+                                for (uint x = 0; x < oldWidth; x++)
                                 {
-                                    message += string.Format("\nNOTES: The mask dimensions are fixed to {0}x{1}.", maskWidth, maskHeight);
+                                    oldStatuses[index] = statuses[cellElementProperties[x, y].enumValueIndex];
+                                }
+                            }
+                            SolidnessStatus[] newStatuses = SolidObjectMask.Resized(oldStatuses, oldWidth, oldHeight, newWidth, newHeight, fillWith);
+                            if (newStatuses == null)
+                            {
+                                cellElementProperties = new SerializedProperty[0, 0];
+                                cellsProperty.arraySize = 0;
+                            }
+                            else
+                            {
+                                cellsProperty.arraySize = (int)(newWidth * newHeight);
+                                index = 0;
+                                for (uint y = 0; y < newHeight; y++)
+                                {
+                                    for (uint x = 0; x < newWidth; x++)
+                                    {
+                                        cellElementProperties[x, y] = cellsProperty.GetArrayElementAtIndex((int)index++);
+                                        cellElementProperties[x, y].enumValueIndex = Array.IndexOf(statuses, fillWith);
+                                    }
+                                }
+                            }
+                        }
+
+                        // Gets the appropriate image according to the state.
+                        private Texture GetStatusImage(SolidnessStatus status)
+                        {
+                            switch (status)
+                            {
+                                case SolidnessStatus.Solid:
+                                    return solidSquare;
+                                case SolidnessStatus.Ghost:
+                                    return ghostSquare;
+                                case SolidnessStatus.Hole:
+                                    return holeSquare;
+                                default:
+                                    return null;
+                            }
+                        }
+
+                        private void RenderGrid(Vector2 basePosition, uint width, uint height, float squareSize)
+                        {
+                            // Names are overriden here to use appropriately sized squares.
+                            Texture2D invalidSquare = MakeSolidIcon(Color.black, (int)squareSize);
+                            Texture2D ghostSquare = MakeSolidIcon(new Color(0, 0.5f, 0, 1), (int)squareSize);
+                            Texture2D holeSquare = MakeSolidIcon(new Color(0.5f, 0, 0, 1), (int)squareSize);
+                            Texture2D solidSquare = MakeSolidIcon(Color.grey, (int)squareSize);
+
+                            Vector2 size = Vector2.one * (squareSize - 1);
+                            GUIStyle label = new GUIStyle(GUI.skin.label) { padding = new RectOffset(0, 0, 0, 0), margin = new RectOffset(0, 0, 0, 0) };
+                            SolidnessStatus[] statuses = (SolidnessStatus[])Enum.GetValues(typeof(SolidnessStatus));
+
+                            for (uint y = 0; y < 8; y++)
+                            {
+                                uint mappedY = scrollY + 7 - y;
+                                if (mappedY >= height)
+                                {
+                                    for (uint x = 0; x < 8; x++)
+                                    {
+                                        GUI.Label(new Rect(basePosition + new Vector2(x, y) * squareSize, size), invalidSquare, label);
+                                    }
                                 }
                                 else
                                 {
-                                    message += "\nMask dimensions can be freely changed, although they are constrained between 1 and 32767.";
-                                }
-                                EditorGUILayout.LabelField(message, longLabelStyle);
-                                DimensionsUI();
-                                PaletteUI();
-                                EditorGUILayout.EndVertical();
-                                uint maxX = maskWidth >= 8 ? maskWidth - 8 : 0;
-                                uint maxY = maskHeight >= 8 ? maskHeight - 8 : 0;
-                                offsetX = Values.Min(maxX, offsetX);
-                                offsetY = Values.Min(maxY, offsetY);
-                                EditorGUILayout.LabelField("This grid is a display of 8x8 mask cells which may contain any state among: Solid, Traversable or Hole.\n" +
-                                                           "Scrollbars will appear accordingly if the width or height is greater than 8.\n" +
-                                                           "Cells will be invalidated accordingly when width or height is lower than 8.", longLabelStyle);
-                                MainUI(maxX, maxY);
-                                if (GUI.Button(new Rect(4, 448, 632, 16), "Update mask"))
-                                {
-                                    property.SetValue(owner, new SolidObjectMask(maskWidth, maskHeight, contents));
-                                    Close();
-                                }
-                            }
-
-                            // Given a sprite, makes its (cropped) texture.
-                            private static Texture makeTexture(Sprite sprite)
-                            {
-                                var croppedTexture = new Texture2D((int)sprite.rect.width, (int)sprite.rect.height);
-                                var pixels = sprite.texture.GetPixels((int)sprite.textureRect.x,
-                                                                        (int)sprite.textureRect.y,
-                                                                        (int)sprite.textureRect.width,
-                                                                        (int)sprite.textureRect.height);
-                                croppedTexture.SetPixels(pixels);
-                                croppedTexture.Apply();
-                                return croppedTexture;
-                            }
-
-                            public static void EditMask(UnityEngine.Object owner, SolidObjectMask mask, FieldInfo property)
-                            {
-                                bool withFixedDimensions = false;
-                                uint maskWidth = 1;
-                                uint maskHeight = 1;
-                                if (owner is MonoBehaviour && Attribute.IsDefined(property, typeof(SolidObjectMask.AutoClampedAttribute)))
-                                {
-                                    Entities.Objects.MapObject mapObject = ((MonoBehaviour)owner).GetComponent<Entities.Objects.MapObject>();
-                                    if (mapObject)
+                                    for (uint x = 0; x < 8; x++)
                                     {
-                                        withFixedDimensions = true;
-                                        maskWidth = mapObject.Width;
-                                        maskHeight = mapObject.Height;
+                                        Vector2 offset = new Vector2(x, y) * squareSize;
+                                        offset.x = (int)offset.x;
+                                        offset.y = (int)offset.y;
+                                        uint mappedX = scrollX + x;
+                                        if (mappedX >= width)
+                                        {
+                                            GUI.Label(new Rect(basePosition + offset, size), invalidSquare, label);
+                                        }
+                                        else
+                                        {
+                                            SolidnessStatus status = statuses[cellElementProperties[mappedX, mappedY].enumValueIndex];
+                                            if (status == SolidnessStatus.Mask)
+                                            {
+                                                status = fillWith;
+                                            }
+                                            Texture2D image = null;
+                                            switch (status)
+                                            {
+                                                case SolidnessStatus.Solid:
+                                                    image = solidSquare;
+                                                    break;
+                                                case SolidnessStatus.Ghost:
+                                                    image = ghostSquare;
+                                                    break;
+                                                case SolidnessStatus.Hole:
+                                                    image = holeSquare;
+                                                    break;
+                                            }
+                                            if (GUI.Button(new Rect(basePosition + offset, size), new GUIContent(image), label))
+                                            {
+                                                cellElementProperties[mappedX, mappedY].enumValueIndex = Array.IndexOf(Enum.GetValues(typeof(SolidnessStatus)), fillWith);
+                                            }
+                                        }
                                     }
                                 }
-                                SolidObjectMaskEditorWindow window = ScriptableObject.CreateInstance<SolidObjectMaskEditorWindow>();
-                                if (mask.Width != maskWidth || mask.Height != maskHeight)
-                                {
-                                    mask = mask.Resized(maskWidth, maskHeight, SolidnessStatus.Ghost);
-                                }
-                                window.contents = mask.Dump();
-                                window.withFixedDimensions = withFixedDimensions;
-                                window.maskHeight = maskHeight;
-                                window.maskWidth = maskWidth;
-                                window.owner = owner;
-                                window.property = property;
-                                window.minSize = new Vector2(640, 468);
-                                window.maxSize = window.minSize;
-                                foreach(Sprite sprite in AssetDatabase.LoadAllAssetRepresentationsAtPath("Assets/Graphics/EditorUI/solidness-cells.png").OfType<Sprite>())
-                                {
-                                    switch(sprite.name)
-                                    {
-                                        case "sc_solid":
-                                            window.solidCellImage = makeTexture(sprite);
-                                            break;
-                                        case "sc_ghost":
-                                            window.ghostCellImage = makeTexture(sprite);
-                                            break;
-                                        case "sc_hole":
-                                            window.holeCellImage = makeTexture(sprite);
-                                            break;
-                                        case "sc_invalid":
-                                            window.invalidCellImage = makeTexture(sprite);
-                                            break;
-                                    }
-                                }
-                                window.titleContent = new GUIContent("Wind Rose - Editing a solid object mask");
-                                window.ShowUtility();
+                            }
+                        }
+
+                        private float GetCurrentWidth()
+                        {
+                            // The value "15" has to be tested against 2017.3.
+                            return EditorGUIUtility.currentViewWidth - 15 * EditorGUI.indentLevel;
+                        }
+
+                        private Vector2 Height2Vector(float height)
+                        {
+                            return new Vector2(0, height);
+                        }
+
+                        private void FillButton(Rect position, Texture2D image, string text, SolidnessStatus status, GUIStyle baseStyle)
+                        {
+                            GUIStyle style = baseStyle;
+                            if (fillWith == status)
+                            {
+                                style = new GUIStyle(style);
+                                style.normal.background = style.active.background;
+                            }
+                            GUIContent content = new GUIContent(text, image);
+                            if (GUI.Button(position, content, style))
+                            {
+                                fillWith = status;
                             }
                         }
 
                         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
                         {
+                            Initialize(property);
+                            float availableWidth = position.width;
+                            float slHeight = EditorGUIUtility.singleLineHeight;
+                            float propHeight = 0;
+                            Vector2 xyPos = position.position;
+                            Vector2 xySpacing = Height2Vector(EditorGUIUtility.standardVerticalSpacing);
+                            Vector2 xySLHeight = Height2Vector(slHeight);
                             EditorGUI.BeginProperty(position, label, property);
-                            var indent = EditorGUI.indentLevel;
-                            EditorGUI.indentLevel = 0;
-                            UnityEngine.Object owner = property.serializedObject.targetObject;
-                            SolidObjectMask mask = (SolidObjectMask)fieldInfo.GetValue(owner);
-                            if (GUI.Button(position, new GUIContent("Edit mask")))
+                            EditorGUI.BeginDisabledGroup(clampAgainst != null);
+                            // Keep current dimensions
+                            uint oldWidth = (uint)widthProperty.intValue;
+                            uint oldHeight = (uint)heightProperty.intValue;
+                            // Width
+                            propHeight = EditorGUI.GetPropertyHeight(widthProperty);
+                            EditorGUI.PropertyField(new Rect(xyPos, new Vector2(position.width, propHeight)), widthProperty, true);
+                            xyPos += xySpacing + Height2Vector(propHeight);
+                            // Height
+                            propHeight = EditorGUI.GetPropertyHeight(heightProperty);
+                            EditorGUI.PropertyField(new Rect(xyPos, new Vector2(position.width, propHeight)), heightProperty, true);
+                            xyPos += xySpacing + Height2Vector(propHeight);
+                            EditorGUI.EndDisabledGroup();
+                            // Clamp current dimensions
+                            widthProperty.intValue = Values.Clamp(1, widthProperty.intValue, 32767);
+                            heightProperty.intValue = Values.Clamp(1, heightProperty.intValue, 32767);
+                            if (clampAgainst)
                             {
-                                SolidObjectMaskEditorWindow.EditMask(owner, mask, fieldInfo);
+                                widthProperty.intValue = (int)clampAgainst.Width;
+                                heightProperty.intValue = (int)clampAgainst.Height;
                             }
-                            EditorGUI.indentLevel = indent;
+                            // Compare dimensions and perhaps resize
+                            uint newWidth = (uint)widthProperty.intValue;
+                            uint newHeight = (uint)heightProperty.intValue;
+                            if (oldWidth != newWidth || oldHeight != newHeight)
+                            {
+                                Resize(oldWidth, oldHeight, newWidth, newHeight);
+                            }
+                            else if (cellsProperty.arraySize != (oldWidth * oldHeight))
+                            {
+                                // This will occur typically on first GUI iteration only.
+                                cellsProperty.arraySize = (int)(newWidth * newHeight);
+                                int index = 0;
+                                for(uint x = 0; x < newWidth; x++)
+                                {
+                                    for(uint y = 0; y < newHeight; y++)
+                                    {
+                                        Debug.Log("cellsProperty=" + cellsProperty);
+                                        cellElementProperties[x, y] = cellsProperty.GetArrayElementAtIndex(index);
+                                        index++;
+                                    }
+                                }
+                            }
+                            // Clamp scrolling coordinates to {1, .., new width - 8}
+                            //                            and {1, .., new height - 8}
+                            uint maxX = newWidth - 8;
+                            uint maxY = newHeight - 8;
+                            scrollX = Values.Clamp(0, scrollX, maxX);
+                            scrollY = Values.Clamp(0, scrollY, maxY);
+                            // Grid (and scrollbars)
+                            float squareSize = (availableWidth - slHeight) / 8;
+                            EditorGUI.BeginDisabledGroup(maxX == 0);
+                            scrollX = (uint)GUI.HorizontalScrollbar(new Rect(xyPos + new Vector2(slHeight, availableWidth - slHeight), new Vector2(availableWidth - slHeight, slHeight)), scrollX, 1, 0, maxX + 1, GUI.skin.horizontalScrollbar);
+                            EditorGUI.EndDisabledGroup();
+                            EditorGUI.BeginDisabledGroup(maxY == 0);
+                            scrollY = (uint)GUI.VerticalScrollbar(new Rect(xyPos, new Vector2(slHeight, availableWidth - slHeight)), scrollY, 1, maxY + 1, 0, GUI.skin.verticalScrollbar);
+                            EditorGUI.EndDisabledGroup();
+                            RenderGrid(xyPos + new Vector2(slHeight, 0), newWidth, newHeight, squareSize);
+                            xyPos += xySpacing + Height2Vector(position.width);
+                            // Position (x, y) -> (xf, yf)
+                            EditorGUI.LabelField(new Rect(xyPos, new Vector2(position.width, slHeight)), string.Format(
+                                "Left-Down: ({0}, {1}) - Right-Up: ({2}, {3})", scrollX, scrollY, Values.Min(scrollX + 7, maxX), Values.Min(scrollY + 7, maxY)
+                            ));
+                            xyPos += xySpacing + xySLHeight;
+                            // Buttons
+                            float width3 = position.width / 3;
+                            FillButton(new Rect(xyPos.x, xyPos.y, width3, slHeight), solidSquare, "Solid", SolidnessStatus.Solid, EditorStyles.miniButtonLeft);
+                            FillButton(new Rect(xyPos.x + width3, xyPos.y, width3, slHeight), ghostSquare, "Ghost", SolidnessStatus.Ghost, EditorStyles.miniButtonMid);
+                            FillButton(new Rect(xyPos.x + 2 * width3, xyPos.y, width3, slHeight), holeSquare, "Hole", SolidnessStatus.Hole, EditorStyles.miniButtonRight);
+                            xyPos += xySpacing + xySLHeight;
                             EditorGUI.EndProperty();
+                        }
+
+                        /// <summary>
+                        ///   Allows caching the same drawer for the same mask property instance.
+                        /// </summary>
+                        /// <param name="property">The property to cache for</param>
+                        /// <returns>true</returns>
+                        public override bool CanCacheInspectorGUI(SerializedProperty property)
+                        {
+                            return true;
+                        }
+
+                        /// <summary>
+                        ///   Property height for 5 fields: 4 having standard size, and 1 having the height
+                        ///   being the same as the GUI width.
+                        /// </summary>
+                        /// <param name="property">The property being calculated for</param>
+                        /// <param name="label">The property label</param>
+                        /// <returns>The height involving all the 5 fields</returns>
+                        public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
+                        {
+                            Initialize(property);
+                            return 2 * EditorGUIUtility.standardVerticalSpacing + GetCurrentWidth() +
+                                   EditorGUI.GetPropertyHeight(widthProperty) + EditorGUI.GetPropertyHeight(heightProperty);
+                            // Possible bug: Why I don't need to add the two instances of standard single-line size
+                            //               and their corresponding standard vertical spacing?
                         }
                     }
                 }

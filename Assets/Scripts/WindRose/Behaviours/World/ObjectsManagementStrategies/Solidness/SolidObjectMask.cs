@@ -347,7 +347,6 @@ namespace WindRose
                             // value is not among them).
                             private SolidnessStatus GetCellContent(uint x, uint y)
                             {
-                                Debug.LogFormat("Getting ({0}, {1}) ...", x, y);
                                 uint index = y * maskWidth + x;
                                 SolidnessStatus value = contents[index];
                                 if (value != SolidnessStatus.Solid && value != SolidnessStatus.Ghost && value != SolidnessStatus.Hole)
@@ -421,6 +420,7 @@ namespace WindRose
 
                             private void MainUI(uint maxX, uint maxY)
                             {
+                                Debug.LogFormat("Max coordinates: ({0}, {1})", maxX, maxY);
                                 Rect mainRect = EditorGUILayout.BeginHorizontal();
                                 Vector2 mainPosition = mainRect.position + new Vector2(16, 16);
                                 EditorGUI.LabelField(
@@ -431,10 +431,10 @@ namespace WindRose
                                     new Rect(mainPosition + new Vector2(16, 288), new Vector2(256, 16)), string.Format("({0}, {1})", offsetX, offsetY)
                                 );
                                 EditorGUI.BeginDisabledGroup(maxX == 0);
-                                offsetX = (uint)GUI.HorizontalScrollbar(new Rect(mainPosition + new Vector2(16, 272), new Vector2(256, 16)), offsetX, 1, 0, maxX, GUI.skin.horizontalScrollbar);
+                                offsetX = (uint)GUI.HorizontalScrollbar(new Rect(mainPosition + new Vector2(16, 272), new Vector2(256, 16)), offsetX, 1, 0, maxX + 1, GUI.skin.horizontalScrollbar);
                                 EditorGUI.EndDisabledGroup();
                                 EditorGUI.BeginDisabledGroup(maxY == 0);
-                                offsetY = (uint)GUI.VerticalScrollbar(new Rect(mainPosition + new Vector2(0, 16), new Vector2(16, 256)), offsetY, 1, 0, maxY, GUI.skin.verticalScrollbar);
+                                offsetY = (uint)GUI.VerticalScrollbar(new Rect(mainPosition + new Vector2(0, 16), new Vector2(16, 256)), offsetY, 1, maxY + 1, 0, GUI.skin.verticalScrollbar);
                                 EditorGUI.EndDisabledGroup();
                                 GridUI(new Vector2(32, 32) + mainRect.position, maxX, maxY);
                             }
@@ -460,9 +460,9 @@ namespace WindRose
                                 PaletteUI();
                                 EditorGUILayout.EndVertical();
                                 uint maxX = maskWidth >= 8 ? maskWidth - 8 : 0;
-                                uint maxY = maskHeight >= 9 ? maskHeight - 8 : 0;
+                                uint maxY = maskHeight >= 8 ? maskHeight - 8 : 0;
                                 offsetX = Values.Min(maxX, offsetX);
-                                offsetY = Values.Max(maxY, offsetY);
+                                offsetY = Values.Min(maxY, offsetY);
                                 EditorGUILayout.LabelField("This grid is a display of 8x8 mask cells which may contain any state among: Solid, Traversable or Hole.\n" +
                                                            "Scrollbars will appear accordingly if the width or height is greater than 8.\n" +
                                                            "Cells will be invalidated accordingly when width or height is lower than 8.", longLabelStyle);
@@ -533,7 +533,6 @@ namespace WindRose
                                             break;
                                     }
                                 }
-                                Debug.LogFormat("Images: solid={0} ghost={1} hole={2} invalid={3}", window.solidCellImage, window.ghostCellImage, window.holeCellImage, window.invalidCellImage);
                                 window.titleContent = new GUIContent("Wind Rose - Editing a solid object mask");
                                 window.ShowUtility();
                             }

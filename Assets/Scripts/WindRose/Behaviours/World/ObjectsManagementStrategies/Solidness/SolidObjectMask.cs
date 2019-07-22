@@ -425,7 +425,7 @@ namespace WindRose
                             return new Vector2(0, height);
                         }
 
-                        private void FillButton(Rect position, Texture2D image, string text, SolidnessStatus status, GUIStyle baseStyle)
+                        private void MakeFillButton(Rect position, Texture2D image, string text, SolidnessStatus status, GUIStyle baseStyle)
                         {
                             GUIStyle style = baseStyle;
                             if (fillWith == status)
@@ -437,6 +437,20 @@ namespace WindRose
                             if (GUI.Button(position, content, style))
                             {
                                 fillWith = status;
+                            }
+                        }
+
+                        private void FillWholeMask()
+                        {
+                            SolidnessStatus[] statuses = (SolidnessStatus[])Enum.GetValues(typeof(SolidnessStatus));
+                            uint width = (uint)widthProperty.intValue;
+                            uint height = (uint)heightProperty.intValue;
+                            for (uint x = 0; x < width; x++)
+                            {
+                                for (uint y = 0; y < height; y++)
+                                {
+                                    cellElementProperties[x, y].enumValueIndex = Array.IndexOf(statuses, fillWith);
+                                }
                             }
                         }
 
@@ -487,7 +501,6 @@ namespace WindRose
                                 {
                                     for(uint y = 0; y < newHeight; y++)
                                     {
-                                        Debug.Log("cellsProperty=" + cellsProperty);
                                         cellElementProperties[x, y] = cellsProperty.GetArrayElementAtIndex(index);
                                         index++;
                                     }
@@ -516,10 +529,14 @@ namespace WindRose
                             xyPos += xySpacing + xySLHeight;
                             // Buttons
                             float width3 = position.width / 3;
-                            FillButton(new Rect(xyPos.x, xyPos.y, width3, slHeight), solidSquare, "Solid", SolidnessStatus.Solid, EditorStyles.miniButtonLeft);
-                            FillButton(new Rect(xyPos.x + width3, xyPos.y, width3, slHeight), ghostSquare, "Ghost", SolidnessStatus.Ghost, EditorStyles.miniButtonMid);
-                            FillButton(new Rect(xyPos.x + 2 * width3, xyPos.y, width3, slHeight), holeSquare, "Hole", SolidnessStatus.Hole, EditorStyles.miniButtonRight);
+                            MakeFillButton(new Rect(xyPos.x, xyPos.y, width3, slHeight), solidSquare, "Solid", SolidnessStatus.Solid, EditorStyles.miniButtonLeft);
+                            MakeFillButton(new Rect(xyPos.x + width3, xyPos.y, width3, slHeight), ghostSquare, "Ghost", SolidnessStatus.Ghost, EditorStyles.miniButtonMid);
+                            MakeFillButton(new Rect(xyPos.x + 2 * width3, xyPos.y, width3, slHeight), holeSquare, "Hole", SolidnessStatus.Hole, EditorStyles.miniButtonRight);
                             xyPos += xySpacing + xySLHeight;
+                            if (GUI.Button(new Rect(xyPos, new Vector2(position.width, slHeight)), "Fill mask with selected type"))
+                            {
+                                FillWholeMask();
+                            }
                             EditorGUI.EndProperty();
                         }
 
@@ -543,8 +560,9 @@ namespace WindRose
                         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
                         {
                             Initialize(property);
-                            return 2 * EditorGUIUtility.standardVerticalSpacing + GetCurrentWidth() +
-                                   EditorGUI.GetPropertyHeight(widthProperty) + EditorGUI.GetPropertyHeight(heightProperty);
+                            return 3 * EditorGUIUtility.standardVerticalSpacing + GetCurrentWidth() +
+                                   EditorGUI.GetPropertyHeight(widthProperty) + EditorGUI.GetPropertyHeight(heightProperty) +
+                                   EditorGUIUtility.singleLineHeight;
                             // Possible bug: Why I don't need to add the two instances of standard single-line size
                             //               and their corresponding standard vertical spacing?
                         }

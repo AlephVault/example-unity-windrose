@@ -35,7 +35,7 @@ namespace WindRose
                         objectName = MenuActionUtils.EnsureNonEmpty(EditorGUILayout.TextField("Object name", objectName), "New Teleporter");
 
                         EditorGUILayout.LabelField("These are the object properties in the editor. Can be changed later.", longLabelStyle);
-                        objectSize = EditorGUILayout.Vector2IntField("Map width (X) and height (Y) [1 to 32767]", objectSize);
+                        objectSize = EditorGUILayout.Vector2IntField("Object width (X) and height (Y) [1 to 32767]", objectSize);
                         objectSize = new Vector2Int(Values.Clamp(1, objectSize.x, 32767), Values.Clamp(1, objectSize.y, 32767));
 
                         addTeleportTargetBehaviour = EditorGUILayout.ToggleLeft("This teleport will also be a target for other possible teleports", addTeleportTargetBehaviour);

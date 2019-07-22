@@ -342,14 +342,6 @@ namespace WindRose
                                 EditorGUILayout.EndHorizontal();
                             }
 
-                            private void TopCornerUI()
-                            {
-                                EditorGUILayout.LabelField(
-                                    string.Format("({0}, {1})", Values.Min(offsetX + 7, maskWidth - 1), Values.Min(offsetY + 7, maskHeight - 1)),
-                                    new GUIStyle() { margin = new RectOffset(8, 0, 0, 0), alignment = TextAnchor.MiddleRight }, GUILayout.Width(256)
-                                );
-                            }
-
                             // Given a cell's coordinate pair, returns its value and ensures it is
                             // solid, ghost or hole (filling cell with the value of fillWith if the
                             // value is not among them).
@@ -389,21 +381,18 @@ namespace WindRose
                                 }
                             }
 
-                            private void GridUI(uint maxX, uint maxY)
+                            private void GridUI(Vector2 basePosition, uint maxX, uint maxY)
                             {
+                                Vector2 size = Vector2.one * 32;
                                 GUIStyle label = new GUIStyle(GUI.skin.label) { padding = new RectOffset(0, 0, 0, 0), margin = new RectOffset(0, 0, 0, 0) };
-                                EditorGUILayout.BeginHorizontal();
-                                offsetY = (uint)GUILayout.VerticalScrollbar(offsetY, maxY, 0, maxY, new GUIStyle() { fixedWidth = 8, fixedHeight = 256 });
-                                EditorGUILayout.BeginVertical();
                                 for(uint y = 0; y < 8; y++)
                                 {
-                                    EditorGUILayout.BeginHorizontal();
                                     uint mappedY = offsetY + 7 - y;
                                     if (mappedY >= maskHeight)
                                     {
                                         for (uint x = 0; x < 8; x++)
                                         {
-                                            GUILayout.Label(invalidCellImage, label, GUILayout.Width(32), GUILayout.Height(32));
+                                            GUI.Label(new Rect(basePosition + new Vector2(x, y) * 32, size), invalidCellImage, label);
                                         }
                                     }
                                     else
@@ -413,41 +402,41 @@ namespace WindRose
                                             uint mappedX = offsetX + x;
                                             if (mappedX >= maskWidth)
                                             {
-                                                GUILayout.Label(invalidCellImage, label, GUILayout.Width(32), GUILayout.Height(32));
+                                                GUI.Label(new Rect(basePosition + new Vector2(x, y) * 32, size), invalidCellImage, label);
                                             }
                                             else
                                             {
                                                 SolidnessStatus status = GetCellContent(mappedX, mappedY);
                                                 Texture image = GetStatusImage(status);
-                                                if (GUILayout.Button(new GUIContent(image), label, GUILayout.Width(32), GUILayout.Width(32)))
+                                                if (GUI.Button(new Rect(basePosition + new Vector2(x, y) * 32, size), new GUIContent(image), label))
                                                 {
                                                     SetCellContent(mappedX, mappedY, fillWith);
                                                 }
                                             }
                                         }
                                     }
-                                    EditorGUILayout.EndHorizontal();
                                 }
-                                EditorGUILayout.EndVertical();
-                                EditorGUILayout.EndHorizontal();
-                                offsetY = (uint)GUILayout.VerticalScrollbar(offsetX, maxX, 0, maxX, new GUIStyle() { fixedHeight = 8, fixedWidth = 256, margin = new RectOffset(8, 0, 0, 0) });
-                            }
-
-                            private void BottomCornerUI()
-                            {
-                                EditorGUILayout.LabelField(
-                                    string.Format("({0}, {1})", offsetX, offsetY),
-                                    new GUIStyle() { margin = new RectOffset(8, 0, 0, 0) }, GUILayout.Width(256)
-                                );
+                                // offsetX = (uint)GUILayout.HorizontalScrollbar(offsetX, 3, 0, maxX + 3, new GUIStyle() { fixedHeight = 8, fixedWidth = 256, margin = new RectOffset(8, 0, 0, 0) });
                             }
 
                             private void MainUI(uint maxX, uint maxY)
                             {
-                                EditorGUILayout.BeginVertical(new GUIStyle() { padding = new RectOffset(20, 20, 20, 20)  });
-                                TopCornerUI();
-                                GridUI(maxX, maxY);
-                                BottomCornerUI();
-                                EditorGUILayout.EndVertical();
+                                Rect mainRect = EditorGUILayout.BeginHorizontal();
+                                Vector2 mainPosition = mainRect.position + new Vector2(16, 16);
+                                EditorGUI.LabelField(
+                                    new Rect(mainPosition + new Vector2(16, 0), new Vector2(256, 16)), string.Format("({0}, {1})", Values.Min(offsetX + 7, maskWidth - 1), Values.Min(offsetY + 7, maskHeight - 1)),
+                                    new GUIStyle() { alignment = TextAnchor.MiddleRight }
+                                );
+                                EditorGUI.LabelField(
+                                    new Rect(mainPosition + new Vector2(16, 288), new Vector2(256, 16)), string.Format("({0}, {1})", offsetX, offsetY)
+                                );
+                                EditorGUI.BeginDisabledGroup(maxX == 0);
+                                offsetX = (uint)GUI.HorizontalScrollbar(new Rect(mainPosition + new Vector2(16, 272), new Vector2(256, 16)), offsetX, 1, 0, maxX, GUI.skin.horizontalScrollbar);
+                                EditorGUI.EndDisabledGroup();
+                                EditorGUI.BeginDisabledGroup(maxY == 0);
+                                offsetY = (uint)GUI.VerticalScrollbar(new Rect(mainPosition + new Vector2(0, 16), new Vector2(16, 256)), offsetY, 1, 0, maxY, GUI.skin.verticalScrollbar);
+                                EditorGUI.EndDisabledGroup();
+                                GridUI(new Vector2(32, 32) + mainRect.position, maxX, maxY);
                             }
 
                             // Renders a grid to edit the mask with 3 states per cell: solid, ghost, hole.
@@ -478,7 +467,7 @@ namespace WindRose
                                                            "Scrollbars will appear accordingly if the width or height is greater than 8.\n" +
                                                            "Cells will be invalidated accordingly when width or height is lower than 8.", longLabelStyle);
                                 MainUI(maxX, maxY);
-                                if (GUILayout.Button("Update mask"))
+                                if (GUI.Button(new Rect(4, 448, 632, 16), "Update mask"))
                                 {
                                     property.SetValue(owner, new SolidObjectMask(maskWidth, maskHeight, contents));
                                     Close();
@@ -519,13 +508,12 @@ namespace WindRose
                                     mask = mask.Resized(maskWidth, maskHeight, SolidnessStatus.Ghost);
                                 }
                                 window.contents = mask.Dump();
-                                Debug.LogFormat("Contents length: {0}, width: {1}, height: {2}", window.contents.Length, maskWidth, maskHeight);
                                 window.withFixedDimensions = withFixedDimensions;
                                 window.maskHeight = maskHeight;
                                 window.maskWidth = maskWidth;
                                 window.owner = owner;
                                 window.property = property;
-                                window.minSize = new Vector2(640, 480);
+                                window.minSize = new Vector2(640, 468);
                                 window.maxSize = window.minSize;
                                 foreach(Sprite sprite in AssetDatabase.LoadAllAssetRepresentationsAtPath("Assets/Graphics/EditorUI/solidness-cells.png").OfType<Sprite>())
                                 {

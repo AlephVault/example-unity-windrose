@@ -47,12 +47,14 @@ namespace WindRose
                         /// <summary>
                         ///   The mask width.
                         /// </summary>
+                        [Delayed]
                         [SerializeField]
                         private uint width;
 
                         /// <summary>
                         ///   The mask height.
                         /// </summary>
+                        [Delayed]
                         [SerializeField]
                         private uint height;
 
@@ -310,7 +312,7 @@ namespace WindRose
                             {
                                 for (uint x = 0; x < oldWidth; x++)
                                 {
-                                    oldStatuses[index] = statuses[cellElementProperties[x, y].enumValueIndex];
+                                    oldStatuses[index++] = statuses[cellElementProperties[x, y].enumValueIndex];
                                 }
                             }
                             SolidnessStatus[] newStatuses = SolidObjectMask.Resized(oldStatuses, oldWidth, oldHeight, newWidth, newHeight, fillWith);
@@ -321,14 +323,15 @@ namespace WindRose
                             }
                             else
                             {
+                                cellElementProperties = new SerializedProperty[newWidth, newHeight];
                                 cellsProperty.arraySize = (int)(newWidth * newHeight);
                                 index = 0;
                                 for (uint y = 0; y < newHeight; y++)
                                 {
                                     for (uint x = 0; x < newWidth; x++)
                                     {
-                                        cellElementProperties[x, y] = cellsProperty.GetArrayElementAtIndex((int)index++);
-                                        cellElementProperties[x, y].enumValueIndex = Array.IndexOf(statuses, fillWith);
+                                        cellElementProperties[x, y] = cellsProperty.GetArrayElementAtIndex((int)index);
+                                        cellElementProperties[x, y].enumValueIndex = Array.IndexOf(statuses, newStatuses[index++]);
                                     }
                                 }
                             }
@@ -404,7 +407,7 @@ namespace WindRose
                                                     image = holeSquare;
                                                     break;
                                             }
-                                            if (GUI.Button(new Rect(basePosition + offset, size), new GUIContent(image), label))
+                                            if (GUI.RepeatButton(new Rect(basePosition + offset, size), new GUIContent(image), label))
                                             {
                                                 cellElementProperties[mappedX, mappedY].enumValueIndex = Array.IndexOf(Enum.GetValues(typeof(SolidnessStatus)), fillWith);
                                             }

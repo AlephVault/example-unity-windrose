@@ -45,12 +45,14 @@ namespace WindRose
                 /// <summary>
                 ///   The width of this object, in map cells.
                 /// </summary>
+                [Delayed]
                 [SerializeField]
                 private uint width = 1;
 
                 /// <summary>
                 ///   The height of this object, in map cells.
                 /// </summary>
+                [Delayed]
                 [SerializeField]
                 private uint height = 1;
 

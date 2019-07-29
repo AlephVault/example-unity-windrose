@@ -253,7 +253,6 @@ namespace WindRose
                         private uint scrollY = 0;
                         private Entities.Objects.MapObject clampAgainst = null;
                         private bool initialized = false;
-                        private SerializedProperty[,] cellElementProperties;
 
                         private Texture2D MakeSolidIcon(Color color, int height = 0)
                         {
@@ -290,15 +289,6 @@ namespace WindRose
                                 {
                                     cellsProperty.arraySize = width * height;
                                 }
-                                cellElementProperties = new SerializedProperty[widthProperty.intValue, heightProperty.intValue];
-                                int index = 0;
-                                for (uint y = 0; y < height; y++)
-                                {
-                                    for (uint x = 0; x < width; x++)
-                                    {
-                                        cellElementProperties[x, y] = cellsProperty.GetArrayElementAtIndex((int)index++);
-                                    }
-                                }
                                 initialized = true;
                             }
                         }
@@ -312,26 +302,24 @@ namespace WindRose
                             {
                                 for (uint x = 0; x < oldWidth; x++)
                                 {
-                                    oldStatuses[index++] = statuses[cellElementProperties[x, y].enumValueIndex];
+                                    oldStatuses[index] = statuses[cellsProperty.GetArrayElementAtIndex((int)index).enumValueIndex];
+                                    index++;
                                 }
                             }
                             SolidnessStatus[] newStatuses = SolidObjectMask.Resized(oldStatuses, oldWidth, oldHeight, newWidth, newHeight, fillWith);
                             if (newStatuses == null)
                             {
-                                cellElementProperties = new SerializedProperty[0, 0];
                                 cellsProperty.arraySize = 0;
                             }
                             else
                             {
-                                cellElementProperties = new SerializedProperty[newWidth, newHeight];
                                 cellsProperty.arraySize = (int)(newWidth * newHeight);
                                 index = 0;
                                 for (uint y = 0; y < newHeight; y++)
                                 {
                                     for (uint x = 0; x < newWidth; x++)
                                     {
-                                        cellElementProperties[x, y] = cellsProperty.GetArrayElementAtIndex((int)index);
-                                        cellElementProperties[x, y].enumValueIndex = Array.IndexOf(statuses, newStatuses[index++]);
+                                        cellsProperty.GetArrayElementAtIndex((int)index).enumValueIndex = Array.IndexOf(statuses, newStatuses[index++]);
                                     }
                                 }
                             }
@@ -389,7 +377,8 @@ namespace WindRose
                                         }
                                         else
                                         {
-                                            SolidnessStatus status = statuses[cellElementProperties[mappedX, mappedY].enumValueIndex];
+                                            int index = (int)(mappedY * width + mappedX);
+                                            SolidnessStatus status = statuses[cellsProperty.GetArrayElementAtIndex((int)index).enumValueIndex];
                                             if (status == SolidnessStatus.Mask)
                                             {
                                                 status = fillWith;
@@ -409,7 +398,7 @@ namespace WindRose
                                             }
                                             if (GUI.RepeatButton(new Rect(basePosition + offset, size), new GUIContent(image), label))
                                             {
-                                                cellElementProperties[mappedX, mappedY].enumValueIndex = Array.IndexOf(Enum.GetValues(typeof(SolidnessStatus)), fillWith);
+                                                cellsProperty.GetArrayElementAtIndex(index).enumValueIndex = Array.IndexOf(Enum.GetValues(typeof(SolidnessStatus)), fillWith);
                                             }
                                         }
                                     }
@@ -448,11 +437,13 @@ namespace WindRose
                             SolidnessStatus[] statuses = (SolidnessStatus[])Enum.GetValues(typeof(SolidnessStatus));
                             uint width = (uint)widthProperty.intValue;
                             uint height = (uint)heightProperty.intValue;
+                            uint index = 0;
                             for (uint x = 0; x < width; x++)
                             {
                                 for (uint y = 0; y < height; y++)
                                 {
-                                    cellElementProperties[x, y].enumValueIndex = Array.IndexOf(statuses, fillWith);
+                                    cellsProperty.GetArrayElementAtIndex((int)index).enumValueIndex = Array.IndexOf(statuses, fillWith);
+                                    index++;
                                 }
                             }
                         }
@@ -499,15 +490,6 @@ namespace WindRose
                             {
                                 // This will occur typically on first GUI iteration only.
                                 cellsProperty.arraySize = (int)(newWidth * newHeight);
-                                int index = 0;
-                                for(uint x = 0; x < newWidth; x++)
-                                {
-                                    for(uint y = 0; y < newHeight; y++)
-                                    {
-                                        cellElementProperties[x, y] = cellsProperty.GetArrayElementAtIndex(index);
-                                        index++;
-                                    }
-                                }
                             }
                             // Clamp scrolling coordinates to {1, .., new width - 8}
                             //                            and {1, .., new height - 8}

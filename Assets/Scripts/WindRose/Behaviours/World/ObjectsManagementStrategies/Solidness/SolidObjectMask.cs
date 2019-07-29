@@ -493,8 +493,8 @@ namespace WindRose
                             }
                             // Clamp scrolling coordinates to {1, .., new width - 8}
                             //                            and {1, .., new height - 8}
-                            uint maxX = newWidth - 8;
-                            uint maxY = newHeight - 8;
+                            uint maxX = newWidth > 8 ? newWidth - 8 : 0;
+                            uint maxY = newHeight > 8 ? newHeight - 8 : 0;
                             scrollX = Values.Clamp(0, scrollX, maxX);
                             scrollY = Values.Clamp(0, scrollY, maxY);
                             // Grid (and scrollbars)

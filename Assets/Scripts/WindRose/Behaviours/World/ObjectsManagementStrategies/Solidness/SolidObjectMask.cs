@@ -348,7 +348,6 @@ namespace WindRose
                             Texture2D ghostSquare = MakeSolidIcon(new Color(0, 0.5f, 0, 1), (int)squareSize);
                             Texture2D holeSquare = MakeSolidIcon(new Color(0.5f, 0, 0, 1), (int)squareSize);
                             Texture2D solidSquare = MakeSolidIcon(Color.grey, (int)squareSize);
-
                             Vector2 size = Vector2.one * (squareSize - 1);
                             GUIStyle label = new GUIStyle(GUI.skin.label) { padding = new RectOffset(0, 0, 0, 0), margin = new RectOffset(0, 0, 0, 0) };
                             SolidnessStatus[] statuses = (SolidnessStatus[])Enum.GetValues(typeof(SolidnessStatus));
@@ -498,12 +497,13 @@ namespace WindRose
                             scrollX = Values.Clamp(0, scrollX, maxX);
                             scrollY = Values.Clamp(0, scrollY, maxY);
                             // Grid (and scrollbars)
-                            float squareSize = (availableWidth - slHeight) / 8;
+                            float squareSize = (int)((availableWidth - slHeight) / 8);
+                            float normalizedSize = squareSize * 8;
                             EditorGUI.BeginDisabledGroup(maxX == 0);
-                            scrollX = (uint)GUI.HorizontalScrollbar(new Rect(xyPos + new Vector2(slHeight, availableWidth - slHeight), new Vector2(availableWidth - slHeight, slHeight)), scrollX, 1, 0, maxX + 1, GUI.skin.horizontalScrollbar);
+                            scrollX = (uint)GUI.HorizontalScrollbar(new Rect(xyPos + new Vector2(slHeight, normalizedSize), new Vector2(normalizedSize, slHeight)), scrollX, 1, 0, maxX + 1, GUI.skin.horizontalScrollbar);
                             EditorGUI.EndDisabledGroup();
                             EditorGUI.BeginDisabledGroup(maxY == 0);
-                            scrollY = (uint)GUI.VerticalScrollbar(new Rect(xyPos, new Vector2(slHeight, availableWidth - slHeight)), scrollY, 1, maxY + 1, 0, GUI.skin.verticalScrollbar);
+                            scrollY = (uint)GUI.VerticalScrollbar(new Rect(xyPos, new Vector2(slHeight, normalizedSize)), scrollY, 1, maxY + 1, 0, GUI.skin.verticalScrollbar);
                             EditorGUI.EndDisabledGroup();
                             RenderGrid(xyPos + new Vector2(slHeight, 0), newWidth, newHeight, squareSize);
                             xyPos += xySpacing + Height2Vector(position.width);

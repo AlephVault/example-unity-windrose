@@ -499,11 +499,15 @@ namespace WindRose
                             // Grid (and scrollbars)
                             float squareSize = (int)((availableWidth - slHeight) / 8);
                             float normalizedSize = squareSize * 8;
+                            // This value is at least the default value and at least in Unity 2017.3.
+                            // It should be revised: perhaps may be changed by styling (then the code
+                            // must include a change for that to force it to 1).
+                            const uint STEP_SIZE = 10;
                             EditorGUI.BeginDisabledGroup(maxX == 0);
-                            scrollX = (uint)GUI.HorizontalScrollbar(new Rect(xyPos + new Vector2(slHeight, normalizedSize), new Vector2(normalizedSize, slHeight)), scrollX, 1, 0, maxX + 1, GUI.skin.horizontalScrollbar);
+                            scrollX = (uint)GUI.HorizontalScrollbar(new Rect(xyPos + new Vector2(slHeight, normalizedSize), new Vector2(normalizedSize, slHeight)), scrollX * STEP_SIZE, STEP_SIZE, 0, maxX * STEP_SIZE + STEP_SIZE, GUI.skin.horizontalScrollbar) / STEP_SIZE;
                             EditorGUI.EndDisabledGroup();
                             EditorGUI.BeginDisabledGroup(maxY == 0);
-                            scrollY = (uint)GUI.VerticalScrollbar(new Rect(xyPos, new Vector2(slHeight, normalizedSize)), scrollY, 1, maxY + 1, 0, GUI.skin.verticalScrollbar);
+                            scrollY = (uint)GUI.VerticalScrollbar(new Rect(xyPos, new Vector2(slHeight, normalizedSize)), scrollY * STEP_SIZE, STEP_SIZE, maxY * STEP_SIZE + STEP_SIZE, 0, GUI.skin.verticalScrollbar) / STEP_SIZE;
                             EditorGUI.EndDisabledGroup();
                             RenderGrid(xyPos + new Vector2(slHeight, 0), newWidth, newHeight, squareSize);
                             xyPos += xySpacing + Height2Vector(position.width);

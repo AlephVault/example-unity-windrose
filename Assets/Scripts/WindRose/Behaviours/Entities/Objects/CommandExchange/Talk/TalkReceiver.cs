@@ -43,12 +43,8 @@ namespace WindRose
                         private void Start()
                         {
                             oriented = GetComponent<Oriented>();
-                            GetComponent<CommandReceiver>().onCommandReceiver.AddListener(delegate (CommandReceiver.CommandStatus status)
-                            {
-                                if (status.Stage == CommandReceiver.CommandStage.ENTER && status.Command.name == TalkSender.COMMAND)
-                                {
-                                    StartCoroutine(StartTalk(status.Command.sender));
-                                }
+							GetComponent<CommandReceiver>().ListenCommand(TalkSender.COMMAND, (string commandName, object[] arguments, GameObject sender) => {
+								StartCoroutine(StartTalk(sender));
                             });
                         }
 

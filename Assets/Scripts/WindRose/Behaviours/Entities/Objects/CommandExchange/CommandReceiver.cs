@@ -12,91 +12,58 @@ namespace WindRose
             {
                 /// <summary>
                 ///   <para>
-                ///     Receives a <see cref="Misc.Command"/> sent from somewhere. Since receiving
-                ///       a command involves detecting collisions, this component also requires a
-                ///       <see cref="TriggerLive"/> which does most of the work for us.
+                ///     Receives a command sent from any kind of command sender. Perhaps even no need for
+				///       a particular sender is needed, but just invoke <see cref="SendCommand(string, object[], GameObject)"/>
+				///       on this behaviour.
                 ///   </para>
                 ///   <para>
                 ///     Other components depending on this one may be interested in adding listeners
-                ///       to <see cref="onCommandReceiver"/> handler.
+				///       by invoking <see cref="ListenCommand(string, Action<string, object[], GameObject>)"/>.
                 ///   </para>
                 /// </summary>
-                [RequireComponent(typeof(TriggerLive))]
                 class CommandReceiver : MonoBehaviour, Common.Pausable.IPausable
                 {
-                    /// <summary>
-                    ///   The stage of the command arrival (just entering,
-                    ///     just leaving, or present).
-                    /// </summary>
-                    public enum CommandStage
-                    {
-                        ENTER, EXIT, STAY
-                    }
+					public class UnityCommandReceivedEvent : UnityEvent<string, object[], GameObject, Action> {}
 
-                    /// <summary>
-                    ///   A command status holds the details of the command and its stage.
-                    /// </summary>
-                    public class CommandStatus
-                    {
-                        /// <summary>
-                        ///   The stage this event is processed in (command just entering,
-                        ///     command just leaving, or command present).
-                        /// </summary>
-                        public readonly CommandStage Stage;
-                        /// <summary>
-                        ///   The <see cref="Misc.Command"/> being processed.
-                        /// </summary>
-                        public readonly Misc.Command Command;
-                        public CommandStatus(Misc.Command command, CommandStage stage)
-                        {
-                            Stage = stage;
-                            Command = command;
-                        }
-                    }
-
-                    [Serializable]
-                    public class UnityCommandReceivedEvent : UnityEvent<CommandStatus> { }
-
-                    /// <summary>
                     ///   This event is triggered when the object receives a command from somewhere.
-                    ///   Other behaviours should add listeners to this event and handle the event
-                    ///     being received.
-                    /// </summary>
-                    public readonly UnityCommandReceivedEvent onCommandReceiver = new UnityCommandReceivedEvent();
+                    private UnityCommandReceivedEvent onCommandReceiver = new UnityCommandReceivedEvent();
 
-                    private Misc.Command GetCommand(Collider2D collider)
-                    {
-                        return collider.gameObject.GetComponent<Misc.Command>();
-                    }
+					/// <summary>
+					///   Sends a command to this component. The component will determine whether it
+					///     can attend the command or not. If the component is not enabled, it will
+					///     not attend any command.
+					/// </summary>
+					/// <param name="commandName">Command name</param>
+					/// <param name="args">Arguments</param>
+					/// <param name="sender">The command sender</param> 
+					/// <returns><c>true</c>, if command was processed, <c>false</c> otherwise.</returns>
+					public bool SendCommand(string commandName, object[] args, GameObject sender) {
+						if (enabled) {
+							bool processed = false;
+							onCommandReceiver.Invoke(commandName, args, sender, () => {
+								processed = true;
+							});
+							return processed;
+						} else {
+							return false;
+						}
+					}
 
-                    private void SendCommandStatusFromCollision(Collider2D collider, CommandStage stage)
-                    {
-                        Misc.Command command = GetCommand(collider);
-
-                        if (enabled && command != null)
-                        {
-                            if (command.sender != null && command.sender.gameObject != gameObject)
-                            {
-                                onCommandReceiver.Invoke(new CommandStatus(command, stage));
-                            }
-                        }
-                    }
-
-                    private void OnTriggerEnter2D(Collider2D collider)
-                    {
-                        SendCommandStatusFromCollision(collider, CommandStage.ENTER);
-                    }
-
-                    private void OnTriggerExit2D(Collider2D collider)
-                    {
-                        SendCommandStatusFromCollision(collider, CommandStage.EXIT);
-                    }
-
-                    private void OnTriggerStay2D(Collider2D collider)
-                    {
-                        SendCommandStatusFromCollision(collider, CommandStage.STAY);
-                    }
-
+					/// <summary>
+					///   Listens the command using a particular listener receiving the command name and
+					///     arguments (the same listener may be used to attend many commands).
+					/// </summary>
+					/// <param name="commandName">Command name</param>
+					/// <param name="listener">Listener callback</param>
+					public void ListenCommand(string commandName, Action<string, object[], GameObject> listener) {
+						onCommandReceiver.AddListener((string cmdName, object[] args, GameObject sender, Action reporter) => {
+							if (commandName == cmdName) {
+								listener(cmdName, args, sender);
+								reporter();
+							}
+						});
+					}
+						
                     /// <summary>
                     ///   Pauses the object - this means the object will not attend commands.
                     /// </summary>

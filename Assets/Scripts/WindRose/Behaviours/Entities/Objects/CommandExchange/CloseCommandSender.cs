@@ -10,6 +10,8 @@ namespace WindRose
         {
             namespace CommandExchange
             {
+				using Support.Utils;
+
                 /// <summary>
                 ///   <para>
                 ///     Sends a command to an adjacent object. If the object contains a
@@ -34,11 +36,10 @@ namespace WindRose
                 [RequireComponent(typeof(Oriented))]
                 class CloseCommandSender : MonoBehaviour, Common.Pausable.IPausable
                 {
-                    // The command currently being sent.
-                    private Misc.Command command;
                     private Oriented oriented;
                     private MapObject mapObject;
                     private bool paused = false;
+					private static Collider2D[] targets = new Collider2D[ushort.MaxValue];
 
                     private void Start()
                     {
@@ -46,9 +47,9 @@ namespace WindRose
                         mapObject = GetComponent<MapObject>();
                     }
 
-                    private void FixCommandPosition()
+					private Vector2 ComputeCommandPosition()
                     {
-                        float x, y;
+                        float x = 0, y = 0;
                         switch (oriented.Orientation)
                         {
                             case Types.Direction.DOWN:
@@ -68,63 +69,40 @@ namespace WindRose
                                 x = mapObject.transform.position.x + (mapObject.Width + 0.5f) * mapObject.GetCellWidth();
                                 break;
                             default:
-                                x = command.transform.position.x;
-                                y = command.transform.position.y;
+								x = mapObject.transform.position.x;
+								y = mapObject.transform.position.y;
                                 break;
                         }
-                        command.transform.position = new Vector3(x, y, command.transform.position.z);
-                    }
-
-                    private void SetCommandData(string commandName, params object[] arguments)
-                    {
-                        command.sender = gameObject;
-                        command.name = commandName;
-                        command.arguments = arguments;
+						return new Vector2(x, y);
                     }
 
                     /// <summary>
                     ///   Casts a command in the direction it is looking to.
                     /// </summary>
                     /// <param name="commandName">The command name</param>
-                    /// <param name="instantaneous">
-                    ///   Whether the command will flash, or will be present untilthe next call
-                    ///   to <see cref="Release"/> or another call to <see cref="Cast(string, bool, object[])"/>
-                    /// </param>
+					/// <param name="maxDeliver">
+					///   If positive, it will be the maximum number of objects that
+					///     can successfully attend the command being sent.
+					/// </param>
                     /// <param name="arguments">The command arguments</param>
-                    public void Cast(string commandName, bool instantaneous = true, params object[] arguments)
+					public void Cast(string commandName, int maxDeliver = 1, object[] arguments = null)
                     {
                         if (paused) return;
-                        Release();
-                        GameObject commandObject = new GameObject("Command");
-                        CircleCollider2D collider = Support.Utils.Layout.AddComponent<CircleCollider2D>(commandObject);
-                        collider.enabled = false;
-                        collider.isTrigger = true;
-                        command = Support.Utils.Layout.AddComponent<Misc.Command>(commandObject);
-                        SetCommandData(commandName, arguments);
-                        FixCommandPosition();
-                        collider.enabled = true;
-                        if (instantaneous)
-                        {
-                            StartCoroutine(InstantRelease());
-                        }
-                    }
-
-                    private IEnumerator InstantRelease()
-                    {
-                        yield return new WaitForSeconds(0f);
-                        Release();
-                    }
-
-                    /// <summary>
-                    ///   Releases the last command sent by <see cref="Cast(string, bool, object[])"/>, if still present.
-                    /// </summary>
-                    public void Release()
-                    {
-                        if (command)
-                        {
-                            Destroy(command.gameObject);
-                            command = null;
-                        }
+						Vector2 commandPosition = ComputeCommandPosition();
+						int targetsCount = Physics2D.OverlapPointNonAlloc(commandPosition, targets);
+						int delivers = 0;
+						for(int index = 0; index < targetsCount; index++) {
+							if (delivers >= maxDeliver && maxDeliver > 0) {
+								break;
+							}
+							Collider2D target = targets[index];
+							CommandReceiver receiver = target.gameObject.GetComponent<CommandReceiver>();
+							if (receiver) {
+								if (receiver.SendCommand(commandName, arguments, this.gameObject)) {
+									delivers++;
+								}
+							}
+						}
                     }
 
                     /// <summary>

@@ -21,7 +21,7 @@ namespace WindRose
                 ///     (such behaviour may be chosen) when at least one "allowed
                 ///     object" is under it.
                 /// </summary>
-                [RequireComponent(typeof(BoxCollider2D))]
+                [RequireComponent(typeof(BoxCollider))]
                 [RequireComponent(typeof(Ceiling))]
                 public class LocallyTriggeredCeiling : MonoBehaviour
                 {
@@ -81,16 +81,16 @@ namespace WindRose
 
                     private void Start()
                     {
-                        BoxCollider2D collider = GetComponent<BoxCollider2D>();
+                        BoxCollider collider = GetComponent<BoxCollider>();
                         Tilemap tilemap = GetComponent<Tilemap>();
                         collider.isTrigger = true;
-                        collider.size = new Vector2(tilemap.cellSize.x * width, tilemap.cellSize.y * height);
-                        collider.offset = collider.size / 2;
+                        collider.size = new Vector3(tilemap.cellSize.x * width, tilemap.cellSize.y * height, 1f);
+						collider.center = new Vector3(collider.size.x / 2, collider.size.y / 2, 0f);
                         // Just decrease the triger width slightly, to avoid colliding on the edges.
-                        collider.size = collider.size - Vector2.one * 0.1f;
+						collider.size = (Vector3)collider.size - (Vector3)Vector2.one * 0.1f;
                     }
 
-                    private void OnTriggerEnter2D(Collider2D collider)
+                    private void OnTriggerEnter(Collider collider)
                     {
                         GameObject gameObject = collider.gameObject;
                         MapObject mapObject = gameObject.GetComponent<MapObject>();
@@ -100,7 +100,7 @@ namespace WindRose
                         }
                     }
 
-                    private void OnTriggerExit2D(Collider2D collider)
+                    private void OnTriggerExit(Collider collider)
                     {
                         GameObject gameObject = collider.gameObject;
                         currentStayingTriggers.Remove(gameObject);

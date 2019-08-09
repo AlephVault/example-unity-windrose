@@ -26,7 +26,7 @@ namespace WindRose
             ///       of 1, and spreading to each side of the main, oriented, spread).
             ///   </para>
             /// </summary>
-            [RequireComponent(typeof(BoxCollider2D))]
+            [RequireComponent(typeof(BoxCollider))]
             public class TriggerVisionRange : TriggerZone
             {
                 // This inner margin is not mutable and will work to avoid bleeding
@@ -98,7 +98,7 @@ namespace WindRose
                 {
                     base.Start();
                     // Forcing accurate position the first time
-                    if (mapObject.ParentMap) Update();
+					if (mapObject.ParentMap) RefreshDimensions();
                 }
 
                 protected override int GetDeltaX()
@@ -152,9 +152,9 @@ namespace WindRose
                 ///   The involved collider is the required <see cref="BoxCollider"/>.
                 /// </summary>
                 /// <returns>The involved collider</returns>
-                protected override Collider2D GetCollider2D()
+                protected override Collider GetCollider()
                 {
-                    return GetComponent<BoxCollider2D>();
+                    return GetComponent<BoxCollider>();
                 }
 
                 /// <summary>
@@ -162,10 +162,10 @@ namespace WindRose
                 ///     the central and side spread (in <see cref="visionLength"/> and
                 ///     <see cref="visionSize"/>), and the bleeding.
                 /// </summary>
-                /// <param name="collider2D">The collider to with with</param>
-                protected override void SetupCollider(Collider2D collider2D)
+                /// <param name="collider">The collider to with with</param>
+                protected override void SetupCollider(Collider collider)
                 {
-                    BoxCollider2D boxCollider2D = (BoxCollider2D)collider2D;
+                    BoxCollider boxCollider = (BoxCollider)collider;
                     float cellWidth = mapObject.GetCellWidth();
                     float cellHeight = mapObject.GetCellHeight();
                     // we set the size based on the direction we are looking, and also the offset back to the right-top corner
@@ -173,13 +173,13 @@ namespace WindRose
                     {
                         case Types.Direction.UP:
                         case Types.Direction.DOWN:
-                            boxCollider2D.size = new Vector2((visionSize * 2 + 1) * cellWidth, (visionLength + 1) * cellHeight);
+                            boxCollider.size = new Vector3((visionSize * 2 + 1) * cellWidth, (visionLength + 1) * cellHeight, 1);
                             break;
                         default:
-                            boxCollider2D.size = new Vector2((visionLength + 1) * cellWidth, (visionSize * 2 + 1) * cellHeight);
+                            boxCollider.size = new Vector3((visionLength + 1) * cellWidth, (visionSize * 2 + 1) * cellHeight, 1);
                             break;
                     }
-                    boxCollider2D.offset = new Vector2(0.5f * boxCollider2D.size.x, 0.5f * boxCollider2D.size.y);
+                    boxCollider.center = new Vector3(0.5f * boxCollider.size.x, 0.5f * boxCollider.size.y, 0);
                     // also we set the transform of this vision range, using global coordinates:
                     Vector3 basePosition = mapObject.transform.position;
                     Vector3 newPosition = Vector3.zero;
@@ -192,7 +192,7 @@ namespace WindRose
                             newPosition = new Vector3(basePosition.x - visionSize * cellWidth, basePosition.y - (visionLength + 1) * cellHeight, basePosition.z);
                             break;
                         case Types.Direction.LEFT:
-                            newPosition = new Vector3(basePosition.x - boxCollider2D.size.x, basePosition.y - visionSize * cellHeight, basePosition.z);
+						    newPosition = new Vector3(basePosition.x - (visionLength + 1) * cellWidth, basePosition.y - visionSize * cellHeight, basePosition.z);
                             break;
                         case Types.Direction.RIGHT:
                             newPosition = new Vector3(basePosition.x + mapObject.Width * cellWidth, basePosition.y - visionSize * cellHeight, basePosition.z);
@@ -202,7 +202,7 @@ namespace WindRose
                     }
                     transform.position = newPosition;
                     // We apply the bleeding buffer right here
-                    boxCollider2D.size = boxCollider2D.size - 2 * new Vector2(BLEEDING_BUFFER * cellWidth, BLEEDING_BUFFER * cellHeight);
+                    boxCollider.size = boxCollider.size - 2 * new Vector3(BLEEDING_BUFFER * cellWidth, BLEEDING_BUFFER * cellHeight, 0f);
                 }
             }
         }

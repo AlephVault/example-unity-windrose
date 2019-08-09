@@ -21,7 +21,8 @@ namespace WindRose
 				///       by invoking <see cref="ListenCommand(string, Action<string, object[], GameObject>)"/>.
                 ///   </para>
                 /// </summary>
-                class CommandReceiver : MonoBehaviour, Common.Pausable.IPausable
+				[RequireComponent(typeof(TriggerLive))]
+				class CommandReceiver : MonoBehaviour, Common.Pausable.IPausable
                 {
 					public class UnityCommandReceivedEvent : UnityEvent<string, object[], GameObject, Action> {}
 

@@ -48,7 +48,7 @@ namespace WindRose
                     MapObject mapObject = GetComponent<MapObject>();
                     Oriented oriented = GetComponent<Oriented>();
                     GameObject aNewGameObject = new GameObject("WatcherVisionRange");
-                    Support.Utils.Layout.AddComponent<BoxCollider2D>(aNewGameObject);
+                    Support.Utils.Layout.AddComponent<BoxCollider>(aNewGameObject);
                     relatedVisionRange = Support.Utils.Layout.AddComponent<TriggerVisionRange>(aNewGameObject, new System.Collections.Generic.Dictionary<string, object>()
                     {
                         { "relatedObject", mapObject },
@@ -56,6 +56,7 @@ namespace WindRose
                         { "visionSize", visionSize },
                         { "visionLength", visionLength }
                     });
+					relatedVisionRange.RefreshDimensions();
                     onWatcherReady.Invoke();
                 }
 

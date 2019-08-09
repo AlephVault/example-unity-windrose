@@ -39,7 +39,7 @@ namespace WindRose
                     private Oriented oriented;
                     private MapObject mapObject;
                     private bool paused = false;
-					private static Collider2D[] targets = new Collider2D[ushort.MaxValue];
+					private static Collider[] targets = new Collider[ushort.MaxValue];
 
                     private void Start()
                     {
@@ -47,7 +47,7 @@ namespace WindRose
                         mapObject = GetComponent<MapObject>();
                     }
 
-					private Vector2 ComputeCommandPosition()
+					private Vector3 ComputeCommandPosition()
                     {
                         float x = 0, y = 0;
                         switch (oriented.Orientation)
@@ -73,7 +73,7 @@ namespace WindRose
 								y = mapObject.transform.position.y;
                                 break;
                         }
-						return new Vector2(x, y);
+						return new Vector3(x, y, 0);
                     }
 
                     /// <summary>
@@ -88,14 +88,14 @@ namespace WindRose
 					public void Cast(string commandName, int maxDeliver = 1, object[] arguments = null)
                     {
                         if (paused) return;
-						Vector2 commandPosition = ComputeCommandPosition();
-						int targetsCount = Physics2D.OverlapPointNonAlloc(commandPosition, targets);
+						Vector3 commandPosition = ComputeCommandPosition();
+						int targetsCount = Physics.OverlapSphereNonAlloc(commandPosition, 0.1f, targets);
 						int delivers = 0;
 						for(int index = 0; index < targetsCount; index++) {
 							if (delivers >= maxDeliver && maxDeliver > 0) {
 								break;
 							}
-							Collider2D target = targets[index];
+							Collider target = targets[index];
 							CommandReceiver receiver = target.gameObject.GetComponent<CommandReceiver>();
 							if (receiver) {
 								if (receiver.SendCommand(commandName, arguments, this.gameObject)) {

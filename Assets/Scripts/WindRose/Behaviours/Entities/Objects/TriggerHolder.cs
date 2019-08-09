@@ -18,13 +18,13 @@ namespace WindRose
             ///       users can make use of it when needed.
             ///   </para>
             /// </summary>
-            [RequireComponent(typeof(Collider2D))]
+            [RequireComponent(typeof(Collider))]
             public abstract class TriggerHolder : MonoBehaviour
             {
                 /// <summary>
-                ///   The retrieved 2D collider.
+                ///   The retrieved collider.
                 /// </summary>
-                protected Collider2D collider2D;
+                protected Collider collider;
 
                 /// <summary>
                 ///   This method must be implemented to retrieve the underlying component.
@@ -32,31 +32,31 @@ namespace WindRose
                 ///     but will differ on the type.
                 /// </summary>
                 /// <returns>The retrieved component</returns>
-                protected abstract Collider2D GetCollider2D();
+                protected abstract Collider GetCollider();
 
                 /// <summary>
                 ///   This method must be implemented to setup the (retrieved) component.
                 /// </summary>
-                /// <param name="collider2D">The component to setup</param>
-                protected abstract void SetupCollider(Collider2D collider2D);
+                /// <param name="collider">The component to setup</param>
+                protected abstract void SetupCollider(Collider collider);
 
                 /// <summary>
-                ///   Refreshes the dimensions (essentially, invokes <see cref="SetupCollider(Collider2D)"/>
+                ///   Refreshes the dimensions (essentially, invokes <see cref="SetupCollider(Collider)"/>
                 ///     again).
                 /// </summary>
                 public void RefreshDimensions()
                 {
-                    SetupCollider(collider2D);
+                    SetupCollider(collider);
                 }
 
                 protected virtual void Awake()
                 {
-                    collider2D = GetCollider2D();
+                    collider = GetCollider();
                 }
 
                 protected virtual void Start()
                 {
-                    collider2D.isTrigger = true;
+                    collider.isTrigger = true;
                 }
             }
         }

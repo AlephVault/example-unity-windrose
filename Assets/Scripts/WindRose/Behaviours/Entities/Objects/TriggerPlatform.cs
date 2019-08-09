@@ -13,7 +13,7 @@ namespace WindRose
             ///     not there but immediately adjacent in any axis.
             /// </summary>
             [RequireComponent(typeof(MapObject))]
-            [RequireComponent(typeof(BoxCollider2D))]
+            [RequireComponent(typeof(BoxCollider))]
             public class TriggerPlatform : TriggerZone
             {
                 /// <summary>
@@ -51,13 +51,13 @@ namespace WindRose
                 }
 
                 /// <summary>
-                ///   The related collider is its <see cref="BoxCollider2D"/>
+                ///   The related collider is its <see cref="BoxCollider"/>
                 ///     component, required right here.
                 /// </summary>
                 /// <returns></returns>
-                protected override Collider2D GetCollider2D()
+                protected override Collider GetCollider()
                 {
-                    return GetComponent<BoxCollider2D>();
+                    return GetComponent<BoxCollider>();
                 }
 
                 /// <summary>
@@ -65,18 +65,18 @@ namespace WindRose
                 ///     (like <see cref="TriggerLive"/> does) but also the inner
                 ///     margin to avoid bleeding.
                 /// </summary>
-                /// <param name="collider2D">The collider to set up</param>
-                protected override void SetupCollider(Collider2D collider2D)
+                /// <param name="collider">The collider to set up</param>
+                protected override void SetupCollider(Collider collider)
                 {
-                    BoxCollider2D boxCollider2D = (BoxCollider2D)collider2D;
+                    BoxCollider boxCollider = (BoxCollider)collider;
                     float cellWidth = mapObject.GetCellWidth();
                     float cellHeight = mapObject.GetCellHeight();
                     // collision mask will have certain width and height
-                    boxCollider2D.size = new Vector2(mapObject.Width * cellWidth, mapObject.Height * cellHeight);
+                    boxCollider.size = new Vector3(mapObject.Width * cellWidth, mapObject.Height * cellHeight, 1f);
                     // and starting with those dimensions, we compute the offset as >>> and vvv
-                    boxCollider2D.offset = new Vector2(boxCollider2D.size.x / 2, boxCollider2D.size.y / 2);
+                    boxCollider.center = new Vector3(boxCollider.size.x / 2, boxCollider.size.y / 2, 0);
                     // adjust to tolerate inner delta and avoid bleeding
-                    boxCollider2D.size = boxCollider2D.size - 2 * (new Vector2(innerMarginFactor * cellWidth, innerMarginFactor * cellHeight));
+					boxCollider.size = boxCollider.size - 2 * (new Vector3(innerMarginFactor * cellWidth, innerMarginFactor * cellHeight, 0f));
                 }
             }
         }

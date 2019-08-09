@@ -208,14 +208,14 @@ namespace WindRose
                         }
                     }
                     registeredCallbacks.Clear();
-                    collider2D.enabled = false;
+                    collider.enabled = false;
 
                     enabled = false;
                 }
 
                 void Appear(Map map)
                 {
-                    collider2D.enabled = true;
+                    collider.enabled = true;
                     enabled = true;
                     RefreshDimensions();
                 }
@@ -263,8 +263,9 @@ namespace WindRose
                 /// <returns>The reference map object</returns>
                 protected abstract MapObject GetRelatedObject();
 
-                void OnTriggerEnter2D(Collider2D collision)
+                void OnTriggerEnter(Collider collision)
                 {
+					Debug.LogFormat("{2} Entering {0} into trigger {1}...", collision.name, this.name, System.DateTime.Now);
                     // IF my map is null I will not take any new incoming objects.
                     //   Although this condition will never cause a return in the ideal
                     //   case since when detached the collider will be disabled, this
@@ -287,9 +288,10 @@ namespace WindRose
                     }
                 }
 
-                void OnTriggerExit2D(Collider2D collision)
+                void OnTriggerExit(Collider collision)
                 {
-                    // Exiting is easier. If I have a registered sender, that sender passed
+					Debug.LogFormat("{2} Leaving {0} trigger {1}...", collision.name, this.name, System.DateTime.Now);
+					// Exiting is easier. If I have a registered sender, that sender passed
                     //   all the stated conditions. So I will only check existence and
                     //   registration in order to proceed.
                     TriggerLive sender = collision.GetComponent<TriggerLive>();
@@ -298,6 +300,18 @@ namespace WindRose
                         ExitAndDisconnect(sender);
                     }
                 }
+
+				void OnTriggerStay(Collider collision)
+				{
+					// Perhaps due to data being changed, this condition may evaluate to false!
+					TriggerLive key = collision.GetComponent<TriggerLive>();
+					if (registeredCallbacks.ContainsKey(key))
+					{
+						MapTriggerCallbacks value = registeredCallbacks[key];
+						CallOnMapTriggerStay(key.GetComponent<MapObject>());
+						value.CheckPosition();
+					}
+				}
 
                 protected override void Awake()
                 {
@@ -310,26 +324,10 @@ namespace WindRose
                 protected override void Start()
                 {
                     base.Start();
-                    collider2D.enabled = false;
+                    collider.enabled = false;
                     mapObject.onDetached.AddListener(Withdraw);
                     mapObject.onAttached.AddListener(Appear);
                     if (mapObject.ParentMap != null) Appear(mapObject.ParentMap);
-                }
-
-                protected virtual void Update()
-                {
-                    // This change is to avoid OutOfSync error - callbacks MAY and WILL change the inner
-                    //   dictionary (of registered callbacks) under some circumstances.
-                    foreach (TriggerLive key in new List<TriggerLive>(registeredCallbacks.Keys))
-                    {
-                        // Perhaps due to data being changed, this condition may evaluate to false!
-                        if (registeredCallbacks.ContainsKey(key))
-                        {
-                            MapTriggerCallbacks value = registeredCallbacks[key];
-                            CallOnMapTriggerStay(key.GetComponent<MapObject>());
-                            value.CheckPosition();
-                        }
-                    }
                 }
             }
         }

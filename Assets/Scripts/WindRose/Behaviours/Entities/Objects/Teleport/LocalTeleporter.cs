@@ -58,6 +58,7 @@ namespace WindRose
 
                     private void OnWalkedIntoTeleporter(MapObject objectToBeTeleported, MapObject thisTeleporter, int x, int y)
                     {
+						Debug.LogFormat("{3} {0} walked into {1} and will be teleported to {2}", objectToBeTeleported, this, Target, System.DateTime.Now);
                         if (enabled && Target)
                         {
                             MapObject tgObject = Target.GetComponent<MapObject>();

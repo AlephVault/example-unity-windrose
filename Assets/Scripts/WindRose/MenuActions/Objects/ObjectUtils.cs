@@ -159,8 +159,8 @@ namespace WindRose
                         switch (addTrigger)
                         {
                             case 1:
-                                Layout.AddComponent<BoxCollider2D>(gameObject);
-                                Layout.AddComponent<Rigidbody2D>(gameObject);
+                                Layout.AddComponent<BoxCollider>(gameObject);
+                                Layout.AddComponent<Rigidbody>(gameObject);
                                 Layout.AddComponent<Behaviours.Entities.Objects.TriggerLive>(gameObject);
                                 if (addCommandReceiver)
                                 {
@@ -172,7 +172,7 @@ namespace WindRose
                                 }
                                 break;
                             case 2:
-                                Layout.AddComponent<BoxCollider2D>(gameObject);
+                                Layout.AddComponent<BoxCollider>(gameObject);
                                 Layout.AddComponent<Behaviours.Entities.Objects.TriggerPlatform>(gameObject, new Dictionary<string, object>()
                                 {
                                     { "innerMarginFactor", 0.25f }

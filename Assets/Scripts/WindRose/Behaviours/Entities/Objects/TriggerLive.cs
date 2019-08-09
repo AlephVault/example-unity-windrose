@@ -10,7 +10,7 @@ namespace WindRose
             /// <summary>
             ///   <para>
             ///     This components sets its underlying collider (which will be a
-            ///       <see cref="BoxCollider2D"/>) to the dimensions of the object
+            ///       <see cref="BoxCollider"/>) to the dimensions of the object
             ///       (considering underlying cell's width/height).
             ///   </para>
             ///   <para>
@@ -20,57 +20,56 @@ namespace WindRose
             ///       to a map.
             ///   </para>
             /// </summary>
-            [RequireComponent(typeof(Rigidbody2D))]
             [RequireComponent(typeof(MapObject))]
-            [RequireComponent(typeof(BoxCollider2D))]
+            [RequireComponent(typeof(BoxCollider))]
             public class TriggerLive : TriggerHolder
             {
-                private Rigidbody2D rigidbody2D;
+                private Rigidbody rigidbody;
                 protected override void Awake()
                 {
                     base.Awake();
-                    collider2D.enabled = false;
+                    collider.enabled = false;
                     MapObject mapObject = GetComponent<MapObject>();
                     mapObject.onAttached.AddListener(delegate (World.Map map)
                     {
-                        collider2D.enabled = true;
+                        collider.enabled = true;
                         RefreshDimensions();
                     });
                     mapObject.onDetached.AddListener(delegate ()
                     {
-                        collider2D.enabled = false;
+                        collider.enabled = false;
                     });
-                    rigidbody2D = GetComponent<Rigidbody2D>();
+                    rigidbody = GetComponent<Rigidbody>();
                 }
 
                 /// <summary>
-                ///   Gets its underlying <see cref="BoxCollider2D"/> as the involved collider.
+                ///   Gets its underlying <see cref="BoxCollider"/> as the involved collider.
                 /// </summary>
                 /// <returns>The collider</returns>
-                protected override Collider2D GetCollider2D()
+                protected override Collider GetCollider()
                 {
-                    return GetComponent<BoxCollider2D>();
+                    return GetComponent<BoxCollider>();
                 }
 
                 /// <summary>
                 ///   Sets up the collider to the dimensions of this object, with respect
                 ///     to the dimensions and cell width/height in the objects layer.
                 /// </summary>
-                /// <param name="collider2D"></param>
-                protected override void SetupCollider(Collider2D collider2D)
+                /// <param name="collider"></param>
+                protected override void SetupCollider(Collider collider)
                 {
-                    BoxCollider2D boxCollider2D = (BoxCollider2D)collider2D;
+                    BoxCollider boxCollider = (BoxCollider)collider;
                     MapObject mapObject = GetComponent<MapObject>();
                     // collision mask will have certain width and height
-                    boxCollider2D.size = new Vector2(mapObject.Width * mapObject.GetCellWidth(), mapObject.Height * mapObject.GetCellHeight());
+                    boxCollider.size = new Vector3(mapObject.Width * mapObject.GetCellWidth(), mapObject.Height * mapObject.GetCellHeight(), 1f);
                     // and starting with those dimensions, we compute the offset as >>> and vvv
-                    boxCollider2D.offset = new Vector2(boxCollider2D.size.x / 2, boxCollider2D.size.y / 2);
+                    boxCollider.center = new Vector3(boxCollider.size.x / 2, boxCollider.size.y / 2, 0);
                 }
 
                 protected override void Start()
                 {
                     base.Start();
-                    rigidbody2D.isKinematic = true;
+					if (rigidbody) rigidbody.isKinematic = true;
                 }
             }
         }

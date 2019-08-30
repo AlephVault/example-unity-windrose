@@ -41,9 +41,10 @@ namespace WindRose
                     private bool addTalkReceiver = false; // depends on addCommandReceiver.
                     // Object strategy setup.
                     private int addStrategy = 0;
+					// TODO these ones will be added later in a BackPack feature.
                     // Bag (local inventory) setup.
-                    private bool addBag = false;
-                    private bool finiteBag = false; // depends on addBag.
+                    // private bool addBag = false;
+                    // private bool finiteBag = false; // depends on addBag.
                     private int bagSize = 10; // depends on finiteBag.
                     // TODO: perhaps include another *Utils class to create a teleporter?
 
@@ -99,6 +100,8 @@ namespace WindRose
                             EditorGUILayout.EndVertical();
                         }
                         addStrategy = EditorGUILayout.IntPopup("Object Strategy", addStrategy, addStrategyLabels, addStrategyOptions);
+						// TODO this one will be added later in a BackPack feature.
+						/**
                         addBag = EditorGUILayout.ToggleLeft("Bag (Particular simple inventory - Drawers will not be automatically added!)", addBag);
                         if (addBag)
                         {
@@ -117,6 +120,7 @@ namespace WindRose
                             }
                             EditorGUILayout.EndVertical();
                         }
+                        */
                         if (GUILayout.Button("Create Object")) Execute();
                         EditorGUILayout.EndVertical();
 
@@ -196,12 +200,13 @@ namespace WindRose
                                 Debug.LogWarning("An object is being just created with no main strategy. This object will be destroyed on play if no main strategy is set.");
                                 break;
                         }
-                        // TODO: on the current strategy holder, set strategy=mainStrategy.
                         Behaviours.Entities.Objects.ObjectStrategyHolder currentHolder = gameObject.GetComponent<Behaviours.Entities.Objects.ObjectStrategyHolder>();
                         Layout.SetObjectFieldValues(currentHolder, new Dictionary<string, object>()
                         {
                             { "objectStrategy", mainStrategy }
                         });
+						// TODO this one will be added later in a backpack feature.
+						/**
                         if (addBag)
                         {
                             Behaviours.Inventory.ManagementStrategies.UsageStrategies.InventoryNullUsageManagementStrategy usageStrategy =
@@ -222,6 +227,7 @@ namespace WindRose
                             }
                             Layout.AddComponent<Behaviours.Entities.Objects.Bags.SimpleBag>(gameObject);
                         }
+                        */
                         gameObject.SetActive(true);
                         Close();
                     }

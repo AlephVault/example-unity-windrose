@@ -3,9 +3,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using WindRose.Behaviours.World.Layers.Drop;
-using WindRose.ScriptableObjects.Inventory.Items;
-using WindRose.ScriptableObjects.Inventory.Items.QuantifyingStrategies;
+using BackPack.Behaviours.World.Layers.Drop;
+using BackPack.ScriptableObjects.Inventory.Items;
+using BackPack.ScriptableObjects.Inventory.Items.QuantifyingStrategies;
 
 [RequireComponent(typeof(DropLayer))]
 [RequireComponent(typeof(Throttler))]
@@ -52,7 +52,7 @@ public class SampleMagicDropper : MonoBehaviour {
     {
         int index = random.Next(0, chances.Count);
         Item item = chances[index];
-        WindRose.Types.Inventory.Stacks.Stack stack;
+        BackPack.Types.Inventory.Stacks.Stack stack;
         if (item.QuantifyingStrategy is ItemUnstackedQuantifyingStrategy)
         {
             stack = item.Create(true, null);

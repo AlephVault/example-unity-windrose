@@ -265,7 +265,7 @@ namespace WindRose
 
                 void OnTriggerEnter(Collider collision)
                 {
-					Debug.LogFormat("{2} Entering {0} into trigger {1}...", collision.name, this.name, System.DateTime.Now);
+					// Debug.LogFormat("{2} Entering {0} into trigger {1}...", collision.name, this.name, System.DateTime.Now);
                     // IF my map is null I will not take any new incoming objects.
                     //   Although this condition will never cause a return in the ideal
                     //   case since when detached the collider will be disabled, this
@@ -290,7 +290,7 @@ namespace WindRose
 
                 void OnTriggerExit(Collider collision)
                 {
-					Debug.LogFormat("{2} Leaving {0} trigger {1}...", collision.name, this.name, System.DateTime.Now);
+					// Debug.LogFormat("{2} Leaving {0} trigger {1}...", collision.name, this.name, System.DateTime.Now);
 					// Exiting is easier. If I have a registered sender, that sender passed
                     //   all the stated conditions. So I will only check existence and
                     //   registration in order to proceed.

@@ -12,10 +12,11 @@ namespace WindRose
         namespace Maps
         {
             using Support.Utils;
-            using Behaviours.Inventory.ManagementStrategies.UsageStrategies;
-            using Behaviours.Inventory.ManagementStrategies.SpatialStrategies;
-            using Behaviours.World.Layers.Drop;
-            using Behaviours.Inventory;
+			// TODO add these to a new menu helper in BackPack package.
+            // using Behaviours.Inventory.ManagementStrategies.UsageStrategies;
+            // using Behaviours.Inventory.ManagementStrategies.SpatialStrategies;
+            // using Behaviours.World.Layers.Drop;
+            // using Behaviours.Inventory;
 
             /// <summary>
             ///   Menu actions to create a map in the scene.
@@ -33,7 +34,8 @@ namespace WindRose
                     private string mapObjectName = "New Map";
                     private string[] floors = new string[] { "New Floor" };
                     private bool addCeilingsLayer = false;
-                    private bool addDropLayer = false;
+					// TODO this one will be moved to the new BackPack package
+                    // private bool addDropLayer = false;
                     private int strategy = 0;
                     private Vector2 scrollPosition = Vector2.zero;
 
@@ -93,6 +95,8 @@ namespace WindRose
                         scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition, false, false);
                         EditorGUILayout.LabelField("Floors, Objects and Visuals layer will be added. There are more layers that can be added as well:", longLabelStyle);
                         addCeilingsLayer = EditorGUILayout.ToggleLeft("Ceilings Layer", addCeilingsLayer);
+						// TODO this one will be moved to a new feature in the BackPack package.
+						/**
                         addDropLayer = EditorGUILayout.ToggleLeft("Drop Layer", addDropLayer);
                         if (addDropLayer)
                         {
@@ -108,6 +112,7 @@ namespace WindRose
                                                        "One MUST be created/reused later.", captionLabelStyle);
                             EditorGUILayout.EndVertical();
                         }
+						*/
                         EditorGUILayout.LabelField("These are the names for each of the floors layers to be added in the hierarchy.", longLabelStyle);
                         floors = UpdateFloors(floors);
                         EditorGUILayout.EndScrollView();
@@ -181,6 +186,8 @@ namespace WindRose
                             Layout.AddComponent<Behaviours.Floors.Floor>(floor);
                         }
                         // 2. Drop layer.
+						// TODO remove this one and add it to a new helper in the BackPack package.
+						/**
                         if (addDropLayer)
                         {
                             GameObject dropLayer = new GameObject("DropLayer");
@@ -198,6 +205,7 @@ namespace WindRose
                             Layout.AddComponent<DropLayer>(dropLayer);
                             dropLayer.SetActive(true);
                         }
+                        */
                         // 3. Objects layer.
                         GameObject objectsLayer = new GameObject("ObjectsLayer");
                         objectsLayer.transform.parent = mapObject.transform;

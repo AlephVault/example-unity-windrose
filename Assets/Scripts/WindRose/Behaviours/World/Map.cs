@@ -106,13 +106,6 @@ namespace WindRose
                 public Layers.Floor.FloorLayer FloorLayer { get; private set; }
 
                 /// <summary>
-                ///   The map's drop layer. This layer is optional, and will hold the
-                ///     dropped objects (if implemented - there are several games that
-                ///     do not make use of drop features).
-                /// </summary>
-                public Layers.Drop.DropLayer DropLayer { get; private set; }
-
-                /// <summary>
                 ///   The map's objects layer. This is where most of the interesting
                 ///     things of your game will happen: movable, oriented, staying
                 ///     and other types of objects will live in this layer.
@@ -166,7 +159,6 @@ namespace WindRose
                     height = Values.Clamp(1, height, (uint)short.MaxValue);
                     // Requiring the layers - at most one of each them may exist per map
                     FloorLayer = ExpectOneLayerComponent<Layers.Floor.FloorLayer>(true);
-                    DropLayer = ExpectOneLayerComponent<Layers.Drop.DropLayer>();
                     ObjectsLayer = ExpectOneLayerComponent<Layers.Objects.ObjectsLayer>(true);
                     VisualsLayer = ExpectOneLayerComponent<Layers.Visuals.VisualsLayer>(true);
                     CeilingLayer = ExpectOneLayerComponent<Layers.Ceiling.CeilingLayer>();

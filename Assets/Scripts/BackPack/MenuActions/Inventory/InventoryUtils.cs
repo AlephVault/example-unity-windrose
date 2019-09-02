@@ -190,7 +190,6 @@ namespace BackPack
                         {
                             Execute();
                         }
-                        Debug.LogFormat("Position: {0}", this.position);
                     }
 
                     private void Execute()
@@ -209,6 +208,7 @@ namespace BackPack
                         });
                         Layout.AddComponent<DropLayer>(dropLayer);
                         dropLayer.SetActive(true);
+                        Close();
                     } 
                 }
 

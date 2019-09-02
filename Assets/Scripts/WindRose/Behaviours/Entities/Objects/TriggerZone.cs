@@ -238,10 +238,8 @@ namespace WindRose
                     //   In that case, no movement will be marked later, in the same position.
                     // So we trigger that, right now.
 
-                    // TODO modificar esta condicion. No vamos a preguntar si el movimiento es null,
-                    //   sino tal vez si "aparecio de repente" (aunque le estemos ordenando movimiento,
-                    //   pero en tanto ya tenga una posicion adentro del trigger y no se encuentre en la
-                    //   fronterita como para gatillar ambos eventos).
+                    // Checks whether the entering was by movement and, if not, it was by some
+                    //   kind of placing/teleport.
                     if (mapObject.Movement == null)
                     {
                         CallOnMapTriggerPlaced(mapObject);

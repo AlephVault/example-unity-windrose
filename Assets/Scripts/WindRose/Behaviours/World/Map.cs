@@ -193,9 +193,6 @@ namespace WindRose
                     {
                         StrategyHolder.Initialize();
                     }
-                    // TODO This line should be removed, and its behaviour moved to a particular
-                    // TODO   subclass of (map-) Strategy upon initialization.
-                    // InitBlockedPositions();
                     // We consider this map as initialized after its strategy started.
                     initialized = true;
                     // Now, it is turn of the already-in-place map objects to initialize.

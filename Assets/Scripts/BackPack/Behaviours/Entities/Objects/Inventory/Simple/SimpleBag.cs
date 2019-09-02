@@ -227,8 +227,6 @@ namespace BackPack
                         return inventoryHolder.Export();
                     }
 
-                    // TODO Add/Remove listener will be different here!
-
                     /**
                      * These are convenience methods to interact, in particular, with a drop layer.
                      */

@@ -225,8 +225,6 @@ namespace Support
                 foreach (KeyValuePair<string, object> pair in data)
                 {
                     FieldInfo field = null;
-                    // TODO: fix this check to iterate on targetType = targetType.BaseType until targetType becomes null.
-                    // TODO:   in the meantime, checking whether one of those types implements a property in these conditions
                     Type currentType = targetType;
                     while (field == null && currentType != null)
                     {

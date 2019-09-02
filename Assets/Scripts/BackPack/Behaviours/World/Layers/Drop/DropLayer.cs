@@ -39,9 +39,6 @@ namespace BackPack
                     public class DropLayer : MapLayer
                     {
                         /**
-                         * TODO this class will render the drop layer. This class, however, is also the listener
-                         *   for the renderer.
-                         * 
                          * While you can directly add/remove items using the holder, it is better if you just
                          *   push / pop the items in the floor (we will treat the items as a "stack" of stacks).
                          * 

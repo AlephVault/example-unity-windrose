@@ -12,11 +12,6 @@ namespace WindRose
         namespace Maps
         {
             using Support.Utils;
-			// TODO add these to a new menu helper in BackPack package.
-            // using Behaviours.Inventory.ManagementStrategies.UsageStrategies;
-            // using Behaviours.Inventory.ManagementStrategies.SpatialStrategies;
-            // using Behaviours.World.Layers.Drop;
-            // using Behaviours.Inventory;
 
             /// <summary>
             ///   Menu actions to create a map in the scene.
@@ -34,8 +29,6 @@ namespace WindRose
                     private string mapObjectName = "New Map";
                     private string[] floors = new string[] { "New Floor" };
                     private bool addCeilingsLayer = false;
-					// TODO this one will be moved to the new BackPack package
-                    // private bool addDropLayer = false;
                     private int strategy = 0;
                     private Vector2 scrollPosition = Vector2.zero;
 
@@ -95,24 +88,6 @@ namespace WindRose
                         scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition, false, false);
                         EditorGUILayout.LabelField("Floors, Objects and Visuals layer will be added. There are more layers that can be added as well:", longLabelStyle);
                         addCeilingsLayer = EditorGUILayout.ToggleLeft("Ceilings Layer", addCeilingsLayer);
-						// TODO this one will be moved to a new feature in the BackPack package.
-						/**
-                        addDropLayer = EditorGUILayout.ToggleLeft("Drop Layer", addDropLayer);
-                        if (addDropLayer)
-                        {
-                            // Specifications for default drop layer will appear here.
-                            EditorGUILayout.BeginVertical(indentedStyle);
-                            EditorGUILayout.LabelField("Drop Layers involve a specific set of strategies like:\n" +
-                                                       "> Infinite simple spatial management strategy inside stack containers\n" +
-                                                       "> Map-sized positioning strategy to locate stack containers\n" +
-                                                       "> Drop-styled rendering strategy\n" +
-                                                       "All that contained inside a new inventory manager component. For the usage strategy, " +
-                                                       "the NULL strategy will be added (which usually works for most games), but it may be changed later.", longLabelStyle);
-                            EditorGUILayout.LabelField("No drop container renderer prefab will automatically be used or generated in the rendering strategy. " +
-                                                       "One MUST be created/reused later.", captionLabelStyle);
-                            EditorGUILayout.EndVertical();
-                        }
-						*/
                         EditorGUILayout.LabelField("These are the names for each of the floors layers to be added in the hierarchy.", longLabelStyle);
                         floors = UpdateFloors(floors);
                         EditorGUILayout.EndScrollView();
@@ -185,41 +160,20 @@ namespace WindRose
                             Layout.AddComponent<Support.Behaviours.Normalized>(floor);
                             Layout.AddComponent<Behaviours.Floors.Floor>(floor);
                         }
-                        // 2. Drop layer.
-						// TODO remove this one and add it to a new helper in the BackPack package.
-						/**
-                        if (addDropLayer)
-                        {
-                            GameObject dropLayer = new GameObject("DropLayer");
-                            dropLayer.transform.parent = mapObject.transform;
-                            dropLayer.SetActive(false);
-                            Layout.AddComponent<SortingGroup>(dropLayer);
-                            Layout.AddComponent<Support.Behaviours.Normalized>(dropLayer);
-                            Layout.AddComponent<InventoryInfiniteSimpleSpatialManagementStrategy>(dropLayer);
-                            Layout.AddComponent<InventoryMapSizedPositioningManagementStrategy>(dropLayer);
-                            InventoryNullUsageManagementStrategy usageStrategy = Layout.AddComponent<InventoryNullUsageManagementStrategy>(dropLayer);
-                            Layout.AddComponent<InventoryDropLayerRenderingManagementStrategy>(dropLayer);
-                            Layout.AddComponent<InventoryManagementStrategyHolder>(dropLayer, new Dictionary<string, object>() {
-                                { "mainUsageStrategy", usageStrategy }
-                            });
-                            Layout.AddComponent<DropLayer>(dropLayer);
-                            dropLayer.SetActive(true);
-                        }
-                        */
-                        // 3. Objects layer.
+                        // 2. Objects layer.
                         GameObject objectsLayer = new GameObject("ObjectsLayer");
                         objectsLayer.transform.parent = mapObject.transform;
                         Layout.AddComponent<Grid>(objectsLayer).cellSize = cellSize;
                         Layout.AddComponent<SortingGroup>(objectsLayer);
                         Layout.AddComponent<Support.Behaviours.Normalized>(objectsLayer);
                         Layout.AddComponent<Behaviours.World.Layers.Objects.ObjectsLayer>(objectsLayer);
-                        // 4. Visuals layer.
+                        // 3. Visuals layer.
                         GameObject visualsLayer = new GameObject("VisualsLayer");
                         visualsLayer.transform.parent = mapObject.transform;
                         Layout.AddComponent<SortingGroup>(visualsLayer);
                         Layout.AddComponent<Support.Behaviours.Normalized>(visualsLayer);
                         Layout.AddComponent<Behaviours.World.Layers.Visuals.VisualsLayer>(visualsLayer);
-                        // 5. Ceilings layer.
+                        // 4. Ceilings layer.
                         if (addCeilingsLayer)
                         {
                             GameObject ceilings = new GameObject("CeilingLayer");

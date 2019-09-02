@@ -420,7 +420,7 @@ namespace WindRose
                 public void Attach(Map map, uint x, uint y, bool force = false)
                 {
                     if (force) Detach();
-                    map.Attach(this, Values.Clamp(1, x, map.Width - 1), Values.Clamp(1, y, map.Height - 1));
+                    map.Attach(this, Values.Clamp(0, x, map.Width - 1), Values.Clamp(0, y, map.Height - 1));
                 }
 
                 /// <summary>

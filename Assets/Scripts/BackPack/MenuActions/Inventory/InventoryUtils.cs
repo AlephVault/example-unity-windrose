@@ -14,6 +14,10 @@ namespace BackPack
         {
             using Support.Utils;
             using Behaviours.Drops;
+            using Behaviours.Inventory.ManagementStrategies.UsageStrategies;
+            using Behaviours.Inventory.ManagementStrategies.SpatialStrategies;
+            using Behaviours.World.Layers.Drop;
+            using Behaviours.Inventory;
 
             /// <summary>
             ///   Menu actions to create inventory-related assets / add inventory-related components.
@@ -65,7 +69,7 @@ namespace BackPack
                 }
 
                 /// <summary>
-                ///   This method is used in the assets menu action: Create > Wind Rose > Inventory > Drop Container Renderer Prefab.
+                ///   This method is used in the assets menu action: Create > Back Pack > Inventory > Drop Container Renderer Prefab.
                 /// </summary>
                 [MenuItem("Assets/Create/Back Pack/Inventory/Drop Container Renderer Prefab")]
                 public static void CreatePrefab()
@@ -101,7 +105,7 @@ namespace BackPack
                         GUIStyle indentedStyle = MenuActionUtils.GetIndentedStyle();
 
                         EditorGUILayout.LabelField("Bags involve a specific set of strategies like:\n" +
-                                                   "> simple spatial management strategy inside stack containers (finite or infinite, but slot-indexed)\n" +
+                                                   "> Simple spatial management strategy inside stack containers (finite or infinite, but slot-indexed)\n" +
                                                    "> Single-positioning strategy to locate stack containers (only one stack container: the bag)\n" +
                                                    "> Slot/Drop-styled rendering strategy\n" +
                                                    "All that contained inside a new inventory manager component. For the usage strategy, " +
@@ -120,33 +124,34 @@ namespace BackPack
                         {
                             Execute();
                         }
-                        Debug.LogFormat("Position: {0}", this.position);
                     }
 
                     private void Execute()
                     {
                         GameObject gameObject = Selection.activeTransform.gameObject;
-                        Behaviours.Inventory.ManagementStrategies.UsageStrategies.InventoryNullUsageManagementStrategy usageStrategy =
-                            Layout.AddComponent<Behaviours.Inventory.ManagementStrategies.UsageStrategies.InventoryNullUsageManagementStrategy>(gameObject);
-                        Layout.AddComponent<Behaviours.Inventory.InventoryManagementStrategyHolder>(gameObject, new Dictionary<string, object>() {
+                        InventoryNullUsageManagementStrategy usageStrategy = Layout.AddComponent<InventoryNullUsageManagementStrategy>(gameObject);
+                        Layout.AddComponent<InventoryManagementStrategyHolder>(gameObject, new Dictionary<string, object>() {
                             { "mainUsageStrategy", usageStrategy }
                         });
                         if (finiteBag)
                         {
-                            Layout.AddComponent<Behaviours.Inventory.ManagementStrategies.SpatialStrategies.InventoryFiniteSimpleSpatialManagementStrategy>(gameObject, new Dictionary<string, object>()
+                            Layout.AddComponent<InventoryFiniteSimpleSpatialManagementStrategy>(gameObject, new Dictionary<string, object>()
                             {
                                 { "size", bagSize }
                             });
                         }
                         else
                         {
-                            Layout.AddComponent<Behaviours.Inventory.ManagementStrategies.SpatialStrategies.InventoryInfiniteSimpleSpatialManagementStrategy>(gameObject);
+                            Layout.AddComponent<InventoryInfiniteSimpleSpatialManagementStrategy>(gameObject);
                         }
                         Layout.AddComponent<Behaviours.Entities.Objects.Bags.SimpleBag>(gameObject);
                         Close();
                     }
                 }
 
+                /// <summary>
+                ///   This method is used in the assets menu action: GameObject > Back Pack > Inventory > Add Bag.
+                /// </summary>
                 [MenuItem("GameObject/Back Pack/Inventory/Add Bag", false, 11)]
                 public static void AddBag()
                 {
@@ -160,6 +165,69 @@ namespace BackPack
                 public static bool CanAddBag()
                 {
                     return Selection.activeTransform && Selection.activeTransform.GetComponent<WindRose.Behaviours.Entities.Objects.MapObject>();
+                }
+
+                private class AddDropLayerWindow : EditorWindow
+                {
+                    public Transform selectedTransform;
+
+                    private void OnGUI()
+                    {
+                        minSize = new Vector2(564, 136);
+                        maxSize = new Vector2(564, 136);
+                        GUIStyle longLabelStyle = MenuActionUtils.GetSingleLabelStyle();
+                        GUIStyle captionLabelStyle = MenuActionUtils.GetCaptionLabelStyle();
+
+                        EditorGUILayout.LabelField("Drop Layers involve a specific set of strategies like:\n" +
+                                                   "> Infinite simple spatial management strategy inside stack containers\n" +
+                                                   "> Map-sized positioning strategy to locate stack containers\n" +
+                                                   "> Drop-styled rendering strategy\n" +
+                                                   "All that contained inside a new inventory manager component. For the usage strategy, " +
+                                                   "the NULL strategy will be added (which usually works for most games), but it may be changed later.", longLabelStyle);
+                        EditorGUILayout.LabelField("No drop container renderer prefab will automatically be used or generated in the rendering strategy. " +
+                                                   "One MUST be created/reused later.", captionLabelStyle);
+                        if (GUILayout.Button("Add a drop layer to the selected map"))
+                        {
+                            Execute();
+                        }
+                        Debug.LogFormat("Position: {0}", this.position);
+                    }
+
+                    private void Execute()
+                    {
+                        GameObject dropLayer = new GameObject("DropLayer");
+                        dropLayer.transform.parent = selectedTransform;
+                        dropLayer.SetActive(false);
+                        Layout.AddComponent<SortingGroup>(dropLayer);
+                        Layout.AddComponent<Support.Behaviours.Normalized>(dropLayer);
+                        Layout.AddComponent<InventoryInfiniteSimpleSpatialManagementStrategy>(dropLayer);
+                        Layout.AddComponent<InventoryMapSizedPositioningManagementStrategy>(dropLayer);
+                        InventoryNullUsageManagementStrategy usageStrategy = Layout.AddComponent<InventoryNullUsageManagementStrategy>(dropLayer);
+                        Layout.AddComponent<InventoryDropLayerRenderingManagementStrategy>(dropLayer);
+                        Layout.AddComponent<InventoryManagementStrategyHolder>(dropLayer, new Dictionary<string, object>() {
+                            { "mainUsageStrategy", usageStrategy }
+                        });
+                        Layout.AddComponent<DropLayer>(dropLayer);
+                        dropLayer.SetActive(true);
+                    } 
+                }
+
+                /// <summary>
+                ///   This method is used in the assets menu action: GameObject > Back Pack > Inventory > Add Drop Layer.
+                /// </summary>
+                [MenuItem("GameObject/Back Pack/Inventory/Add Drop Layer", false, 11)]
+                public static void AddDropLayer()
+                {
+                    AddDropLayerWindow window = ScriptableObject.CreateInstance<AddDropLayerWindow>();
+                    window.selectedTransform = Selection.activeTransform;
+                    window.position = new Rect(264, 333, 564, 136);
+                    window.ShowUtility();
+                }
+
+                [MenuItem("GameObject/Back Pack/Inventory/Add Drop Layer", true)]
+                public static bool CanAddDropLayer()
+                {
+                    return Selection.activeTransform && Selection.activeTransform.GetComponent<WindRose.Behaviours.World.Map>();
                 }
             }
         }

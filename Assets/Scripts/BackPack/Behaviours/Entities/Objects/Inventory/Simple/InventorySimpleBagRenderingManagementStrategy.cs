@@ -10,7 +10,6 @@ namespace BackPack
 {
     namespace Behaviours
     {
-		using Inventory;
 		using Inventory.ManagementStrategies.RenderingStrategies;
 
         namespace Entities.Objects
@@ -22,7 +21,6 @@ namespace BackPack
                 ///     This strategy will allow the connection of several objects acting
                 ///     as "viewers" (<see cref="SimpleBagInventorySubRenderer"/>).
                 /// </summary>
-                [RequireComponent(typeof(SimpleBag))]
                 public class InventorySimpleBagRenderingManagementStrategy : InventorySimpleRenderingManagementStrategy
                 {
                     /// <summary>

@@ -16,11 +16,11 @@ namespace BackPack
             using Behaviours.Drops;
 
             /// <summary>
-            ///   Menu actions to create inventory-related assets.
+            ///   Menu actions to create inventory-related assets / add inventory-related components.
             /// </summary>
             public static class InventoryUtils
             {
-                public class CreateDropContainerRendererPrefabWindow : EditorWindow
+                private class CreateDropContainerRendererPrefabWindow : EditorWindow
                 {
                     private int imagesCount = 3;
                     private string prefabName = "DropDisplay";
@@ -67,7 +67,7 @@ namespace BackPack
                 /// <summary>
                 ///   This method is used in the assets menu action: Create > Wind Rose > Inventory > Drop Container Renderer Prefab.
                 /// </summary>
-                [MenuItem("Assets/Create/Wind Rose/Inventory/Drop Container Renderer Prefab")]
+                [MenuItem("Assets/Create/Back Pack/Inventory/Drop Container Renderer Prefab")]
                 public static void CreatePrefab()
                 {
                     CreateDropContainerRendererPrefabWindow window = ScriptableObject.CreateInstance<CreateDropContainerRendererPrefabWindow>();
@@ -85,6 +85,81 @@ namespace BackPack
                     Debug.Log("Using path: " + newAssetPath);
                     window.prefabPath = newAssetPath;
                     window.ShowUtility();
+                }
+
+                private class AddBagWindow : EditorWindow
+                {
+                    public Transform selectedTransform;
+                    private bool finiteBag = true;
+                    private int bagSize = 10;
+
+                    private void OnGUI()
+                    {
+                        minSize = new Vector2(590, 144);
+                        maxSize = new Vector2(590, 144);
+                        GUIStyle longLabelStyle = MenuActionUtils.GetSingleLabelStyle();
+                        GUIStyle indentedStyle = MenuActionUtils.GetIndentedStyle();
+
+                        EditorGUILayout.LabelField("Bags involve a specific set of strategies like:\n" +
+                                                   "> simple spatial management strategy inside stack containers (finite or infinite, but slot-indexed)\n" +
+                                                   "> Single-positioning strategy to locate stack containers (only one stack container: the bag)\n" +
+                                                   "> Slot/Drop-styled rendering strategy\n" +
+                                                   "All that contained inside a new inventory manager component. For the usage strategy, " +
+                                                   "the NULL strategy will be added, which should be changed later or the items in the bag will have no logic.", longLabelStyle);
+                        finiteBag = EditorGUILayout.ToggleLeft("Has a limited size", finiteBag);
+                        if (finiteBag)
+                        {
+                            bagSize = EditorGUILayout.IntField("Bag size (>= 0)", bagSize);
+                            if (bagSize < 1) bagSize = 1;
+                        }
+                        else
+                        {
+                            EditorGUILayout.LabelField("Bag size is potentially infinite.");
+                        }
+                        if (GUILayout.Button("Add a bag behaviour to the selected object"))
+                        {
+                            Execute();
+                        }
+                        Debug.LogFormat("Position: {0}", this.position);
+                    }
+
+                    private void Execute()
+                    {
+                        GameObject gameObject = Selection.activeTransform.gameObject;
+                        Behaviours.Inventory.ManagementStrategies.UsageStrategies.InventoryNullUsageManagementStrategy usageStrategy =
+                            Layout.AddComponent<Behaviours.Inventory.ManagementStrategies.UsageStrategies.InventoryNullUsageManagementStrategy>(gameObject);
+                        Layout.AddComponent<Behaviours.Inventory.InventoryManagementStrategyHolder>(gameObject, new Dictionary<string, object>() {
+                            { "mainUsageStrategy", usageStrategy }
+                        });
+                        if (finiteBag)
+                        {
+                            Layout.AddComponent<Behaviours.Inventory.ManagementStrategies.SpatialStrategies.InventoryFiniteSimpleSpatialManagementStrategy>(gameObject, new Dictionary<string, object>()
+                            {
+                                { "size", bagSize }
+                            });
+                        }
+                        else
+                        {
+                            Layout.AddComponent<Behaviours.Inventory.ManagementStrategies.SpatialStrategies.InventoryInfiniteSimpleSpatialManagementStrategy>(gameObject);
+                        }
+                        Layout.AddComponent<Behaviours.Entities.Objects.Bags.SimpleBag>(gameObject);
+                        Close();
+                    }
+                }
+
+                [MenuItem("GameObject/Back Pack/Inventory/Add Bag", false, 11)]
+                public static void AddBag()
+                {
+                    AddBagWindow window = ScriptableObject.CreateInstance<AddBagWindow>();
+                    window.selectedTransform = Selection.activeTransform;
+                    window.position = new Rect(275, 327, 590, 144);
+                    window.ShowUtility();
+                }
+
+                [MenuItem("GameObject/Back Pack/Inventory/Add Bag", true)]
+                public static bool CanAddBag()
+                {
+                    return Selection.activeTransform && Selection.activeTransform.GetComponent<WindRose.Behaviours.Entities.Objects.MapObject>();
                 }
             }
         }

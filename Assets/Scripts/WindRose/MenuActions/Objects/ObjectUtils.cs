@@ -41,12 +41,6 @@ namespace WindRose
                     private bool addTalkReceiver = false; // depends on addCommandReceiver.
                     // Object strategy setup.
                     private int addStrategy = 0;
-					// TODO these ones will be added later in a BackPack feature.
-                    // Bag (local inventory) setup.
-                    // private bool addBag = false;
-                    // private bool finiteBag = false; // depends on addBag.
-                    private int bagSize = 10; // depends on finiteBag.
-                    // TODO: perhaps include another *Utils class to create a teleporter?
 
                     private void OnGUI()
                     {
@@ -100,27 +94,6 @@ namespace WindRose
                             EditorGUILayout.EndVertical();
                         }
                         addStrategy = EditorGUILayout.IntPopup("Object Strategy", addStrategy, addStrategyLabels, addStrategyOptions);
-						// TODO this one will be added later in a BackPack feature.
-						/**
-                        addBag = EditorGUILayout.ToggleLeft("Bag (Particular simple inventory - Drawers will not be automatically added!)", addBag);
-                        if (addBag)
-                        {
-                            EditorGUILayout.BeginVertical(indentedStyle);
-                            EditorGUILayout.LabelField("Bags involve a specific set of strategies like:\n" +
-                                                       "> simple spatial management strategy inside stack containers (finite or infinite, but slot-indexed)\n" +
-                                                       "> Single-positioning strategy to locate stack containers (only one stack container: the bag)\n" +
-                                                       "> Slot/Drop-styled rendering strategy\n" +
-                                                       "All that contained inside a new inventory manager component. For the usage strategy, " +
-                                                       "the NULL strategy will be added, which should be changed later or the items in the bag will have no logic.", longLabelStyle);
-                            finiteBag = EditorGUILayout.ToggleLeft("Has a limited size", finiteBag);
-                            if (finiteBag)
-                            {
-                                bagSize = EditorGUILayout.IntField("Bag size (>= 0)", bagSize);
-                                if (bagSize < 1) bagSize = 1;
-                            }
-                            EditorGUILayout.EndVertical();
-                        }
-                        */
                         if (GUILayout.Button("Create Object")) Execute();
                         EditorGUILayout.EndVertical();
 
@@ -205,29 +178,6 @@ namespace WindRose
                         {
                             { "objectStrategy", mainStrategy }
                         });
-						// TODO this one will be added later in a backpack feature.
-						/**
-                        if (addBag)
-                        {
-                            Behaviours.Inventory.ManagementStrategies.UsageStrategies.InventoryNullUsageManagementStrategy usageStrategy =
-                                Layout.AddComponent<Behaviours.Inventory.ManagementStrategies.UsageStrategies.InventoryNullUsageManagementStrategy>(gameObject);
-                            Layout.AddComponent<Behaviours.Inventory.InventoryManagementStrategyHolder>(gameObject, new Dictionary<string, object>() {
-                                { "mainUsageStrategy", usageStrategy }
-                            });
-                            if (finiteBag)
-                            {
-                                Layout.AddComponent<Behaviours.Inventory.ManagementStrategies.SpatialStrategies.InventoryFiniteSimpleSpatialManagementStrategy>(gameObject, new Dictionary<string, object>()
-                                {
-                                    { "size", bagSize }
-                                });
-                            }
-                            else
-                            {
-                                Layout.AddComponent<Behaviours.Inventory.ManagementStrategies.SpatialStrategies.InventoryInfiniteSimpleSpatialManagementStrategy>(gameObject);
-                            }
-                            Layout.AddComponent<Behaviours.Entities.Objects.Bags.SimpleBag>(gameObject);
-                        }
-                        */
                         gameObject.SetActive(true);
                         Close();
                     }

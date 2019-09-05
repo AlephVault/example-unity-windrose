@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using BackPack.Behaviours.UI.Inventory;
+using WindRose.Behaviours.UI.Inventory;
 
 [RequireComponent(typeof(Button))]
 public class SampleSimpleBagViewItem : SimpleBagView.SimpleBagViewItem {

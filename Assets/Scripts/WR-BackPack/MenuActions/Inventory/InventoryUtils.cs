@@ -6,7 +6,7 @@ using UnityEngine.Rendering;
 using UnityEngine.Tilemaps;
 using UnityEditor;
 
-namespace BackPack
+namespace WindRose
 {
     namespace MenuActions
     {
@@ -14,10 +14,10 @@ namespace BackPack
         {
             using Support.Utils;
             using Behaviours.Drops;
-            using Behaviours.Inventory.ManagementStrategies.UsageStrategies;
-            using Behaviours.Inventory.ManagementStrategies.SpatialStrategies;
-            using Behaviours.World.Layers.Drop;
-            using Behaviours.Inventory;
+            using BackPack.Behaviours.Inventory.ManagementStrategies.UsageStrategies;
+			using BackPack.Behaviours.Inventory.ManagementStrategies.SpatialStrategies;
+			using BackPack.Behaviours.Inventory;
+			using Behaviours.World.Layers.Drop;
 
             /// <summary>
             ///   Menu actions to create inventory-related assets / add inventory-related components.

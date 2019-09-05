@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace BackPack
+namespace WindRose
 {
     namespace Behaviours
     {
@@ -12,9 +12,9 @@ namespace BackPack
 
             namespace Bags
             {
-                using Types.Inventory.Stacks;
-                using Inventory;
-                using Inventory.ManagementStrategies.SpatialStrategies;
+                using BackPack.Types.Inventory.Stacks;
+				using BackPack.Behaviours.Inventory;
+				using BackPack.Behaviours.Inventory.ManagementStrategies.SpatialStrategies;
                 using System;
                 using System.Linq;
                 using Support.Types;
@@ -84,7 +84,7 @@ namespace BackPack
                     /// <summary>
                     ///   Convenience method. See <see cref="InventoryManagementStrategyHolder.FindAll(object, ScriptableObjects.Inventory.Items.Item, bool)"/>.
                     /// </summary>
-                    public IEnumerable<Stack> FindAll(ScriptableObjects.Inventory.Items.Item item, bool reverse = false)
+                    public IEnumerable<Stack> FindAll(BackPack.ScriptableObjects.Inventory.Items.Item item, bool reverse = false)
                     {
                         return inventoryHolder.FindAll(Position.Instance, item, reverse);
                     }
@@ -116,7 +116,7 @@ namespace BackPack
                     /// <summary>
                     ///   Convenience method. See <see cref="InventoryManagementStrategyHolder.FindOne(object, ScriptableObjects.Inventory.Items.Item, bool)"/>.
                     /// </summary>
-                    public Stack FindOne(ScriptableObjects.Inventory.Items.Item item, bool reverse = false)
+                    public Stack FindOne(BackPack.ScriptableObjects.Inventory.Items.Item item, bool reverse = false)
                     {
                         return inventoryHolder.FindOne(Position.Instance, item, reverse);
                     }
@@ -214,7 +214,7 @@ namespace BackPack
                     /// <summary>
                     ///   Convenience method. See <see cref="InventoryManagementStrategyHolder.Import(Types.Inventory.SerializedInventory)"/>.
                     /// </summary>
-                    public void Import(Types.Inventory.SerializedInventory serializedInventory)
+                    public void Import(BackPack.Types.Inventory.SerializedInventory serializedInventory)
                     {
                         inventoryHolder.Import(serializedInventory);
                     }
@@ -222,7 +222,7 @@ namespace BackPack
                     /// <summary>
                     ///   Convenience method. See <see cref="InventoryManagementStrategyHolder.Export"/>.
                     /// </summary>
-                    public Types.Inventory.SerializedInventory Export()
+                    public BackPack.Types.Inventory.SerializedInventory Export()
                     {
                         return inventoryHolder.Export();
                     }

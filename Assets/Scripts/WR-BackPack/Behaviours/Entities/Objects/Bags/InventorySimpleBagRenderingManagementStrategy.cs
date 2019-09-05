@@ -6,11 +6,11 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-namespace BackPack
+namespace WindRose
 {
     namespace Behaviours
     {
-		using Inventory.ManagementStrategies.RenderingStrategies;
+		using BackPack.Behaviours.Inventory.ManagementStrategies.RenderingStrategies;
 
         namespace Entities.Objects
         {
@@ -248,8 +248,8 @@ namespace BackPack
                             {
                                 elements = new SortedDictionary<int, Tuple<Sprite, string, object>>();
                             }
-                            IEnumerable<Tuple<int, Types.Inventory.Stacks.Stack>> pairs = sourceRenderer.SimpleBag.StackPairs();
-                            foreach(Tuple<int, Types.Inventory.Stacks.Stack> pair in pairs)
+                            IEnumerable<Tuple<int, BackPack.Types.Inventory.Stacks.Stack>> pairs = sourceRenderer.SimpleBag.StackPairs();
+							foreach(Tuple<int, BackPack.Types.Inventory.Stacks.Stack> pair in pairs)
                             {
                                 Dictionary<string, object> target = new Dictionary<string, object>();
                                 pair.Second.MainRenderingStrategy.DumpRenderingData(target);

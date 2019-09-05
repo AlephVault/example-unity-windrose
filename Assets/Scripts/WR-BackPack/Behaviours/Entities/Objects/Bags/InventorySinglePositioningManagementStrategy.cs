@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace BackPack
+namespace WindRose
 {
     namespace Behaviours
     {
@@ -8,7 +8,7 @@ namespace BackPack
         {
             namespace Bags
             {
-                using Inventory.ManagementStrategies.PositioningStrategies;
+				using BackPack.Behaviours.Inventory.ManagementStrategies.PositioningStrategies;
 
                 /// <summary>
                 ///   Handles and yield one single position. One container

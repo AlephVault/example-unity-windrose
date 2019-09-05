@@ -3,7 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using BackPack.Behaviours.World.Layers.Drop;
+using WindRose.Behaviours.World.Layers.Drop;
 using BackPack.ScriptableObjects.Inventory.Items;
 using BackPack.ScriptableObjects.Inventory.Items.QuantifyingStrategies;
 

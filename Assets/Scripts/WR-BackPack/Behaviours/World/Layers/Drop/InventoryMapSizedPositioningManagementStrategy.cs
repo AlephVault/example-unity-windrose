@@ -2,20 +2,18 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace BackPack
+namespace WindRose
 {
     namespace Behaviours
     {
         namespace World
         {
-			using WindRose.Behaviours.World;
-
 			namespace Layers
             {
                 namespace Drop
                 {
                     using Support.Utils;
-                    using Inventory.ManagementStrategies.PositioningStrategies;
+                    using BackPack.Behaviours.Inventory.ManagementStrategies.PositioningStrategies;
 
                     /// <summary>
                     ///   This class validates and iterates position based on the map's dimensions.

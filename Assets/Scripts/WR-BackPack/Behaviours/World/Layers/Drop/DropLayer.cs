@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace BackPack
+namespace WindRose
 {
     namespace Behaviours
     {
@@ -15,9 +15,9 @@ namespace BackPack
 
                 namespace Drop
                 {
-                    using Types.Inventory.Stacks;
-                    using Inventory;
-                    using Inventory.ManagementStrategies.SpatialStrategies;
+                    using BackPack.Types.Inventory.Stacks;
+					using BackPack.Behaviours.Inventory;
+					using BackPack.Behaviours.Inventory.ManagementStrategies.SpatialStrategies;
                     using Support.Types;
                     using System.Linq;
 
@@ -122,7 +122,7 @@ namespace BackPack
                         /// <summary>
                         ///   Convenience method. See <see cref="InventoryManagementStrategyHolder.FindAll(object, ScriptableObjects.Inventory.Items.Item, bool)"/>.
                         /// </summary>
-                        public IEnumerable<Stack> FindAll(Vector2Int containerPosition, ScriptableObjects.Inventory.Items.Item item, bool reverse = false)
+						public IEnumerable<Stack> FindAll(Vector2Int containerPosition, BackPack.ScriptableObjects.Inventory.Items.Item item, bool reverse = false)
                         {
                             return inventoryHolder.FindAll(containerPosition, item, reverse);
                         }
@@ -154,7 +154,7 @@ namespace BackPack
                         /// <summary>
                         ///   Convenience method. See <see cref="InventoryManagementStrategyHolder.FindOne(object, ScriptableObjects.Inventory.Items.Item, bool)"/>.
                         /// </summary>
-                        public Stack FindOne(Vector2Int containerPosition, ScriptableObjects.Inventory.Items.Item item, bool reverse = false)
+						public Stack FindOne(Vector2Int containerPosition, BackPack.ScriptableObjects.Inventory.Items.Item item, bool reverse = false)
                         {
                             return inventoryHolder.FindOne(containerPosition, item, reverse);
                         }
@@ -260,7 +260,7 @@ namespace BackPack
                         /// <summary>
                         ///   Convenience method. See <see cref="InventoryManagementStrategyHolder.Import(Types.Inventory.SerializedInventory)"/>.
                         /// </summary>
-                        public void Import(Types.Inventory.SerializedInventory serializedInventory)
+						public void Import(BackPack.Types.Inventory.SerializedInventory serializedInventory)
                         {
                             inventoryHolder.Import(serializedInventory);
                         }
@@ -268,7 +268,7 @@ namespace BackPack
                         /// <summary>
                         ///   Convenience method. See <see cref="InventoryManagementStrategyHolder.Export"/>.
                         /// </summary>
-                        public Types.Inventory.SerializedInventory Export()
+                        public BackPack.Types.Inventory.SerializedInventory Export()
                         {
                             return inventoryHolder.Export();
                         }

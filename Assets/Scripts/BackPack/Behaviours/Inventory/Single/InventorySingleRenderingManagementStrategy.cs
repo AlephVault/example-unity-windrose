@@ -6,22 +6,22 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-namespace WindRose
+namespace BackPack
 {
     namespace Behaviours
     {
-		using BackPack.Behaviours.Inventory.ManagementStrategies.RenderingStrategies;
-
-        namespace Entities.Objects
+        namespace Inventory
         {
-            namespace Bags
+			using ManagementStrategies.RenderingStrategies;
+
+            namespace Single
             {
                 /// <summary>
                 ///   This is a rendering strategy for <see cref="SimpleBag"/> behaviours.
                 ///     This strategy will allow the connection of several objects acting
                 ///     as "viewers" (<see cref="SimpleBagInventorySubRenderer"/>).
                 /// </summary>
-                public class InventorySimpleBagRenderingManagementStrategy : InventorySimpleRenderingManagementStrategy
+                public class InventorySingleRenderingManagementStrategy : InventorySimpleRenderingManagementStrategy
                 {
                     /// <summary>
                     ///   A sub-renderer is, basically, a view than can be connected
@@ -31,7 +31,7 @@ namespace WindRose
                     ///     renderers may show different pages, but they will render
                     ///     the same underlying items.
                     /// </summary>
-                    public abstract class SimpleBagInventorySubRenderer : MonoBehaviour
+                    public abstract class SingleInventorySubRenderer : MonoBehaviour
                     {
                         /**
                          * This is a reference to the only rendering strategy one of this
@@ -39,7 +39,7 @@ namespace WindRose
                          *   another renderer, the former renderer will disconnect from
                          *   this object.
                          */
-                        private InventorySimpleBagRenderingManagementStrategy sourceRenderer;
+                        private InventorySingleRenderingManagementStrategy sourceRenderer;
 
                         /// <summary>
                         ///   Contains the elements to render, in terms of its position
@@ -62,9 +62,9 @@ namespace WindRose
                         ///   Returns the underlying simple bag (which is tied to the related
                         ///     renderer).
                         /// </summary>
-                        public SimpleBag SourceSimpleBag
+                        public SingleInventory SourceSingleInventory
                         {
-                            get { return sourceRenderer != null ? sourceRenderer.SimpleBag : null; }
+							get { return sourceRenderer != null ? sourceRenderer.SingleInventory : null; }
                         }
 
                         /// <summary>
@@ -231,7 +231,7 @@ namespace WindRose
                         ///     to. Although this logic may be overridden, it is needed a call to <c>base.Connected</c>
                         ///     somewhere in the code.
                         /// </summary>
-                        public virtual void Connected(InventorySimpleBagRenderingManagementStrategy sbRenderer)
+                        public virtual void Connected(InventorySingleRenderingManagementStrategy sbRenderer)
                         {
                             if (sourceRenderer != null)
                             {
@@ -248,7 +248,7 @@ namespace WindRose
                             {
                                 elements = new SortedDictionary<int, Tuple<Sprite, string, object>>();
                             }
-                            IEnumerable<Tuple<int, BackPack.Types.Inventory.Stacks.Stack>> pairs = sourceRenderer.SimpleBag.StackPairs();
+							IEnumerable<Tuple<int, BackPack.Types.Inventory.Stacks.Stack>> pairs = sourceRenderer.SingleInventory.StackPairs();
 							foreach(Tuple<int, BackPack.Types.Inventory.Stacks.Stack> pair in pairs)
                             {
                                 Dictionary<string, object> target = new Dictionary<string, object>();
@@ -447,13 +447,13 @@ namespace WindRose
                     ///     to add to this rendering strategy.
                     /// </summary>
                     [SerializeField]
-                    private List<SimpleBagInventorySubRenderer> subRenderers = new List<SimpleBagInventorySubRenderer>();
-                    private HashSet<SimpleBagInventorySubRenderer> subRenderersSet = new HashSet<SimpleBagInventorySubRenderer>();
+                    private List<SingleInventorySubRenderer> subRenderers = new List<SingleInventorySubRenderer>();
+                    private HashSet<SingleInventorySubRenderer> subRenderersSet = new HashSet<SingleInventorySubRenderer>();
 
                     /// <summary>
                     ///   The <see cref="SimpleBag"/> this strategy is linked to.
                     /// </summary>
-                    public SimpleBag SimpleBag
+                    public SingleInventory SingleInventory
                     {
                         get; private set;
                     }
@@ -471,12 +471,12 @@ namespace WindRose
                     {
                         base.Awake();
                         MaxSize = spatialStrategy.GetSize();
-                        SimpleBag = GetComponent<SimpleBag>();
+						SingleInventory = GetComponent<SingleInventory>();
                     }
 
                     void Start()
                     {
-                        foreach(SimpleBagInventorySubRenderer subRenderer in subRenderers)
+                        foreach(SingleInventorySubRenderer subRenderer in subRenderers)
                         {
                             if (subRenderer == null) continue;
                             subRenderersSet.Add(subRenderer);
@@ -486,9 +486,9 @@ namespace WindRose
 
                     void OnDestroy()
                     {
-                        HashSet<SimpleBagInventorySubRenderer> cloned = new HashSet<SimpleBagInventorySubRenderer>(subRenderersSet);
+                        HashSet<SingleInventorySubRenderer> cloned = new HashSet<SingleInventorySubRenderer>(subRenderersSet);
                         subRenderersSet.Clear();
-                        foreach (SimpleBagInventorySubRenderer subRenderer in cloned)
+                        foreach (SingleInventorySubRenderer subRenderer in cloned)
                         {
                             subRenderer.Disconnected();
                         }
@@ -501,7 +501,7 @@ namespace WindRose
                     /// </summary>
                     /// <param name="subRenderer">The <see cref="SimpleBagInventorySubRenderer"/> to add</param>
                     /// <returns>Whether it could be added, or it was already added</returns>
-                    public bool AddSubRenderer(SimpleBagInventorySubRenderer subRenderer)
+                    public bool AddSubRenderer(SingleInventorySubRenderer subRenderer)
                     {
                         if (subRenderer == null)
                         {
@@ -524,7 +524,7 @@ namespace WindRose
                     /// </summary>
                     /// <param name="subRenderer">The <see cref="SimpleBagInventorySubRenderer"/> to remove</param>
                     /// <returns>Whether it could be removed, or it wasn't connected here on first place</returns>
-                    public bool RemoveSubRenderer(SimpleBagInventorySubRenderer subRenderer)
+                    public bool RemoveSubRenderer(SingleInventorySubRenderer subRenderer)
                     {
                         if (!subRenderersSet.Contains(subRenderer))
                         {
@@ -547,7 +547,7 @@ namespace WindRose
                     /// </summary>
                     public override void EverythingWasCleared()
                     {
-                        foreach(SimpleBagInventorySubRenderer subRenderer in subRenderersSet)
+                        foreach(SingleInventorySubRenderer subRenderer in subRenderersSet)
                         {
                             subRenderer.Clear();
                         }
@@ -560,7 +560,7 @@ namespace WindRose
                     /// </summary>
                     protected override void StackWasUpdated(object containerPosition, int stackPosition, Sprite icon, string caption, object quantity)
                     {
-                        foreach (SimpleBagInventorySubRenderer subRenderer in subRenderersSet)
+                        foreach (SingleInventorySubRenderer subRenderer in subRenderersSet)
                         {
                             subRenderer.UpdateStack(stackPosition, icon, caption, quantity);
                         }
@@ -573,7 +573,7 @@ namespace WindRose
                     /// </summary>
                     protected override void StackWasRemoved(object containerPosition, int stackPosition)
                     {
-                        foreach (SimpleBagInventorySubRenderer subRenderer in subRenderersSet)
+                        foreach (SingleInventorySubRenderer subRenderer in subRenderersSet)
                         {
                             subRenderer.RemoveStack(stackPosition);
                         }

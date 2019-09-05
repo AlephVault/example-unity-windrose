@@ -4,10 +4,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using WindRose.Behaviours.UI.Inventory;
+using BackPack.Behaviours.UI.Inventory;
 
 [RequireComponent(typeof(Button))]
-public class SampleSimpleBagViewItem : SimpleBagView.SimpleBagViewItem {
+public class SampleSimpleBagViewItem : SingleInventoryView.SingleInventoryViewItem {
     /**
      * This component will have three parts:
      * - The selection glow: It will become visible on SetSelection().

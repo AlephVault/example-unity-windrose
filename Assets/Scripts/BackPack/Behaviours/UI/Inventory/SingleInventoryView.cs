@@ -5,7 +5,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace WindRose
+namespace BackPack
 {
     namespace Behaviours
     {
@@ -13,21 +13,21 @@ namespace WindRose
         {
             namespace Inventory
             {
-                using Entities.Objects.Bags;
+				using Behaviours.Inventory.Single;
 
                 /// <summary>
-                ///   Simple bag views are a subclass of <see cref="InventorySimpleBagRenderingManagementStrategy.SimpleBagInventorySubRenderer"/>
+                ///   Single views are a subclass of <see cref="InventorySingleRenderingManagementStrategy.SingleInventorySubRenderer"/>
                 ///     that account for an internal array of items being visible: such items will be cleared or set (according to what actually
                 ///     happens in the sub-renderer and renderer in general)
                 /// </summary>
                 [RequireComponent(typeof(Image))]
-                public class SimpleBagView : InventorySimpleBagRenderingManagementStrategy.SimpleBagInventorySubRenderer
+                public class SingleInventoryView : InventorySingleRenderingManagementStrategy.SingleInventorySubRenderer
                 {
                     /// <summary>
                     ///   An UI item that will know how to render and clear itself according to "simple" data.
                     /// </summary>
                     [RequireComponent(typeof(Image))]
-                    public abstract class SimpleBagViewItem : MonoBehaviour
+                    public abstract class SingleInventoryViewItem : MonoBehaviour
                     {
                         /**
                          * This class is the renderer of each item. Rendering an item like this
@@ -49,7 +49,7 @@ namespace WindRose
                         public NoSimpleBagViewItemException(string message) : base(message) {}
                     }
 
-                    protected SimpleBagViewItem[] items;
+					protected SingleInventoryViewItem[] items;
 
                     protected virtual void Awake()
                     {
@@ -57,7 +57,7 @@ namespace WindRose
                          * Get the slots from the children elements. Require at least one children.
                          */
 
-                        items = GetComponentsInChildren<SimpleBagViewItem>();
+						items = GetComponentsInChildren<SingleInventoryViewItem>();
                         PageSize = (uint)items.Length;
                         if (PageSize == 0)
                         {
@@ -71,7 +71,7 @@ namespace WindRose
                     /// </summary>
                     public override void Clear()
                     {
-                        foreach(SimpleBagViewItem item in items)
+						foreach(SingleInventoryViewItem item in items)
                         {
                             item.Clear();
                         }

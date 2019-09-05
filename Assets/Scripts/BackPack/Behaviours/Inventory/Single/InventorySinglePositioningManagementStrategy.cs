@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
 
-namespace WindRose
+namespace BackPack
 {
     namespace Behaviours
     {
-        namespace Entities.Objects
+        namespace Inventory
         {
-            namespace Bags
+            namespace Single
             {
-				using BackPack.Behaviours.Inventory.ManagementStrategies.PositioningStrategies;
+				using ManagementStrategies.PositioningStrategies;
 
                 /// <summary>
                 ///   Handles and yield one single position. One container

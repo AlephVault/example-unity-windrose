@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace WindRose
+namespace BackPack
 {
     namespace Behaviours
     {
-        namespace Entities.Objects
+        namespace Inventory
         {
-            namespace Bags
+            namespace Single
             {
                 /// <summary>
                 ///   A singleton position. The only expression that matters here is

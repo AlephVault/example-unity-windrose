@@ -5,11 +5,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using WindRose.Behaviours.UI.Inventory;
+using BackPack.Behaviours.UI.Inventory;
+using WindRose.Behaviours.Entities.Objects.Bags;
 
 [RequireComponent(typeof(Throttler))]
 [RequireComponent(typeof(Image))]
-public class SampleSimpleBagView : SimpleBagView {
+public class SampleSimpleBagView : SingleInventoryView {
     /**
      * Instances of this class will have children objects.
      * 
@@ -53,9 +54,13 @@ public class SampleSimpleBagView : SimpleBagView {
         throttler = GetComponent<Throttler>();
     }
 
+	protected void Start()
+	{
+	}
+
     public void Select(int position)
     {
-        if (SourceSimpleBag.Find(position) != null)
+		if (SourceSingleInventory.Find(position) != null)
         {
             if (position == selectedItem) return;
 
@@ -63,9 +68,9 @@ public class SampleSimpleBagView : SimpleBagView {
             selectedItem = position;
             if (positionToUnselect != null)
             {
-                SourceSimpleBag.Blink(positionToUnselect.Value);
+				SourceSingleInventory.Blink(positionToUnselect.Value);
             }
-            SourceSimpleBag.Blink(position);
+			SourceSingleInventory.Blink(position);
             // Go to that page (useful if automatically selected)
             Go(PageFor(position));
             // Force refresh on general components as well
@@ -79,7 +84,7 @@ public class SampleSimpleBagView : SimpleBagView {
         {
             int positionToUnselect = selectedItem.Value;
             selectedItem = null;
-            SourceSimpleBag.Blink(positionToUnselect);
+			SourceSingleInventory.Blink(positionToUnselect);
             // Force refresh on general components as well
             AfterRefresh();
         }
@@ -132,7 +137,7 @@ public class SampleSimpleBagView : SimpleBagView {
         {
             int position = selectedItem.Value;
             Unselect();
-            SourceSimpleBag.Drop(position);
+			SourceSingleInventory.GetComponent<SimpleBag>().Drop(position);
             AfterRefresh();
         }
     }
@@ -140,7 +145,7 @@ public class SampleSimpleBagView : SimpleBagView {
     void Pick()
     {
         int? finalPosition;
-        SourceSimpleBag.Pick(out finalPosition);
+		SourceSingleInventory.GetComponent<SimpleBag>().Pick(out finalPosition);
         if (finalPosition != null && selectedItem == null)
         {
             Select(finalPosition.Value);

@@ -42,11 +42,11 @@ namespace BackPack
 
                     /// <summary>
                     ///   Tells when this UI object cannot find, among its descendants,
-                    ///     any behaviour being subclass of <see cref="SimpleBagViewItem"/>.
+                    ///     any behaviour being subclass of <see cref="SingleInventoryViewItem"/>.
                     /// </summary>
-                    public class NoSimpleBagViewItemException : Support.Types.Exception
+                    public class NoSingleInventoryViewItemException : Support.Types.Exception
                     {
-                        public NoSimpleBagViewItemException(string message) : base(message) {}
+                        public NoSingleInventoryViewItemException(string message) : base(message) {}
                     }
 
 					protected SingleInventoryViewItem[] items;
@@ -62,12 +62,12 @@ namespace BackPack
                         if (PageSize == 0)
                         {
                             Destroy(gameObject);
-                            throw new NoSimpleBagViewItemException("At least one object must have a component of type SimpleBagViewItem (a descendant of)");
+                            throw new NoSingleInventoryViewItemException("At least one object must have a component of type SingleInventoryViewItem (a descendant of)");
                         }
                     }
 
                     /// <summary>
-                    ///   Forces every <see cref="SimpleBagViewItem"/> to <see cref="SimpleBagViewItem.Clear"/> themselves.
+                    ///   Forces every <see cref="SingleInventoryViewItem"/> to <see cref="SingleInventoryViewItem.Clear"/> themselves.
                     /// </summary>
                     public override void Clear()
                     {
@@ -78,7 +78,7 @@ namespace BackPack
                     }
 
                     /// <summary>
-                    ///   Delegates the behaviour in the <see cref="SimpleBagViewItem"/> in the given slot by calling <see cref="SimpleBagViewItem.Clear"/>.
+                    ///   Delegates the behaviour in the <see cref="SingleInventoryViewItem"/> in the given slot by calling <see cref="SingleInventoryViewItem.Clear"/>.
                     /// </summary>
                     /// <param name="slot"></param>
                     protected override void ClearStack(int slot)
@@ -87,7 +87,7 @@ namespace BackPack
                     }
 
                     /// <summary>
-                    ///   Delegates the behaviour in the <see cref="SimpleBagViewItem"/> in the given slot by calling <see cref="SimpleBagViewItem.Set(int, Sprite, string, object)"/>.
+                    ///   Delegates the behaviour in the <see cref="SingleInventoryViewItem"/> in the given slot by calling <see cref="SingleInventoryViewItem.Set(int, Sprite, string, object)"/>.
                     /// </summary>
                     protected override void SetStack(int slot, int position, Sprite icon, string caption, object quantity)
                     {

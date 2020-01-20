@@ -4,16 +4,18 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-namespace WindRose
+namespace BackPack
 {
     namespace Behaviours
     {
 		using Drops;
-		using BackPack.Behaviours.Inventory;
-		using BackPack.Behaviours.Inventory.ManagementStrategies.RenderingStrategies;
+		using Inventory;
+		using Inventory.ManagementStrategies.RenderingStrategies;
 
         namespace World
         {
+			using WindRose.Behaviours.World;
+
             namespace Layers
             {
                 namespace Drop

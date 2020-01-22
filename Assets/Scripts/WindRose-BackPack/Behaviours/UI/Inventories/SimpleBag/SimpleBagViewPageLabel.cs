@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(Text))]
-public class SampleSimpleBagViewPageLabel : MonoBehaviour {
+public class SimpleBagViewPageLabel : MonoBehaviour {
     /**
      * Updates the content of the paging into its text as "page / total-pages"
      */

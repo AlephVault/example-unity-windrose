@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(Image))]
-public class SampleSimpleBagViewItemIcon : MonoBehaviour {
+public class SimpleBagViewItemIcon : MonoBehaviour {
     /**
      * This class is the icon of a SampleSimpleBagViewItemIton.
      */

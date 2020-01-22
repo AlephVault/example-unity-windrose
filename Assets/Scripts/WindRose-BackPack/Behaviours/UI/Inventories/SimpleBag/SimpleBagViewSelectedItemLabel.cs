@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(Text))]
-public class SampleSimpleBagViewSelectedItemLabel : MonoBehaviour {
+public class SimpleBagViewSelectedItemLabel : MonoBehaviour {
     /**
      * Updates the content of the item into its text.
      */

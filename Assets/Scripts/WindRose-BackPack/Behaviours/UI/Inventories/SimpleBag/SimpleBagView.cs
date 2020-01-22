@@ -10,13 +10,13 @@ using WindRose.Behaviours.Entities.Objects.Bags;
 
 [RequireComponent(typeof(Throttler))]
 [RequireComponent(typeof(Image))]
-public class SampleSimpleBagView : SingleInventoryView {
+public class SimpleBagView : SingleInventoryView {
     /**
      * Instances of this class will have children objects.
      * 
      * 1. A Back button.
      * 2. A Next button.
-     * 3. Several (6, 8 or 10) SampleSimpleBagViewItem objects.
+     * 3. Several (6, 8 or 10) SimpleBagViewItem objects.
      * 4. A label telling the current page number and max number.
      * 5. A label telling the currently selected item.
      * 
@@ -34,8 +34,8 @@ public class SampleSimpleBagView : SingleInventoryView {
      */
 
     private int? selectedItem = null;
-    private SampleSimpleBagViewPageLabel pageLabel;
-    private SampleSimpleBagViewSelectedItemLabel selectedItemLabel;
+    private SimpleBagViewPageLabel pageLabel;
+    private SimpleBagViewSelectedItemLabel selectedItemLabel;
     private Throttler throttler;
 
     [SerializeField]
@@ -47,10 +47,10 @@ public class SampleSimpleBagView : SingleInventoryView {
     protected override void Awake()
     {
         base.Awake();
-        pageLabel = Layout.RequireComponentInChildren<SampleSimpleBagViewPageLabel>(this);
-        selectedItemLabel = Layout.RequireComponentInChildren<SampleSimpleBagViewSelectedItemLabel>(this);
-        Layout.RequireComponentInChildren<SampleSimpleBagViewNextButton>(this).GetComponent<Button>().onClick.AddListener(delegate() { Next(); });
-        Layout.RequireComponentInChildren<SampleSimpleBagViewPrevButton>(this).GetComponent<Button>().onClick.AddListener(delegate () { Prev(); });
+        pageLabel = Layout.RequireComponentInChildren<SimpleBagViewPageLabel>(this);
+        selectedItemLabel = Layout.RequireComponentInChildren<SimpleBagViewSelectedItemLabel>(this);
+        Layout.RequireComponentInChildren<SimpleBagViewNextButton>(this).GetComponent<Button>().onClick.AddListener(delegate() { Next(); });
+        Layout.RequireComponentInChildren<SimpleBagViewPrevButton>(this).GetComponent<Button>().onClick.AddListener(delegate () { Prev(); });
         throttler = GetComponent<Throttler>();
     }
 
@@ -103,14 +103,14 @@ public class SampleSimpleBagView : SingleInventoryView {
             int slot = SlotFor(selectedItem.Value);
             for(int iSlot = 0; iSlot < items.Length; iSlot++)
             {
-                ((SampleSimpleBagViewItem)items[iSlot]).SetSelection(iSlot == slot);
+                ((SimpleBagViewItem)items[iSlot]).SetSelection(iSlot == slot);
             }
         }
         else
         {
             for (int iSlot = 0; iSlot < items.Length; iSlot++)
             {
-                ((SampleSimpleBagViewItem)items[iSlot]).SetSelection(false);
+                ((SimpleBagViewItem)items[iSlot]).SetSelection(false);
             }
         }
     }

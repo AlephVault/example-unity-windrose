@@ -5,9 +5,10 @@ using UnityEngine;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(Button))]
-public class SampleSimpleBagViewNextButton : MonoBehaviour {
+public class SimpleBagViewPrevButton : MonoBehaviour
+{
     /**
-     * The parent SampleSimpleBagView object installs a handler for
+     * The parent SimpleBagView object installs a handler for
      *   onClick event. This behaviour is just a marker/profiler for
      *   the parent to correctly identify the button to install
      *   the handler.

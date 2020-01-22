@@ -7,7 +7,7 @@ using UnityEngine.UI;
 using BackPack.Behaviours.UI.Inventory;
 
 [RequireComponent(typeof(Button))]
-public class SampleSimpleBagViewItem : SingleInventoryView.SingleInventoryViewItem {
+public class SimpleBagViewItem : SingleInventoryView.SingleInventoryViewItem {
     /**
      * This component will have three parts:
      * - The selection glow: It will become visible on SetSelection().
@@ -17,17 +17,17 @@ public class SampleSimpleBagViewItem : SingleInventoryView.SingleInventoryViewIt
      * This component will be a button as well.
      */
 
-    private SampleSimpleBagViewItemIcon iconHolder;
-    private SampleSimpleBagViewItemSelectionGlow glow;
-    private SampleSimpleBagViewItemQuantityLabel quantityLabel;
+    private SimpleBagViewItemIcon iconHolder;
+    private SimpleBagViewItemSelectionGlow glow;
+    private SimpleBagViewItemQuantityLabel quantityLabel;
     private int? targetPosition;
     
     void Awake()
     {
-        quantityLabel = GetComponentInChildren<SampleSimpleBagViewItemQuantityLabel>();
-        iconHolder = GetComponentInChildren<SampleSimpleBagViewItemIcon>();
-        glow = GetComponentInChildren<SampleSimpleBagViewItemSelectionGlow>();
-        SampleSimpleBagView parent = Layout.RequireComponentInParent<SampleSimpleBagView>(Layout.RequireComponentInParent<GridLayoutGroup>(this).gameObject);
+        quantityLabel = GetComponentInChildren<SimpleBagViewItemQuantityLabel>();
+        iconHolder = GetComponentInChildren<SimpleBagViewItemIcon>();
+        glow = GetComponentInChildren<SimpleBagViewItemSelectionGlow>();
+        SimpleBagView parent = Layout.RequireComponentInParent<SimpleBagView>(Layout.RequireComponentInParent<GridLayoutGroup>(this).gameObject);
         GetComponent<Button>().onClick.AddListener(delegate ()
         {
             if (targetPosition != null)

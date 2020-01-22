@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(Text))]
-public class SampleSimpleBagViewItemQuantityLabel : MonoBehaviour {
+public class SimpleBagViewItemQuantityLabel : MonoBehaviour {
     /**
      * This class represents the quantity on its label.
      */

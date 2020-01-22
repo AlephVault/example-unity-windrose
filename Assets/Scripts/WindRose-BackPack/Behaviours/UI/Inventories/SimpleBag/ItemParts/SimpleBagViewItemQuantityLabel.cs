@@ -3,28 +3,44 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(Text))]
-public class SimpleBagViewItemQuantityLabel : MonoBehaviour {
-    /**
-     * This class represents the quantity on its label.
-     */
 
-    private Text text;
+namespace WindRose
+{
+	namespace Behaviours
+	{
+		namespace UI
+		{
+			namespace Inventories
+			{
+				namespace SimpleBag
+				{
+					[RequireComponent(typeof(Text))]
+					public class SimpleBagViewItemQuantityLabel : MonoBehaviour {
+						/**
+					     * This class represents the quantity on its label.
+					     */
 
-    void Awake()
-    {
-        text = GetComponent<Text>();
-    }
+						private Text text;
 
-    public void SetQuantity(object quantity)
-    {
-        if (quantity == null || quantity is bool)
-        {
-            text.text = "";
-        }
-        else
-        {
-            text.text = quantity.ToString();
-        }
-    }
+						void Awake()
+						{
+							text = GetComponent<Text>();
+						}
+
+						public void SetQuantity(object quantity)
+						{
+							if (quantity == null || quantity is bool)
+							{
+								text.text = "";
+							}
+							else
+							{
+								text.text = quantity.ToString();
+							}
+						}
+					}
+				}
+			}
+		}
+	}
 }

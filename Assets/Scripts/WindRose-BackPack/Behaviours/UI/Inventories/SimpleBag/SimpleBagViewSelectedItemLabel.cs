@@ -3,21 +3,37 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(Text))]
-public class SimpleBagViewSelectedItemLabel : MonoBehaviour {
-    /**
-     * Updates the content of the item into its text.
-     */
 
-    private Text textComponent;
+namespace WindRose
+{
+	namespace Behaviours
+	{
+		namespace UI
+		{
+			namespace Inventories
+			{
+				namespace SimpleBag
+				{
+					[RequireComponent(typeof(Text))]
+					public class SimpleBagViewSelectedItemLabel : MonoBehaviour {
+						/**
+					     * Updates the content of the item into its text.
+					     */
 
-    void Awake()
-    {
-        textComponent = GetComponent<Text>();
-    }
+						private Text textComponent;
 
-    public void SetCaption(string caption)
-    {
-        textComponent.text = caption;
-    }
+						void Awake()
+						{
+							textComponent = GetComponent<Text>();
+						}
+
+						public void SetCaption(string caption)
+						{
+							textComponent.text = caption;
+						}
+					}
+				}
+			}
+		}
+	}
 }

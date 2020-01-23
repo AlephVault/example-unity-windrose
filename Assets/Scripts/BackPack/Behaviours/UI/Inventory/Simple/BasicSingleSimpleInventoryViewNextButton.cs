@@ -16,7 +16,7 @@ namespace BackPack
 				namespace Simple
 				{
 					[RequireComponent(typeof(Button))]
-					public class SimpleInventoryViewNextButton : MonoBehaviour {
+					public class BasicSingleSimpleInventoryViewNextButton : MonoBehaviour {
 						/**
 					     * The parent SimpleInventoryView object installs a handler for
 					     *   onClick event. This behaviour is just a marker/profiler for

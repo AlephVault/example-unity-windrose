@@ -16,7 +16,7 @@ namespace WindRose
 				{
 					using BackPack.Behaviours.UI.Inventory.Simple;
 
-					[RequireComponent(typeof(SimpleInventoryView))]
+					[RequireComponent(typeof(BasicSingleSimpleInventoryView))]
 					[RequireComponent(typeof(Throttler))]
 					public class SimpleBagControl : MonoBehaviour {
 						/**
@@ -37,12 +37,12 @@ namespace WindRose
 						private KeyCode pickKey = KeyCode.A;
 
 						private Throttler throttler;
-						private SimpleInventoryView inventoryView;
+						private BasicSingleSimpleInventoryView inventoryView;
 
 						void Awake()
 						{
 							throttler = GetComponent<Throttler>();
-							inventoryView = GetComponent<SimpleInventoryView> ();
+							inventoryView = GetComponent<BasicSingleSimpleInventoryView> ();
 						}
 
 						void Update()

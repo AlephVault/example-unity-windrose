@@ -15,7 +15,7 @@ namespace BackPack
 				namespace Simple
 				{
 					[RequireComponent(typeof(Text))]
-					public class SimpleInventoryViewPageLabel : MonoBehaviour {
+					public class BasicSingleSimpleInventoryViewPageLabel : MonoBehaviour {
 						/**
 					     * Updates the content of the paging into its text as "page / total-pages"
 					     */

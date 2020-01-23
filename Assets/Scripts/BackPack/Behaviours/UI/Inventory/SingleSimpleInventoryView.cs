@@ -21,19 +21,19 @@ namespace BackPack
                 ///     happens in the sub-renderer and renderer in general)
                 /// </summary>
                 [RequireComponent(typeof(Image))]
-                public class SingleInventoryView : InventorySingleRenderingManagementStrategy.SingleInventorySubRenderer
+                public class SingleSimpleInventoryView : InventorySingleSimpleRenderingManagementStrategy.SingleInventorySubRenderer
                 {
                     /// <summary>
                     ///   An UI item that will know how to render and clear itself according to "simple" data.
                     /// </summary>
                     [RequireComponent(typeof(Image))]
-                    public abstract class SingleInventoryViewItem : MonoBehaviour
+                    public abstract class SingleSimpleInventoryViewItem : MonoBehaviour
                     {
                         /**
                          * This class is the renderer of each item. Rendering an item like this
                          *   requires another Panel component (i.e. another image). This
-                         *   element is direct child of SimpleBagView in the components
-                         *   hierarchy on the scene.
+                         *   element is contained -directly or not- inside in-scene-hierarchy
+                         *   a <see cref="SingleSimpleInventoryView"/> instance.
                          */
 
                         public abstract void Clear();
@@ -49,7 +49,7 @@ namespace BackPack
                         public NoSingleInventoryViewItemException(string message) : base(message) {}
                     }
 
-					protected SingleInventoryViewItem[] items;
+					protected SingleSimpleInventoryViewItem[] items;
 
                     protected virtual void Awake()
                     {
@@ -57,7 +57,7 @@ namespace BackPack
                          * Get the slots from the children elements. Require at least one children.
                          */
 
-						items = GetComponentsInChildren<SingleInventoryViewItem>();
+						items = GetComponentsInChildren<SingleSimpleInventoryViewItem>();
                         PageSize = (uint)items.Length;
                         if (PageSize == 0)
                         {
@@ -71,7 +71,7 @@ namespace BackPack
                     /// </summary>
                     public override void Clear()
                     {
-						foreach(SingleInventoryViewItem item in items)
+						foreach(SingleSimpleInventoryViewItem item in items)
                         {
                             item.Clear();
                         }

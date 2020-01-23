@@ -15,7 +15,7 @@ namespace BackPack
 				namespace Simple
 				{
 					[RequireComponent(typeof(Image))]
-					public class SimpleInventoryViewItemIcon : MonoBehaviour {
+					public class BasicSingleSimpleInventoryViewItemIcon : MonoBehaviour {
 						/**
 					     * This class is the icon of a SampleSimpleInventoryViewItemIton.
 					     */

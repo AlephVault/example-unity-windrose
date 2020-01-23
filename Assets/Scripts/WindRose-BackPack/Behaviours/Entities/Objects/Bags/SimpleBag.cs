@@ -23,7 +23,7 @@ namespace WindRose
 					///   have features to interact with the underlying map's
 					///   drop layer.
 					/// </summary>
-					[RequireComponent(typeof(SingleInventory))]
+					[RequireComponent(typeof(SingleSimpleInventory))]
 					[RequireComponent(typeof(MapObject))]
 					public class SimpleBag : MonoBehaviour
 					{
@@ -31,12 +31,12 @@ namespace WindRose
 						public MapObject MapObject { get; private set; }
 
 						// The underlying single inventory.
-						public SingleInventory Inventory { get; private set; }
+						public SingleSimpleInventory Inventory { get; private set; }
 
 						private void Awake()
 						{
 							MapObject = GetComponent<MapObject>();
-							Inventory = GetComponent<SingleInventory>();
+							Inventory = GetComponent<SingleSimpleInventory>();
 						}
 
 						/**

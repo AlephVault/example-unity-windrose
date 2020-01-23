@@ -17,15 +17,15 @@ namespace BackPack
             namespace Single
             {
                 /// <summary>
-                ///   This is a rendering strategy for <see cref="SimpleBag"/> behaviours.
-                ///     This strategy will allow the connection of several objects acting
-                ///     as "viewers" (<see cref="SimpleBagInventorySubRenderer"/>).
+                ///   This is a rendering strategy for <see cref="SingleSimpleInventory"/>
+				///     behaviours. This strategy will allow the connection of several
+				///     objects acting as "viewers" (<see cref="SingleInventorySubRenderer"/>).
                 /// </summary>
-                public class InventorySingleRenderingManagementStrategy : InventorySimpleRenderingManagementStrategy
+                public class InventorySingleSimpleRenderingManagementStrategy : InventorySimpleRenderingManagementStrategy
                 {
                     /// <summary>
                     ///   A sub-renderer is, basically, a view than can be connected
-                    ///     to an <see cref="InventorySimpleBagRenderingManagementStrategy"/>.
+                    ///     to an <see cref="InventorySingleSimpleRenderingManagementStrategy"/>.
                     ///   It is not just a way to render items, but also a way to
                     ///     interact with them by -e.g.- pagination: different sub
                     ///     renderers may show different pages, but they will render
@@ -39,7 +39,7 @@ namespace BackPack
                          *   another renderer, the former renderer will disconnect from
                          *   this object.
                          */
-                        private InventorySingleRenderingManagementStrategy sourceRenderer;
+                        private InventorySingleSimpleRenderingManagementStrategy sourceRenderer;
 
                         /// <summary>
                         ///   Contains the elements to render, in terms of its position
@@ -59,10 +59,10 @@ namespace BackPack
                          */
 
                         /// <summary>
-                        ///   Returns the underlying simple bag (which is tied to the related
-                        ///     renderer).
+                        ///   Returns the underlying simple simple inventory (which is tied to
+                        ///     the related renderer).
                         /// </summary>
-                        public SingleInventory SourceSingleInventory
+                        public SingleSimpleInventory SourceSingleInventory
                         {
 							get { return sourceRenderer != null ? sourceRenderer.SingleInventory : null; }
                         }
@@ -110,7 +110,7 @@ namespace BackPack
 
                         /// <summary>
                         ///   Calculates the page -considering current page settings-
-                        ///     for a particular position in the bag.
+                        ///     for a particular position in the inventory.
                         /// </summary>
                         public uint PageFor(int position)
                         {
@@ -231,7 +231,7 @@ namespace BackPack
                         ///     to. Although this logic may be overridden, it is needed a call to <c>base.Connected</c>
                         ///     somewhere in the code.
                         /// </summary>
-                        public virtual void Connected(InventorySingleRenderingManagementStrategy sbRenderer)
+                        public virtual void Connected(InventorySingleSimpleRenderingManagementStrategy sbRenderer)
                         {
                             if (sourceRenderer != null)
                             {
@@ -434,8 +434,8 @@ namespace BackPack
                     }
 
                     /// <summary>
-                    ///   Tells when trying to add a null <see cref="SimpleBagInventorySubRenderer"/>
-                    ///     when calling <see cref="AddSubRenderer(SimpleBagInventorySubRenderer)"/>.
+					///   Tells when trying to add a null <see cref="SingleInventorySubRenderer"/>
+					///     when calling <see cref="AddSubRenderer(SingleInventorySubRenderer)"/>.
                     /// </summary>
                     public class InvalidSubRendererException : Support.Types.Exception
                     {
@@ -443,7 +443,7 @@ namespace BackPack
                     }
 
                     /// <summary>
-                    ///   The initial list of <see cref="SimpleBagInventorySubRenderer"/> instances
+					///   The initial list of <see cref="SingleInventorySubRenderer"/> instances
                     ///     to add to this rendering strategy.
                     /// </summary>
                     [SerializeField]
@@ -451,16 +451,16 @@ namespace BackPack
                     private HashSet<SingleInventorySubRenderer> subRenderersSet = new HashSet<SingleInventorySubRenderer>();
 
                     /// <summary>
-                    ///   The <see cref="SimpleBag"/> this strategy is linked to.
+                    ///   The <see cref="SingleSimpleInventory"/> this strategy is linked to.
                     /// </summary>
-                    public SingleInventory SingleInventory
+                    public SingleSimpleInventory SingleInventory
                     {
                         get; private set;
                     }
 
                     /// <summary>
-                    ///   The max size of the container in the <see cref="SimpleBag"/>. This size will actually be taken from
-                    ///     the related spatial strategy.
+                    ///   The max size of the container in the <see cref="SingleSimpleInventory"/>. This size will
+					///     actually be taken from the related spatial strategy.
                     /// </summary>
                     public int MaxSize
                     {
@@ -471,7 +471,7 @@ namespace BackPack
                     {
                         base.Awake();
                         MaxSize = spatialStrategy.GetSize();
-						SingleInventory = GetComponent<SingleInventory>();
+						SingleInventory = GetComponent<SingleSimpleInventory>();
                     }
 
                     void Start()
@@ -497,9 +497,9 @@ namespace BackPack
                     /// <summary>
                     ///   Adds a sub-renderer to this rendering management strategy. The sub-renderer will
                     ///     refresh with this renderer's data accordingly, and will be synchronized until
-                    ///     it is removed by a call to <see cref="RemoveSubRenderer(SimpleBagInventorySubRenderer)"/>.
+					///     it is removed by a call to <see cref="RemoveSubRenderer(SingleInventorySubRenderer)"/>.
                     /// </summary>
-                    /// <param name="subRenderer">The <see cref="SimpleBagInventorySubRenderer"/> to add</param>
+					/// <param name="subRenderer">The <see cref="SingleInventorySubRenderer"/> to add</param>
                     /// <returns>Whether it could be added, or it was already added</returns>
                     public bool AddSubRenderer(SingleInventorySubRenderer subRenderer)
                     {
@@ -522,7 +522,7 @@ namespace BackPack
                     ///   Removes a sub-renderer from this rendering management strategy. The sub-renderer will
                     ///     be cleared and removed.
                     /// </summary>
-                    /// <param name="subRenderer">The <see cref="SimpleBagInventorySubRenderer"/> to remove</param>
+					/// <param name="subRenderer">The <see cref="SingleInventorySubRenderer"/> to remove</param>
                     /// <returns>Whether it could be removed, or it wasn't connected here on first place</returns>
                     public bool RemoveSubRenderer(SingleInventorySubRenderer subRenderer)
                     {

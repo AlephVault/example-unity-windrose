@@ -15,7 +15,7 @@ namespace BackPack
 				namespace Simple
 				{
 					[RequireComponent(typeof(Text))]
-					public class SimpleInventoryViewItemQuantityLabel : MonoBehaviour {
+					public class BasicSingleSimpleInventoryViewItemQuantityLabel : MonoBehaviour {
 						/**
 					     * This class represents the quantity on its label.
 					     */

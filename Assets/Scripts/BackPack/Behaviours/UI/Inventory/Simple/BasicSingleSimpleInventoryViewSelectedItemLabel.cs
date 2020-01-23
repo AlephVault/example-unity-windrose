@@ -15,7 +15,7 @@ namespace BackPack
 				namespace Simple
 				{
 					[RequireComponent(typeof(Text))]
-					public class SimpleInventoryViewSelectedItemLabel : MonoBehaviour {
+					public class BasicSingleSimpleInventoryViewSelectedItemLabel : MonoBehaviour {
 						/**
 					     * Updates the content of the item into its text.
 					     */

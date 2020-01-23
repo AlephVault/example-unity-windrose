@@ -19,7 +19,7 @@ namespace BackPack
 				namespace Simple
 				{
 					[RequireComponent(typeof(Image))]
-					public class SimpleInventoryView : SingleInventoryView {
+					public class BasicSingleSimpleInventoryView : SingleSimpleInventoryView {
 						/**
 					     * Instances of this class will have children objects.
 					     * 
@@ -42,8 +42,8 @@ namespace BackPack
 					     *     is a selected item. The inventory WILL refresh.
 					     */
 
-						private SimpleInventoryViewPageLabel pageLabel;
-						private SimpleInventoryViewSelectedItemLabel selectedItemLabel;
+						private BasicSingleSimpleInventoryViewPageLabel pageLabel;
+						private BasicSingleSimpleInventoryViewSelectedItemLabel selectedItemLabel;
 						public int? SelectedPosition { get; private set; }
 						public BackPack.Types.Inventory.Stacks.Stack SelectedItem {
 							get {
@@ -54,10 +54,10 @@ namespace BackPack
 						protected override void Awake()
 						{
 							base.Awake();
-							pageLabel = Layout.RequireComponentInChildren<SimpleInventoryViewPageLabel>(this);
-							selectedItemLabel = Layout.RequireComponentInChildren<SimpleInventoryViewSelectedItemLabel>(this);
-							Layout.RequireComponentInChildren<SimpleInventoryViewNextButton>(this).GetComponent<Button>().onClick.AddListener(delegate() { Next(); });
-							Layout.RequireComponentInChildren<SimpleInventoryViewPrevButton>(this).GetComponent<Button>().onClick.AddListener(delegate () { Prev(); });
+							pageLabel = Layout.RequireComponentInChildren<BasicSingleSimpleInventoryViewPageLabel>(this);
+							selectedItemLabel = Layout.RequireComponentInChildren<BasicSingleSimpleInventoryViewSelectedItemLabel>(this);
+							Layout.RequireComponentInChildren<BasicSingleSimpleInventoryViewNextButton>(this).GetComponent<Button>().onClick.AddListener(delegate() { Next(); });
+							Layout.RequireComponentInChildren<BasicSingleSimpleInventoryViewPrevButton>(this).GetComponent<Button>().onClick.AddListener(delegate () { Prev(); });
 						}
 
 						protected void Start()
@@ -109,14 +109,14 @@ namespace BackPack
 								int slot = SlotFor(SelectedPosition.Value);
 								for(int iSlot = 0; iSlot < items.Length; iSlot++)
 								{
-									((SimpleInventoryViewItem)items[iSlot]).SetSelection(iSlot == slot);
+									((BasicSingleSimpleInventoryViewItem)items[iSlot]).SetSelection(iSlot == slot);
 								}
 							}
 							else
 							{
 								for (int iSlot = 0; iSlot < items.Length; iSlot++)
 								{
-									((SimpleInventoryViewItem)items[iSlot]).SetSelection(false);
+									((BasicSingleSimpleInventoryViewItem)items[iSlot]).SetSelection(false);
 								}
 							}
 						}

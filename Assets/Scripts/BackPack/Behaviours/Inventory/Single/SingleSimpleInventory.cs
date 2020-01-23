@@ -21,21 +21,22 @@ namespace BackPack
 
                 /// <summary>
                 ///   <para>
-                ///     Simple bags are intended to be used as portable bags on objects and
-                ///       they will handle just ONE container, but with convenience methods
-                ///       to abstract the user regarding the inners of the single-container
-                ///       positioning strategy.
+                ///     Single-Simple inventories are intended to be an implementation of just
+				///       1 inventory position (most of the inventories in most games are of
+				///       size = 1), and rendering of simple items (label, picture, quantity).
+				///       The user is saved from referencing the only container, and so the
+				///       usual "container" (position) argument is not present here.
                 ///   </para>
                 ///   <para>
                 ///     They are tightly related to <see cref="InventoryManagementStrategyHolder"/>
-                ///       and <see cref="InventorySimpleBagRenderingManagementStrategy"/>.
+                ///       and <see cref="InventorySingleSimpleRenderingManagementStrategy"/>.
                 ///   </para>
                 /// </summary>
                 [RequireComponent(typeof(InventorySinglePositioningManagementStrategy))]
                 [RequireComponent(typeof(InventorySimpleSpatialManagementStrategy))]
                 [RequireComponent(typeof(InventoryManagementStrategyHolder))]
-                [RequireComponent(typeof(InventorySingleRenderingManagementStrategy))]
-                public class SingleInventory : MonoBehaviour
+                [RequireComponent(typeof(InventorySingleSimpleRenderingManagementStrategy))]
+                public class SingleSimpleInventory : MonoBehaviour
                 {
                     private InventoryManagementStrategyHolder inventoryHolder;
 

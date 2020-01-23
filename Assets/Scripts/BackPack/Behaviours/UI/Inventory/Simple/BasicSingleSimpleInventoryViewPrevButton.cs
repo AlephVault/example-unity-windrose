@@ -16,7 +16,7 @@ namespace BackPack
 				namespace Simple
 				{
 					[RequireComponent(typeof(Button))]
-					public class SimpleInventoryViewPrevButton : MonoBehaviour
+					public class BasicSingleSimpleInventoryViewPrevButton : MonoBehaviour
 					{
 						/**
 					     * The parent SimpleInventoryView object installs a handler for

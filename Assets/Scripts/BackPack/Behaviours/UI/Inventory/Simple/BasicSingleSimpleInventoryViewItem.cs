@@ -18,7 +18,7 @@ namespace BackPack
 				namespace Simple
 				{
 					[RequireComponent(typeof(Button))]
-					public class SimpleInventoryViewItem : SingleInventoryView.SingleInventoryViewItem {
+					public class BasicSingleSimpleInventoryViewItem : SingleSimpleInventoryView.SingleSimpleInventoryViewItem {
 						/**
 					     * This component will have three parts:
 					     * - The selection glow: It will become visible on SetSelection().
@@ -28,17 +28,17 @@ namespace BackPack
 					     * This component will be a button as well.
 					     */
 
-						private SimpleInventoryViewItemIcon iconHolder;
-						private SimpleInventoryViewItemSelectionGlow glow;
-						private SimpleInventoryViewItemQuantityLabel quantityLabel;
+						private BasicSingleSimpleInventoryViewItemIcon iconHolder;
+						private BasicSingleSimpleInventoryViewItemSelectionGlow glow;
+						private BasicSingleSimpleInventoryViewItemQuantityLabel quantityLabel;
 						private int? targetPosition;
 
 						void Awake()
 						{
-							quantityLabel = GetComponentInChildren<SimpleInventoryViewItemQuantityLabel>();
-							iconHolder = GetComponentInChildren<SimpleInventoryViewItemIcon>();
-							glow = GetComponentInChildren<SimpleInventoryViewItemSelectionGlow>();
-							SimpleInventoryView parent = Layout.RequireComponentInParent<SimpleInventoryView>(Layout.RequireComponentInParent<GridLayoutGroup>(this).gameObject);
+							quantityLabel = GetComponentInChildren<BasicSingleSimpleInventoryViewItemQuantityLabel>();
+							iconHolder = GetComponentInChildren<BasicSingleSimpleInventoryViewItemIcon>();
+							glow = GetComponentInChildren<BasicSingleSimpleInventoryViewItemSelectionGlow>();
+							BasicSingleSimpleInventoryView parent = Layout.RequireComponentInParent<BasicSingleSimpleInventoryView>(Layout.RequireComponentInParent<GridLayoutGroup>(this).gameObject);
 							GetComponent<Button>().onClick.AddListener(delegate ()
 								{
 									if (targetPosition != null)

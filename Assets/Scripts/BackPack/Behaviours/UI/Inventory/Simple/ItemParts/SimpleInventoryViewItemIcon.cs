@@ -4,20 +4,20 @@ using UnityEngine;
 using UnityEngine.UI;
 
 
-namespace WindRose
+namespace BackPack
 {
 	namespace Behaviours
 	{
 		namespace UI
 		{
-			namespace Inventories
+			namespace Inventory
 			{
-				namespace SimpleBag
+				namespace Simple
 				{
 					[RequireComponent(typeof(Image))]
-					public class SimpleBagViewItemIcon : MonoBehaviour {
+					public class SimpleInventoryViewItemIcon : MonoBehaviour {
 						/**
-					     * This class is the icon of a SampleSimpleBagViewItemIton.
+					     * This class is the icon of a SampleSimpleInventoryViewItemIton.
 					     */
 
 						private Image image;

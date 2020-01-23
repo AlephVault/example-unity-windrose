@@ -4,18 +4,18 @@ using UnityEngine;
 using UnityEngine.UI;
 
 
-namespace WindRose
+namespace BackPack
 {
 	namespace Behaviours
 	{
 		namespace UI
 		{
-			namespace Inventories
+			namespace Inventory
 			{
-				namespace SimpleBag
+				namespace Simple
 				{
 					[RequireComponent(typeof(Text))]
-					public class SimpleBagViewSelectedItemLabel : MonoBehaviour {
+					public class SimpleInventoryViewSelectedItemLabel : MonoBehaviour {
 						/**
 					     * Updates the content of the item into its text.
 					     */

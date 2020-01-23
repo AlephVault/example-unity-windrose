@@ -5,20 +5,20 @@ using UnityEngine;
 using UnityEngine.UI;
 
 
-namespace WindRose
+namespace BackPack
 {
 	namespace Behaviours
 	{
 		namespace UI
 		{
-			namespace Inventories
+			namespace Inventory
 			{
-				namespace SimpleBag
+				namespace Simple
 				{
 					[RequireComponent(typeof(Button))]
-					public class SimpleBagViewNextButton : MonoBehaviour {
+					public class SimpleInventoryViewNextButton : MonoBehaviour {
 						/**
-					     * The parent SimpleBagView object installs a handler for
+					     * The parent SimpleInventoryView object installs a handler for
 					     *   onClick event. This behaviour is just a marker/profiler for
 					     *   the parent to correctly identify the button to install
 					     *   the handler.

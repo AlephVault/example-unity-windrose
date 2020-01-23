@@ -4,18 +4,18 @@ using UnityEngine;
 using UnityEngine.UI;
 
 
-namespace WindRose
+namespace BackPack
 {
 	namespace Behaviours
 	{
 		namespace UI
 		{
-			namespace Inventories
+			namespace Inventory
 			{
-				namespace SimpleBag
+				namespace Simple
 				{
 					[RequireComponent(typeof(Text))]
-					public class SimpleBagViewItemQuantityLabel : MonoBehaviour {
+					public class SimpleInventoryViewItemQuantityLabel : MonoBehaviour {
 						/**
 					     * This class represents the quantity on its label.
 					     */

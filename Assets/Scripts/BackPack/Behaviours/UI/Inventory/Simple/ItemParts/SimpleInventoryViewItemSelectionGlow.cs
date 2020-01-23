@@ -3,17 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-namespace WindRose
+namespace BackPack
 {
 	namespace Behaviours
 	{
 		namespace UI
 		{
-			namespace Inventories
+			namespace Inventory
 			{
-				namespace SimpleBag
+				namespace Simple
 				{
-					public class SimpleBagViewItemSelectionGlow : MonoBehaviour {
+					public class SimpleInventoryViewItemSelectionGlow : MonoBehaviour {
 
 						// Use this for initialization
 						void Start () {

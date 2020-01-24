@@ -19,8 +19,14 @@ namespace BackPack
             /// </summary>
             public class InventoryUtils
             {
+				// TODO change these ones later.
+				private const Vector2 windowSize = new Vector2(360, 110);
+				private const Vector2 windowPos = new Vector2(300, 200);
+
                 public class CreateSingleInventoryViewWindow : EditorWindow
                 {
+					public Transform selectedTransform = null;
+
                     // Main container properties
                     private Color backgroundColor = Color.white;
                     private int gapSize = 4;
@@ -60,8 +66,7 @@ namespace BackPack
 
                     private void OnGUI()
                     {
-						// TODO change this one (the window dimensions) later.
-						minSize = new Vector2(360, 110);
+						minSize = windowSize;
 						maxSize = minSize;
 						GUIStyle longLabelStyle = MenuActionUtils.GetSingleLabelStyle();
 
@@ -107,6 +112,24 @@ namespace BackPack
 
                     }
                 }
+
+				/// <summary>
+				///   This method is used in the assets menu action: GameObject > Back Pack > Inventory > Create Basic Inventory.
+				/// </summary>
+				[MenuItem("GameObject/Back Pack/Inventory/Create Basic Inventory", false, 11)]
+				public static void AddBag()
+				{
+					CreateSingleInventoryViewWindow window = ScriptableObject.CreateInstance<CreateSingleInventoryViewWindow>();
+					window.selectedTransform = Selection.activeTransform;
+					window.position = new Rect(windowPos, windowSize);
+					window.ShowUtility();
+				}
+
+				[MenuItem("GameObject/Back Pack/Inventory/Create Basic Inventory", true)]
+				public static bool CanAddBag()
+				{
+					Selection.activeTransform != null && Selection.activeTransform.GetComponent<Canvas>();
+				}
             }
         }
     }

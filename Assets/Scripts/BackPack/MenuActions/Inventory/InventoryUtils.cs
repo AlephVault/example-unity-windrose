@@ -39,7 +39,7 @@ namespace BackPack
 
                     // Properties of the cell
                     private Color backgroundCellColor = new Color32(200, 200, 200, 255);
-                    private bool useCustomGapsForCells;
+                    private bool useCustomGapsForCells = false;
                     private int verticalCellGapSize = 4;
                     private int horizontalCellGapSize = 4;
                     private int verticalCellPadding = 9;
@@ -60,7 +60,46 @@ namespace BackPack
 
                     private void OnGUI()
                     {
-                        
+						// TODO change this one (the window dimensions) later.
+						minSize = new Vector2(360, 110);
+						maxSize = minSize;
+						GUIStyle longLabelStyle = MenuActionUtils.GetSingleLabelStyle();
+
+						titleContent = new GUIContent("Back Pack - Creating a new HUD simple & single inventory view");
+						EditorGUILayout.LabelField(
+							"This wizard will create a new view for a simple & single inventory under the selected HUD canvas. " +
+							"There is a default implementation (called the 'basic single & simple' one) that will be used, and " +
+							"is compatible with single-container inventories, and simple (icon, text, quantity) items, so the " +
+							"inventory to connect must be compatible (this package provides the Single Simple Inventory which " +
+							"satisfies both requirements and so it can be connected to the view being created by this wizard)"
+						);
+
+						///////////////////////////////////////////////////////
+						/// First, fix some values and derivate the other ones.
+						///////////////////////////////////////////////////////
+
+						bool customGapsForCellDisabled = !useCustomGapsForCells;
+
+						if (customGapsForCellDisabled) {
+							horizontalCellGapSize = gapSize;
+							verticalCellGapSize = gapSize;
+						}
+
+						// Now the derivated values:
+						int cellWidth = 2 * horizontalCellPadding + iconWidth;
+						int cellHeight = 2 * verticalCellPadding + iconHeight;
+						int gridWidth = columns * cellWidth + (columns - 1) * horizontalCellGapSize + 1;
+						int gridHeight = rows * cellHeight + (rows - 1) * verticalCellGapSize + 1;
+						int controlWidth = gridWidth + 2 * gapSize;
+						int controlHeight = gridHeight + pageLabelHeight + selectedItemLabelHeight + 4 * gapSize;
+						int buttonHeight = pageLabelHeight;
+						int buttonWidth = pageLabelHeight;
+						int pageLabelWidth = controlWidth - 4 * gapSize - 2 * buttonWidth;
+						int selectedItemLabelWidth = gridWidth;
+
+						//////////////////////////////////
+						/// Now, the appropriate controls.
+						//////////////////////////////////
                     }
 
                     private void Execute()

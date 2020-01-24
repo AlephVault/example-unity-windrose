@@ -1,6 +1,6 @@
 ﻿using System;
 using UnityEngine;
-using UnityEditor;
+using UnityEngine.UI;
 using System.Text.RegularExpressions;
 
 namespace Support
@@ -51,6 +51,24 @@ namespace Support
                 string simplified = SimplifySpaces(source);
                 return simplified != "" ? simplified : defaultValue;
             }
+
+            /// <summary>
+            ///   Returns the default colors to be used in any color transition.
+            ///   These colors are just a suggestion and can be changed.
+            /// </summary>
+            /// <returns>A <see cref="ColorBlock"/> with default colors.</returns>
+            public static ColorBlock DefaultColors()
+            {
+                ColorBlock colors = new ColorBlock();
+                colors.normalColor = new Color32(255, 255, 255, 255);
+                colors.highlightedColor = new Color32(245, 245, 245, 255);
+                colors.pressedColor = new Color32(200, 200, 200, 255);
+                colors.disabledColor = new Color32(200, 200, 200, 255);
+                colors.fadeDuration = 0.1f;
+                colors.colorMultiplier = 1f;
+                return colors;
+            }
+
         }
     }
 }

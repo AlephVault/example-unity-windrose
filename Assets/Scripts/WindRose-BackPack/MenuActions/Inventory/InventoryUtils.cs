@@ -20,7 +20,7 @@ namespace WindRose
 			using Behaviours.World.Layers.Drop;
 
             /// <summary>
-            ///   Menu actions to create inventory-related assets / add inventory-related components.
+            ///   Menu actions to create drop/bag-related assets / add drop/bag-related components.
             /// </summary>
             public static class InventoryUtils
             {

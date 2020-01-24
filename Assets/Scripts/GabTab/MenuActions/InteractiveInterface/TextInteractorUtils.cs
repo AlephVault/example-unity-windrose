@@ -31,7 +31,7 @@ namespace GabTab
                     private InteractorUtils.ButtonSettings continueButton = new InteractorUtils.ButtonSettings("ok", "OK");
                     private InteractorUtils.ButtonSettings cancelButton = new InteractorUtils.ButtonSettings("cancel", "Cancel");
                     private bool withCancelButton = false;
-                    private ColorBlock inputSettings = InteractorUtils.DefaultColors();
+                    private ColorBlock inputSettings = MenuActionUtils.DefaultColors();
                     private Color inputContentColor = Color.black;
                     private Color inputPlaceholderColor = new Color(7 / 16f, 7 / 16f, 7 / 16f);
 

@@ -13,7 +13,7 @@ namespace GabTab
         namespace InteractiveInterface
         {
             using Support.Utils;
-            using GabTab.Behaviours;
+            using Behaviours;
 
             /// <summary>
             ///   Utility class holding features common to almost all interactors.
@@ -34,25 +34,8 @@ namespace GabTab
                     {
                         this.key = key;
                         this.caption = caption;
-                        colors = DefaultColors();
+                        colors = MenuActionUtils.DefaultColors();
                     }
-                }
-
-                /// <summary>
-                ///   Returns the default colors to be used in any color transition.
-                ///   These colors are just a suggestion and can be changed.
-                /// </summary>
-                /// <returns>A <see cref="ColorBlock"/> with default colors.</returns>
-                public static ColorBlock DefaultColors()
-                {
-                    ColorBlock colors = new ColorBlock();
-                    colors.normalColor = new Color32(255, 255, 255, 255);
-                    colors.highlightedColor = new Color32(245, 245, 245, 255);
-                    colors.pressedColor = new Color32(200, 200, 200, 255);
-                    colors.disabledColor = new Color32(200, 200, 200, 255);
-                    colors.fadeDuration = 0.1f;
-                    colors.colorMultiplier = 1f;
-                    return colors;
                 }
 
                 /// <summary>

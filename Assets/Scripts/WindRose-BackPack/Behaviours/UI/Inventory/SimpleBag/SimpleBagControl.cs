@@ -10,7 +10,7 @@ namespace WindRose
 	{
 		namespace UI
 		{
-			namespace Inventories
+			namespace Inventory
 			{
 				namespace SimpleBag
 				{

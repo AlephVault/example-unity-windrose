@@ -65,7 +65,7 @@ namespace GabTab
                             backgroundTint = EditorGUILayout.ColorField("Background tint", backgroundTint);
                             EditorGUILayout.EndVertical();
                         }
-                        inputSettings = InteractorUtils.ColorsGUI(inputSettings);
+                        inputSettings = MenuActionUtils.ColorsGUI(inputSettings);
                         inputContentColor = EditorGUILayout.ColorField("Input content color", inputContentColor);
                         inputPlaceholderColor = EditorGUILayout.ColorField("Input placeholder color", inputPlaceholderColor);
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEditor;
 using System.Text.RegularExpressions;
 
 namespace Support
@@ -69,6 +70,22 @@ namespace Support
                 return colors;
             }
 
+            /// <summary>
+            ///   Generates the UI to change a specific color set.
+            /// </summary>
+            /// <param name="source">The input colors</param>
+            /// <returns>The new colors</returns>
+            public static ColorBlock ColorsGUI(ColorBlock source)
+            {
+                ColorBlock colors = new ColorBlock();
+                colors.normalColor = EditorGUILayout.ColorField("Normal color", source.normalColor);
+                colors.highlightedColor = EditorGUILayout.ColorField("Highlighted color", source.highlightedColor);
+                colors.pressedColor = EditorGUILayout.ColorField("Pressed color", source.pressedColor);
+                colors.disabledColor = EditorGUILayout.ColorField("Disabled color", source.disabledColor);
+                colors.fadeDuration = source.fadeDuration;
+                colors.colorMultiplier = source.colorMultiplier;
+                return colors;
+            }
         }
     }
 }

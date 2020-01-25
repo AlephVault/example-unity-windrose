@@ -84,23 +84,6 @@ namespace GabTab
                 }
 
                 /// <summary>
-                ///   Generates the UI to change a specific color set.
-                /// </summary>
-                /// <param name="source">The input colors</param>
-                /// <returns>The new colors</returns>
-                public static ColorBlock ColorsGUI(ColorBlock source)
-                {
-                    ColorBlock colors = new ColorBlock();
-                    colors.normalColor = EditorGUILayout.ColorField("Normal color", source.normalColor);
-                    colors.highlightedColor = EditorGUILayout.ColorField("Highlighted color", source.highlightedColor);
-                    colors.pressedColor = EditorGUILayout.ColorField("Pressed color", source.pressedColor);
-                    colors.disabledColor = EditorGUILayout.ColorField("Disabled color", source.disabledColor);
-                    colors.fadeDuration = source.fadeDuration;
-                    colors.colorMultiplier = source.colorMultiplier;
-                    return colors;
-                }
-
-                /// <summary>
                 ///   Generates the UI to change a specific indexed button setting.
                 /// </summary>
                 /// <param name="index">The button index (intended to be used on a multi-button setting)</param>
@@ -124,7 +107,7 @@ namespace GabTab
                     settings.key = MenuActionUtils.EnsureNonEmpty(EditorGUILayout.TextField("Button key", settings.key), defaultKey);
                     EditorGUILayout.BeginVertical(style);
                     settings.caption = MenuActionUtils.EnsureNonEmpty(EditorGUILayout.TextField("Caption", settings.caption), defaultCaption);
-                    settings.colors = ColorsGUI(settings.colors);
+                    settings.colors = MenuActionUtils.ColorsGUI(settings.colors);
                     settings.textColor = EditorGUILayout.ColorField("Text color", settings.textColor);
                     EditorGUILayout.EndVertical();
                     EditorGUILayout.EndVertical();

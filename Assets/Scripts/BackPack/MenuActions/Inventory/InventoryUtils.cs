@@ -64,9 +64,9 @@ namespace BackPack
 
                     // Properties of the cell's label
                     private int labelWidth = 40;
-                    private int labelHeight = 11;
+                    private int labelHeight = 20;
                     private int labelBottomMargin = 2;
-                    private int labelFontSize = 11;
+                    private int labelFontSize = 10;
 
                     // Derivated data:
                     int cellWidth, cellHeight;
@@ -354,7 +354,6 @@ namespace BackPack
 					{
 						GameObject selectionGlow = new GameObject("SelectionGlow");
 						Image selectionGlowImage = selectionGlow.AddComponent<Image>();
-						selectionGlowImage.enabled = false;
 						selectionGlowImage.sprite = sprite;
 						selectionGlowImage.type = Image.Type.Sliced;
 						selectionGlowImage.fillCenter = true;
@@ -376,6 +375,7 @@ namespace BackPack
 						Text quantityText = quantity.AddComponent<Text>();
 						quantityText.fontSize = labelFontSize;
 						quantityText.alignment = TextAnchor.MiddleCenter;
+						quantityText.color = Color.black;
 						RectTransform quantityRectTransform = quantity.GetComponent<RectTransform>();
 						quantityRectTransform.pivot = new Vector2(0.5f, 0.0f);
 						quantityRectTransform.anchorMin = new Vector2(0.5f, 0.0f);

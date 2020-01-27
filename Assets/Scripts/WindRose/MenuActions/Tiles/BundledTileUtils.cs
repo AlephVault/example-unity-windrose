@@ -40,6 +40,7 @@ namespace WindRose
                             AssetDatabase.CreateFolder(parentPath, "Bundled");
                         }
                         BundledTile bundledTile = ScriptableObject.CreateInstance<BundledTile>();
+                        Undo.RegisterCreatedObjectUndo(bundledTile, "Create Bundled Tile");
                         Layout.SetObjectFieldValues(bundledTile, new Dictionary<string, object>() {
                             { "sourceTile", tileBase }
                         });

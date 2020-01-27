@@ -60,6 +60,7 @@ namespace WindRose
                             Layout.AddComponent<Behaviours.Entities.Objects.Teleport.TeleportTarget>(gameObject);
                         }
                         gameObject.SetActive(true);
+                        Undo.RegisterCreatedObjectUndo(gameObject, "Create Local Teleporter");
                         Close();
                     }
                 }

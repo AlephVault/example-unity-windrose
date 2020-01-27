@@ -14,7 +14,7 @@ namespace GabTab
         using Behaviours;
             
         /// <summary>
-        ///   Menu actions to create <see cref="InteractiveInterface"/> with the inner
+        ///   Menu actions to create <see cref="Behaviours.InteractiveInterface"/> with the inner
         ///     message component.
         /// </summary>
         public static class InteractiveInterfaceUtils

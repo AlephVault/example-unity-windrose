@@ -39,6 +39,7 @@ namespace WindRose
                         }
                         Tile tile = ScriptableObject.CreateInstance<Tile>();
                         tile.sprite = sprite;
+                        Undo.RegisterCreatedObjectUndo(tile, "Create Tile");
                         AssetDatabase.CreateAsset(tile, Path.Combine(bundledPath, fileName));
                     }
                 }
@@ -75,6 +76,7 @@ namespace WindRose
                     Layout.SetObjectFieldValues(randomTile, new Dictionary<string, object>() {
                         { "m_Sprites", sprites }
                     });
+                    Undo.RegisterCreatedObjectUndo(randomTile, "Create Random Tile");
                     AssetDatabase.CreateAsset(randomTile, Path.Combine(bundledPath, fileName));
                 }
 

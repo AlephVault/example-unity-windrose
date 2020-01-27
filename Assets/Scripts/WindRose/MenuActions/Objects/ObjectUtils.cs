@@ -179,6 +179,7 @@ namespace WindRose
                             { "objectStrategy", mainStrategy }
                         });
                         gameObject.SetActive(true);
+                        Undo.RegisterCreatedObjectUndo(gameObject, "Create Object");
                         Close();
                     }
                 }

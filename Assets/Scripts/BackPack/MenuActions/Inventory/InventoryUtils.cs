@@ -320,12 +320,12 @@ namespace BackPack
                     {
                         GameObject gridControl = new GameObject("Slots");
                         GridLayoutGroup gridLayoutGroup = gridControl.AddComponent<GridLayoutGroup>();
-                        gridLayoutGroup.spacing = new Vector3(cellWidth, cellHeight);
-                        gridLayoutGroup.cellSize = new Vector3(horizontalCellGapSize, verticalCellGapSize);
+                        gridLayoutGroup.cellSize = new Vector3(cellWidth, cellHeight);
+                        gridLayoutGroup.spacing = new Vector3(horizontalCellGapSize, verticalCellGapSize);
                         RectTransform gridRectTransform = gridControl.GetComponent<RectTransform>();
                         Vector2 position = new Vector2(gapSize, 2 * gapSize + selectedItemLabelHeight);
                         Vector2 size = new Vector2(gridWidth, gridHeight);
-                        gridRectTransform.SetParent(inventory.GetComponent<RectTransform>(), false);
+                        gridRectTransform.SetParent(inventory.transform, false);
                         gridRectTransform.anchorMin = Vector2.zero;
                         gridRectTransform.anchorMax = Vector2.zero;
                         gridRectTransform.pivot = Vector2.zero;
@@ -334,9 +334,73 @@ namespace BackPack
                         return gridControl;
                     }
 
-                    private void MakeSlotControl(GameObject parentLayout, int row, int column)
-                    {
+					private void AddIcon(GameObject slot)
+					{
+						GameObject icon = new GameObject("Icon");
+						Image iconImage = icon.AddComponent<Image>();
+						iconImage.enabled = false;
+						RectTransform iconRectTransform = icon.GetComponent<RectTransform>();
+						iconRectTransform.SetParent(slot.transform, false);
+						iconRectTransform.pivot = Vector2.one / 2;
+						iconRectTransform.anchorMin = Vector2.one / 2;
+						iconRectTransform.anchorMax = Vector2.one / 2;
+						iconRectTransform.localPosition = Vector3.zero;
+						iconRectTransform.offsetMin = new Vector2(iconWidth, iconHeight) / -2;
+						iconRectTransform.offsetMax = new Vector2(iconWidth, iconHeight) / 2;
+						icon.AddComponent<BasicSingleSimpleInventoryViewItemIcon>();
+					}
 
+					private void AddSelectionGlow(GameObject slot)
+					{
+						GameObject selectionGlow = new GameObject("SelectionGlow");
+						Image selectionGlowImage = selectionGlow.AddComponent<Image>();
+						selectionGlowImage.enabled = false;
+						selectionGlowImage.sprite = sprite;
+						selectionGlowImage.type = Image.Type.Sliced;
+						selectionGlowImage.fillCenter = true;
+						selectionGlowImage.color = selectionGlowColor;
+						RectTransform selectionGlowRectTransform = selectionGlow.GetComponent<RectTransform>();
+						selectionGlowRectTransform.SetParent(slot.transform, false);
+						selectionGlowRectTransform.pivot = Vector2.one / 2;
+						selectionGlowRectTransform.anchorMin = Vector2.one / 2;
+						selectionGlowRectTransform.anchorMax = Vector2.one / 2;
+						selectionGlowRectTransform.localPosition = Vector3.zero;
+						selectionGlowRectTransform.offsetMin = new Vector2(cellWidth, cellHeight) / -2;
+						selectionGlowRectTransform.offsetMax = new Vector2(cellWidth, cellHeight) / 2;
+						selectionGlow.AddComponent<BasicSingleSimpleInventoryViewItemSelectionGlow>();
+					}
+
+					private void AddQuantityLabel(GameObject slot)
+					{
+						GameObject quantity = new GameObject("Quantity");
+						Text quantityText = quantity.AddComponent<Text>();
+						quantityText.fontSize = labelFontSize;
+						quantityText.alignment = TextAnchor.MiddleCenter;
+						RectTransform quantityRectTransform = quantity.GetComponent<RectTransform>();
+						quantityRectTransform.pivot = new Vector2(0.5f, 0.0f);
+						quantityRectTransform.anchorMin = new Vector2(0.5f, 0.0f);
+						quantityRectTransform.anchorMax = new Vector2(0.5f, 0.0f);
+						quantityRectTransform.offsetMin = new Vector2(-labelWidth/2, 0.0f);
+						quantityRectTransform.offsetMax = new Vector2(labelWidth/2, labelHeight);
+						quantityRectTransform.localPosition = new Vector3(0.0f, labelBottomMargin, 0.0f);
+						quantityRectTransform.SetParent(slot.transform, false);
+						quantity.AddComponent<BasicSingleSimpleInventoryViewItemQuantityLabel>();
+					}
+
+					private void MakeSlotControl(GameObject parentGrid, int row, int column)
+                    {
+						GameObject slot = new GameObject(string.Format("Slot[{0},{1}]", row, column));
+						Image slotBackground = slot.AddComponent<Image>();
+						RectTransform slotRectTransform = slot.GetComponent<RectTransform>();
+						slotRectTransform.SetParent(parentGrid.transform, false);
+						slotBackground.sprite = inputFieldBackground;
+						slotBackground.type = Image.Type.Sliced;
+						slotBackground.fillCenter = true;
+						slotBackground.color = cellColor;
+						AddIcon(slot);
+						AddSelectionGlow(slot);
+						AddQuantityLabel(slot);
+						slot.AddComponent<BasicSingleSimpleInventoryViewItem>();
                     }
 
                     private void MakeBodyControls(GameObject inventory)

@@ -195,8 +195,9 @@ namespace GabTab
                             float innerWidth = parent.rect.width - leftX - rightX;
                             float labelWidth = innerWidth / 3 - buttonsOffset;
                             for(int index = 0; index < 3; index++)
-                            {                                
-                                Button button = InteractorUtils.AddButton(parent, new Vector2(leftX + buttonsOffset + index * (buttonsOffset + labelWidth), y), new Vector2(labelWidth, controlHeight), new InteractorUtils.ButtonSettings("label-" + index, ""), (int)(controlHeight / 1.2));
+                            {
+                                InteractorUtils.ButtonSettings settings = new InteractorUtils.ButtonSettings("label-" + index, "");
+                                Button button = MenuActionUtils.AddButton(parent, new Vector2(leftX + buttonsOffset + index * (buttonsOffset + labelWidth), y), new Vector2(labelWidth, controlHeight), settings.caption, settings.key, settings.textColor, settings.colors, (int)(controlHeight / 1.2));
                                 button.transition = Selectable.Transition.None;
                                 labels[index] = button.gameObject;
                             }
@@ -213,11 +214,11 @@ namespace GabTab
                             // set prev button settings
                             slowNavigationButtonsSettings.key = key + "-prev";
                             slowNavigationButtonsSettings.caption = "◀";
-                            prevButton = InteractorUtils.AddButton(parent, new Vector2(xPrev, y), Vector2.one * controlHeight, slowNavigationButtonsSettings, (int)controlHeight / 3);
+                            prevButton = MenuActionUtils.AddButton(parent, new Vector2(xPrev, y), Vector2.one * controlHeight, slowNavigationButtonsSettings.caption, slowNavigationButtonsSettings.key, slowNavigationButtonsSettings.textColor, slowNavigationButtonsSettings.colors, (int)controlHeight / 3);
                             // set next button settings
                             slowNavigationButtonsSettings.key = key + "-next";
                             slowNavigationButtonsSettings.caption = "▶";
-                            nextButton = InteractorUtils.AddButton(parent, new Vector2(xNext, y), Vector2.one * controlHeight, slowNavigationButtonsSettings, (int)controlHeight / 3);
+                            nextButton = MenuActionUtils.AddButton(parent, new Vector2(xNext, y), Vector2.one * controlHeight, slowNavigationButtonsSettings.caption, slowNavigationButtonsSettings.key, slowNavigationButtonsSettings.textColor, slowNavigationButtonsSettings.colors, (int)controlHeight / 3);
                             // reset
                             slowNavigationButtonsSettings.key = key;
                             slowNavigationButtonsSettings.caption = caption;
@@ -233,11 +234,11 @@ namespace GabTab
                             // set prev button settings
                             fastNavigationButtonsSettings.key = key + "-prev";
                             fastNavigationButtonsSettings.caption = "◀◀";
-                            prevPageButton = InteractorUtils.AddButton(parent, new Vector2(xPrev, y), Vector2.one * controlHeight, fastNavigationButtonsSettings, (int)controlHeight / 3);
+                            prevPageButton = MenuActionUtils.AddButton(parent, new Vector2(xPrev, y), Vector2.one * controlHeight, fastNavigationButtonsSettings.caption, fastNavigationButtonsSettings.key, fastNavigationButtonsSettings.textColor, fastNavigationButtonsSettings.colors, (int)controlHeight / 3);
                             // set next button settings
                             fastNavigationButtonsSettings.key = key + "-next";
                             fastNavigationButtonsSettings.caption = "▶▶";
-                            nextPageButton = InteractorUtils.AddButton(parent, new Vector2(xNext, y), Vector2.one * controlHeight, fastNavigationButtonsSettings, (int)controlHeight / 3);
+                            nextPageButton = MenuActionUtils.AddButton(parent, new Vector2(xNext, y), Vector2.one * controlHeight, fastNavigationButtonsSettings.caption, fastNavigationButtonsSettings.key, fastNavigationButtonsSettings.textColor, fastNavigationButtonsSettings.colors, (int)controlHeight / 3);
                             // reset
                             fastNavigationButtonsSettings.key = key;
                             fastNavigationButtonsSettings.caption = caption;
@@ -281,6 +282,8 @@ namespace GabTab
                                 { "prevPageButton", prevPageButton },
                                 { "itemDisplays", itemDisplays }
                             });
+                            Undo.RegisterCreatedObjectUndo(listInteractorObject, "Create Simple String List Interactor");
+                            Close();
                         }
                     }
 

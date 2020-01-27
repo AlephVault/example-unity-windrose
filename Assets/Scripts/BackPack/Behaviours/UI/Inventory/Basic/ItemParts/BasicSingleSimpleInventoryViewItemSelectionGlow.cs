@@ -11,7 +11,7 @@ namespace BackPack
 		{
 			namespace Inventory
 			{
-				namespace Simple
+				namespace Basic
 				{
 					public class BasicSingleSimpleInventoryViewItemSelectionGlow : MonoBehaviour {
 

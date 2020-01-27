@@ -61,7 +61,8 @@ namespace WindRose
                             image.AddComponent<SpriteRenderer>();
                             image.transform.parent = prefab.transform;
                         }
-                        PrefabUtility.CreatePrefab(relativePrefabPath, prefab);
+                        GameObject result = PrefabUtility.CreatePrefab(relativePrefabPath, prefab);
+                        Undo.RegisterCreatedObjectUndo(result, "Create Drop Container Renderer Prefab");
                         DestroyImmediate(prefab);
                         Close();
                         EditorUtility.DisplayDialog("Save Successful", "The drop container prefab was successfully saved. However, it can be configured to add/remove slots and/or set a background image.", "OK");
@@ -129,6 +130,7 @@ namespace WindRose
                     private void Execute()
                     {
                         GameObject gameObject = Selection.activeTransform.gameObject;
+                        Undo.RegisterCompleteObjectUndo(gameObject, "Add Bag");
                         InventoryNullUsageManagementStrategy usageStrategy = Layout.AddComponent<InventoryNullUsageManagementStrategy>(gameObject);
                         Layout.AddComponent<InventoryManagementStrategyHolder>(gameObject, new Dictionary<string, object>() {
                             { "mainUsageStrategy", usageStrategy }
@@ -208,6 +210,7 @@ namespace WindRose
                         });
                         Layout.AddComponent<DropLayer>(dropLayer);
                         dropLayer.SetActive(true);
+                        Undo.RegisterCreatedObjectUndo(dropLayer, "Add Drop Layer");
                         Close();
                     } 
                 }

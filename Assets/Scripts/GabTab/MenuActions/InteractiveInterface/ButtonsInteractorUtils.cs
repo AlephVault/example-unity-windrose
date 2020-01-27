@@ -103,6 +103,7 @@ namespace GabTab
                         {
                             if (buttonsCount > index) AddButton(buttons, index, interactorRectTransformComponent, buttonsSettings[index], buttonsOffset, interactorRect);
                         }
+                        Undo.RegisterCreatedObjectUndo(interactorObject, "Create Buttons Interactor");
                         Close();
                     }
                 }

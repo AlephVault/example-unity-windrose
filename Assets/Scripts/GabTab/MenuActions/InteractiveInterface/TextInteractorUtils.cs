@@ -159,6 +159,7 @@ namespace GabTab
                             { "cancelButton", cancelButtonComponent },
                             { "textInput", textInput }
                         });
+                        Undo.RegisterCreatedObjectUndo(interactorObject, "Create Text Interactor");
                         Close();
                     }
                 }

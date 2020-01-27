@@ -12,7 +12,7 @@ namespace BackPack
 		{
 			namespace Inventory
 			{
-				namespace Simple
+				namespace Basic
 				{
 					[RequireComponent(typeof(Image))]
 					public class BasicSingleSimpleInventoryViewItemIcon : MonoBehaviour {

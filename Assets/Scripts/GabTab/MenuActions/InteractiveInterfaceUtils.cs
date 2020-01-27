@@ -100,7 +100,7 @@ namespace GabTab
                     interactiveMessageContentTextComponent.alignment = TextAnchor.UpperLeft;
                     interactiveMessageContentTextComponent.horizontalOverflow = HorizontalWrapMode.Wrap;
                     interactiveMessageContentTextComponent.verticalOverflow = VerticalWrapMode.Overflow;
-                    interactiveMessageContentTextComponent.text = "Lorem ipsom dolor sit amet consectetur adipiscing elit.";
+                    interactiveMessageContentTextComponent.text = "Lorem ipsum dolor sit amet consectetur adipiscing elit.";
                     interactiveMessageContentTextComponent.fontSize = (int)(interactiveMessageRectTransform.rect.height / 2.4f);
                     interactiveMessageContentTextComponent.color = messageContentColor;
                     ContentSizeFitter interactiveMessageContentContentSizeFitterComponent = interactiveMessageContentObject.GetComponent<ContentSizeFitter>();
@@ -127,6 +127,7 @@ namespace GabTab
                         { "interactiveMessage", interactiveMessageComponent }
                     });
                     interactiveInterfaceObject.SetActive(true);
+                    Undo.RegisterCreatedObjectUndo(interactiveInterfaceObject, "Create Interactive Interface");
                     Close();
                 }
             }

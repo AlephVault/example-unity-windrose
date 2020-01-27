@@ -14,7 +14,7 @@ namespace WindRose
 			{
 				namespace SimpleBag
 				{
-					using BackPack.Behaviours.UI.Inventory.Simple;
+					using BackPack.Behaviours.UI.Inventory.Basic;
 
 					[RequireComponent(typeof(BasicSingleSimpleInventoryView))]
 					[RequireComponent(typeof(Throttler))]

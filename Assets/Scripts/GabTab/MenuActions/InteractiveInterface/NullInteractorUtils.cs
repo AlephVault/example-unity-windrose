@@ -42,6 +42,7 @@ namespace GabTab
                         GameObject nullInteractorObject = new GameObject(nullInteractorName);
                         nullInteractorObject.transform.parent = selectedTransform;
                         Layout.AddComponent<NullInteractor>(nullInteractorObject);
+                        Undo.RegisterCreatedObjectUndo(nullInteractorObject, "Create Null Interactor");
                         Close();
                     }
                 }

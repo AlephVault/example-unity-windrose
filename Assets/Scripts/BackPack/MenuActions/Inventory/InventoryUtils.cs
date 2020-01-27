@@ -13,12 +13,17 @@ namespace BackPack
         namespace Inventory
         {
             using Support.Utils;
+            using Behaviours.UI.Inventory.Basic;
 
             /// <summary>
             ///   Menu actions to create inventory view components.
             /// </summary>
             public class InventoryUtils
             {
+                private static Sprite background = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/Background.psd");
+                private static Sprite sprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd");
+                private static Sprite inputFieldBackground = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/InputFieldBackground.psd");
+
                 public class CreateBasicInventoryViewWindow : EditorWindow
                 {
 					public Transform selectedTransform = null;
@@ -33,11 +38,11 @@ namespace BackPack
                     private int columns = 5;
 
                     // Properties of labels
-                    private int selectedItemLabelHeight = 20;
-                    private int selectedItemLabelFontSize = 19;
+                    private int selectedItemLabelHeight = 40;
+                    private int selectedItemLabelFontSize = 20;
 
                     // Properties of the pagination controls
-                    private int pageLabelHeight = 20;
+                    private int pageLabelHeight = 40;
                     private int pageLabelFontSize = 20;
                     private ColorBlock prevPageButtonColor = MenuActionUtils.DefaultColors();
                     private ColorBlock nextPageButtonColor = MenuActionUtils.DefaultColors();
@@ -62,6 +67,13 @@ namespace BackPack
                     private int labelHeight = 11;
                     private int labelBottomMargin = 2;
                     private int labelFontSize = 11;
+
+                    // Derivated data:
+                    int cellWidth, cellHeight;
+                    int gridWidth, gridHeight;
+                    int buttonWidth, buttonHeight;
+                    int pageLabelWidth, selectedItemLabelWidth;
+                    int controlWidth, controlHeight;
 
                     private void OnGUI()
                     {
@@ -104,7 +116,7 @@ namespace BackPack
                         EditorGUILayout.LabelField("Header Controls' Styles", longLabelStyle);
                         EditorGUILayout.BeginHorizontal();
                         pageLabelHeight = EditorGUILayout.IntField("Page Label Height", pageLabelHeight);
-                        pageLabelFontSize = EditorGUILayout.IntField("Page Label Fond Size", pageLabelFontSize);
+                        pageLabelFontSize = EditorGUILayout.IntField("Page Label Font Size", pageLabelFontSize);
                         EditorGUILayout.EndHorizontal();
                         EditorGUILayout.BeginHorizontal();
                         EditorGUILayout.BeginVertical();
@@ -170,8 +182,8 @@ namespace BackPack
                         EditorGUILayout.LabelField("Final Cell Styles", longLabelStyle);
                         EditorGUI.BeginDisabledGroup(true);
                         EditorGUILayout.BeginHorizontal();
-                        int cellWidth = EditorGUILayout.IntField("Final Width", 2 * horizontalCellPadding + iconWidth);
-                        int cellHeight = EditorGUILayout.IntField("Final Height", 2 * verticalCellPadding + iconHeight);
+                        cellWidth = EditorGUILayout.IntField("Final Width", 2 * horizontalCellPadding + iconWidth);
+                        cellHeight = EditorGUILayout.IntField("Final Height", 2 * verticalCellPadding + iconHeight);
                         EditorGUILayout.EndHorizontal();
                         EditorGUI.EndDisabledGroup();
 
@@ -180,8 +192,8 @@ namespace BackPack
                         EditorGUILayout.LabelField("Grid Styles");
                         EditorGUI.BeginDisabledGroup(true);
                         EditorGUILayout.BeginHorizontal();
-                        int gridWidth = EditorGUILayout.IntField("Final Grid Width", columns * cellWidth + (columns - 1) * horizontalCellGapSize + 1);
-                        int gridHeight = EditorGUILayout.IntField("Final Grid Height", rows * cellHeight + (rows - 1) * verticalCellGapSize + 1);
+                        gridWidth = EditorGUILayout.IntField("Final Grid Width", columns * cellWidth + (columns - 1) * horizontalCellGapSize + 1);
+                        gridHeight = EditorGUILayout.IntField("Final Grid Height", rows * cellHeight + (rows - 1) * verticalCellGapSize + 1);
                         EditorGUILayout.EndHorizontal();
                         EditorGUI.EndDisabledGroup();
 
@@ -190,11 +202,11 @@ namespace BackPack
                         EditorGUILayout.LabelField("Final Header Controls' Styles");
                         EditorGUI.BeginDisabledGroup(true);
                         EditorGUILayout.BeginHorizontal();
-                        int buttonWidth = EditorGUILayout.IntField("Final Button Width", pageLabelHeight);
-                        int buttonHeight = EditorGUILayout.IntField("Final Button Height", pageLabelHeight);
+                        buttonWidth = EditorGUILayout.IntField("Final Button Width", pageLabelHeight);
+                        buttonHeight = EditorGUILayout.IntField("Final Button Height", pageLabelHeight);
                         EditorGUILayout.EndHorizontal();
                         EditorGUILayout.BeginHorizontal();
-                        int pageLabelWidth = gridWidth - 2 * gapSize - 2 * buttonWidth;
+                        pageLabelWidth = gridWidth - 2 * gapSize - 2 * buttonWidth;
                         pageLabelWidth = Values.Max(0, pageLabelWidth);
                         EditorGUILayout.Space();
                         EditorGUILayout.EndHorizontal();
@@ -206,7 +218,7 @@ namespace BackPack
                         EditorGUILayout.BeginHorizontal();
                         selectedItemLabelHeight = EditorGUILayout.IntField("Label Height", selectedItemLabelHeight);
                         EditorGUI.BeginDisabledGroup(true);
-                        int selectedItemLabelWidth = gridWidth;
+                        selectedItemLabelWidth = gridWidth;
                         EditorGUI.EndDisabledGroup();
                         EditorGUILayout.EndHorizontal();
                         selectedItemLabelFontSize = EditorGUILayout.IntField("Font Size", selectedItemLabelFontSize);
@@ -216,8 +228,8 @@ namespace BackPack
                         EditorGUILayout.LabelField("Final Control Styles");
                         EditorGUILayout.BeginHorizontal();
                         EditorGUI.BeginDisabledGroup(true);
-                        int controlWidth = EditorGUILayout.IntField("Overall Width", gridWidth + 2 * gapSize);
-                        int controlHeight = EditorGUILayout.IntField("Overall Height", gridHeight + pageLabelHeight + selectedItemLabelHeight + 4 * gapSize);
+                        controlWidth = EditorGUILayout.IntField("Overall Width", gridWidth + 2 * gapSize);
+                        controlHeight = EditorGUILayout.IntField("Overall Height", gridHeight + pageLabelHeight + selectedItemLabelHeight + 4 * gapSize);
                         EditorGUI.EndDisabledGroup();
                         EditorGUILayout.EndHorizontal();
 
@@ -226,16 +238,137 @@ namespace BackPack
                         if (GUILayout.Button("Create Inventory")) Execute();
                     }
 
+                    private void MakeInventoryContainer(GameObject inventory)
+                    {
+                        Image inventoryBackground = inventory.AddComponent<Image>();
+                        RectTransform inventoryRectTransform = inventory.GetComponent<RectTransform>();
+                        inventory.AddComponent<BasicSingleSimpleInventoryView>();
+                        Vector2 v01 = new Vector2(0, 1);
+                        inventoryRectTransform.localScale = Vector3.one;
+                        inventoryRectTransform.anchorMin = v01;
+                        inventoryRectTransform.anchorMax = v01;
+                        inventoryRectTransform.pivot = v01;
+                        inventoryRectTransform.offsetMin = new Vector2(0, -controlHeight);
+                        inventoryRectTransform.offsetMax = new Vector2(controlWidth, 0);
+                        inventoryBackground.sprite = background;
+                        inventoryBackground.type = Image.Type.Sliced;
+                        inventoryBackground.color = backgroundColor;
+                    }
+
+                    private void MakePrevButtonControl(GameObject inventory)
+                    {
+                        Vector2 position = new Vector2(gapSize, 3 * gapSize + selectedItemLabelHeight + gridHeight);
+                        Button button = MenuActionUtils.AddButton(inventory.GetComponent<RectTransform>(), position, new Vector2(buttonWidth, buttonHeight), "◀◀", "Prev", Color.black, prevPageButtonColor);
+                        button.gameObject.AddComponent<BasicSingleSimpleInventoryViewPrevButton>();
+                    }
+
+                    private void MakeNextButtonControl(GameObject inventory)
+                    {
+                        Vector2 position = new Vector2(3 * gapSize + buttonWidth + pageLabelWidth, 3 * gapSize + selectedItemLabelHeight + gridHeight);
+                        Button button = MenuActionUtils.AddButton(inventory.GetComponent<RectTransform>(), position, new Vector2(buttonWidth, buttonHeight), "▶▶", "Next", Color.black, nextPageButtonColor);
+                        button.gameObject.AddComponent<BasicSingleSimpleInventoryViewNextButton>();
+                    }
+
+                    private void MakePageLabelControl(GameObject inventory)
+                    {
+                        GameObject pageLabelControl = new GameObject("PageLabel");
+                        Text pageLabelText = pageLabelControl.AddComponent<Text>();
+                        RectTransform pageLabelRectTransform = pageLabelControl.GetComponent<RectTransform>();
+                        Vector2 position = new Vector2(2 * gapSize + buttonWidth, 3 * gapSize + selectedItemLabelHeight + gridHeight);
+                        Vector2 size = new Vector2(pageLabelWidth, pageLabelHeight);
+                        pageLabelRectTransform.SetParent(inventory.GetComponent<RectTransform>(), false);
+                        pageLabelRectTransform.anchorMin = Vector2.zero;
+                        pageLabelRectTransform.anchorMax = Vector2.zero;
+                        pageLabelRectTransform.pivot = Vector2.zero;
+                        pageLabelRectTransform.offsetMin = position;
+                        pageLabelRectTransform.offsetMax = position + size;
+                        pageLabelText.alignment = TextAnchor.MiddleCenter;
+                        pageLabelText.fontSize = pageLabelFontSize;
+                        pageLabelText.text = "(page) / (total)";
+                        pageLabelText.color = Color.black;
+                        pageLabelControl.AddComponent<BasicSingleSimpleInventoryViewPageLabel>();
+                    }
+
+                    private void MakeHeaderControls(GameObject inventory)
+                    {
+                        MakeNextButtonControl(inventory);
+                        MakePageLabelControl(inventory);
+                        MakePrevButtonControl(inventory);
+                    }
+
+                    private void MakeSelectionLabelControl(GameObject inventory)
+                    {
+                        GameObject selectedItemLabelControl = new GameObject("SelectedItemLabel");
+                        Text selectedItemLabelText = selectedItemLabelControl.AddComponent<Text>();
+                        RectTransform selectedItemLabelRectTransform = selectedItemLabelControl.GetComponent<RectTransform>();
+                        Vector2 position = new Vector2(gapSize, gapSize);
+                        Vector2 size = new Vector2(selectedItemLabelWidth, selectedItemLabelHeight);
+                        selectedItemLabelRectTransform.SetParent(inventory.GetComponent<RectTransform>(), false);
+                        selectedItemLabelRectTransform.anchorMin = Vector2.zero;
+                        selectedItemLabelRectTransform.anchorMax = Vector2.zero;
+                        selectedItemLabelRectTransform.pivot = Vector2.zero;
+                        selectedItemLabelRectTransform.offsetMin = position;
+                        selectedItemLabelRectTransform.offsetMax = position + size;
+                        selectedItemLabelText.alignment = TextAnchor.MiddleCenter;
+                        selectedItemLabelText.fontSize = selectedItemLabelFontSize;
+                        selectedItemLabelText.text = "";
+                        selectedItemLabelText.color = Color.black;
+                        selectedItemLabelControl.AddComponent<BasicSingleSimpleInventoryViewSelectedItemLabel>();
+                    }
+
+                    private GameObject MakeGridControl(GameObject inventory)
+                    {
+                        GameObject gridControl = new GameObject("Slots");
+                        GridLayoutGroup gridLayoutGroup = gridControl.AddComponent<GridLayoutGroup>();
+                        gridLayoutGroup.spacing = new Vector3(cellWidth, cellHeight);
+                        gridLayoutGroup.cellSize = new Vector3(horizontalCellGapSize, verticalCellGapSize);
+                        RectTransform gridRectTransform = gridControl.GetComponent<RectTransform>();
+                        Vector2 position = new Vector2(gapSize, 2 * gapSize + selectedItemLabelHeight);
+                        Vector2 size = new Vector2(gridWidth, gridHeight);
+                        gridRectTransform.SetParent(inventory.GetComponent<RectTransform>(), false);
+                        gridRectTransform.anchorMin = Vector2.zero;
+                        gridRectTransform.anchorMax = Vector2.zero;
+                        gridRectTransform.pivot = Vector2.zero;
+                        gridRectTransform.offsetMin = position;
+                        gridRectTransform.offsetMax = position + size;
+                        return gridControl;
+                    }
+
+                    private void MakeSlotControl(GameObject parentLayout, int row, int column)
+                    {
+
+                    }
+
+                    private void MakeBodyControls(GameObject inventory)
+                    {
+                        GameObject layout = MakeGridControl(inventory);
+                        for(int currentRow = 0; currentRow < rows; currentRow++)
+                        {
+                            for(int currentColumn = 0; currentColumn < columns; currentColumn++)
+                            {
+                                MakeSlotControl(layout, currentRow, currentColumn);
+                            }
+                        }
+                    }
+
                     private void Execute()
                     {
+                        GameObject inventoryView = new GameObject("Basic Inventory View");
+                        inventoryView.transform.parent = selectedTransform;
+                        Canvas parentCanvas = selectedTransform.GetComponent<Canvas>();
+                        MakeInventoryContainer(inventoryView);
+                        MakeHeaderControls(inventoryView);
+                        MakeSelectionLabelControl(inventoryView);
+                        MakeBodyControls(inventoryView);
+                        Undo.RegisterCreatedObjectUndo(inventoryView, "Create Basic Inventory View");
                         Close();
                     }
                 }
 
 				/// <summary>
-				///   This method is used in the assets menu action: GameObject > Back Pack > Inventory > Create Basic Inventory.
+				///   This method is used in the assets menu action: GameObject > Back Pack > Inventory > Create Basic Inventory View.
 				/// </summary>
-				[MenuItem("GameObject/Back Pack/Inventory/Create Basic Inventory", false, 11)]
+				[MenuItem("GameObject/Back Pack/Inventory/Create Basic Inventory View", false, 11)]
 				public static void AddBasicInventory()
 				{
 					CreateBasicInventoryViewWindow window = ScriptableObject.CreateInstance<CreateBasicInventoryViewWindow>();
@@ -244,7 +377,7 @@ namespace BackPack
 					window.ShowUtility();
 				}
 
-				[MenuItem("GameObject/Back Pack/Inventory/Create Basic Inventory", true)]
+				[MenuItem("GameObject/Back Pack/Inventory/Create Basic Inventory View", true)]
 				public static bool CanAddBasicInventory()
 				{
 					return Selection.activeTransform != null && Selection.activeTransform.GetComponent<Canvas>();

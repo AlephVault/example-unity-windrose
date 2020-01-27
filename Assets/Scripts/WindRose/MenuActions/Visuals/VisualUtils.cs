@@ -117,6 +117,7 @@ namespace WindRose
                                 break;
                         }
                         gameObject.SetActive(true);
+                        Undo.RegisterCreatedObjectUndo(gameObject, "Create Visual");
                         Close();
                     }
                 }

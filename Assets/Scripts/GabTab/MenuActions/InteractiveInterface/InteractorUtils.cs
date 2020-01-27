@@ -138,54 +138,7 @@ namespace GabTab
                         return null;
                     }
 
-                    return AddButton(parent, new Vector2(position * (buttonsOffset + buttonWidth) + buttonsOffset, buttonsOffset), new Vector2(buttonWidth, buttonHeight), settings, fontSize);
-                }
-
-                /// <summary>
-                ///   Creates a button, inside a parent, using specific coordinates (based on bottom-left) and size.
-                /// </summary>
-                /// <param name="parent">The parent under which the button will be located</param>
-                /// <param name="position">The button's from-top-bottom position</param>
-                /// <param name="size">The button's size</param>
-                /// <param name="settings">The button's settings</param>
-                /// <param name="fontSize">Optional font size. Will default to half the height</param>
-                /// <returns>The button being created, or <c>null</c> if arguments are negative or somehow inconsistent</returns>
-                public static Button AddButton(RectTransform parent, Vector2 position, Vector2 size, ButtonSettings settings, int fontSize = 0)
-                {
-                    if (size.x <= 0 || size.y <= 0 || position.x < 0 || position.y < 0)
-                    {
-                        return null;
-                    }
-                    GameObject buttonObject = new GameObject(settings.key);
-                    buttonObject.transform.parent = parent;
-                    RectTransform rectTransformComponent = Layout.AddComponent<RectTransform>(buttonObject);
-                    rectTransformComponent.pivot = Vector2.zero;
-                    rectTransformComponent.anchorMin = Vector2.zero;
-                    rectTransformComponent.anchorMax = Vector2.zero;
-                    rectTransformComponent.offsetMin = position;
-                    rectTransformComponent.offsetMax = position;
-                    rectTransformComponent.sizeDelta = size;
-                    Image buttonImageComponent = Layout.AddComponent<Image>(buttonObject);
-                    buttonImageComponent.sprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd");
-                    buttonImageComponent.type = Image.Type.Sliced;
-                    buttonImageComponent.fillCenter = true;
-                    Button buttonComponent = Layout.AddComponent<Button>(buttonObject);
-                    buttonComponent.colors = settings.colors;
-                    buttonComponent.targetGraphic = buttonImageComponent;
-                    GameObject textObject = new GameObject("Text");
-                    textObject.transform.parent = buttonObject.transform;
-                    Text textComponent = Layout.AddComponent<Text>(textObject);
-                    textComponent.text = settings.caption;
-                    textComponent.fontSize = (fontSize >= 0) ? fontSize : (int)(size.y / 2);
-                    textComponent.alignment = TextAnchor.MiddleCenter;
-                    textComponent.color = settings.textColor;
-                    RectTransform textRectTransform = textObject.GetComponent<RectTransform>();
-                    textRectTransform.pivot = Vector2.one / 2f;
-                    textRectTransform.anchorMin = Vector2.zero;
-                    textRectTransform.anchorMax = Vector2.one;
-                    textRectTransform.offsetMin = Vector2.zero;
-                    textRectTransform.offsetMax = Vector2.zero;
-                    return buttonComponent;
+                    return MenuActionUtils.AddButton(parent, new Vector2(position * (buttonsOffset + buttonWidth) + buttonsOffset, buttonsOffset), new Vector2(buttonWidth, buttonHeight), settings.caption, settings.key, settings.textColor, settings.colors, fontSize);
                 }
             }
         }

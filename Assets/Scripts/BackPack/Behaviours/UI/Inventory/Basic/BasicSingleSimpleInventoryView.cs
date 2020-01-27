@@ -16,7 +16,7 @@ namespace BackPack
 		{
 			namespace Inventory
 			{
-				namespace Simple
+				namespace Basic
 				{
 					[RequireComponent(typeof(Image))]
 					public class BasicSingleSimpleInventoryView : SingleSimpleInventoryView {
@@ -45,7 +45,7 @@ namespace BackPack
 						private BasicSingleSimpleInventoryViewPageLabel pageLabel;
 						private BasicSingleSimpleInventoryViewSelectedItemLabel selectedItemLabel;
 						public int? SelectedPosition { get; private set; }
-						public BackPack.Types.Inventory.Stacks.Stack SelectedItem {
+						public Types.Inventory.Stacks.Stack SelectedItem {
 							get {
 								return (SelectedPosition != null) ? SourceSingleInventory.Find(SelectedPosition.Value) : null;
 							}

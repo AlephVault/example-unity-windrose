@@ -185,6 +185,7 @@ namespace WindRose
                         }
                         // Ok. Now activate the object.
                         mapObject.SetActive(true);
+                        Undo.RegisterCreatedObjectUndo(mapObject, "Create Map");
                         Close();
                     }
                 }

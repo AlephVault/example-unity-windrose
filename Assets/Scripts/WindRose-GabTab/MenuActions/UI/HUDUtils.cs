@@ -97,7 +97,7 @@ namespace WindRose
                         {
                             { "canvas", useSameObjectForCanvasAndHUD ? null : newCanvasComponent }
                         });
-
+						Undo.RegisterCreatedObjectUndo(gameObject, "Create HUD");
                         Close();
                     }
                 }

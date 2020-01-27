@@ -67,14 +67,14 @@ namespace WindRose
                 public float DisplayModeOpacity
                 {
                     get { return opacityInTranslucentMode; }
-                    set { opacityInTranslucentMode = Support.Utils.Values.Clamp(0, value, 1); }
+                    set { opacityInTranslucentMode = GMM.Utils.Values.Clamp(0, value, 1); }
                 }
 
                 private void Awake()
                 {
                     try
                     {
-                        CeilingLayer ceilingLayer = Support.Utils.Layout.RequireComponentInParent<CeilingLayer>(this);
+                        CeilingLayer ceilingLayer = GMM.Utils.Layout.RequireComponentInParent<CeilingLayer>(this);
                         parentGrid = ceilingLayer.GetComponent<Grid>();
                         // TODO in version 2018.x+ I have to require RECTANGULAR tilemap, or explode.
                         Tilemap tilemap = GetComponent<Tilemap>();

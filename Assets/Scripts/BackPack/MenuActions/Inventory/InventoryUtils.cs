@@ -12,7 +12,7 @@ namespace BackPack
     {
         namespace Inventory
         {
-            using Support.Utils;
+            using GMM.Utils;
             using Behaviours.UI.Inventory.Basic;
 
             /// <summary>

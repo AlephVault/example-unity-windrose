@@ -9,7 +9,7 @@ namespace WindRose
     {
         namespace Maps
         {
-            using Support.Utils;
+            using GMM.Utils;
 
             /// <summary>
             ///   Menu actions to create an object inside an Objects layer.

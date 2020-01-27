@@ -9,7 +9,7 @@ namespace WindRose
     {
         namespace Drops
         {
-            using Support.Types;
+            using GMM.Types;
 
             /// <summary>
             ///   <para>
@@ -57,7 +57,6 @@ namespace WindRose
                     //   a different sorting order
                     renderers = GetComponentsInChildren<SpriteRenderer>();
                     int order = 0;
-                    Debug.Log(string.Format("Initializing SDC Renderer with {0} renderers ...", renderers.Length));
                     foreach(SpriteRenderer renderer in renderers)
                     {
                         renderer.sortingLayerID = 0;

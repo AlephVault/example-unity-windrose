@@ -23,7 +23,7 @@ namespace BackPack
                         /// <summary>
                         ///   Tells when a container ID is invalid for this strategy.
                         /// </summary>
-                        public class InvalidPositionException : Support.Types.Exception
+                        public class InvalidPositionException : GMM.Types.Exception
                         {
                             public InvalidPositionException(string message) : base(message) {}
                         }

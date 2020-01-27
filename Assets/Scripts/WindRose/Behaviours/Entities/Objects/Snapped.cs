@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using Support.Utils;
+using GMM.Utils;
 
 namespace WindRose
 {

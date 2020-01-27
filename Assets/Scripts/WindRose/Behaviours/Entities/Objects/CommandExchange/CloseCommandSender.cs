@@ -10,7 +10,7 @@ namespace WindRose
         {
             namespace CommandExchange
             {
-				using Support.Utils;
+				using GMM.Utils;
 
                 /// <summary>
                 ///   <para>

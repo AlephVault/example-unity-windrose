@@ -1,5 +1,5 @@
-﻿using Support.Types;
-using Support.Utils;
+﻿using GMM.Types;
+using GMM.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -437,7 +437,7 @@ namespace BackPack
 					///   Tells when trying to add a null <see cref="SingleInventorySubRenderer"/>
 					///     when calling <see cref="AddSubRenderer(SingleInventorySubRenderer)"/>.
                     /// </summary>
-                    public class InvalidSubRendererException : Support.Types.Exception
+                    public class InvalidSubRendererException : GMM.Types.Exception
                     {
                         public InvalidSubRendererException(string message) : base(message) { }
                     }

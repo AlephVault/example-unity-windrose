@@ -2,7 +2,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
-using Support.Utils;
+using GMM.Utils;
 
 namespace GabTab
 {

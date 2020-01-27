@@ -14,7 +14,7 @@ namespace WindRose
             {
                 namespace Drop
                 {
-                    using Support.Utils;
+                    using GMM.Utils;
                     using BackPack.Behaviours.Inventory.ManagementStrategies.PositioningStrategies;
 
                     /// <summary>

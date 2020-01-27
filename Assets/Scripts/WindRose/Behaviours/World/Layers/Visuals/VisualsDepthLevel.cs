@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.Rendering;
-using Support.Utils;
+using GMM.Utils;
 
 namespace WindRose
 {

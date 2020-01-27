@@ -11,7 +11,7 @@ namespace WindRose
     {
         namespace Maps
         {
-            using Support.Utils;
+            using GMM.Utils;
 
             /// <summary>
             ///   Menu actions to create a map in the scene.
@@ -149,7 +149,7 @@ namespace WindRose
                         floorLayer.transform.parent = mapObject.transform;
                         Layout.AddComponent<Grid>(floorLayer).cellSize = cellSize;
                         Layout.AddComponent<SortingGroup>(floorLayer);
-                        Layout.AddComponent<Support.Behaviours.Normalized>(floorLayer);
+                        Layout.AddComponent<GMM.Behaviours.Normalized>(floorLayer);
                         Layout.AddComponent<Behaviours.World.Layers.Floor.FloorLayer>(floorLayer);
                         foreach (string floorName in floors)
                         {
@@ -157,7 +157,7 @@ namespace WindRose
                             floor.transform.parent = floorLayer.transform;
                             Layout.AddComponent<Tilemap>(floor);
                             Layout.AddComponent<TilemapRenderer>(floor);
-                            Layout.AddComponent<Support.Behaviours.Normalized>(floor);
+                            Layout.AddComponent<GMM.Behaviours.Normalized>(floor);
                             Layout.AddComponent<Behaviours.Floors.Floor>(floor);
                         }
                         // 2. Objects layer.
@@ -165,13 +165,13 @@ namespace WindRose
                         objectsLayer.transform.parent = mapObject.transform;
                         Layout.AddComponent<Grid>(objectsLayer).cellSize = cellSize;
                         Layout.AddComponent<SortingGroup>(objectsLayer);
-                        Layout.AddComponent<Support.Behaviours.Normalized>(objectsLayer);
+                        Layout.AddComponent<GMM.Behaviours.Normalized>(objectsLayer);
                         Layout.AddComponent<Behaviours.World.Layers.Objects.ObjectsLayer>(objectsLayer);
                         // 3. Visuals layer.
                         GameObject visualsLayer = new GameObject("VisualsLayer");
                         visualsLayer.transform.parent = mapObject.transform;
                         Layout.AddComponent<SortingGroup>(visualsLayer);
-                        Layout.AddComponent<Support.Behaviours.Normalized>(visualsLayer);
+                        Layout.AddComponent<GMM.Behaviours.Normalized>(visualsLayer);
                         Layout.AddComponent<Behaviours.World.Layers.Visuals.VisualsLayer>(visualsLayer);
                         // 4. Ceilings layer.
                         if (addCeilingsLayer)
@@ -180,7 +180,7 @@ namespace WindRose
                             ceilings.transform.parent = mapObject.transform;
                             Layout.AddComponent<Grid>(ceilings).cellSize = cellSize;
                             Layout.AddComponent<SortingGroup>(ceilings);
-                            Layout.AddComponent<Support.Behaviours.Normalized>(ceilings);
+                            Layout.AddComponent<GMM.Behaviours.Normalized>(ceilings);
                             Layout.AddComponent<Behaviours.World.Layers.Ceiling.CeilingLayer>(ceilings);
                         }
                         // Ok. Now activate the object.

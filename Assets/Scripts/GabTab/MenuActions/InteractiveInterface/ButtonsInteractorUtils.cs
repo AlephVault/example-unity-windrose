@@ -12,7 +12,7 @@ namespace GabTab
     {
         namespace InteractiveInterface
         {
-            using Support.Utils;
+            using GMM.Utils;
             using GabTab.Behaviours;
             using GabTab.Behaviours.Interactors;
 

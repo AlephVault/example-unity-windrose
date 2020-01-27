@@ -41,7 +41,7 @@ namespace BackPack
 
                         private void Awake()
                         {
-                            max = Support.Utils.Values.Max(0, max);
+                            max = GMM.Utils.Values.Max(0, max);
                         }
 
                         /// <summary>

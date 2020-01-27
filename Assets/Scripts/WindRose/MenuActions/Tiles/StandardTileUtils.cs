@@ -12,7 +12,7 @@ namespace WindRose
     {
         namespace Tiles
         {
-            using Support.Utils;
+            using GMM.Utils;
 
             /// <summary>
             ///   Menu actions to create standard tiles from sprites.

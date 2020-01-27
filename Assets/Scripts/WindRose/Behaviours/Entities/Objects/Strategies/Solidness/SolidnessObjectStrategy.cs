@@ -14,7 +14,7 @@ namespace WindRose
             {
                 namespace Solidness
                 {
-                    using Support.Utils;
+                    using GMM.Utils;
                     using World.ObjectsManagementStrategies.Solidness;
 
                     /// <summary>

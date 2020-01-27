@@ -44,7 +44,7 @@ namespace BackPack
                         /// <summary>
                         ///   Tells when a stack as an invalid (incompatible) usage strategy.
                         /// </summary>
-                        public class InvalidStackUsageStrategyCounterparyType : Support.Types.Exception
+                        public class InvalidStackUsageStrategyCounterparyType : GMM.Types.Exception
                         {
                             public InvalidStackUsageStrategyCounterparyType(string message) : base(message) { }
                         }

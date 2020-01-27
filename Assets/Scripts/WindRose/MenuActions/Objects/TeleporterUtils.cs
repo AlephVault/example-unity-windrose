@@ -9,7 +9,7 @@ namespace WindRose
     {
         namespace Objects
         {
-            using Support.Utils;
+            using GMM.Utils;
 
             /// <summary>
             ///   Menu actions to create a teleporter object inside an Objects layer.

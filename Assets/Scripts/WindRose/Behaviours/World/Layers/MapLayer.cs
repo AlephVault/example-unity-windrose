@@ -18,7 +18,7 @@ namespace WindRose
                 ///     more layer types (although this is entirely up to the
                 ///     developer).
                 /// </summary>
-                [RequireComponent(typeof(Support.Behaviours.Normalized))]
+                [RequireComponent(typeof(GMM.Behaviours.Normalized))]
                 [RequireComponent(typeof(SortingGroup))]
                 [ExecuteInEditMode]
                 public abstract class MapLayer : MonoBehaviour
@@ -46,9 +46,9 @@ namespace WindRose
                         sortingGroup = GetComponent<SortingGroup>();
                         try
                         {
-                            Map = Support.Utils.Layout.RequireComponentInParent<Map>(this);
+                            Map = GMM.Utils.Layout.RequireComponentInParent<Map>(this);
                         }
-                        catch (Support.Types.Exception)
+                        catch (GMM.Types.Exception)
                         {
                             Destroy(gameObject);
                             throw new ParentMustBeMapException();

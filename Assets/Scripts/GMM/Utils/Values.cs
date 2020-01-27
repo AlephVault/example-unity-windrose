@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Support
+namespace GMM
 {
     namespace Utils
     {

@@ -48,8 +48,8 @@ namespace WindRose
                     MapObject mapObject = GetComponent<MapObject>();
                     Oriented oriented = GetComponent<Oriented>();
                     GameObject aNewGameObject = new GameObject("WatcherVisionRange");
-                    Support.Utils.Layout.AddComponent<BoxCollider>(aNewGameObject);
-                    relatedVisionRange = Support.Utils.Layout.AddComponent<TriggerVisionRange>(aNewGameObject, new System.Collections.Generic.Dictionary<string, object>()
+                    GMM.Utils.Layout.AddComponent<BoxCollider>(aNewGameObject);
+                    relatedVisionRange = GMM.Utils.Layout.AddComponent<TriggerVisionRange>(aNewGameObject, new System.Collections.Generic.Dictionary<string, object>()
                     {
                         { "relatedObject", mapObject },
                         { "direction", oriented.Orientation },

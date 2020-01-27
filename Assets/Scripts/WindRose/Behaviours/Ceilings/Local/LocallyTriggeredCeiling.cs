@@ -66,8 +66,8 @@ namespace WindRose
 
                     private void Awake()
                     {
-                        CeilingLayer ceilingLayer = Support.Utils.Layout.RequireComponentInParent<CeilingLayer>(this);
-                        map = Support.Utils.Layout.RequireComponentInParent<Map>(ceilingLayer);
+                        CeilingLayer ceilingLayer = GMM.Utils.Layout.RequireComponentInParent<CeilingLayer>(this);
+                        map = GMM.Utils.Layout.RequireComponentInParent<Map>(ceilingLayer);
                         // VISIBLE is not allowed, since there would be no
                         //   change: the ceiling would never take off.
                         if (displayModeWhenTriggering == Ceiling.DisplayMode.VISIBLE)

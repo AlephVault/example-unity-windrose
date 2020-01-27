@@ -4,7 +4,7 @@ using UnityEngine;
 using GabTab.Behaviours;
 using GabTab.Behaviours.Interactors;
 using WindRose.Behaviours.UI;
-using Support.Utils;
+using GMM.Utils;
 
 [RequireComponent(typeof(HUD))]
 public class SampleTextFiller : MonoBehaviour

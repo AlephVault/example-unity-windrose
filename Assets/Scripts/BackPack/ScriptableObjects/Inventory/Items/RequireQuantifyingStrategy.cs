@@ -11,7 +11,7 @@ namespace BackPack
         {
             namespace Items
             {
-                using Support.Utils;
+                using GMM.Utils;
 
                 /// <summary>
                 ///   This is an attribute to be used on item Rendering/Usage Strategies. This attribute ensures a 

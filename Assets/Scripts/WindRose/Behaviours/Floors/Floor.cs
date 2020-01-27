@@ -17,7 +17,7 @@ namespace WindRose
             /// </summary>
             [RequireComponent(typeof(Tilemap))]
             [RequireComponent(typeof(TilemapRenderer))]
-            [RequireComponent(typeof(Support.Behaviours.Normalized))]
+            [RequireComponent(typeof(GMM.Behaviours.Normalized))]
             class Floor : MonoBehaviour
             {
                 /// <summary>
@@ -33,7 +33,7 @@ namespace WindRose
                 {
                     try
                     {
-                        Support.Utils.Layout.RequireComponentInParent<World.Layers.Floor.FloorLayer>(this);
+                        GMM.Utils.Layout.RequireComponentInParent<World.Layers.Floor.FloorLayer>(this);
                         // TODO in version 2018.x+ I have to require RECTANGULAR tilemap, or explode.
                         Tilemap tilemap = GetComponent<Tilemap>();
                         tilemap.orientation = Tilemap.Orientation.XY;

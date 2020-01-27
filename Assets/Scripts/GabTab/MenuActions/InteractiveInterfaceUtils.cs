@@ -10,7 +10,7 @@ namespace GabTab
 {
     namespace MenuActions
     {
-        using Support.Utils;
+        using GMM.Utils;
         using Behaviours;
             
         /// <summary>

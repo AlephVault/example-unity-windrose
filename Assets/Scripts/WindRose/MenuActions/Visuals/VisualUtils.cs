@@ -11,7 +11,7 @@ namespace WindRose
     {
         namespace Visuals
         {
-            using Support.Utils;
+            using GMM.Utils;
             using ScriptableObjects.Animations;
             using Behaviours.Entities.Visuals;
             using Behaviours.Entities.Visuals.StateBundles.Moving;

@@ -12,7 +12,7 @@ namespace WindRose
     {
         namespace Tiles
         {
-            using Support.Utils;
+            using GMM.Utils;
             using ScriptableObjects.Tiles;
 
             /// <summary>

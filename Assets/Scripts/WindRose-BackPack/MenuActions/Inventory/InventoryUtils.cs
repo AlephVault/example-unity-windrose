@@ -12,7 +12,7 @@ namespace WindRose
     {
         namespace Inventory
         {
-            using Support.Utils;
+            using GMM.Utils;
             using Behaviours.Drops;
             using BackPack.Behaviours.Inventory.ManagementStrategies.UsageStrategies;
 			using BackPack.Behaviours.Inventory.ManagementStrategies.SpatialStrategies;
@@ -200,7 +200,7 @@ namespace WindRose
                         dropLayer.transform.parent = selectedTransform;
                         dropLayer.SetActive(false);
                         Layout.AddComponent<SortingGroup>(dropLayer);
-                        Layout.AddComponent<Support.Behaviours.Normalized>(dropLayer);
+                        Layout.AddComponent<GMM.Behaviours.Normalized>(dropLayer);
                         Layout.AddComponent<InventoryInfiniteSimpleSpatialManagementStrategy>(dropLayer);
                         Layout.AddComponent<InventoryMapSizedPositioningManagementStrategy>(dropLayer);
                         InventoryNullUsageManagementStrategy usageStrategy = Layout.AddComponent<InventoryNullUsageManagementStrategy>(dropLayer);

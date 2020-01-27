@@ -4,7 +4,7 @@ using UnityEditor;
 using System.Reflection;
 using System;
 
-namespace Support
+namespace GMM
 {
     namespace Editors
     {

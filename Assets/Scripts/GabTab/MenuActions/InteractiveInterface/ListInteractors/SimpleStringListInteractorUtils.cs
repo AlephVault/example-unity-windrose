@@ -14,7 +14,7 @@ namespace GabTab
         {
             namespace ListInteractors
             {
-                using Support.Utils;
+                using GMM.Utils;
                 using Behaviours;
                 using Behaviours.Interactors.DefaultLists;
 

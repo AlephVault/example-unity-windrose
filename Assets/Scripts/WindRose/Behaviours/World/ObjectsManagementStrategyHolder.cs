@@ -163,7 +163,7 @@ namespace WindRose
                         throw new InvalidStrategyComponentException("The selected strategy component must be non-null and present among the current map's components");
                     }
                     // We enumerate all the strategies attached. We will iterate their calls and cache their results, if any.
-                    sortedStrategies = (from component in Support.Utils.Layout.SortByDependencies(GetComponents<ObjectsManagementStrategy>()) select (component as ObjectsManagementStrategy)).ToArray();
+                    sortedStrategies = (from component in GMM.Utils.Layout.SortByDependencies(GetComponents<ObjectsManagementStrategy>()) select (component as ObjectsManagementStrategy)).ToArray();
 
                     // We cannot allow a strategy type being added (depended) twice.
                     if (sortedStrategies.Length != new HashSet<Type>(from sortedStrategy in sortedStrategies select sortedStrategy.GetType()).Count)
@@ -402,7 +402,7 @@ namespace WindRose
                     RequireNotAttached(objectStrategy);
 
                     // Do we accept or reject the strategy being attached? (no per-strategy-component call is needed here)
-                    if (!Support.Utils.Classes.IsSameOrSubclassOf(objectStrategy.GetType(), Strategy.CounterpartType))
+                    if (!GMM.Utils.Classes.IsSameOrSubclassOf(objectStrategy.GetType(), Strategy.CounterpartType))
                     {
                         throw new StrategyNowAllowedException("This strategy is not allowed on this map because is not a valid counterpart of the current map strategy.");
                     }

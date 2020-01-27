@@ -145,9 +145,9 @@ namespace BackPack
                     ///   Serializes its content into a tuple (item, quantity, arbitrary data).
                     /// </summary>
                     /// <returns>A tuple representation of this stack: (item, quantity, arbitrary data)</returns>
-                    public Support.Types.Tuple<ScriptableObjects.Inventory.Items.Item, object, object> Dump()
+                    public GMM.Types.Tuple<ScriptableObjects.Inventory.Items.Item, object, object> Dump()
                     {
-                        return new Support.Types.Tuple<ScriptableObjects.Inventory.Items.Item, object, object>(Item, QuantifyingStrategy.Quantity, MainUsageStrategy.Export());
+                        return new GMM.Types.Tuple<ScriptableObjects.Inventory.Items.Item, object, object>(Item, QuantifyingStrategy.Quantity, MainUsageStrategy.Export());
                     }
 
                     /**

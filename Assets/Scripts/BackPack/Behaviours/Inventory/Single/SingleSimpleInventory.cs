@@ -14,7 +14,7 @@ namespace BackPack
 				using ManagementStrategies.SpatialStrategies;
                 using System;
                 using System.Linq;
-                using Support.Types;
+                using GMM.Types;
 
 				// TODO move this one to child behaviour.
                 // using World.Layers.Drop;

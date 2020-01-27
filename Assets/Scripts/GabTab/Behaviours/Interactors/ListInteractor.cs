@@ -307,7 +307,7 @@ namespace GabTab
                  * The currently selected item(s). The last selected item will be considered by us as the "active" item.
                  * However, it will be up to users to actually take care of such quality.
                  */
-                private Support.Types.OrderedSet<ListItem> selectedItems = new Support.Types.OrderedSet<ListItem>();
+                private GMM.Types.OrderedSet<ListItem> selectedItems = new GMM.Types.OrderedSet<ListItem>();
 
                 /// <summary>
                 ///   Gets/sets the items being selected. When you set this property, the last element in
@@ -449,10 +449,10 @@ namespace GabTab
                             // 2. You can only move M steps forward, where M is the result of (items.Count - 1 - position) / itemDisplays.Length
                             int min = -(position / itemDisplays.Length);
                             int max = (items.Count - 1 - position) / itemDisplays.Length;
-                            position += Support.Utils.Values.Clamp<int>(min, numItems, max) * itemDisplays.Length;
+                            position += GMM.Utils.Values.Clamp<int>(min, numItems, max) * itemDisplays.Length;
                             break;
                         case PagingType.CLAMPED:
-                            position = Support.Utils.Values.Clamp<int>(0, position + numItems * itemDisplays.Length, items.Count - itemDisplays.Length);
+                            position = GMM.Utils.Values.Clamp<int>(0, position + numItems * itemDisplays.Length, items.Count - itemDisplays.Length);
                             break;
                         case PagingType.LOOPONG:
                             numItems = (numItems * itemDisplays.Length) % items.Count;

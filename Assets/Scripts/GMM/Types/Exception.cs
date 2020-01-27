@@ -1,4 +1,4 @@
-﻿namespace Support
+﻿namespace GMM
 {
     namespace Types
     {

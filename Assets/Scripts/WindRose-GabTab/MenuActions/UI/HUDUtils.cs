@@ -12,7 +12,7 @@ namespace WindRose
         namespace UI
         {
             using Behaviours.UI;
-            using Support.Utils;
+            using GMM.Utils;
             
             /// <summary>
             ///   Menu actions to create HUD objects (and, perhaps, cameras).

@@ -44,7 +44,7 @@ namespace WindRose
                 [SerializeField]
                 private Strategies.TileStrategy[] strategies;
 
-                public class TileStrategyDependencyException : Support.Utils.AssetsLayout.DependencyException
+                public class TileStrategyDependencyException : GMM.Utils.AssetsLayout.DependencyException
                 {
                     public TileStrategyDependencyException(string message) : base(message) {}
                 }
@@ -54,7 +54,7 @@ namespace WindRose
                     try
                     {
                         // Order / Flatten dependencies
-                        strategies = Support.Utils.AssetsLayout.FlattenDependencies<Strategies.TileStrategy, RequireTileStrategy, TileStrategyDependencyException>(strategies);
+                        strategies = GMM.Utils.AssetsLayout.FlattenDependencies<Strategies.TileStrategy, RequireTileStrategy, TileStrategyDependencyException>(strategies);
                     }
                     catch(Exception)
                     {

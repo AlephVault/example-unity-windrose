@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using System.Collections;
 using UnityEngine;
-using Support.Utils;
+using GMM.Utils;
 
 namespace GabTab
 {

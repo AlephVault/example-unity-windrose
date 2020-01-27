@@ -14,7 +14,7 @@ namespace BackPack
             namespace Items
             {
                 using UnityEngine;
-                using Support.Utils;
+                using GMM.Utils;
                 using Types.Inventory.Stacks;
                 using Types.Inventory.Stacks.QuantifyingStrategies;
                 using Types.Inventory.Stacks.RenderingStrategies;

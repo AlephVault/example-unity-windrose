@@ -2,7 +2,7 @@
 using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
-using Support.Utils;
+using GMM.Utils;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif

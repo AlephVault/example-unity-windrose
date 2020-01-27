@@ -12,7 +12,7 @@ namespace BackPack
     {
         namespace Inventory
         {
-            using Support.Types;
+            using GMM.Types;
             using Types.Inventory.Stacks;
             using ManagementStrategies.UsageStrategies;
 
@@ -36,7 +36,7 @@ namespace BackPack
                 ///     of <see cref="mainUsageStrategy"/>, or that property
                 ///     is null.
                 /// </summary>
-                public class InvalidStrategyComponentException : Support.Types.Exception
+                public class InvalidStrategyComponentException : GMM.Types.Exception
                 {
                     public InvalidStrategyComponentException(string message) : base(message) { }
                 }
@@ -46,7 +46,7 @@ namespace BackPack
                 ///     having invalid quantity value, not having the required
                 ///     spatial strategy, or having an incompatible usage strategy.
                 /// </summary>
-                public class StackRejectedException : Support.Types.Exception
+                public class StackRejectedException : GMM.Types.Exception
                 {
                     /// <summary>
                     ///   Rejection may involve quantity of invalid type, not having
@@ -111,7 +111,7 @@ namespace BackPack
                     positioningStrategy = GetComponent<ManagementStrategies.PositioningStrategies.InventoryPositioningManagementStrategy>();
                     spatialStrategy = GetComponent<ManagementStrategies.SpatialStrategies.InventorySpatialManagementStrategy>();
                     ManagementStrategies.UsageStrategies.InventoryUsageManagementStrategy[] usageStrategies = GetComponents<ManagementStrategies.UsageStrategies.InventoryUsageManagementStrategy>();
-                    sortedUsageStrategies = (from component in Support.Utils.Layout.SortByDependencies(usageStrategies) select (component as ManagementStrategies.UsageStrategies.InventoryUsageManagementStrategy)).ToArray();
+                    sortedUsageStrategies = (from component in GMM.Utils.Layout.SortByDependencies(usageStrategies) select (component as ManagementStrategies.UsageStrategies.InventoryUsageManagementStrategy)).ToArray();
                     if (mainUsageStrategy == null || !(new HashSet<ManagementStrategies.UsageStrategies.InventoryUsageManagementStrategy>(sortedUsageStrategies).Contains(mainUsageStrategy)))
                     {
                         Destroy(gameObject);

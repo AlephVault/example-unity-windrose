@@ -4,7 +4,7 @@ using UnityEngine.UI;
 using UnityEditor;
 using System.Text.RegularExpressions;
 
-namespace Support
+namespace GMM
 {
     namespace Utils
     {

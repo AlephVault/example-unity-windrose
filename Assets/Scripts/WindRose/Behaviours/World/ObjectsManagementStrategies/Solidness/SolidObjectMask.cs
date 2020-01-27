@@ -16,7 +16,7 @@ namespace WindRose
             {
                 namespace Solidness
                 {
-                    using Support.Utils;
+                    using GMM.Utils;
 
                     /// <summary>
                     ///   SolidObjectMask is an abstraction of an object's solidness mask,

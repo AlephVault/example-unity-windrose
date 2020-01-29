@@ -17,9 +17,8 @@ namespace WindRose
 					using BackPack.Behaviours.UI.Inventory.Basic;
 
 					[RequireComponent(typeof(BasicSingleSimpleInventoryView))]
-					[RequireComponent(typeof(Throttler))]
-					public class SimpleBagControl : MonoBehaviour {
-						/**
+					public class BasicSimpleBagView : MonoBehaviour {
+                        /**
 						 * This is an implementation of SimpleInventoryView to be straight used
 						 *   by a WindRose-BackPack Bag object (this is an inventory existing as
 						 *   tied to an object, and thus living inside a map). Since it belongs
@@ -27,37 +26,14 @@ namespace WindRose
 						 *   (drop layer) of the map.
 						 */
 
-						[SerializeField]
-						private bool useKeyInteraction = true;
+                        private BasicSingleSimpleInventoryView inventoryView;
 
-						[SerializeField]
-						private KeyCode dropKey = KeyCode.D;
+                        void Awake()
+                        {
+                            inventoryView = GetComponent<BasicSingleSimpleInventoryView>();
+                        }
 
-						[SerializeField]
-						private KeyCode pickKey = KeyCode.A;
-
-						private Throttler throttler;
-						private BasicSingleSimpleInventoryView inventoryView;
-
-						void Awake()
-						{
-							throttler = GetComponent<Throttler>();
-							inventoryView = GetComponent<BasicSingleSimpleInventoryView> ();
-						}
-
-						void Update()
-						{
-							if (Input.GetKey(dropKey))
-							{
-								throttler.Throttled(DropSelected);
-							}
-							else if (Input.GetKey(pickKey))
-							{
-								throttler.Throttled(Pick);
-							}
-						}
-
-						void DropSelected()
+                        public void DropSelected()
 						{
 							if (inventoryView.SelectedPosition != null)
 							{
@@ -68,7 +44,7 @@ namespace WindRose
 							}
 						}
 
-						void Pick()
+						public void Pick()
 						{
 							int? finalPosition;
 							inventoryView.SourceSingleInventory.GetComponent<WindRose.Behaviours.Entities.Objects.Bags.SimpleBag>().Pick(out finalPosition);

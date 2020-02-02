@@ -200,13 +200,27 @@ namespace GMM
                 }
                 else
                 {
-                    bool active = gameObject.activeSelf;
-                    gameObject.SetActive(false);
-                    T component = gameObject.AddComponent<T>();
-                    SetObjectFieldValues(component, data);
-                    gameObject.SetActive(active);
-                    return component;
+                    return EnsureInactive<T>(gameObject, delegate () {
+                        T component = gameObject.AddComponent<T>();
+                        SetObjectFieldValues(component, data);
+                        return component;
+                    });
                 }
+            }
+
+            /// <summary>
+            ///   Turns an object as inactive, runs certain custom code, and sets the object back to its previous active/inactive state.
+            ///   Returns whatever value is returned by the custom code.
+            /// </summary>
+            /// <param name="gameObject">The object to blink out while running the custom code.</param>
+            /// <param name="action">The custom code to run.</param>
+            public static T EnsureInactive<T>(GameObject gameObject, Func<T> action)
+            {
+                bool active = gameObject.activeSelf;
+                gameObject.SetActive(false);
+                T result = action();
+                gameObject.SetActive(active);
+                return result;
             }
 
             /// <summary>

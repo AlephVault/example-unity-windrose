@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEditor;
@@ -137,6 +138,35 @@ namespace GMM
                 textRectTransform.offsetMax = Vector2.zero;
                 textRectTransform.localScale = Vector3.one;
                 return buttonComponent;
+            }
+
+            /// <summary>
+            ///   Adds a component to an object in this editor context: adding it to the UNDO stack.
+            /// </summary>
+            /// <typeparam name="T">The type of component to add</typeparam>
+            /// <param name="gameObject">The game object to add a component to</param>
+            /// <param name="data">The data to set for the component being added</param>
+            /// <param name="ensureInactive">Be default true, it tells whether the game object must be inactive while this method is running</param>
+            /// <returns>The newly created component</returns>
+            public static T AddUndoableComponent<T>(GameObject gameObject, Dictionary<string, object> data = null, bool ensureInactive = true) where T : Component
+            {
+                Func<T> action = delegate () {
+                    T component = Undo.AddComponent<T>(gameObject);
+                    if (data != null)
+                    {
+                        Layout.SetObjectFieldValues(component, data);
+                    }
+                    return component;
+                };
+
+                if (ensureInactive)
+                {
+                    return Layout.EnsureInactive(gameObject, action);
+                }
+                else
+                {
+                    return action();
+                }
             }
         }
     }

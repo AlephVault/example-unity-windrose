@@ -129,24 +129,26 @@ namespace WindRose
 
                     private void Execute()
                     {
-                        GameObject gameObject = Selection.activeTransform.gameObject;
+                        GameObject gameObject = selectedTransform.gameObject;
                         Undo.RegisterCompleteObjectUndo(gameObject, "Add Bag");
-                        InventoryNullUsageManagementStrategy usageStrategy = Layout.AddComponent<InventoryNullUsageManagementStrategy>(gameObject);
-                        Layout.AddComponent<InventoryManagementStrategyHolder>(gameObject, new Dictionary<string, object>() {
-                            { "mainUsageStrategy", usageStrategy }
-                        });
-                        if (finiteBag)
-                        {
-                            Layout.AddComponent<InventoryFiniteSimpleSpatialManagementStrategy>(gameObject, new Dictionary<string, object>()
-                            {
-                                { "size", bagSize }
+                        Layout.EnsureInactive(gameObject, delegate () {
+                            InventoryNullUsageManagementStrategy usageStrategy = MenuActionUtils.AddUndoableComponent<InventoryNullUsageManagementStrategy>(gameObject);
+                            InventoryManagementStrategyHolder holder = MenuActionUtils.AddUndoableComponent<InventoryManagementStrategyHolder>(gameObject, new Dictionary<string, object>() {
+                                { "mainUsageStrategy", usageStrategy }
                             });
-                        }
-                        else
-                        {
-                            Layout.AddComponent<InventoryInfiniteSimpleSpatialManagementStrategy>(gameObject);
-                        }
-                        Layout.AddComponent<Behaviours.Entities.Objects.Bags.SimpleBag>(gameObject);
+                            if (finiteBag)
+                            {
+                                InventoryFiniteSimpleSpatialManagementStrategy simpleSpatialManagementStrategy = MenuActionUtils.AddUndoableComponent<InventoryFiniteSimpleSpatialManagementStrategy>(gameObject, new Dictionary<string, object>() {
+                                    { "size", bagSize }
+                                });
+                            }
+                            else
+                            {
+                                MenuActionUtils.AddUndoableComponent<InventoryInfiniteSimpleSpatialManagementStrategy>(gameObject);
+                            }
+                            MenuActionUtils.AddUndoableComponent<Behaviours.Entities.Objects.Bags.SimpleBag>(gameObject);
+                            return holder;
+                        });
                         Close();
                     }
                 }

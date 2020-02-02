@@ -68,7 +68,7 @@ namespace WindRose
                     {
                         currentTime = 0;
                         currentAnimationIndex = 0;
-                        frameInterval = 1.0f / animation.FPS;
+                        frameInterval = (animation.FPS != 0) ? 1.0f / animation.FPS : float.MaxValue;
                     }
 
                     /// <summary>

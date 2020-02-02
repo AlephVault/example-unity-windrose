@@ -34,7 +34,7 @@ namespace WindRose
                 ///   The frames per second.
                 /// </summary>
                 [SerializeField]
-                private uint fps;
+                private uint fps = 16;
 
                 /// <summary>
                 ///   See <see cref="fps"/>.

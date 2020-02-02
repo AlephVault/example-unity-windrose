@@ -21,6 +21,7 @@ namespace GabTab
         {
             private class CreateInteractiveInterfaceWindow : EditorWindow
             {
+                public Transform selectedTransform;
                 private string interactiveInterfaceObjectName = "New Interactive Interface";
                 private float interfaceHeight = 0.3f;
                 private Color interfaceTint = Color.white;
@@ -52,7 +53,7 @@ namespace GabTab
 
                 private void Execute()
                 {
-                    Canvas selectedCanvas = Selection.activeTransform.GetComponent<Canvas>();
+                    Canvas selectedCanvas = selectedTransform.GetComponent<Canvas>();
                     Rect canvasRect = selectedCanvas.GetComponent<RectTransform>().rect;
                     float messageOffset = Values.Max(canvasRect.height, canvasRect.width) * 0.01f;
                     Sprite background = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/Background.psd");
@@ -60,7 +61,7 @@ namespace GabTab
                     // Creating the object
                     GameObject interactiveInterfaceObject = new GameObject(interactiveInterfaceObjectName);
                     interactiveInterfaceObject.SetActive(false);
-                    interactiveInterfaceObject.transform.parent = Selection.activeTransform;
+                    interactiveInterfaceObject.transform.parent = selectedTransform;
                     Image interactiveInterfaceImageComponent = Layout.AddComponent<Image>(interactiveInterfaceObject);
                     interactiveInterfaceImageComponent.sprite = background;
                     interactiveInterfaceImageComponent.type = Image.Type.Sliced;
@@ -142,6 +143,7 @@ namespace GabTab
                 CreateInteractiveInterfaceWindow window = ScriptableObject.CreateInstance<CreateInteractiveInterfaceWindow>();
                 window.maxSize = new Vector2(550, 186);
                 window.minSize = window.maxSize;
+                window.selectedTransform = Selection.activeTransform;
                 window.ShowUtility();
             }
 

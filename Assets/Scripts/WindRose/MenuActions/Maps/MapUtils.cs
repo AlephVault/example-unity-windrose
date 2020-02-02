@@ -24,6 +24,7 @@ namespace WindRose
                 /// </summary>
                 public class CreateMapWindow : EditorWindow
                 {
+                    public Transform selectedTransform;
                     private Vector2Int mapSize = new Vector2Int(8, 6);
                     private Vector3 cellSize = Vector3.one;
                     private string mapObjectName = "New Map";
@@ -110,7 +111,7 @@ namespace WindRose
                     private void Execute()
                     {
                         GameObject mapObject = new GameObject(mapObjectName);
-                        mapObject.transform.parent = Selection.activeTransform;
+                        mapObject.transform.parent = selectedTransform;
                         mapObject.SetActive(false);
                         // Creating the map component & sorting group.
                         Layout.AddComponent<SortingGroup>(mapObject);
@@ -199,6 +200,7 @@ namespace WindRose
                 {
                     CreateMapWindow window = ScriptableObject.CreateInstance<CreateMapWindow>();
                     window.position = new Rect(new Vector2(110, 250), new Vector2(643, 250));
+                    window.selectedTransform = Selection.activeTransform;
                     window.ShowUtility();
                 }
 

@@ -34,6 +34,11 @@ namespace WindRose
                         {
                             base.Awake();
                             grid = GetComponent<Grid>();
+                            if (grid.cellLayout != GridLayout.CellLayout.Rectangle)
+                            {
+                                Destroy(gameObject);
+                                throw new Types.Exception("Object layers' grids only support Rectangle grids for their tilemap(s)");
+                            }
                         }
 
                         protected override int GetSortingOrder()

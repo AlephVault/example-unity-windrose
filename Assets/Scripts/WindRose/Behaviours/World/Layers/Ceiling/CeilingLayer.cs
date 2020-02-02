@@ -31,6 +31,11 @@ namespace WindRose
                             base.Awake();
                             // We sort the layers accordingly - please use different sorting orders explicitly.
                             Grid grid = GetComponent<Grid>();
+                            if (grid.cellLayout != GridLayout.CellLayout.Rectangle)
+                            {
+                                Destroy(gameObject);
+                                throw new Types.Exception("Ceilings' grids only support Rectangle grids for their tilemap(s)");
+                            }
                             grid.cellSwizzle = GridLayout.CellSwizzle.XYZ;
                         }
                     }

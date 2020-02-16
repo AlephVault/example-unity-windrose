@@ -45,7 +45,29 @@ namespace WindRose
             }
 
             /// <summary>
-            ///   Constructs a bitmask.
+            ///   Constructs a bitmask by specifying its data.
+            ///   The data array must be of the appropriate size,
+            ///     usually from parsing this from a resoruce file,
+            ///     or an error will occur.
+            /// </summary>
+            /// <param name="width">Width of the bitmask.</param>
+            /// <param name="height">Height of the bitmask.</param>
+            /// <param name="initial">The data to initialize the bitmask with.</param>
+            public Bitmask(uint width, uint height, ulong[] data)
+            {
+                uint size = width * height;
+                if (size == 0) throw new ArgumentException("Both width and height must be > 0");
+                Width = width;
+                Height = height;
+                if (data == null) throw new ArgumentNullException("data");
+                if (data.Length != (size + 63) / 64) throw new ArgumentException(string.Format("The input data has an invalid length. For {0}x{1} the data size must be {2}",
+                    width, height, (size + 63) / 64
+                ));
+                bits = (ulong[])data.Clone();
+            }
+
+            /// <summary>
+            ///   Constructs a bitmask by filling with value.
             /// </summary>
             /// <param name="width">Width of the bitmask.</param>
             /// <param name="height">Height of the bitmask.</param>

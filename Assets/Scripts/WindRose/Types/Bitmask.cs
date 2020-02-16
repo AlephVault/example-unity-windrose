@@ -22,7 +22,7 @@ namespace WindRose
             ///   Consider the four aristotelic quantifiers for predicates. They are, actually, those operations.
             /// </remarks>
             public enum CheckType { ANY_BLOCKED, ANY_FREE, ALL_BLOCKED, ALL_FREE }
-            private uint[] bits;
+            private ulong[] bits;
             /// <summary>
             ///   Width of this bitmask.
             /// </summary>
@@ -41,7 +41,7 @@ namespace WindRose
                 if (source == null) throw new ArgumentNullException("source");
                 Width = source.Width;
                 Height = source.Height;
-                bits = (uint[])source.bits.Clone();
+                bits = source.Dump();
             }
 
             /// <summary>
@@ -54,7 +54,7 @@ namespace WindRose
             {
                 uint size = width * height;
                 if (size == 0) throw new ArgumentException("Both width and height must be > 0");
-                bits = new uint[(size + 31) / 32];
+                bits = new ulong[(size + 63) / 64];
                 Width = width;
                 Height = height;
                 Fill(initial);
@@ -71,18 +71,18 @@ namespace WindRose
                 get
                 {
                     uint flat_index = y * Width + x;
-                    return (this.bits[flat_index / 32] & (uint)(1 << (int)(flat_index % 32))) != 0;
+                    return (bits[flat_index / 64] & (1ul << (int)(flat_index % 64))) != 0;
                 }
                 set
                 {
                     uint flat_index = y * Width + x;
                     if (value)
                     {
-                        this.bits[flat_index / 32] |= (uint)(1 << (int)(flat_index % 32));
+                        bits[flat_index / 64] |= (1ul << (int)(flat_index % 64));
                     }
                     else
                     {
-                        this.bits[flat_index / 32] &= ~(uint)(1 << (int)(flat_index % 32));
+                        bits[flat_index / 64] &= ~(1ul << (int)(flat_index % 64));
                     }
                 }
             }
@@ -93,7 +93,7 @@ namespace WindRose
             /// <param name="value">The value to fill.</param>
             public void Fill(bool value)
             {
-                uint filler = value ? 0xffffffff : 0;
+                ulong filler = value ? ulong.MaxValue : 0;
                 for (int x = 0; x < bits.Length; x++) bits[x] = filler;
             }
 
@@ -469,6 +469,15 @@ namespace WindRose
             public bool GetCell(uint x, uint y)
             {
                 return this[Values.Clamp<uint>(0, x, Width - 1), Values.Clamp<uint>(0, y, Height - 1)];
+            }
+
+            /// <summary>
+            ///   Dumps all the bits of this mask.
+            /// </summary>
+            /// <returns>A copy of the internal bits.</returns>
+            public ulong[] Dump()
+            {
+                return (ulong[])bits.Clone();
             }
 
             private void CheckSameDimensions(Bitmask other)

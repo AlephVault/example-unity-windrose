@@ -112,32 +112,32 @@ namespace WindRose
                 /// <summary>
                 ///   The current X position of the object inside the attached map.
                 /// </summary>
-                public uint X { get { return parentMap.StrategyHolder.StatusFor(StrategyHolder).X; } }
+                public uint X { get { return parentMap.ObjectsLayer.StrategyHolder.StatusFor(StrategyHolder).X; } }
 
                 /// <summary>
                 ///   The current Y position of the object inside the attached map.
                 /// </summary>
-                public uint Y { get { return parentMap.StrategyHolder.StatusFor(StrategyHolder).Y; } }
+                public uint Y { get { return parentMap.ObjectsLayer.StrategyHolder.StatusFor(StrategyHolder).Y; } }
 
                 /// <summary>
                 ///   The opposite X position of this object inside the attached map, with
                 ///     respect of its <see cref="width"/> value.
                 /// </summary>
                 /// <remarks>(Xf, Yf) point is the opposite corner of (X, Y).</remarks>
-                public uint Xf { get { return parentMap.StrategyHolder.StatusFor(StrategyHolder).X + Width - 1; } }
+                public uint Xf { get { return parentMap.ObjectsLayer.StrategyHolder.StatusFor(StrategyHolder).X + Width - 1; } }
 
                 /// <summary>
                 ///   The opposite Y position of this object inside the attached map, with
                 ///     respect of its <see cref="height"/> value.
                 /// </summary>
                 /// <remarks>(Xf, Yf) point is the opposite corner of (X, Y).</remarks>
-                public uint Yf { get { return parentMap.StrategyHolder.StatusFor(StrategyHolder).Y + Height - 1; } }
+                public uint Yf { get { return parentMap.ObjectsLayer.StrategyHolder.StatusFor(StrategyHolder).Y + Height - 1; } }
 
                 /// <summary>
                 ///   The current movement of the object inside the attached map.
                 ///   It will be <c>null</c> if the object is not moving.
                 /// </summary>
-                public Direction? Movement { get { return parentMap.StrategyHolder.StatusFor(StrategyHolder).Movement; } }
+                public Direction? Movement { get { return parentMap.ObjectsLayer.StrategyHolder.StatusFor(StrategyHolder).Movement; } }
 
                 /// <summary>
                 ///   The strategy holder of this object.
@@ -355,33 +355,33 @@ namespace WindRose
 
                     try
                     {
-                        Map parentMap;
+                        ObjectsLayer parentLayer;
                         // We find the parent map like this: (current) -> ObjectsLayer -> map
                         if (transform.parent != null && transform.parent.parent != null)
                         {
-                            parentMap = transform.parent.parent.GetComponent<Map>();
+                            parentLayer = transform.parent.GetComponent<ObjectsLayer>();
                         }
                         else
                         {
-                            parentMap = null;
+                            parentLayer = null;
                         }
                         // It is OK to have no map! However, the object will be detached and
                         //   almost nothing useful will be able to be done to the object until
                         //   it is attached.
-                        if (parentMap != null)
+                        if (parentLayer != null)
                         {
                             // Here we are with an object that was instantiated inside a map's
                             //   hierarchy. We will not proceed and mark as initialized if
                             //   the underlying map is not initialized beforehand: otherwise
                             //   we would not necessarily know the appropriate dimensions.
-                            if (!parentMap.Initialized) return;
+                            if (!parentLayer.Initialized) return;
                             // And we also keep its objects layer
                             Layout.RequireComponentInParent<ObjectsLayer>(gameObject);
                             // Then we calculate the cell position from the grid in the layer.
                             Grid grid = Layout.RequireComponentInParent<Grid>(gameObject);
                             Vector3Int cellPosition = grid.WorldToCell(transform.position);
                             // Then we initialize, and perhaps it may explode due to exception.
-                            Attach(parentMap, (uint)cellPosition.x, (uint)cellPosition.y);
+                            Attach(parentLayer.Map, (uint)cellPosition.x, (uint)cellPosition.y);
                         }
                         // After success of a standalone map object being initialized, either
                         //   by itself or by the parent map invoking the initialization.
@@ -404,7 +404,7 @@ namespace WindRose
                     // That's why we run the conditional.
                     //
                     // For the general cases, Detach will find a mapObjectState attached.
-                    if (parentMap != null) parentMap.StrategyHolder.Detach(StrategyHolder);
+                    if (parentMap != null) parentMap.ObjectsLayer.StrategyHolder.Detach(StrategyHolder);
                 }
 
                 /// <summary>
@@ -431,7 +431,7 @@ namespace WindRose
                 /// <remarks>Does nothing if the object is paused.</remarks>
                 public void Teleport(uint x, uint y)
                 {
-                    if (parentMap != null && !Paused) parentMap.StrategyHolder.Teleport(StrategyHolder, x, y);
+                    if (parentMap != null && !Paused) parentMap.ObjectsLayer.StrategyHolder.Teleport(StrategyHolder, x, y);
                 }
 
                 /// <summary>
@@ -443,7 +443,7 @@ namespace WindRose
                 /// <remarks>Does nothing if the object is paused.</remarks>
                 public bool StartMovement(Direction movementDirection, bool continuated = false)
                 {
-                    return parentMap != null && !Paused && parentMap.StrategyHolder.MovementStart(StrategyHolder, movementDirection, continuated);
+                    return parentMap != null && !Paused && parentMap.ObjectsLayer.StrategyHolder.MovementStart(StrategyHolder, movementDirection, continuated);
                 }
 
                 /// <summary>
@@ -453,7 +453,7 @@ namespace WindRose
                 /// <returns>Does nothing if the object is paused.</returns>
                 public bool FinishMovement()
                 {
-                    return parentMap != null && !Paused && parentMap.StrategyHolder.MovementFinish(StrategyHolder);
+                    return parentMap != null && !Paused && parentMap.ObjectsLayer.StrategyHolder.MovementFinish(StrategyHolder);
                 }
 
                 /// <summary>
@@ -463,7 +463,7 @@ namespace WindRose
                 /// <returns>Does nothing if the object is paused.</returns>
                 public bool CancelMovement()
                 {
-                    return parentMap != null && !Paused && parentMap.StrategyHolder.MovementCancel(StrategyHolder);
+                    return parentMap != null && !Paused && parentMap.ObjectsLayer.StrategyHolder.MovementCancel(StrategyHolder);
                 }
 
                 /// <summary>

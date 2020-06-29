@@ -17,7 +17,6 @@ namespace WindRose
             /// </summary>
             [ExecuteInEditMode]
             [RequireComponent(typeof(SortingGroup))]
-            [RequireComponent(typeof(ObjectsManagementStrategyHolder))]
             public class Map : MonoBehaviour
             {
                 /// <summary>
@@ -139,18 +138,6 @@ namespace WindRose
                 /// </summary>
                 public uint Width { get { return width; } }
 
-                /// <summary>
-                ///   Tells whether the map is initialized. No need to make use of
-                ///     this property, but <see cref="MapObject"/> objects will.
-                /// </summary>
-                public bool Initialized { get { return initialized; } }
-
-                /// <summary>
-                ///   The objects strategy holder. It manages the rules under which the
-                ///     objcts inside can perform movements.
-                /// </summary>
-                public ObjectsManagementStrategyHolder StrategyHolder { get; private set; }
-
                 // Use this for initialization
                 private void Awake()
                 {
@@ -165,8 +152,6 @@ namespace WindRose
                     Grid floorLayerGrid = FloorLayer.GetComponent<Grid>();
                     CopyGridProperties(ObjectsLayer.GetComponent<Grid>(), floorLayerGrid);
                     if (CeilingLayer != null) CopyGridProperties(CeilingLayer.GetComponent<Grid>(), floorLayerGrid);
-                    // Fetching strategy - needed
-                    StrategyHolder = GetComponent<ObjectsManagementStrategyHolder>();
                     if (transform.parent) Debug.LogWarning("Warning!!! A Map must be a root object in the scene (i.e. have no parent transform) to be properly recognized by a HUD pausing all the maps!!!");
                 }
 
@@ -178,30 +163,6 @@ namespace WindRose
                     dst.cellSwizzle = src.cellSwizzle;
                 }
 
-                private void Start()
-                {
-#if UNITY_EDITOR
-                    if (!Application.isPlaying) return;
-#endif
-
-                    // Initializing strategy
-                    if (StrategyHolder == null)
-                    {
-                        throw new Types.Exception("An objects management strategy holder is required when the map initializes.");
-                    }
-                    else
-                    {
-                        StrategyHolder.Initialize();
-                    }
-                    // We consider this map as initialized after its strategy started.
-                    initialized = true;
-                    // Now, it is turn of the already-in-place map objects to initialize.
-                    foreach (MapObject mapObject in GetComponentsInChildren<MapObject>())
-                    {
-                        mapObject.Initialize();
-                    }
-                }
-
                 /// <summary>
                 ///   Attaches an object to this map.
                 /// </summary>
@@ -210,7 +171,7 @@ namespace WindRose
                 /// <param name="y">The new Y position</param>
                 public void Attach(MapObject mapObject, uint x, uint y)
                 {
-                    if (initialized) StrategyHolder.Attach(mapObject.StrategyHolder, x, y);
+                    ObjectsLayer.Attach(mapObject, x, y);
                 }
 
                 /// <summary>

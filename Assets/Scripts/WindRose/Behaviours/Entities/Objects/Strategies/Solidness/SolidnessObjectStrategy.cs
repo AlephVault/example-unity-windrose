@@ -15,7 +15,7 @@ namespace WindRose
                 namespace Solidness
                 {
                     using GMM.Utils;
-                    using World.ObjectsManagementStrategies.Solidness;
+                    using World.Layers.Objects.ObjectsManagementStrategies.Solidness;
 
                     /// <summary>
                     ///   Solidness strategy keeps the solidness state of this

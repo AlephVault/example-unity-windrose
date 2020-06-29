@@ -121,25 +121,25 @@ namespace WindRose
                             { "cellSize", cellSize},
                         });
                         // Creating the strategy holder & strategies.
-                        Behaviours.World.ObjectsManagementStrategies.ObjectsManagementStrategy mainStrategy = null;
+                        Behaviours.World.Layers.Objects.ObjectsManagementStrategies.ObjectsManagementStrategy mainStrategy = null;
                         switch(strategy)
                         {
                             case 0:
-                                Layout.AddComponent<Behaviours.World.ObjectsManagementStrategies.Base.BaseObjectsManagementStrategy>(mapObject);
-                                Layout.AddComponent<Behaviours.World.ObjectsManagementStrategies.Base.LayoutObjectsManagementStrategy>(mapObject);
-                                Layout.AddComponent<Behaviours.World.ObjectsManagementStrategies.Solidness.SolidnessObjectsManagementStrategy>(mapObject);
-                                mainStrategy = Layout.AddComponent<Behaviours.World.ObjectsManagementStrategies.Simple.SimpleObjectsManagementStrategy>(mapObject);
+                                Layout.AddComponent<Behaviours.World.Layers.Objects.ObjectsManagementStrategies.Base.BaseObjectsManagementStrategy>(mapObject);
+                                Layout.AddComponent<Behaviours.World.Layers.Objects.ObjectsManagementStrategies.Base.LayoutObjectsManagementStrategy>(mapObject);
+                                Layout.AddComponent<Behaviours.World.Layers.Objects.ObjectsManagementStrategies.Solidness.SolidnessObjectsManagementStrategy>(mapObject);
+                                mainStrategy = Layout.AddComponent<Behaviours.World.Layers.Objects.ObjectsManagementStrategies.Simple.SimpleObjectsManagementStrategy>(mapObject);
                                 break;
                             case 1:
-                                Layout.AddComponent<Behaviours.World.ObjectsManagementStrategies.Base.BaseObjectsManagementStrategy>(mapObject);
-                                mainStrategy = Layout.AddComponent<Behaviours.World.ObjectsManagementStrategies.Base.LayoutObjectsManagementStrategy>(mapObject);
+                                Layout.AddComponent<Behaviours.World.Layers.Objects.ObjectsManagementStrategies.Base.BaseObjectsManagementStrategy>(mapObject);
+                                mainStrategy = Layout.AddComponent<Behaviours.World.Layers.Objects.ObjectsManagementStrategies.Base.LayoutObjectsManagementStrategy>(mapObject);
                                 break;
                             default:
                                 Debug.LogWarning("A map is being just created with no main strategy. This map will be destroyed on play if no main strategy is set.");
                                 break;
                         }
                         // On the existing current holder, set the strategy=mainStrategy.
-                        Behaviours.World.ObjectsManagementStrategyHolder currentHolder = mapObject.GetComponent<Behaviours.World.ObjectsManagementStrategyHolder>();
+                        Behaviours.World.Layers.Objects.ObjectsManagementStrategyHolder currentHolder = mapObject.GetComponent<Behaviours.World.Layers.Objects.ObjectsManagementStrategyHolder>();
                         Layout.SetObjectFieldValues(currentHolder, new Dictionary<string, object>()
                         {
                             { "strategy", mainStrategy }

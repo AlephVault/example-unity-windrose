@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-using WindRose.Behaviours.World.ObjectsManagementStrategies.Solidness;
+using WindRose.Behaviours.World.Layers.Objects.ObjectsManagementStrategies.Solidness;
 using WindRose.Behaviours.Entities.Objects;
 using WindRose.Behaviours.Entities.Objects.Strategies.Simple;
 using WindRose.Behaviours.Entities.Objects.Strategies.Solidness;

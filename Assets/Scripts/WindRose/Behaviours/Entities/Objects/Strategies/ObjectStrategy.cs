@@ -15,7 +15,7 @@ namespace WindRose
             {
                 /// <summary>
                 ///   <para>
-                ///     Object strategies are the counterpart of <see cref="World.ObjectsManagementStrategies.ObjectsManagementStrategy"/>,
+                ///     Object strategies are the counterpart of <see cref="World.Layers.Objects.ObjectsManagementStrategies.ObjectsManagementStrategy"/>,
                 ///       and will reside in the same object holding an <see cref="ObjectStrategyHolder"/>.
                 ///   </para>
                 ///   <para>
@@ -26,11 +26,11 @@ namespace WindRose
                 [RequireComponent(typeof(MapObject))]
                 public abstract class ObjectStrategy : MonoBehaviour
                 {
-                    private static Type baseCounterpartStrategyType = typeof(World.ObjectsManagementStrategies.ObjectsManagementStrategy);
+                    private static Type baseCounterpartStrategyType = typeof(World.Layers.Objects.ObjectsManagementStrategies.ObjectsManagementStrategy);
 
                     /// <summary>
                     ///   Tells when the given counterpart type is not valid (i.e. subclass of
-                    ///     <see cref="World.ObjectsManagementStrategies.ObjectsManagementStrategy"/>).
+                    ///     <see cref="World.Layers.Objects.ObjectsManagementStrategies.ObjectsManagementStrategy"/>).
                     /// </summary>
                     public class UnsupportedTypeException : Types.Exception
                     {
@@ -103,10 +103,10 @@ namespace WindRose
                     /// <param name="newValue">The new value</param>
                     protected void PropertyWasUpdated(string property, object oldValue, object newValue)
                     {
-                        World.ObjectsManagementStrategyHolder strategyHolder = null;
+                        World.Layers.Objects.ObjectsManagementStrategyHolder strategyHolder = null;
                         try
                         {
-                            strategyHolder = StrategyHolder.Object.ParentMap.StrategyHolder;
+                            strategyHolder = StrategyHolder.Object.ParentMap.ObjectsLayer.StrategyHolder;
                         }
                         catch(NullReferenceException)
                         {

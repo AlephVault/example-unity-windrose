@@ -16,7 +16,7 @@ namespace WindRose
                     ///   <see cref="Base.LayoutObjectStrategy"/> and
                     ///   <see cref="Solidness.SolidnessObjectStrategy"/>.
                     ///   Its counterpart type is
-                    ///   <see cref="World.ObjectsManagementStrategies.Simple.SimpleObjectsManagementStrategy"/>.
+                    ///   <see cref="World.Layers.Objects.ObjectsManagementStrategies.Simple.SimpleObjectsManagementStrategy"/>.
                     /// </summary>
                     [RequireComponent(typeof(Base.LayoutObjectStrategy))]
                     [RequireComponent(typeof(Solidness.SolidnessObjectStrategy))]
@@ -24,11 +24,11 @@ namespace WindRose
                     {
                         /// <summary>
                         ///   Its counterpart type is
-                        ///   <see cref="World.ObjectsManagementStrategies.Simple.SimpleObjectsManagementStrategy"/>.
+                        ///   <see cref="World.Layers.Objects.ObjectsManagementStrategies.Simple.SimpleObjectsManagementStrategy"/>.
                         /// </summary>
                         protected override Type GetCounterpartType()
                         {
-                            return typeof(World.ObjectsManagementStrategies.Simple.SimpleObjectsManagementStrategy);
+                            return typeof(World.Layers.Objects.ObjectsManagementStrategies.Simple.SimpleObjectsManagementStrategy);
                         }
                     }
                 }

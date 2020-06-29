@@ -11,16 +11,16 @@ namespace WindRose
                 namespace Base
                 {
                     /// <summary>
-                    ///   This strategy is just the counterpart of <see cref="World.ObjectsManagementStrategies.Base.BaseObjectsManagementStrategy"/>.
+                    ///   This strategy is just the counterpart of <see cref="World.Layers.Objects.ObjectsManagementStrategies.Base.BaseObjectsManagementStrategy"/>.
                     /// </summary>
                     class BaseObjectStrategy : ObjectStrategy
                     {
                         /// <summary>
-                        ///   The counterpart type is <see cref="World.ObjectsManagementStrategies.Base.BaseObjectsManagementStrategy"/>.
+                        ///   The counterpart type is <see cref="World.Layers.Objects.ObjectsManagementStrategies.Base.BaseObjectsManagementStrategy"/>.
                         /// </summary>
                         protected override Type GetCounterpartType()
                         {
-                            return typeof(World.ObjectsManagementStrategies.Base.BaseObjectsManagementStrategy);
+                            return typeof(World.Layers.Objects.ObjectsManagementStrategies.Base.BaseObjectsManagementStrategy);
                         }
                     }
                 }

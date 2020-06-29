@@ -12,17 +12,17 @@ namespace WindRose
                 namespace Base
                 {
                     /// <summary>
-                    ///   This strategy is just the counterpart of <see cref="World.ObjectsManagementStrategies.Base.LayoutObjectsManagementStrategy"/>.
+                    ///   This strategy is just the counterpart of <see cref="World.Layers.Objects.ObjectsManagementStrategies.Base.LayoutObjectsManagementStrategy"/>.
                     /// </summary>
                     [RequireComponent(typeof(BaseObjectStrategy))]
                     class LayoutObjectStrategy : ObjectStrategy
                     {
                         /// <summary>
-                        ///   The counterpart type is <see cref="World.ObjectsManagementStrategies.Base.LayoutObjectsManagementStrategy"/>.
+                        ///   The counterpart type is <see cref="World.Layers.Objects.ObjectsManagementStrategies.Base.LayoutObjectsManagementStrategy"/>.
                         /// </summary>
                         protected override Type GetCounterpartType()
                         {
-                            return typeof(World.ObjectsManagementStrategies.Base.LayoutObjectsManagementStrategy);
+                            return typeof(World.Layers.Objects.ObjectsManagementStrategies.Base.LayoutObjectsManagementStrategy);
                         }
                     }
                 }

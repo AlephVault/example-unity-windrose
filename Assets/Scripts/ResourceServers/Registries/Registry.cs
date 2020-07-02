@@ -17,7 +17,10 @@ namespace ResourceServers
             ///   This exception is thrown when an error
             ///     occurs while fetching one resource.
             /// </summary>
-            public class FindError : System.Exception {}
+            public class FindError : System.Exception
+            {
+                public FindError(string message) : base(message) {}
+            }
 
             /// <summary>
             ///   <para>

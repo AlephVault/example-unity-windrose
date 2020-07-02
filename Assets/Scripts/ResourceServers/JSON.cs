@@ -1,4 +1,5 @@
 ﻿using System;
+using Newtonsoft.Json;
 using System.Collections;
 using UnityEngine.Networking;
 
@@ -81,11 +82,10 @@ namespace ResourceServers
         /// </summary>
         /// <typeparam name="T">The type to use as parse target</typeparam>
         /// <param name="text">The text to parse</param>
-        /// <returns>A parsed object.</returns>
+        /// <returns>A parsed object</returns>
         public static T Parse<T>(string text)
         {
-            // TODO
-            return default(T);
+            return JsonConvert.DeserializeObject<T>(text);
         }
     }
 }

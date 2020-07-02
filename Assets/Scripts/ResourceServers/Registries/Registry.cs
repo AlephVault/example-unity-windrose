@@ -14,15 +14,18 @@ namespace ResourceServers
         public abstract class Registry : ScriptableObject
         {
             /// <summary>
+            ///   This exception is thrown when an error
+            ///     occurs while fetching one resource.
+            /// </summary>
+            public class FindError : System.Exception {}
+
+            /// <summary>
             ///   <para>
             ///     Finds an object (of arbitrary type) given
             ///     its path. Paths will typically be of form
             ///     "/foo/bar/baz/qoo/1", but this will only
             ///     depend on the registry version (e.g. V2
             ///     uses /package/space/list/id).
-            ///   </para>
-            ///   <para>
-            ///     
             ///   </para>
             /// </summary>
             /// <param name="path">The resource path</param>

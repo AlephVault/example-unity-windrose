@@ -58,7 +58,7 @@ namespace BackPack
                     /// </summary>
                     public IEnumerable<Tuple<int, Stack>> StackPairs(bool reverse = false)
                     {
-                        return from tuple in inventoryHolder.StackPairs(Position.Instance, reverse) select new Tuple<int, Stack>((int)tuple.First, tuple.Second);
+                        return from tuple in inventoryHolder.StackPairs(Position.Instance, reverse) select new Tuple<int, Stack>((int)tuple.Item1, tuple.Item2);
                     }
 
                     /// <summary>
@@ -74,7 +74,7 @@ namespace BackPack
                     /// </summary>
                     public IEnumerable<Stack> FindAll(Func<Tuple<int, Stack>, bool> predicate, bool reverse = false)
                     {
-                        return inventoryHolder.FindAll(Position.Instance, delegate (Tuple<object, Stack> tuple) { return predicate(new Tuple<int, Stack>((int)tuple.First, tuple.Second)); }, reverse);
+                        return inventoryHolder.FindAll(Position.Instance, delegate (Tuple<object, Stack> tuple) { return predicate(new Tuple<int, Stack>((int)tuple.Item1, tuple.Item2)); }, reverse);
                     }
 
                     /// <summary>
@@ -106,7 +106,7 @@ namespace BackPack
                     /// </summary>
                     public Stack FindOne(Func<Tuple<int, Stack>, bool> predicate, bool reverse = false)
                     {
-                        return inventoryHolder.FindOne(Position.Instance, delegate (Tuple<object, Stack> tuple) { return predicate(new Tuple<int, Stack>((int)tuple.First, tuple.Second)); }, reverse);
+                        return inventoryHolder.FindOne(Position.Instance, delegate (Tuple<object, Stack> tuple) { return predicate(new Tuple<int, Stack>((int)tuple.Item1, tuple.Item2)); }, reverse);
                     }
 
                     /// <summary>

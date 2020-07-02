@@ -118,7 +118,7 @@ namespace WindRose
 	                            bool result = Inventory.Put(null, found.Clone(), out finalPosition, optimalPick);
 	                            if (result)
 	                            {
-	                                dropLayer.Remove(containerPosition, (int)found.QualifiedPosition.First);
+	                                dropLayer.Remove(containerPosition, (int)found.QualifiedPosition.Item1);
 	                            }
 
 	                            return result;

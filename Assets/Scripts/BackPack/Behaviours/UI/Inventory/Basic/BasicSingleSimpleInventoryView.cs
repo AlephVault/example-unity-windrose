@@ -102,7 +102,7 @@ namespace BackPack
 						protected override void AfterRefresh()
 						{
 							pageLabel.SetPaginationLabel(Page, MaxPage());
-							selectedItemLabel.SetCaption(SelectedPosition != null ? elements[SelectedPosition.Value].Second : "");
+							selectedItemLabel.SetCaption(SelectedPosition != null ? elements[SelectedPosition.Value].Item2 : "");
 							// display the selection square over the appropriate slot, if the page is matched.
 							if (SelectedPosition != null)
 							{

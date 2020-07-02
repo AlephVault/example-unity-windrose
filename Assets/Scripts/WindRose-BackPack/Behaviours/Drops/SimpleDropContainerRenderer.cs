@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -9,8 +10,6 @@ namespace WindRose
     {
         namespace Drops
         {
-            using GMM.Types;
-
             /// <summary>
             ///   <para>
             ///     Simple drop containers are components that render the loot in a single square.
@@ -93,7 +92,7 @@ namespace WindRose
                         {
                             // Uncomment this line to debug.
                             // debugElements.Add(string.Format("{0} -> {1}", index, elements[index + baseElementIndex].Second));
-                            renderers[index].sprite = elements[index + baseElementIndex].First;
+                            renderers[index].sprite = elements[index + baseElementIndex].Item1;
                             renderers[index].enabled = true;
                         }
                     }
@@ -103,7 +102,7 @@ namespace WindRose
                         {
                             // Uncomment this line to debug.
                             // debugElements.Add(string.Format("{0} -> {1}", index, elements[index].Second));
-                            renderers[index].sprite = elements[index].First;
+                            renderers[index].sprite = elements[index].Item1;
                             renderers[index].enabled = true;
                         }
                     }
@@ -113,7 +112,7 @@ namespace WindRose
                         {
                             // Uncomment this line to debug.
                             // debugElements.Add(string.Format("{0} -> {1}", index, elements[index].Second));
-                            renderers[index].sprite = elements[index].First;
+                            renderers[index].sprite = elements[index].Item1;
                             renderers[index].enabled = true;
                         }
                         for(int index = currentSize; index < renderingSlots; index++)

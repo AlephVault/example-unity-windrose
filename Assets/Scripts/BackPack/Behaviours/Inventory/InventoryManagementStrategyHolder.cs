@@ -286,9 +286,9 @@ namespace BackPack
                         // Render everything
                         foreach (Stack queuedStack in stacksToSaturate)
                         {
-                            renderingStrategy.StackWasUpdated(containerPosition, queuedStack.QualifiedPosition.First, queuedStack);
+                            renderingStrategy.StackWasUpdated(containerPosition, queuedStack.QualifiedPosition.Item1, queuedStack);
                         }
-                        renderingStrategy.StackWasUpdated(containerPosition, unsaturatedLastStack.QualifiedPosition.First, unsaturatedLastStack);
+                        renderingStrategy.StackWasUpdated(containerPosition, unsaturatedLastStack.QualifiedPosition.Item1, unsaturatedLastStack);
 
                         // The stack was put, but not on a new position: instead, it filled other stacks and it should be
                         //   considered destroyed.
@@ -314,9 +314,9 @@ namespace BackPack
                             // Render everything
                             foreach (Stack queuedStack in stacksToSaturate)
                             {
-                                renderingStrategy.StackWasUpdated(containerPosition, queuedStack.QualifiedPosition.First, queuedStack);
+                                renderingStrategy.StackWasUpdated(containerPosition, queuedStack.QualifiedPosition.Item1, queuedStack);
                             }
-                            renderingStrategy.StackWasUpdated(containerPosition, stackWithRemainder.QualifiedPosition.First, stackWithRemainder);
+                            renderingStrategy.StackWasUpdated(containerPosition, stackWithRemainder.QualifiedPosition.Item1, stackWithRemainder);
                             return true;
                         }
                         else
@@ -658,7 +658,7 @@ namespace BackPack
                 {
                     foreach (Tuple<object, Stack> pair in pairs)
                     {
-                        DoBlink(containerPosition, pair.First, pair.Second);
+                        DoBlink(containerPosition, pair.Item1, pair.Item2);
                     }
                 }
 
@@ -711,11 +711,11 @@ namespace BackPack
                     {
                         foreach(KeyValuePair<object, Types.Inventory.SerializedStack> stackPair in containerPair.Value)
                         {
-                            ScriptableObjects.Inventory.Items.Item item = ScriptableObjects.Inventory.Items.ItemRegistry.GetItem(stackPair.Value.First, stackPair.Value.Second);
+                            ScriptableObjects.Inventory.Items.Item item = ScriptableObjects.Inventory.Items.ItemRegistry.GetItem(stackPair.Value.Item1, stackPair.Value.Item2);
                             if (item != null)
                             {
                                 object finalStackPosition;
-                                Put(containerPair.Key, stackPair.Key, item.Create(stackPair.Value.Third, stackPair.Value.Fourth), out finalStackPosition);
+                                Put(containerPair.Key, stackPair.Key, item.Create(stackPair.Value.Item3, stackPair.Value.Item4), out finalStackPosition);
                             }
                         }
                     }
@@ -738,10 +738,10 @@ namespace BackPack
 
                         foreach(Tuple<object, Stack> stackPair in spatialStrategy.StackPairs(containerPosition, false))
                         {
-                            object stackPosition = stackPair.First;
-                            Stack stack = stackPair.Second;
+                            object stackPosition = stackPair.Item1;
+                            Stack stack = stackPair.Item2;
                             Tuple<ScriptableObjects.Inventory.Items.Item, object, object> dumped = stack.Dump();
-                            serializedInventory[containerPosition][stackPosition] = new Types.Inventory.SerializedStack(dumped.First.Registry.Key, dumped.First.Key, dumped.Second, dumped.Third);
+                            serializedInventory[containerPosition][stackPosition] = new Types.Inventory.SerializedStack(dumped.Item1.Registry.Key, dumped.Item1.Key, dumped.Item2, dumped.Item3);
                         }
                     }
                     return serializedInventory;

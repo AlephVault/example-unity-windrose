@@ -133,7 +133,7 @@ namespace BackPack
 
                             try
                             {
-                                if (stack.QualifiedPosition.Third.SpatialStrategy.GetComponent<InventoryManagementStrategyHolder>() != StrategyHolder)
+                                if (stack.QualifiedPosition.Item3.SpatialStrategy.GetComponent<InventoryManagementStrategyHolder>() != StrategyHolder)
                                 {
                                     throw new UsageException("The stack being used is not managed by this inventory");
                                 }

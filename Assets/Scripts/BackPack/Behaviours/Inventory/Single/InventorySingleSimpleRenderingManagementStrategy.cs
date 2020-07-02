@@ -161,7 +161,7 @@ namespace BackPack
                                      * In these listings, position will match the slot because you are
                                      *   rendering everything (so the match will be automatic here).
                                      */
-                                    SetStack(pair.Key, pair.Key, pair.Value.First, pair.Value.Second, pair.Value.Third);
+                                    SetStack(pair.Key, pair.Key, pair.Value.Item1, pair.Value.Item2, pair.Value.Item3);
                                 }
                             }
                             else
@@ -178,7 +178,7 @@ namespace BackPack
                                     Tuple<Sprite, string, object> element;
                                     if (elements.TryGetValue(position, out element))
                                     {
-                                        SetStack(slot, position, element.First, element.Second, element.Third);
+                                        SetStack(slot, position, element.Item1, element.Item2, element.Item3);
                                     }
                                     else
                                     {
@@ -252,8 +252,8 @@ namespace BackPack
 							foreach(Tuple<int, BackPack.Types.Inventory.Stacks.Stack> pair in pairs)
                             {
                                 Dictionary<string, object> target = new Dictionary<string, object>();
-                                pair.Second.MainRenderingStrategy.DumpRenderingData(target);
-                                elements.Add(pair.First, new Tuple<Sprite, string, object>((Sprite)target["icon"], (string)target["caption"], target["quantity"]));
+                                pair.Item2.MainRenderingStrategy.DumpRenderingData(target);
+                                elements.Add(pair.Item1, new Tuple<Sprite, string, object>((Sprite)target["icon"], (string)target["caption"], target["quantity"]));
                             }
                             Refresh();
                         }

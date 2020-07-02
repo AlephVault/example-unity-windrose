@@ -40,7 +40,7 @@ namespace BackPack
                         ///     strategy being accounted in the underlying stack for this purpose, and the
                         ///     spatial container this position is valid in.
                         /// </summary>
-                        public class QualifiedStackPosition : GMM.Types.Tuple<object, ItemSpatialStrategy, SpatialContainer>
+                        public class QualifiedStackPosition : Tuple<object, ItemSpatialStrategy, SpatialContainer>
                         {
                             public QualifiedStackPosition(object position, ItemSpatialStrategy itemStrategy, SpatialContainer container) : base(position, itemStrategy, container)
                             {
@@ -276,9 +276,9 @@ namespace BackPack
                             /// <summary>
                             ///   Enumerates all the (position, stack) pairs.
                             /// </summary>
-                            public IEnumerable<GMM.Types.Tuple<object, Stack>> StackPairs(bool reverse)
+                            public IEnumerable<Tuple<object, Stack>> StackPairs(bool reverse)
                             {
-                                return from position in Positions(reverse) select new GMM.Types.Tuple<object, Stack>(position, stacks[position]);
+                                return from position in Positions(reverse) select new Tuple<object, Stack>(position, stacks[position]);
                             }
 
                             /// <summary>
@@ -299,9 +299,9 @@ namespace BackPack
                             /// </summary>
                             /// <param name="predicate">The predicate to test on each stack</param>
                             /// <param name="reverse">Whether the search is in reversed order</param>
-                            public IEnumerable<Stack> FindAll(Func<GMM.Types.Tuple<object, Stack>, bool> predicate, bool reverse)
+                            public IEnumerable<Stack> FindAll(Func<Tuple<object, Stack>, bool> predicate, bool reverse)
                             {
-                                return from pair in StackPairs(reverse).Where(predicate) select pair.Second;
+                                return from pair in StackPairs(reverse).Where(predicate) select pair.Item2;
                             }
 
                             /// <summary>
@@ -312,9 +312,9 @@ namespace BackPack
                             /// <param name="reverse">Whether the search is in reversed order</param>
                             public IEnumerable<Stack> FindAll(Item item, bool reverse)
                             {
-                                return FindAll(delegate (GMM.Types.Tuple<object, Stack> pair)
+                                return FindAll(delegate (Tuple<object, Stack> pair)
                                 {
-                                    return pair.Second.Item == item;
+                                    return pair.Item2.Item == item;
                                 }, reverse);
                             }
 
@@ -326,9 +326,9 @@ namespace BackPack
                             /// <param name="reverse">Whether the search is in reversed order</param>
                             public IEnumerable<Stack> FindAll(Stack stack, bool reverse)
                             {
-                                return FindAll(delegate (GMM.Types.Tuple<object, Stack> pair)
+                                return FindAll(delegate (Tuple<object, Stack> pair)
                                 {
-                                    return pair.Second.Equals(stack);
+                                    return pair.Item2.Equals(stack);
                                 }, reverse);
                             }
 
@@ -338,7 +338,7 @@ namespace BackPack
                             /// <returns>The first stack in this container</returns>
                             public Stack First()
                             {
-                                return (from pair in StackPairs(false) select pair.Second).FirstOrDefault();
+                                return (from pair in StackPairs(false) select pair.Item2).FirstOrDefault();
                             }
 
                             /// <summary>
@@ -347,7 +347,7 @@ namespace BackPack
                             /// <returns>The last stack in this container</returns>
                             public Stack Last()
                             {
-                                return (from pair in StackPairs(true) select pair.Second).FirstOrDefault();
+                                return (from pair in StackPairs(true) select pair.Item2).FirstOrDefault();
                             }
 
                             /// <summary>
@@ -356,7 +356,7 @@ namespace BackPack
                             /// </summary>
                             /// <param name="predicate">The predicate to test on each stack</param>
                             /// <param name="reverse">Whether the search is in reversed order</param>
-                            public Stack FindOne(Func<GMM.Types.Tuple<object, Stack>, bool> predicate, bool reverse)
+                            public Stack FindOne(Func<Tuple<object, Stack>, bool> predicate, bool reverse)
                             {
                                 return FindAll(predicate, reverse).FirstOrDefault();
                             }
@@ -420,8 +420,8 @@ namespace BackPack
                                 if (!StackPositionIsAvailable(position, stack)) return false;
                                 if (stacks.ContainsValue(stack))
                                 {
-                                    Release(stack.QualifiedPosition.First, stack);
-                                    stacks.Remove(stack.QualifiedPosition.First);
+                                    Release(stack.QualifiedPosition.Item1, stack);
+                                    stacks.Remove(stack.QualifiedPosition.Item1);
                                 }
                                 Occupy(position, stack);
                                 stacks[position] = stack;
@@ -437,8 +437,8 @@ namespace BackPack
                             public bool Remove(Stack stack)
                             {
                                 if (!stacks.ContainsValue(stack)) return false;
-                                Release(stack.QualifiedPosition.First, stack);
-                                stacks.Remove(stack.QualifiedPosition.First);
+                                Release(stack.QualifiedPosition.Item1, stack);
+                                stacks.Remove(stack.QualifiedPosition.Item1);
                                 SetPosition(stack, null);
                                 return true;
                             }
@@ -580,7 +580,7 @@ namespace BackPack
                         /// <summary>
                         ///   Invokes <see cref="SpatialContainer.StackPairs(bool)"/> on a given container.
                         /// </summary>
-                        public IEnumerable<GMM.Types.Tuple<object, Stack>> StackPairs(object containerPosition, bool reverse)
+                        public IEnumerable<Tuple<object, Stack>> StackPairs(object containerPosition, bool reverse)
                         {
                             return GetContainer(containerPosition, IfAbsent.Null).StackPairs(reverse);
                         }
@@ -596,7 +596,7 @@ namespace BackPack
                         /// <summary>
                         ///   Invokes <see cref="SpatialContainer.FindAll(Func{GMM.Types.Tuple{object, Stack}, bool}, bool)"/> on a given container.
                         /// </summary>
-                        public IEnumerable<Stack> FindAll(object containerPosition, Func<GMM.Types.Tuple<object, Stack>, bool> predicate, bool reverse)
+                        public IEnumerable<Stack> FindAll(object containerPosition, Func<Tuple<object, Stack>, bool> predicate, bool reverse)
                         {
                             return GetContainer(containerPosition, IfAbsent.Null).FindAll(predicate, reverse);
                         }
@@ -636,7 +636,7 @@ namespace BackPack
                         /// <summary>
                         ///   Invokes <see cref="SpatialContainer.FindOne(Func{GMM.Types.Tuple{object, Stack}, bool}, bool)"/> on a given container.
                         /// </summary>
-                        public Stack FindOne(object containerPosition, Func<GMM.Types.Tuple<object, Stack>, bool> predicate, bool reverse)
+                        public Stack FindOne(object containerPosition, Func<Tuple<object, Stack>, bool> predicate, bool reverse)
                         {
                             return GetContainer(containerPosition, IfAbsent.Null).FindOne(predicate, reverse);
                         }

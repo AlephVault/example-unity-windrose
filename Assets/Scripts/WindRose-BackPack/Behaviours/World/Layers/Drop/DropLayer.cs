@@ -87,7 +87,7 @@ namespace WindRose
                             Stack stack = inventoryHolder.Last(containerPosition);
                             if (stack != null)
                             {
-                                inventoryHolder.Remove(containerPosition, stack.QualifiedPosition.First);
+                                inventoryHolder.Remove(containerPosition, stack.QualifiedPosition.Item1);
                             }
                             return stack;
                         }
@@ -101,7 +101,7 @@ namespace WindRose
                         /// </summary>
                         public IEnumerable<Tuple<int, Stack>> StackPairs(Vector2Int containerPosition, bool reverse = false)
                         {
-                            return from tuple in inventoryHolder.StackPairs(containerPosition, reverse) select new Tuple<int, Stack>((int)tuple.First, tuple.Second);
+                            return from tuple in inventoryHolder.StackPairs(containerPosition, reverse) select new Tuple<int, Stack>((int)tuple.Item1, tuple.Item2);
                         }
 
                         /// <summary>
@@ -117,7 +117,7 @@ namespace WindRose
                         /// </summary>
                         public IEnumerable<Stack> FindAll(Vector2Int containerPosition, Func<Tuple<int, Stack>, bool> predicate, bool reverse = false)
                         {
-                            return inventoryHolder.FindAll(containerPosition, delegate (Tuple<object, Stack> tuple) { return predicate(new Tuple<int, Stack>((int)tuple.First, tuple.Second)); }, reverse);
+                            return inventoryHolder.FindAll(containerPosition, delegate (Tuple<object, Stack> tuple) { return predicate(new Tuple<int, Stack>((int)tuple.Item1, tuple.Item2)); }, reverse);
                         }
 
                         /// <summary>
@@ -149,7 +149,7 @@ namespace WindRose
                         /// </summary>
                         public Stack FindOne(Vector2Int containerPosition, Func<Tuple<int, Stack>, bool> predicate, bool reverse = false)
                         {
-                            return inventoryHolder.FindOne(containerPosition, delegate (Tuple<object, Stack> tuple) { return predicate(new Tuple<int, Stack>((int)tuple.First, tuple.Second)); }, reverse);
+                            return inventoryHolder.FindOne(containerPosition, delegate (Tuple<object, Stack> tuple) { return predicate(new Tuple<int, Stack>((int)tuple.Item1, tuple.Item2)); }, reverse);
                         }
 
                         /// <summary>

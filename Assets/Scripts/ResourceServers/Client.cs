@@ -14,11 +14,17 @@ namespace ResourceServers
         /// <summary>
         ///   This class is just a version picker for the JSON's
         ///     body (it will serve to get the appropriate
-        ///     loader later).
+        ///     loader later). Either "version" or "Version"
+        ///     will be used, for V1 was lowercased in the keys.
         /// </summary>
         private class WithVersion
         {
             public string Version { get; set; }
+            public string version { get; set; }
+            public string GetVersion()
+            {
+                return version != "" ? version : Version;
+            }
         }
 
         /// <summary>
@@ -50,7 +56,7 @@ namespace ResourceServers
 
         private static string GetVersion(string body)
         {
-            return "2"; // TODO
+            return JSON.Parse<WithVersion>(body).GetVersion();
         }
 
         private static IEnumerable fetched(string baseUrl, string data, Registries.Registry target)

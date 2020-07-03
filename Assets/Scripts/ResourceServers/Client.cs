@@ -41,14 +41,15 @@ namespace ResourceServers
 
         /// <summary>
         ///   Fetches data from a JSON root in a resources
-        ///     server
+        ///     server, according to the version and using
+        ///     the appropriate loader.
         /// </summary>
-        /// <param name="url"></param>
-        /// <param name="target"></param>
-        /// <returns></returns>
+        /// <param name="url">The root url to fetch</param>
+        /// <param name="target">The registry to populate</param>
+        /// <returns>An enumerable, suitable for coroutines</returns>
         public static IEnumerable Fetch(string url, Registries.Registry target)
         {
-            foreach(var result in JSON.Fetch(url, delegate(string data) { return fetched(url, data, target); }))
+            foreach(var result in JSON.Fetch(url, delegate(string body) { return fetched(url, body, target); }))
             {
                 yield return result;
             }
@@ -59,17 +60,21 @@ namespace ResourceServers
             return JSON.Parse<WithVersion>(body).GetVersion();
         }
 
-        private static IEnumerable fetched(string baseUrl, string data, Registries.Registry target)
+        private static Loaders.Loader GetLoader(string body)
         {
-
-            string version = GetVersion(data);
-            switch(version)
+            string version = GetVersion(body);
+            switch (version)
             {
                 case "2":
-                    return new Loaders.V2.Loader().Populate(baseUrl, data, target);
+                    return new Loaders.V2.Loader();
                 default:
                     throw new UnsupportedVersion(version);
             }
+        }
+
+        private static IEnumerable fetched(string baseUrl, string body, Registries.Registry target)
+        {
+            return GetLoader(body).Populate(baseUrl, body, target);
         }
     }
 }

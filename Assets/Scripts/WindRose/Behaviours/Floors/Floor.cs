@@ -34,7 +34,6 @@ namespace WindRose
                     try
                     {
                         GMM.Utils.Layout.RequireComponentInParent<World.Layers.Floor.FloorLayer>(this);
-                        // TODO in version 2018.x+ I have to require RECTANGULAR tilemap, or explode.
                         Tilemap tilemap = GetComponent<Tilemap>();
                         tilemap.orientation = Tilemap.Orientation.XY;
                         TilemapRenderer tilemapRenderer = GetComponent<TilemapRenderer>();

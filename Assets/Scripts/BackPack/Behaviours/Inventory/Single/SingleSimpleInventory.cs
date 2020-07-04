@@ -16,7 +16,6 @@ namespace BackPack
                 using System.Linq;
                 using GMM.Types;
 
-				// TODO move this one to child behaviour.
                 // using World.Layers.Drop;
 
                 /// <summary>

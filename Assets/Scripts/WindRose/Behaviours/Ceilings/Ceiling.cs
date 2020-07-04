@@ -76,7 +76,6 @@ namespace WindRose
                     {
                         CeilingLayer ceilingLayer = GMM.Utils.Layout.RequireComponentInParent<CeilingLayer>(this);
                         parentGrid = ceilingLayer.GetComponent<Grid>();
-                        // TODO in version 2018.x+ I have to require RECTANGULAR tilemap, or explode.
                         Tilemap tilemap = GetComponent<Tilemap>();
                         tilemap.orientation = Tilemap.Orientation.XY;
                         tilemapRenderer = GetComponent<TilemapRenderer>();

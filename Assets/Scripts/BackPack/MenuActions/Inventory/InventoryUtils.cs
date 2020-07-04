@@ -28,7 +28,6 @@ namespace BackPack
                 {
 					public Transform selectedTransform = null;
 
-                    // TODO change these ones later.
                     private Vector2 windowSize = new Vector2(963, 689);
 
                     // Main container properties

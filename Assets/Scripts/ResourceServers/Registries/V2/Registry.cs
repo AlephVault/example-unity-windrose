@@ -21,6 +21,7 @@ namespace ResourceServers
                 /// </summary>
                 public new class FindError : Registries.Registry.FindError
                 {
+                    public const string NotReady = "not-ready";
                     public const string Format = "format";
                     public const string Package = "package";
                     public const string Space = "space";
@@ -30,8 +31,10 @@ namespace ResourceServers
 
                     private static string GetMessage(string type, string value)
                     {
-                        switch(type)
+                        switch (type)
                         {
+                            case NotReady:
+                                return "List not ready (needs fetch & inflate): " + value;
                             case Format:
                                 return "Invalid path format: " + value;
                             case Package:
@@ -49,54 +52,34 @@ namespace ResourceServers
                         }
                     }
 
-                    public FindError(string type, string value) : base(GetMessage(type, value)) {}
-                }
+                    public string Type { get; private set; }
 
-                /// <summary>
-                ///   Lists have to be implemented to return an
-                ///     arbitrary Unity object given an id. If
-                ///     somehow this fails (e.g. invalid ID)
-                ///     then a V2.Registry.FetchError must be
-                ///     raised.
-                /// </summary>
-                public abstract class List : ScriptableObject
-                {
-                    /// <summary>
-                    ///   Populates its content via a received
-                    ///   JSON body. Each list will know how to
-                    ///   do this by itself.
-                    /// </summary>
-                    /// <param name="body">The JSON body to parse and populate from</param>
-                    public abstract void Populate(string body);
-
-                    /// <summary>
-                    ///   Finds an object by its ID. Must throw
-                    ///     <see cref="FindError"/> if a resource
-                    ///     with that ID is not found.
-                    /// </summary>
-                    /// <param name="id">The ID to look for</param>
-                    /// <returns>The object for the given ID</returns>
-                    public abstract UnityEngine.Object Find(ulong id);
+                    public FindError(string type, string value) : base(GetMessage(type, value)) {
+                        Type = type;
+                    }
                 }
 
                 /// <summary>
                 ///   A dictionary of url keys and their lists.
                 /// </summary>
                 [Serializable]
-                public class Space : SerializableDictionary<string, List> {}
+                public class Space : SerializableDictionary<string, List> { }
 
                 /// <summary>
                 ///   A dictionary of url keys and their spaces.
                 /// </summary>
                 [Serializable]
-                public class Package : SerializableDictionary<string, Space> {}
+                public class Package : SerializableDictionary<string, Space> { }
 
                 /// <summary>
                 ///   A dictionary of url keys and packages.
                 /// </summary>
                 [Serializable]
-                public class PackageSet : SerializableDictionary<string, Package> {}
+                public class PackageSet : SerializableDictionary<string, Package> { }
 
+                /// <summary>
+                ///   The registered packages, spaces and lists in thie registry.
+                /// </summary>
                 [SerializeField]
                 private PackageSet packages;
 
@@ -111,13 +94,28 @@ namespace ResourceServers
                 private const string pattern = @"^/([^/]+)/([^/]+)/([^/]+)/(\d+)$";
 
                 /// <summary>
+                ///   Gets a list in some specific resource path.
+                /// </summary>
+                /// <param name="package">The package key</param>
+                /// <param name="space">The space key</param>
+                /// <param name="list">The list key</param>
+                /// <returns>The list under those keys, if present</returns>
+                public List this[string package, string space, string list]
+                {
+                    get
+                    {
+                        return packages[package][space][list];
+                    }
+                }
+
+                /// <summary>
                 ///   Takes a 4-parts url like /foo/bar/baz/3
                 ///     and looks for a resource in package "foo",
                 ///     space "bar", list "baz", with id 3. If not
                 ///     found, then an error will be raised.
                 /// </summary>
-                /// <param name="path"></param>
-                /// <returns></returns>
+                /// <param name="path">The full path</param>
+                /// <returns>The found object, if present</returns>
                 public override UnityEngine.Object Find(string path)
                 {
                     Match match = Regex.Match(path, pattern);
@@ -152,7 +150,14 @@ namespace ResourceServers
                             throw new FindError(FindError.List, listkey);
                         }
 
-                        return list.Find(id);
+                        try
+                        {
+                            return list.Find(id);
+                        }
+                        catch(List.StageError)
+                        {
+                            throw new FindError(FindError.NotReady, listkey);
+                        }
                     }
                     else
                     {

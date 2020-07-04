@@ -16,6 +16,15 @@ namespace ResourceServers
         public abstract class Loader
         {
             /// <summary>
+            ///   This exception is thrown when an error
+            ///     occurs while populating a registry.
+            /// </summary>
+            public class PopulateError : System.Exception
+            {
+                public PopulateError(string message) : base(message) { }
+            }
+
+            /// <summary>
             ///   Populates a registry given a root json body.
             ///   The body will have the appropriate version,
             ///     and the loader will be able to traverse

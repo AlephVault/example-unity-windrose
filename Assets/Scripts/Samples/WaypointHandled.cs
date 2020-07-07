@@ -5,6 +5,7 @@ using WindRose.Behaviours.World;
 using WindRose.Behaviours.Entities.Objects;
 using WindRose.Types;
 using System.Threading.Tasks;
+using GMM.Utils;
 
 [RequireComponent(typeof(Movable))]
 class WaypointHandled : MonoBehaviour
@@ -56,7 +57,7 @@ class WaypointHandled : MonoBehaviour
             float currentTime = 0;
             while (currentTime <= currentStep.delay)
             {
-                await Task.Yield();
+                await Tasks.Blink();
                 currentTime += Time.deltaTime;
             }
 
@@ -79,7 +80,7 @@ class WaypointHandled : MonoBehaviour
                     // Wait until the movement is done.
                     while (movable.Movement != null)
                     {
-                        await Task.Yield();
+                        await Tasks.Blink();
                     }
 
                     // Move to the next frame.

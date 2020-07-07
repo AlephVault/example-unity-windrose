@@ -3,6 +3,7 @@ using System.Collections;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Events;
+using GMM.Utils;
 
 namespace WindRose
 {
@@ -69,7 +70,7 @@ namespace WindRose
                                         oriented.Orientation = Types.Direction.LEFT;
                                         break;
                                 }
-                                await Task.Yield();
+                                await Tasks.Blink();
                             }
                             onTalkReceived.Invoke(sender);
                         }

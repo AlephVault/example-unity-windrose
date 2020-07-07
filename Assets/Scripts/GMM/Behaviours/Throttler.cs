@@ -47,7 +47,7 @@ namespace GMM
                 float currentTime = 0;
                 while (currentTime < Lapse)
                 {
-                    await Task.Yield();
+                    await Utils.Tasks.Blink();
                     currentTime += Time.deltaTime;
                 }
                 Locked = false;

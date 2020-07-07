@@ -72,23 +72,11 @@ namespace GMM
                 throw (Exception)Activator.CreateInstance(type, new object[] { message });
             }
 
-            private static HashSet<Type> GetDependencies(Type attributeType, Type type, Type exceptionType)
+            private static HashSet<Type> GetDependencies(Type attributeType, Type type)
             {
                 return new HashSet<Type>(
                     from attribute in type.GetCustomAttributes(attributeType, true) select ((Depends)attribute).Dependency
                 );
-            }
-
-            /// <summary>
-            ///   Gets the dependencies of a given type, according to a given attribute type, and raising a particular exception on dependency error.
-            /// </summary>
-            /// <typeparam name="A">The attribute type. A subclass of <see cref="Depends"/>.</typeparam>
-            /// <typeparam name="E">The exception type. A subclass of <see cref="DependencyException"/>.</typeparam>
-            /// <typeparam name="T">The type being queried.</typeparam>
-            /// <returns>A set of types that are dependencies of the queried type.</returns>
-            public static HashSet<Type> GetDependencies<A, E, T>() where A : Depends where E : DependencyException
-            {
-                return GetDependencies(typeof(A), typeof(T), typeof(E));
             }
 
             /// <summary>
@@ -99,7 +87,7 @@ namespace GMM
             /// <returns>A set of types that are dependencies of the queried type.</returns>
             public static HashSet<Type> GetDependencies<A, T>() where A : Depends
             {
-                return GetDependencies(typeof(A), typeof(T), typeof(DependencyException));
+                return GetDependencies(typeof(A), typeof(T));
             }
 
             private static void CheckAssignability(Type attributeType, Type type, Type exceptionType)
@@ -122,7 +110,7 @@ namespace GMM
                 Type attributeType = typeof(A);
                 Type exceptionType = typeof(E);
                 CheckAssignability(attributeType, type, exceptionType);
-                return GetDependencies(attributeType, type, exceptionType);
+                return GetDependencies(attributeType, type);
             }
 
             /// <summary>
@@ -136,7 +124,7 @@ namespace GMM
                 Type attributeType = typeof(A);
                 Type exceptionType = typeof(DependencyException);
                 CheckAssignability(attributeType, type, exceptionType);
-                return GetDependencies(attributeType, type, exceptionType);
+                return GetDependencies(attributeType, type);
             }
 
             /// <summary>
@@ -242,7 +230,7 @@ namespace GMM
             /// <summary>
             ///   Avoids duplicate dependencies among components. This ensures that there are no two or more components
             ///     of the same type in a components list (quite like the Inspector ensures that regarding game objects
-            ///     and their components. A particular exception will be raised on duplicates.
+            ///     and their components). A particular exception will be raised on duplicates.
             /// </summary>
             /// <typeparam name="T">The (common ancestor) type of components to pass.</typeparam>
             /// <typeparam name="E">The exception to raise on error. A subclass of <see cref="DependencyException"/>.</typeparam>

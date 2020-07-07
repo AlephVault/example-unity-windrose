@@ -126,7 +126,7 @@ namespace GabTab
                 float slow = Values.Max(0.0001f, slowTimeBetweenLetters);
                 while (currentTime < (QuickTextMovement ? quick : slow))
                 {
-                    await Task.Yield();
+                    await Tasks.Blink();
                     currentTime += Time.deltaTime;
                 }
             }
@@ -148,7 +148,7 @@ namespace GabTab
                     float slow = Values.Max(0.0001f, slowDelayAfterMessage);
                     while (currentTime < (QuickTextMovement ? quick : slow))
                     {
-                        await Task.Yield();
+                        await Tasks.Blink();
                         currentTime += Time.deltaTime;
                     }
                 }
@@ -159,7 +159,7 @@ namespace GabTab
                     float slow = Values.Max(0.0001f, seconds.Value);
                     while (currentTime < (QuickTextMovement ? quick : slow))
                     {
-                        await Task.Yield();
+                        await Tasks.Blink();
                         currentTime += Time.deltaTime;
                     }
                 }

@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using GMM.Types;
+using GMM.Utils;
 using System.Threading.Tasks;
 
 namespace GabTab
@@ -59,7 +60,7 @@ namespace GabTab
                     Result = null;
                     while (Result == null)
                     {
-                        await Task.Yield();
+                        await Tasks.Blink();
                     }
                 }
             }

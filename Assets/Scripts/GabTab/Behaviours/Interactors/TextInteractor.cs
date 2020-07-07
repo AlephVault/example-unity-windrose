@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
+using GMM.Utils;
 
 namespace GabTab
 {
@@ -198,7 +199,7 @@ namespace GabTab
                     Content = null;
                     while (Result == null)
                     {
-                        await Task.Yield();
+                        await Tasks.Blink();
                     }
                 }
             }

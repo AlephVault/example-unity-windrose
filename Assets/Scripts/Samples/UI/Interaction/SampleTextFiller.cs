@@ -40,7 +40,7 @@ public class SampleTextFiller : MonoBehaviour
         //          cause the map-pause be executed, but the sprites will not be yet visible since most
         //          of this stuff was run in Awake(), but this method is Start() and the method that
         //          initializes the sprites is also Start() or Update().
-        await Task.Yield();
+        await Tasks.Blink();
         hud.RunInteraction(StartSampleMessages);
 	}
 

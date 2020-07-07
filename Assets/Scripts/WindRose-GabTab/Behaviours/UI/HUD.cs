@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using GabTab.Behaviours;
+using GMM.Utils;
 
 namespace WindRose
 {
@@ -152,7 +153,7 @@ namespace WindRose
                         // Wait until the current object is being focused.
                         while (Status == FocusStatus.Transitioning)
                         {
-                            await Task.Yield();
+                            await Tasks.Blink();
                         }
                     }
 

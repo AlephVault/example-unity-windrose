@@ -4,6 +4,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Threading.Tasks;
+using GMM.Utils;
 
 namespace GabTab
 {
@@ -662,7 +663,7 @@ namespace GabTab
                         HasResult = false;
                         while (!HasResult)
                         {
-                            await Task.Yield();
+                            await Tasks.Blink();
                         }
                         System.Collections.Generic.List<InteractiveMessage.Prompt> prompt = new System.Collections.Generic.List<InteractiveMessage.Prompt>();
                         ValidateSelection(SelectedItems, (InteractiveMessage.Prompt[] reported) => prompt.AddRange(reported));

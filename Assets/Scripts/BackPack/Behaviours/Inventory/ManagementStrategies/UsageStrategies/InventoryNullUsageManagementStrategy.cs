@@ -16,6 +16,7 @@ namespace BackPack
             {
                 namespace UsageStrategies
                 {
+                    using System.Threading.Tasks;
                     using Types.Inventory.Stacks.UsageStrategies;
 
                     /// <summary>
@@ -24,10 +25,7 @@ namespace BackPack
                     /// </summary>
                     public class InventoryNullUsageManagementStrategy : InventoryUsageManagementStrategy
                     {
-                        protected override IEnumerator DoUse(Types.Inventory.Stacks.Stack stack, object argument)
-                        {
-                            yield break;
-                        }
+                        protected override async Task DoUse(Types.Inventory.Stacks.Stack stack, object argument) {}
 
                         public override bool Accepts(StackUsageStrategy strategy)
                         {

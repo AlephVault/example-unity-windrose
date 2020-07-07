@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Threading.Tasks;
 
 namespace GabTab
 {
@@ -13,10 +14,7 @@ namespace GabTab
             /// </summary>
             public class NullInteractor : Interactor
             {
-                protected override IEnumerator Input(InteractiveMessage interactiveMessage)
-                {
-                    yield break;
-                }
+                protected override async Task Input(InteractiveMessage interactiveMessage) {}
             }
         }
     }

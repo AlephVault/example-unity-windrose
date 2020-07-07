@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Threading.Tasks;
 
 namespace GabTab
 {
@@ -640,7 +641,7 @@ namespace GabTab
                 ///     <see cref="InteractiveInterface"/> that ultimately triggered this interaction. 
                 /// </param>
                 /// <returns>An enumerator to be run inside a coroutine.</returns>
-                protected override IEnumerator Input(InteractiveMessage message)
+                protected override async Task Input(InteractiveMessage message)
                 {
                     if (cancelButton == null && !AtLeastOneSelectableItem())
                     {
@@ -659,12 +660,15 @@ namespace GabTab
                         // 1. Release the fact that we have a result.
                         // 2. Wait for a result (i.e. a selection).
                         HasResult = false;
-                        yield return new WaitUntil(() => HasResult);
+                        while (!HasResult)
+                        {
+                            await Task.Yield();
+                        }
                         System.Collections.Generic.List<InteractiveMessage.Prompt> prompt = new System.Collections.Generic.List<InteractiveMessage.Prompt>();
                         ValidateSelection(SelectedItems, (InteractiveMessage.Prompt[] reported) => prompt.AddRange(reported));
                         if (prompt.Count > 0) {
                             allSelectedItemsAreValid = false;
-                            yield return message.PromptMessages(prompt.ToArray());
+                            await message.PromptMessages(prompt.ToArray());
                         }
                         // 4. Repeat until the validation does not fail.
                     }

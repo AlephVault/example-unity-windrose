@@ -2,6 +2,7 @@
 using System.Collections;
 using UnityEngine;
 using GMM.Utils;
+using System.Threading.Tasks;
 
 namespace GabTab
 {
@@ -118,13 +119,16 @@ namespace GabTab
             ///   This coroutine waits using character-sized time.
             /// </summary>
             /// <returns>A coroutine to start and wait.</returns>
-            public Types.WaitForQuickOrSlowSeconds CharacterWaiterCoroutine()
+            public async Task CharacterWaiterCoroutine()
             {
-                return new Types.WaitForQuickOrSlowSeconds(
-                    Values.Max(0.00001f, quickTimeBetweenLetters),
-                    Values.Max(0.0001f, slowTimeBetweenLetters),
-                    delegate () { return QuickTextMovement; }
-                );
+                float currentTime = 0;
+                float quick = Values.Max(0.00001f, quickTimeBetweenLetters);
+                float slow = Values.Max(0.0001f, slowTimeBetweenLetters);
+                while (currentTime < (QuickTextMovement ? quick : slow))
+                {
+                    await Task.Yield();
+                    currentTime += Time.deltaTime;
+                }
             }
 
             /// <summary>
@@ -135,23 +139,29 @@ namespace GabTab
             ///   If you specify this, it will wait such amount on slow speed (and such amount divided by 10 on quick speed) instead of the setup wait times.
             /// </param>
             /// <returns>A coroutine to start and wait.</returns>
-            public Types.WaitForQuickOrSlowSeconds ExplicitWaiterCoroutine(float? seconds = null)
+            public async Task ExplicitWaiter(float? seconds = null)
             {
                 if (seconds == null)
                 {
-                    return new Types.WaitForQuickOrSlowSeconds(
-                        Values.Max(0.00001f, quickDelayAfterMessage),
-                        Values.Max(0.0001f, slowDelayAfterMessage),
-                        delegate () { return QuickTextMovement; }
-                    );
+                    float currentTime = 0;
+                    float quick = Values.Max(0.00001f, quickDelayAfterMessage);
+                    float slow = Values.Max(0.0001f, slowDelayAfterMessage);
+                    while (currentTime < (QuickTextMovement ? quick : slow))
+                    {
+                        await Task.Yield();
+                        currentTime += Time.deltaTime;
+                    }
                 }
                 else
                 {
-                    return new Types.WaitForQuickOrSlowSeconds(
-                        Values.Max(0.00001f, seconds.Value / 10),
-                        Values.Max(0.0001f, seconds.Value),
-                        delegate () { return QuickTextMovement; }
-                    );
+                    float currentTime = 0;
+                    float quick = Values.Max(0.00001f, seconds.Value / 10);
+                    float slow = Values.Max(0.0001f, seconds.Value);
+                    while (currentTime < (QuickTextMovement ? quick : slow))
+                    {
+                        await Task.Yield();
+                        currentTime += Time.deltaTime;
+                    }
                 }
             }
         }

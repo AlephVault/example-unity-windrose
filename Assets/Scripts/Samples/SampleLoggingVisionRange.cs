@@ -3,6 +3,7 @@ using WindRose.Behaviours.Entities.Objects;
 using GabTab.Behaviours;
 using GabTab.Behaviours.Interactors;
 using System.Collections;
+using System.Threading.Tasks;
 
 [RequireComponent(typeof(Watcher))]
 class SampleLoggingVisionRange : MonoBehaviour
@@ -42,10 +43,10 @@ class SampleLoggingVisionRange : MonoBehaviour
         });
     }
 
-    IEnumerator Gotcha(InteractorsManager manager, InteractiveMessage interactiveMessage)
+    private async Task Gotcha(InteractorsManager manager, InteractiveMessage interactiveMessage)
     {
         NullInteractor nullInteractor = (NullInteractor)manager["null-input"];
-        yield return nullInteractor.RunInteraction(interactiveMessage, new InteractiveMessage.PromptBuilder().Clear().Write(
+        await nullInteractor.RunInteraction(interactiveMessage, new InteractiveMessage.PromptBuilder().Clear().Write(
             string.Format("Gotcha! Saw you at ({0}, {1}) of my sight", x, y)
         ).Wait().End());
     }

@@ -15,6 +15,7 @@ namespace WindRose
             using World;
             using Entities.Objects;
             using GabTab.Behaviours.Interactors;
+            using System.Threading.Tasks;
 
             /// <summary>
             ///   <para>
@@ -129,32 +130,30 @@ namespace WindRose
                 /// <param name="delay">The delay to take transitioning to the new object</param>
                 /// <param name="noWait">Tells whether waiting the current transition or not</param>
                 /// <returns>The new coroutine</returns>
-                public Coroutine Focus(MapObject newTarget, float delay = 0f, bool noWait = false)
+                public async Task Focus(MapObject newTarget, float delay = 0f, bool noWait = false)
                 {
-                    if (!canvas.worldCamera)
+                    if (canvas.worldCamera)
                     {
-                        // An empty coroutine.
-                        return StartCoroutine(new MapObject[] { }.GetEnumerator());
-                    }
-                    else
-                    {
-                        return StartCoroutine(DoFocus(newTarget, delay, noWait));
+                        await DoFocus(newTarget, delay, noWait);
                     }
                 }
 
-                private IEnumerator DoFocus(MapObject newTarget, float delay = 0f, bool noWait = false)
+                private async Task DoFocus(MapObject newTarget, float delay = 0f, bool noWait = false)
                 {
                     if (noWait)
                     {
                         if (newTarget && Status == FocusStatus.Transitioning)
                         {
-                            yield break;
+                            return;
                         }
                     }
                     else
                     {
                         // Wait until the current object is being focused.
-                        yield return new WaitUntil(delegate () { return Status != FocusStatus.Transitioning; });
+                        while (Status == FocusStatus.Transitioning)
+                        {
+                            await Task.Yield();
+                        }
                     }
 
                     // Set the object and move to its position or start a new transition to it.
@@ -244,21 +243,21 @@ namespace WindRose
                 }
 
                 /// <summary>
-                ///   Executes an interaction, as described in <see cref="InteractiveInterface.RunInteraction(Func{InteractorsManager, InteractiveMessage, IEnumerator})"/>.
+                ///   Executes an interaction, as described in <see cref="InteractiveInterface.RunInteraction(Func{InteractorsManager, InteractiveMessage, Task})"/>.
                 ///     However the behaviour is wrapped in pausing/unpausing context, depending on the value of <see cref="pauseType"/>.
                 /// </summary>
                 /// <param name="interaction">The interaction to run</param>
-                public void RunInteraction(Func<InteractorsManager, InteractiveMessage, IEnumerator> interaction)
+                public void RunInteraction(Func<InteractorsManager, InteractiveMessage, Task> interaction)
                 {
-                    if (!interactiveInterface.IsRunningAnInteraction) StartCoroutine(WrappedInteraction(interaction));
+                    if (!interactiveInterface.IsRunningAnInteraction) WrappedInteraction(interaction);
                 }
 
-                private IEnumerator WrappedInteraction(Func<InteractorsManager, InteractiveMessage, IEnumerator> interaction)
+                private async void WrappedInteraction(Func<InteractorsManager, InteractiveMessage, Task> interaction)
                 {
                     try
                     {
                         OnAcquire();
-                        yield return interactiveInterface.RunInteraction(interaction);
+                        await interactiveInterface.RunInteraction(interaction);
                     }
                     finally
                     {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace GMM
@@ -41,9 +42,14 @@ namespace GMM
             /// </summary>
             public bool Locked { get; private set; }
 
-            private IEnumerator Unlock()
+            private async void Unlock()
             {
-                yield return new WaitForSeconds(Lapse);
+                float currentTime = 0;
+                while (currentTime < Lapse)
+                {
+                    await Task.Yield();
+                    currentTime += Time.deltaTime;
+                }
                 Locked = false;
             }
 
@@ -61,7 +67,7 @@ namespace GMM
                 try
                 {
                     action();
-                    StartCoroutine(Unlock());
+                    Unlock();
                 }
                 catch (Exception)
                 {

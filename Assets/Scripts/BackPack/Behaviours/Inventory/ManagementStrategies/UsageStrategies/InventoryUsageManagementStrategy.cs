@@ -14,6 +14,7 @@ namespace BackPack
             {
                 namespace UsageStrategies
                 {
+                    using System.Threading.Tasks;
                     using Types.Inventory.Stacks;
                     using Types.Inventory.Stacks.UsageStrategies;
 
@@ -97,7 +98,7 @@ namespace BackPack
                         /// <param name="stack">The stack being used</param>
                         /// <param name="argument">A custom argument to setup the usage</param>
                         /// <returns>The enumerator for the coroutine</returns>
-                        protected abstract IEnumerator DoUse(Stack stack, object argument);
+                        protected abstract Task DoUse(Stack stack, object argument);
 
                         /// <summary>
                         ///   This wrapper method performs the usage and, when done (or error) it clears the flag of an item
@@ -106,11 +107,11 @@ namespace BackPack
                         /// <param name="stack">The stack being used</param>
                         /// <param name="argument">A custom argument to setup the usage</param>
                         /// <returns>The enumerator for the coroutine</returns>
-                        protected IEnumerator DoUseWrapper(Stack stack, object argument)
+                        protected async void DoUseWrapper(Stack stack, object argument)
                         {
                             try
                             {
-                                yield return StartCoroutine(DoUse(stack, argument));
+                                await DoUse(stack, argument);
                             }
                             finally
                             {
@@ -144,7 +145,7 @@ namespace BackPack
                             }
 
                             currentlyUsingAnItem = true;
-                            StartCoroutine(DoUseWrapper(stack, argument));
+                            DoUseWrapper(stack, argument);
                         }
                     }
                 }

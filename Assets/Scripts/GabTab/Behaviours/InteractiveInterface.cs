@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
 using GMM.Utils;
+using System.Threading.Tasks;
 
 namespace GabTab
 {
@@ -150,12 +151,12 @@ namespace GabTab
             /// <seealso cref="Interactors.InteractorsManager"/>
             /// <seealso cref="InteractiveMessage"/>
             /// <seealso cref="Interactors.Interactor"/> 
-            public Coroutine RunInteraction(Func<Interactors.InteractorsManager, InteractiveMessage, IEnumerator> runnable)
+            public async Task RunInteraction(Func<Interactors.InteractorsManager, InteractiveMessage, Task> runnable)
             {
-                return StartCoroutine(WrappedInteraction(runnable(interactorsManager, interactiveMessage)));
+                await WrappedInteraction(runnable(interactorsManager, interactiveMessage));
             }
 
-            private IEnumerator WrappedInteraction(IEnumerator innerInteraction)
+            private async Task WrappedInteraction(Task innerInteraction)
             {
                 if (IsRunningAnInteraction)
                 {
@@ -163,7 +164,7 @@ namespace GabTab
                 }
                 IsRunningAnInteraction = true;
                 beforeRunningInteraction.Invoke();
-                yield return StartCoroutine(innerInteraction);
+                await innerInteraction;
                 afterRunningInteraction.Invoke();
                 IsRunningAnInteraction = false;
             }

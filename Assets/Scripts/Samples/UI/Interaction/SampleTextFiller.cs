@@ -5,6 +5,7 @@ using GabTab.Behaviours;
 using GabTab.Behaviours.Interactors;
 using WindRose.Behaviours.UI;
 using GMM.Utils;
+using System.Threading.Tasks;
 
 [RequireComponent(typeof(HUD))]
 public class SampleTextFiller : MonoBehaviour
@@ -32,18 +33,18 @@ public class SampleTextFiller : MonoBehaviour
     // Use this for initialization
     // THIS IS JUST AN EXAMPLE and not a real-life one. This Start method will be run as a coroutine
     //   just to give time to the interactive interfact to initialize.
-    IEnumerator Start()
+    private async void Start()
     {
         // WARNING: If I remove this wait, the map will be loaded, but the sprites (images) will not be
         //          loaded until the Start() methods of the inner Sprite components run. This will
         //          cause the map-pause be executed, but the sprites will not be yet visible since most
         //          of this stuff was run in Awake(), but this method is Start() and the method that
         //          initializes the sprites is also Start() or Update().
-        yield return new WaitForSeconds(0f);
+        await Task.Yield();
         hud.RunInteraction(StartSampleMessages);
 	}
 
-    IEnumerator StartSampleMessages(InteractorsManager manager, InteractiveMessage interactiveMessage)
+    private async Task StartSampleMessages(InteractorsManager manager, InteractiveMessage interactiveMessage)
     {
         ButtonsInteractor yesnoInteractor = (ButtonsInteractor)manager["yesno-input"];
         NullInteractor nullInteractor = (NullInteractor)manager["null-input"];
@@ -51,11 +52,11 @@ public class SampleTextFiller : MonoBehaviour
         ZodiacListInteractor zodiacInteractor = (ZodiacListInteractor)manager["zodiac-input"];
         ElementListInteractor elementsInteractor = (ElementListInteractor)manager["elements-input"];
         CharacterClassListInteractor charClassInteractor = (CharacterClassListInteractor)manager["charclass-input"];
-        yield return yesnoInteractor.RunInteraction(interactiveMessage, new InteractiveMessage.PromptBuilder().Clear().Write(INTRO).Wait().Clear().Write(QUESTION).Wait().End());
+        await yesnoInteractor.RunInteraction(interactiveMessage, new InteractiveMessage.PromptBuilder().Clear().Write(INTRO).Wait().Clear().Write(QUESTION).Wait().End());
         if (yesnoInteractor.Result == "yes")
         {
             textInteractor.PlaceholderPrompt = "Enter your name ...";
-            yield return textInteractor.RunInteraction(interactiveMessage, new InteractiveMessage.PromptBuilder().Clear().Write(YOURNAME).Wait().End());
+            await textInteractor.RunInteraction(interactiveMessage, new InteractiveMessage.PromptBuilder().Clear().Write(YOURNAME).Wait().End());
             string name;
             if (textInteractor.Result == true)
             {
@@ -64,19 +65,19 @@ public class SampleTextFiller : MonoBehaviour
             else
             {
                 name = "Anonymous";
-                yield return nullInteractor.RunInteraction(interactiveMessage, new InteractiveMessage.PromptBuilder().Write(string.Format(MISSING, name)).Wait().End());
+                await nullInteractor.RunInteraction(interactiveMessage, new InteractiveMessage.PromptBuilder().Write(string.Format(MISSING, name)).Wait().End());
             }
-            yield return zodiacInteractor.RunInteraction(interactiveMessage, new InteractiveMessage.PromptBuilder().Clear().Write(ZODIAC_QUESTION).Wait().End());
-            yield return nullInteractor.RunInteraction(interactiveMessage, new InteractiveMessage.PromptBuilder().Clear().Write(string.Format(ZODIAC_ANSWER, zodiacInteractor.SelectedItems[0].Text)).Wait().End());
-            yield return elementsInteractor.RunInteraction(interactiveMessage, new InteractiveMessage.PromptBuilder().Clear().Write(ELEMENTS_QUESTION).Wait().End());
-            yield return nullInteractor.RunInteraction(interactiveMessage, new InteractiveMessage.PromptBuilder().Clear().Write(string.Format(ELEMENTS_ANSWER, string.Join(", ", elementsInteractor.SelectedItems.Select((e) => e.Text).ToArray()))).Wait().End());
-            yield return charClassInteractor.RunInteraction(interactiveMessage, new InteractiveMessage.PromptBuilder().Clear().Write(CHARCLASS_QUESTION).Wait().End());
-            yield return nullInteractor.RunInteraction(interactiveMessage, new InteractiveMessage.PromptBuilder().Clear().Write(string.Format(CHARCLASS_ANSWER, charClassInteractor.SelectedItems[0].Text)).Wait().End());
-            yield return nullInteractor.RunInteraction(interactiveMessage, new InteractiveMessage.PromptBuilder().Clear().Write(string.Format(THANKYOU, name)).Wait().End());
+            await zodiacInteractor.RunInteraction(interactiveMessage, new InteractiveMessage.PromptBuilder().Clear().Write(ZODIAC_QUESTION).Wait().End());
+            await nullInteractor.RunInteraction(interactiveMessage, new InteractiveMessage.PromptBuilder().Clear().Write(string.Format(ZODIAC_ANSWER, zodiacInteractor.SelectedItems[0].Text)).Wait().End());
+            await elementsInteractor.RunInteraction(interactiveMessage, new InteractiveMessage.PromptBuilder().Clear().Write(ELEMENTS_QUESTION).Wait().End());
+            await nullInteractor.RunInteraction(interactiveMessage, new InteractiveMessage.PromptBuilder().Clear().Write(string.Format(ELEMENTS_ANSWER, string.Join(", ", elementsInteractor.SelectedItems.Select((e) => e.Text).ToArray()))).Wait().End());
+            await charClassInteractor.RunInteraction(interactiveMessage, new InteractiveMessage.PromptBuilder().Clear().Write(CHARCLASS_QUESTION).Wait().End());
+            await nullInteractor.RunInteraction(interactiveMessage, new InteractiveMessage.PromptBuilder().Clear().Write(string.Format(CHARCLASS_ANSWER, charClassInteractor.SelectedItems[0].Text)).Wait().End());
+            await nullInteractor.RunInteraction(interactiveMessage, new InteractiveMessage.PromptBuilder().Clear().Write(string.Format(THANKYOU, name)).Wait().End());
         }
         else
         {
-            yield return nullInteractor.RunInteraction(interactiveMessage, new InteractiveMessage.PromptBuilder().Clear().Write(FUCKOFF).Wait().End());
+            await nullInteractor.RunInteraction(interactiveMessage, new InteractiveMessage.PromptBuilder().Clear().Write(FUCKOFF).Wait().End());
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -44,11 +45,11 @@ namespace WindRose
                         {
                             oriented = GetComponent<Oriented>();
 							GetComponent<CommandReceiver>().ListenCommand(TalkSender.COMMAND, (string commandName, object[] arguments, GameObject sender) => {
-								StartCoroutine(StartTalk(sender));
+								StartTalk(sender);
                             });
                         }
 
-                        IEnumerator StartTalk(GameObject sender)
+                        private async void StartTalk(GameObject sender)
                         {
                             Oriented senderOriented = sender.GetComponent<Oriented>();
                             if (senderOriented)
@@ -68,7 +69,7 @@ namespace WindRose
                                         oriented.Orientation = Types.Direction.LEFT;
                                         break;
                                 }
-                                yield return new WaitForSeconds(0f);
+                                await Task.Yield();
                             }
                             onTalkReceived.Invoke(sender);
                         }

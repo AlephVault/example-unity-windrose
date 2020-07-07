@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using GMM.Types;
+using System.Threading.Tasks;
 
 namespace GabTab
 {
@@ -52,11 +53,14 @@ namespace GabTab
                 ///   An instance of <see cref="InteractiveInterface"/>, first referenced by the instance of
                 ///     <see cref="InteractiveInterface"/> that ultimately triggered this interaction. 
                 /// </param>
-                /// <returns>An enumerator to be run inside a coroutine.</returns>
-                protected override IEnumerator Input(InteractiveMessage interactiveMessage)
+                /// <returns>A task to be awaited asynchronously.</returns>
+                protected override async Task Input(InteractiveMessage interactiveMessage)
                 {
                     Result = null;
-                    yield return new WaitWhile(delegate() { return Result == null; });
+                    while (Result == null)
+                    {
+                        await Task.Yield();
+                    }
                 }
             }
         }

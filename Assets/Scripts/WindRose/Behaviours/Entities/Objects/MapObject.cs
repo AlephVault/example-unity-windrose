@@ -14,6 +14,7 @@ namespace WindRose
             using GabTab.Behaviours;
             using GabTab.Behaviours.Interactors;
             using System.Collections;
+            using System.Threading.Tasks;
             using Types;
             using UnityEngine.SceneManagement;
             using World;
@@ -497,12 +498,12 @@ namespace WindRose
                 }
 
                 /// <summary>
-                ///   Executes an interaction, as described in <see cref="UI.HUD.RunInteraction(Func{InteractorsManager, InteractiveMessage, IEnumerator})"/>.
+                ///   Executes an interaction, as described in <see cref="UI.HUD.RunInteraction(Func{InteractorsManager, InteractiveMessage, Task})"/>.
                 ///   The HUD to consider is one being specifically added to the scene (the only one) or, even better, the one assigned to this object
                 ///     under the <see cref="UI.HUD"/> property.
                 /// </summary>
                 /// <param name="interaction">The interaction to run</param>
-                public void RunInteraction(Func<InteractorsManager, InteractiveMessage, IEnumerator> interaction)
+                public void RunInteraction(Func<InteractorsManager, InteractiveMessage, Task> interaction)
                 {
                     UI.HUD hud = HUD ? HUD : GetTheOnlyHUDInScene();
                     hud.RunInteraction(interaction);

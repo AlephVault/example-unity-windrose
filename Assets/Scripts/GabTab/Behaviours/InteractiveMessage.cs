@@ -3,6 +3,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 using GMM.Utils;
+using System.Threading.Tasks;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -111,7 +112,7 @@ namespace GabTab
             /// <seealso cref="WaiterPrompt"/>
             public abstract class Prompt
             {
-                public abstract IEnumerator ToDisplay(InteractiveMessageContent content, StringBuilder builder, char? lastChar = null);
+                public abstract Task ToDisplay(InteractiveMessageContent content, StringBuilder builder, char? lastChar = null);
             }
 
             /// <summary>
@@ -125,13 +126,13 @@ namespace GabTab
                     OnlyIfSignificant = onlyIfSignificant;
                 }
 
-                public override IEnumerator ToDisplay(InteractiveMessageContent content, StringBuilder builder, char? lastChar = null)
+                public override async Task ToDisplay(InteractiveMessageContent content, StringBuilder builder, char? lastChar = null)
                 {
                     if (lastChar != null && lastChar != '\n' || !OnlyIfSignificant)
                     {
                         builder.Append('\n');
                         content.GetComponent<Text>().text = builder.ToString();
-                        yield return content.CharacterWaiterCoroutine();
+                        await content.CharacterWaiterCoroutine();
                     }
                 }
             }
@@ -141,11 +142,11 @@ namespace GabTab
             /// </summary>
             public class ClearPrompt : Prompt
             {
-                public override IEnumerator ToDisplay(InteractiveMessageContent content, StringBuilder builder, char? lastChar = null)
+                public override async Task ToDisplay(InteractiveMessageContent content, StringBuilder builder, char? lastChar = null)
                 {
                     builder.Remove(0, builder.Length);
                     content.GetComponent<Text>().text = "";
-                    yield return content.CharacterWaiterCoroutine();
+                    await content.CharacterWaiterCoroutine();
                 }
             }
 
@@ -160,14 +161,14 @@ namespace GabTab
                     Message = message;
                 }
 
-                public override IEnumerator ToDisplay(InteractiveMessageContent content, StringBuilder builder, char? lastChar = null)
+                public override async Task ToDisplay(InteractiveMessageContent content, StringBuilder builder, char? lastChar = null)
                 {
                     Text textComponent = content.GetComponent<Text>();
                     foreach (char c in Message)
                     {
                         builder.Append(c);
                         textComponent.text = builder.ToString();
-                        yield return content.CharacterWaiterCoroutine();
+                        await content.CharacterWaiterCoroutine();
                     }
                 }
             }
@@ -183,9 +184,9 @@ namespace GabTab
                     SecondsToWait = secondsToWait;
                 }
 
-                public override IEnumerator ToDisplay(InteractiveMessageContent content, StringBuilder builder, char? lastChar = null)
+                public override async Task ToDisplay(InteractiveMessageContent content, StringBuilder builder, char? lastChar = null)
                 {
-                    yield return content.ExplicitWaiterCoroutine(SecondsToWait);
+                    await content.ExplicitWaiter(SecondsToWait);
                 }
             }
 
@@ -302,12 +303,12 @@ namespace GabTab
             /// </summary>
             /// <param name="prompt">The list of <see cref="Prompt"/> objects to execute.</param>
             /// <returns>The just-started coroutine.</returns>
-            public Coroutine PromptMessages(Prompt[] prompt)
+            public async Task PromptMessages(Prompt[] prompt)
             {
-                return StartCoroutine(MessagesPrompter(prompt));
+                await MessagesPrompter(prompt);
             }
 
-            private IEnumerator MessagesPrompter(Prompt[] prompt)
+            private async Task MessagesPrompter(Prompt[] prompt)
             {
                 Text textComponent = messageContent.GetComponent<Text>();
                 StringBuilder builder = new StringBuilder(textComponent.text);
@@ -315,7 +316,7 @@ namespace GabTab
                 foreach (Prompt prompted in prompt)
                 {
                     string currentText = textComponent.text;
-                    yield return StartCoroutine(prompted.ToDisplay(messageContent, builder, currentText != "" ? (char?)currentText[currentText.Length - 1] : null));
+                    await prompted.ToDisplay(messageContent, builder, currentText != "" ? (char?)currentText[currentText.Length - 1] : null);
                 }
             }
 

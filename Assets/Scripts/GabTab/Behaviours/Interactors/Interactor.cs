@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace GabTab
@@ -16,7 +17,7 @@ namespace GabTab
             ///   Interactors make sense only in the scope of an <see cref="InteractiveInterface"/>.
             ///     Interactors are registered (in the editor) inside an <see cref="InteractorsManager"/> instance,
             ///     and accessed/used as in the example given in
-            ///     <see cref="InteractiveInterface.RunInteraction(Func{InteractorsManager, InteractiveMessage, IEnumerator})"/>.
+            ///     <see cref="InteractiveInterface.RunInteraction(Func{InteractorsManager, InteractiveMessage, Task})"/>.
             /// </summary>
             /// <remarks>
             ///   The only relevant method of this class is <see cref="RunInteraction(InteractiveMessage, InteractiveMessage.Prompt[])"/>,
@@ -49,13 +50,13 @@ namespace GabTab
                 ///   You will usually build this array using a <see cref="InteractiveMessage.PromptBuilder"/> as
                 ///     you can read in the example section of <see cref="InteractiveInterface"/>. 
                 /// </param>
-                /// <returns>A <c>Coroutine</c> to be run.</returns>
-                public Coroutine RunInteraction(InteractiveMessage interactiveMessage, InteractiveMessage.Prompt[] prompt)
+                /// <returns>A task to be run.</returns>
+                public Task RunInteraction(InteractiveMessage interactiveMessage, InteractiveMessage.Prompt[] prompt)
                 {
-                    return StartCoroutine(WrappedInteraction(interactiveMessage, prompt));
+                    return WrappedInteraction(interactiveMessage, prompt);
                 }
 
-                private IEnumerator WrappedInteraction(InteractiveMessage interactiveMessage, InteractiveMessage.Prompt[] prompt)
+                private async Task WrappedInteraction(InteractiveMessage interactiveMessage, InteractiveMessage.Prompt[] prompt)
                 {
                     if (interactionRunning)
                     {
@@ -74,9 +75,9 @@ namespace GabTab
                         InteractiveMessage.MessagePrompt lastPrompt = prompt[length - 1] as InteractiveMessage.MessagePrompt;
                         prompt[length - 1] = new InteractiveMessage.MessagePrompt(lastPrompt.Message + extraSpaces);
                     }
-                    yield return interactiveMessage.PromptMessages(prompt);
+                    await interactiveMessage.PromptMessages(prompt);
                     interactionDisplaying = true;
-                    yield return StartCoroutine(Input(interactiveMessage));
+                    await Input(interactiveMessage);
                     interactionDisplaying = false;
                     interactionRunning = false;
                 }
@@ -94,8 +95,8 @@ namespace GabTab
                 ///   An instance of <see cref="InteractiveInterface"/>, first referenced by the instance of
                 ///     <see cref="InteractiveInterface"/> that ultimately triggered this interaction. 
                 /// </param>
-                /// <returns>An enumerator to be run inside a coroutine.</returns>
-                protected abstract IEnumerator Input(InteractiveMessage interactiveMessage);
+                /// <returns>A task to be run asynchronously.</returns>
+                protected abstract Task Input(InteractiveMessage interactiveMessage);
             }
         }
     }

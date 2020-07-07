@@ -13,7 +13,7 @@ namespace GabTab
             ///   This component registers all the (other) components that will be used as interactors.
             /// </summary>
             /// <remarks>
-            ///   See the example in <see cref="InteractiveInterface.RunInteraction(Func{InteractorsManager, InteractiveMessage, System.Collections.IEnumerator})"/> to understand how is this class used. 
+            ///   See the example in <see cref="InteractiveInterface.RunInteraction(Func{InteractorsManager, InteractiveMessage, System.Threading.Tasks.Task})"/> to understand how is this class used. 
             /// </remarks>
             /// <seealso cref="Interactor"/>
             public class InteractorsManager : MonoBehaviour

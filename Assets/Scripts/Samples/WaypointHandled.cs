@@ -4,6 +4,7 @@ using UnityEngine;
 using WindRose.Behaviours.World;
 using WindRose.Behaviours.Entities.Objects;
 using WindRose.Types;
+using System.Threading.Tasks;
 
 [RequireComponent(typeof(Movable))]
 class WaypointHandled : MonoBehaviour
@@ -30,29 +31,34 @@ class WaypointHandled : MonoBehaviour
     {
         movable = GetComponent<Movable>();
         oriented = GetComponent<Oriented>();
-        WindRose.Behaviours.Entities.Objects.MapObject mapObject = GetComponent<WindRose.Behaviours.Entities.Objects.MapObject>();
+        MapObject mapObject = GetComponent<MapObject>();
         mapObject.onAttached.AddListener(delegate (Map map)
         {
+            isDead = false;
             if (waySteps.Length != 0)
             {
-                currentCoroutine = StartCoroutine(PerformMovement());
+                PerformMovement();
             }
         });
         mapObject.onDetached.AddListener(delegate ()
         {
-            if (currentCoroutine != null) StopCoroutine(currentCoroutine);
-            currentCoroutine = null;
+            isDead = true;
         });
     }
 
-    IEnumerator PerformMovement()
+    private async void PerformMovement()
     {
         while(true)
         {
             WayStep currentStep = waySteps[currentStepIndex];
 
             // Waiting for delay
-            yield return new WaitForSeconds(currentStep.delay);
+            float currentTime = 0;
+            while (currentTime <= currentStep.delay)
+            {
+                await Task.Yield();
+                currentTime += Time.deltaTime;
+            }
 
             // If dead, aborting
             if (isDead)
@@ -71,7 +77,10 @@ class WaypointHandled : MonoBehaviour
                 if (result)
                 {
                     // Wait until the movement is done.
-                    yield return new WaitUntil(() => movable.Movement == null);
+                    while (movable.Movement != null)
+                    {
+                        await Task.Yield();
+                    }
 
                     // Move to the next frame.
                     currentStepIndex = (currentStepIndex + 1) % waySteps.Length;

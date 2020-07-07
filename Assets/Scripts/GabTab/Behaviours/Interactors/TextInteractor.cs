@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -191,11 +192,14 @@ namespace GabTab
                 ///     <see cref="InteractiveInterface"/> that ultimately triggered this interaction. 
                 /// </param>
                 /// <returns>An enumerator to be run inside a coroutine.</returns>
-                protected override IEnumerator Input(InteractiveMessage interactiveMessage)
+                protected override async Task Input(InteractiveMessage interactiveMessage)
                 {
                     Result = null;
                     Content = null;
-                    yield return new WaitWhile(delegate() { return Result == null; });
+                    while (Result == null)
+                    {
+                        await Task.Yield();
+                    }
                 }
             }
         }

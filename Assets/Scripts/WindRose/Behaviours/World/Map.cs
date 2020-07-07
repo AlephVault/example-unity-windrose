@@ -126,8 +126,6 @@ namespace WindRose
                 /// </summary>
                 public Layers.Ceiling.CeilingLayer CeilingLayer { get; private set; }
 
-                private bool initialized = false;
-
                 /// <summary>
                 ///   See <see cref="height"/>.
                 /// </summary>

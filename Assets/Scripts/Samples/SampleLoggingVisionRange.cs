@@ -6,7 +6,7 @@ using System.Collections;
 using System.Threading.Tasks;
 
 [RequireComponent(typeof(Watcher))]
-class SampleLoggingVisionRange : MonoBehaviour
+public class SampleLoggingVisionRange : MonoBehaviour
 {
     private bool stillInside = false;
     private int x;

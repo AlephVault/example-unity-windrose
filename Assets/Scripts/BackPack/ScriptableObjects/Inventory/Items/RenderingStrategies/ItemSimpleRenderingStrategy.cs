@@ -20,7 +20,7 @@ namespace BackPack
                     /// </summary>
                     [CreateAssetMenu(fileName = "NewInventoryItemSimpleRenderingStrategy", menuName = "Wind Rose/Inventory/Item Strategies/Rendering/Simple", order = 101)]
                     [RequireSpatialStrategy(typeof(SpatialStrategies.ItemSimpleSpatialStrategy))]
-                    class ItemSimpleRenderingStrategy : ItemRenderingStrategy
+                    public class ItemSimpleRenderingStrategy : ItemRenderingStrategy
                     {
                         /// <summary>
                         ///   The icon to render.

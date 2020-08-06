@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using GabTab.Behaviours;
 
-class ElementListInteractor : TextOptionListInteractor
+public class ElementListInteractor : TextOptionListInteractor
 {
     protected override void Start()
     {

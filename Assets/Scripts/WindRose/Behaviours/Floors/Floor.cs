@@ -18,7 +18,7 @@ namespace WindRose
             [RequireComponent(typeof(Tilemap))]
             [RequireComponent(typeof(TilemapRenderer))]
             [RequireComponent(typeof(GMM.Behaviours.Normalized))]
-            class Floor : MonoBehaviour
+            public class Floor : MonoBehaviour
             {
                 /// <summary>
                 ///   Tells when the parent is not a <see cref="World.Layers.Floor.FloorLayer"/>.

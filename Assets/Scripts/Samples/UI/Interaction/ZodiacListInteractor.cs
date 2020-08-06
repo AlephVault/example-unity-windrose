@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-class ZodiacListInteractor : TextOptionListInteractor
+public class ZodiacListInteractor : TextOptionListInteractor
 {
     protected override void Start()
     {

@@ -22,7 +22,7 @@ namespace WindRose
                 ///   </para>
                 /// </summary>
 				[RequireComponent(typeof(TriggerLive))]
-				class CommandReceiver : MonoBehaviour, Common.Pausable.IPausable
+				public class CommandReceiver : MonoBehaviour, Common.Pausable.IPausable
                 {
 					public class UnityCommandReceivedEvent : UnityEvent<string, object[], GameObject, Action> {}
 

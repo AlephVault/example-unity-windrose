@@ -21,7 +21,7 @@
                             /// </summary>
                             public enum SolidnessStatus { Hole, Ghost, Solid, Mask };
 
-                            static class SolidnessStatusMethods
+                            public static class SolidnessStatusMethods
                             {
                                 /// <summary>
                                 ///   Solid objects cannot traverse anything. Others will.

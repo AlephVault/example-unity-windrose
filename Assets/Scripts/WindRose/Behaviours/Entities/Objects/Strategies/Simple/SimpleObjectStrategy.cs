@@ -20,7 +20,7 @@ namespace WindRose
                     /// </summary>
                     [RequireComponent(typeof(Base.LayoutObjectStrategy))]
                     [RequireComponent(typeof(Solidness.SolidnessObjectStrategy))]
-                    class SimpleObjectStrategy : ObjectStrategy
+                    public class SimpleObjectStrategy : ObjectStrategy
                     {
                         /// <summary>
                         ///   Its counterpart type is

@@ -17,7 +17,7 @@ namespace BackPack
                     ///   The main element to consider here is the <see cref="ItemIntegerQuantifyingStrategy.Max"/>
                     ///     property to compare against.
                     /// </summary>
-                    class StackIntegerQuantifyingStrategy : StackQuantifyingStrategy
+                    public class StackIntegerQuantifyingStrategy : StackQuantifyingStrategy
                     {
                         public StackIntegerQuantifyingStrategy(ItemQuantifyingStrategy itemStrategy, object argument) : base(itemStrategy, argument)
                         {

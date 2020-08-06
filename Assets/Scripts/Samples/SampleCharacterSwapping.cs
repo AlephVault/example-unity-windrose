@@ -6,7 +6,7 @@ using UnityEngine;
 using CamJam.Behaviours;
 
 [RequireComponent(typeof(WindRose.Behaviours.UI.HUD))]
-class SampleCharacterSwapping : MonoBehaviour
+public class SampleCharacterSwapping : MonoBehaviour
 {
     /**
      * Delay for transitions.

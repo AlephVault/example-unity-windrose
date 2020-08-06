@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using GMM.Utils;
 
 [RequireComponent(typeof(Movable))]
-class WaypointHandled : MonoBehaviour
+public class WaypointHandled : MonoBehaviour
 {
     private Movable movable;
     private Oriented oriented;

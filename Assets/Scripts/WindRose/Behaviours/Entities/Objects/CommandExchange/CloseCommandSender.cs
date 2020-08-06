@@ -34,7 +34,7 @@ namespace WindRose
                 ///     to avoid this case.
                 /// </remarks>
                 [RequireComponent(typeof(Oriented))]
-                class CloseCommandSender : MonoBehaviour, Common.Pausable.IPausable
+                public class CloseCommandSender : MonoBehaviour, Common.Pausable.IPausable
                 {
                     private Oriented oriented;
                     private MapObject mapObject;

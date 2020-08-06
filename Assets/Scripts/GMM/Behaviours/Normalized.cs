@@ -13,7 +13,7 @@ namespace GMM
         ///     its local scale is 1, and its local rotation is the identity (i.e. no
         ///     further rotation).
         /// </summary>
-        class Normalized : MonoBehaviour
+        public class Normalized : MonoBehaviour
         {
             private void Awake()
             {

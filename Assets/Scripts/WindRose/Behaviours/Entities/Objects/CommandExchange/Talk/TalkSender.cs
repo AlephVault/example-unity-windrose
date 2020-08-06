@@ -16,7 +16,7 @@ namespace WindRose
                     ///     then it will know how to handle such command.
                     /// </summary>
                     [RequireComponent(typeof(CloseCommandSender))]
-                    class TalkSender : MonoBehaviour
+                    public class TalkSender : MonoBehaviour
                     {
                         /// <summary>
                         ///   The "talk" command.

@@ -18,7 +18,7 @@ namespace BackPack
                     /// <summary>
                     ///   Unstacked quantifying strategies check against unstacked (boolean) quantity values.
                     /// </summary>
-                    class StackUnstackedQuantifyingStrategy : StackQuantifyingStrategy
+                    public class StackUnstackedQuantifyingStrategy : StackQuantifyingStrategy
                     {
                         public StackUnstackedQuantifyingStrategy(ItemQuantifyingStrategy itemStrategy) : base(itemStrategy, null)
                         {

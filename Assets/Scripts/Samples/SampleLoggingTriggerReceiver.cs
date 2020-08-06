@@ -2,7 +2,7 @@
 using WindRose.Behaviours.Entities.Objects;
 
 [RequireComponent(typeof(TriggerPlatform))]
-class SampleLoggingTriggerReceiver : MonoBehaviour
+public class SampleLoggingTriggerReceiver : MonoBehaviour
 {
     private TriggerPlatform platform;
     

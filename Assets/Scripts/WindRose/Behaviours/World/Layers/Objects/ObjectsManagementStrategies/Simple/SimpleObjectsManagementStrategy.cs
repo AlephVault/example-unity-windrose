@@ -30,7 +30,7 @@ namespace WindRose
                             /// </summary>
                             [RequireComponent(typeof(Base.LayoutObjectsManagementStrategy))]
                             [RequireComponent(typeof(Solidness.SolidnessObjectsManagementStrategy))]
-                            class SimpleObjectsManagementStrategy : ObjectsManagementStrategy
+                            public class SimpleObjectsManagementStrategy : ObjectsManagementStrategy
                             {
                                 /// <summary>
                                 ///   Combines the result of <see cref="Base.LayoutObjectsManagementStrategy.CanAllocateMovement(Dictionary{Type, bool}, ObjectStrategy, ObjectsManagementStrategyHolder.Status, Direction, bool)"/>

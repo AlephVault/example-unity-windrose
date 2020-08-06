@@ -7,7 +7,7 @@ using WindRose.Behaviours.Entities.Objects.CommandExchange.Talk;
 using System.Threading.Tasks;
 
 [RequireComponent(typeof(TalkReceiver))]
-class SampleMeaninglessTalk : MonoBehaviour
+public class SampleMeaninglessTalk : MonoBehaviour
 {
     void Awake()
     {

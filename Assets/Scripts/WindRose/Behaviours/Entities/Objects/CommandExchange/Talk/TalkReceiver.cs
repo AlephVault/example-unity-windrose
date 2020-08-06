@@ -27,7 +27,7 @@ namespace WindRose
                     /// </remarks>
                     [RequireComponent(typeof(Oriented))]
                     [RequireComponent(typeof(CommandReceiver))]
-                    class TalkReceiver : MonoBehaviour
+                    public class TalkReceiver : MonoBehaviour
                     {
                         Oriented oriented;
 

@@ -16,7 +16,7 @@ namespace BackPack
                     ///   Stacks with this strategy do nothing when attempted to use them. In the same way,
                     ///     interpolation will be trivial and always succeed.
                     /// </summary>
-                    class StackNullUsageStrategy : StackUsageStrategy
+                    public class StackNullUsageStrategy : StackUsageStrategy
                     {
                         public StackNullUsageStrategy(ItemUsageStrategy itemStrategy) : base(itemStrategy)
                         {

@@ -13,7 +13,7 @@ namespace WindRose
                     /// <summary>
                     ///   This strategy is just the counterpart of <see cref="World.Layers.Objects.ObjectsManagementStrategies.Base.BaseObjectsManagementStrategy"/>.
                     /// </summary>
-                    class BaseObjectStrategy : ObjectStrategy
+                    public class BaseObjectStrategy : ObjectStrategy
                     {
                         /// <summary>
                         ///   The counterpart type is <see cref="World.Layers.Objects.ObjectsManagementStrategies.Base.BaseObjectsManagementStrategy"/>.

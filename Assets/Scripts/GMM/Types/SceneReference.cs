@@ -52,10 +52,9 @@ namespace GMM
 
             /// <summary>
             ///   Preloads the scene with the given path.
-            ///   This process is asynchronous and should be waited for.
             /// </summary>
             /// <returns>Whether the scene was loaded or not</returns>
-            public async Task<bool> Preload()
+            public bool Preload(LocalPhysicsMode physicsMode = LocalPhysicsMode.None)
             {
                 if (loadedScene.IsValid())
                 {
@@ -67,12 +66,7 @@ namespace GMM
                 }
                 else
                 {
-                    AsyncOperation operation = SceneManager.LoadSceneAsync(_path, LoadSceneMode.Additive);
-                    while (!operation.isDone)
-                    {
-                        await Tasks.Blink();
-                    }
-                    Scene scene = SceneManager.GetSceneByPath(_path);
+                    Scene scene = SceneManager.LoadScene(_path, new LoadSceneParameters(LoadSceneMode.Additive, physicsMode));
                     if (scene.IsValid())
                     {
                         loadedScene = scene;

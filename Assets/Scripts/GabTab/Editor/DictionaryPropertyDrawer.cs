@@ -1,5 +1,5 @@
 ﻿using UnityEditor;
-using GMM.Editors;
+using GMM.Types;
 
 namespace GabTab
 {

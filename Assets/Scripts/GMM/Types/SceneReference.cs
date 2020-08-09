@@ -57,7 +57,7 @@ namespace GMM
             /// <returns>Whether the scene was loaded or not</returns>
             public async Task<bool> Preload()
             {
-                if (loadedScene != null)
+                if (loadedScene.IsValid())
                 {
                     return true;
                 }
@@ -73,7 +73,7 @@ namespace GMM
                         await Tasks.Blink();
                     }
                     Scene scene = SceneManager.GetSceneByPath(_path);
-                    if (scene != null && scene.IsValid())
+                    if (scene.IsValid())
                     {
                         loadedScene = scene;
                         return true;

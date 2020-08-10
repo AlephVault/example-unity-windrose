@@ -1,7 +1,9 @@
-﻿using UnityEngine;
+﻿using System.Threading.Tasks;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 using Mirror;
 using GMM.Types;
+using GMM.Utils;
 
 namespace NetRose
 {
@@ -37,33 +39,35 @@ namespace NetRose
             [SerializeField]
             private SceneReferenceDictionary templateScenes;
 
-            void Start()
+            async void Start()
             {
                 // Preload all the fixed scenes.
                 foreach(var pair in fixedScenes)
                 {
-                    pair.Value.Preload();
+                    await pair.Value.Preload();
                 }
 
                 // Preload all the template scenes.
                 foreach(var pair in templateScenes)
                 {
-                    pair.Value.Preload();
+                    await pair.Value.Preload();
                 }
             }
 
             /// <summary>
             ///   Returns a fixed scene by its key. Returns an invalid
             ///   scene (uninitialized) if no scene exists for the key
-            ///   or the corresponding scene was not (pre)loaded.
+            ///   or the corresponding scene was not (pre)loaded. This
+            ///   is an asynchronous task that must be waited for.
             /// </summary>
             /// <param name="key">The key to pick a scene by</param>
             /// <returns>A scene, which may be an invalid one if not found</returns>
-            public Scene GetSceneByKey(string key)
+            public async Task<Scene> GetSceneByKey(string key, LocalPhysicsMode physicsMode = LocalPhysicsMode.None)
             {
                 SceneReference reference = null;
                 if (fixedScenes.TryGetValue(key, out reference))
                 {
+                    await reference.Preload(physicsMode);
                     return reference.LoadedScene;
                 }
                 else
@@ -75,16 +79,36 @@ namespace NetRose
             /// <summary>
             ///   Clones a template scene by its key. Returns an invalid
             ///   scene (uninitialized) if no scene exists for the key
-            ///   or the corresponding scene was not (pre)loaded.
+            ///   or the corresponding scene was not (pre)loaded. This
+            ///   is an asynchronous task that must be waited for.
             /// </summary>
             /// <param name="key">The key to pick a scene by</param>
+            /// <param name="physicsMode">The physics mode to clone the scene with</param>
             /// <returns>A cloned scene, which may be an invalid one if not found</returns>
-            public Scene CloneSceneByKey(string key, LocalPhysicsMode physicsMode = LocalPhysicsMode.None)
+            public async Task<Scene> CloneSceneByKey(string key, LocalPhysicsMode physicsMode = LocalPhysicsMode.None)
             {
                 SceneReference reference = null;
-                if (fixedScenes.TryGetValue(key, out reference) && reference.LoadedScene.IsValid())
+                if (fixedScenes.TryGetValue(key, out reference))
                 {
-                    return SceneManager.LoadScene(reference.LoadedScene.name, new LoadSceneParameters(LoadSceneMode.Additive, physicsMode));
+                    // To get a scene, loadSceneAsync will be called and will return
+                    // an AsyncOperation. Such operations are queued, thus never
+                    // running into race conditions. This will imply that this code
+                    // will be stable regarding the scene count.
+                    Scene scene = new Scene{};
+                    AsyncOperation operation = SceneManager.LoadSceneAsync(reference.Path, new LoadSceneParameters(LoadSceneMode.Additive, physicsMode));
+                    int index = SceneManager.sceneCount;
+                    operation.completed += (op) =>
+                    {
+                        if (SceneManager.sceneCount != index)
+                        {
+                            scene = SceneManager.GetSceneAt(index);
+                        }
+                    };
+                    while (!operation.isDone)
+                    {
+                        await Tasks.Blink();
+                    }
+                    return scene;
                 }
                 else
                 {

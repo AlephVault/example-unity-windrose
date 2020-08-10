@@ -52,9 +52,10 @@ namespace GMM
 
             /// <summary>
             ///   Preloads the scene with the given path.
+            ///   This is an asynchronous task that must be waited for.
             /// </summary>
             /// <returns>Whether the scene was loaded or not</returns>
-            public bool Preload(LocalPhysicsMode physicsMode = LocalPhysicsMode.None)
+            public async Task<bool> Preload(LocalPhysicsMode physicsMode = LocalPhysicsMode.None)
             {
                 if (loadedScene.IsValid())
                 {
@@ -66,7 +67,25 @@ namespace GMM
                 }
                 else
                 {
-                    Scene scene = SceneManager.LoadScene(_path, new LoadSceneParameters(LoadSceneMode.Additive, physicsMode));
+                    // To get a scene, loadSceneAsync will be called and will return
+                    // an AsyncOperation. Such operations are queued, thus never
+                    // running into race conditions. This will imply that this code
+                    // will be stable regarding the scene count.
+                    Scene scene = new Scene{};
+                    AsyncOperation operation = SceneManager.LoadSceneAsync(_path, new LoadSceneParameters(LoadSceneMode.Additive, physicsMode));
+                    int index = SceneManager.sceneCount;
+                    operation.completed += (op) =>
+                    {
+                        if (SceneManager.sceneCount != index)
+                        {
+                            scene = SceneManager.GetSceneAt(index);
+                        }
+                    };
+                    while (!operation.isDone)
+                    {
+                        await Tasks.Blink();
+                    }
+                    // Now, the scene may be invalid or not.
                     if (scene.IsValid())
                     {
                         loadedScene = scene;

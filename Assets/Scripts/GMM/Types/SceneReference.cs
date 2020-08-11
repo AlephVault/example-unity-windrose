@@ -40,30 +40,16 @@ namespace GMM
             /// </summary>
             public string Path => _path;
 
-            // The inner scene.
-            private Scene loadedScene;
-
             /// <summary>
-            ///   Returns the underlying scene. The scene must
-            ///   be successfully loaded before trying to get
-            ///   the reference, or it will be null.
-            /// </summary>
-            public Scene LoadedScene => loadedScene;
-
-            /// <summary>
-            ///   Preloads the scene with the given path.
+            ///   Loads the scene with the given path.
             ///   This is an asynchronous task that must be waited for.
             /// </summary>
             /// <returns>Whether the scene was loaded or not</returns>
-            public async Task<bool> Preload(LocalPhysicsMode physicsMode = LocalPhysicsMode.None)
+            public async Task<Scene> Load(LocalPhysicsMode physicsMode = LocalPhysicsMode.None)
             {
-                if (loadedScene.IsValid())
+                if (string.IsNullOrEmpty(_path))
                 {
-                    return true;
-                }
-                else if (string.IsNullOrEmpty(_path))
-                {
-                    return false;
+                    return new Scene{};
                 }
                 else
                 {
@@ -85,16 +71,7 @@ namespace GMM
                     {
                         await Tasks.Blink();
                     }
-                    // Now, the scene may be invalid or not.
-                    if (scene.IsValid())
-                    {
-                        loadedScene = scene;
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                    return scene;
                 }
             }
 

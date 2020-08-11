@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Mirror;
@@ -11,108 +12,151 @@ namespace NetRose
     {
         /// <summary>
         ///   <para>
-        ///     Worlds account for two different sets of scenes that will be
-        ///     loaded in different contexts: fixed scenes, and template scenes.
+        ///     World will define their layout of scenes. Each scene will
+        ///     have a distinct key and they will be either singleton or
+        ///     template scenes when trying to load.
         ///   </para>
         ///   <para>
-        ///     Fixed scenes are loaded on start. They are added additively.
-        ///     Template scenes are also loaded on start, and additively, but
-        ///     they will serve a different purpose: they will be cloned and
-        ///     instantiated.
+        ///     It has several features involving the underlying scenes,
+        ///     and moving players across scenes.
+        ///   </para>
+        ///   <para>
+        ///     This object, on itself, is a singleton.
         ///   </para>
         /// </summary>
         public class World : NetworkBehaviour
         {
             /// <summary>
-            ///   A list of "fixed" scenes, which may be referenced
-            ///   later via its code. Those "fixed" scenes can be
-            ///   referenced later (e.g. to teleport a character
-            ///   from one place to another).
+            ///   The list of scenes to load. Those scenes can be either
+            ///   template or singleton scenes.
             /// </summary>
             [SerializeField]
-            private SceneReferenceDictionary fixedScenes;
+            SceneConfigDictionary scenes = new SceneConfigDictionary();
 
             /// <summary>
-            ///   A list of "template" scenes. New scenes can be
-            ///   "cloned" out of each of these templates.
+            ///   Set this property to true to cause a preload to be triggered
+            ///   when this component starts.
             /// </summary>
             [SerializeField]
-            private SceneReferenceDictionary templateScenes;
+            private bool autoPreload = false;
 
-            async void Start()
+            // The tracked instance.
+            private static World instance = null;
+
+            private async void Start()
             {
-                // Preload all the fixed scenes.
-                foreach(var pair in fixedScenes)
+                if (instance != null && instance != this)
                 {
-                    await pair.Value.Preload();
-                }
-
-                // Preload all the template scenes.
-                foreach(var pair in templateScenes)
-                {
-                    await pair.Value.Preload();
-                }
-            }
-
-            /// <summary>
-            ///   Returns a fixed scene by its key. Returns an invalid
-            ///   scene (uninitialized) if no scene exists for the key
-            ///   or the corresponding scene was not (pre)loaded. This
-            ///   is an asynchronous task that must be waited for.
-            /// </summary>
-            /// <param name="key">The key to pick a scene by</param>
-            /// <returns>A scene, which may be an invalid one if not found</returns>
-            public async Task<Scene> GetSceneByKey(string key, LocalPhysicsMode physicsMode = LocalPhysicsMode.None)
-            {
-                SceneReference reference = null;
-                if (fixedScenes.TryGetValue(key, out reference))
-                {
-                    await reference.Preload(physicsMode);
-                    return reference.LoadedScene;
+                    // TODO error, and destroy.
                 }
                 else
                 {
-                    return new Scene{};
+                    instance = this;
+                }
+
+                if (autoPreload)
+                {
+                    await Preload();
+                }
+            }
+
+            private void OnDestroy()
+            {
+                if (instance == this) instance = null;
+            }
+
+            /// <summary>
+            ///   Preloads all the singleton scenes. This is an asynchronous
+            ///   task that must be waited for.
+            /// </summary>
+            public async Task Preload()
+            {
+                foreach(KeyValuePair<string, SceneConfig> pair in scenes)
+                {
+                    if (pair.Value.LoadMode == SceneLoadMode.Singleton)
+                    {
+                        await pair.Value.Load();
+                    }
                 }
             }
 
             /// <summary>
-            ///   Clones a template scene by its key. Returns an invalid
-            ///   scene (uninitialized) if no scene exists for the key
-            ///   or the corresponding scene was not (pre)loaded. This
-            ///   is an asynchronous task that must be waited for.
+            ///   Loads a scene, identified by its key. If the key does not
+            ///   exist, an invalid scene will be returned. Depending on the
+            ///   scene mode, an existing scene instance will be returned or
+            ///   a new scene instance will be created. This is an asynchronous
+            ///   task that must be waited for. A reference to the loaded
+            ///   <see cref="Scene"/> is then returned, either existing or
+            ///   instantiated.
             /// </summary>
-            /// <param name="key">The key to pick a scene by</param>
-            /// <param name="physicsMode">The physics mode to clone the scene with</param>
-            /// <returns>A cloned scene, which may be an invalid one if not found</returns>
-            public async Task<Scene> CloneSceneByKey(string key, LocalPhysicsMode physicsMode = LocalPhysicsMode.None)
+            /// <param name="sceneKey">The scene key to load</param>
+            /// <returns>The loaded scene</returns>
+            public async Task<Scene> Load(string sceneKey)
             {
-                SceneReference reference = null;
-                if (fixedScenes.TryGetValue(key, out reference))
+                SceneConfig config;
+                Scene scene = new Scene{};
+                if (scenes.TryGetValue(sceneKey, out config))
                 {
-                    // To get a scene, loadSceneAsync will be called and will return
-                    // an AsyncOperation. Such operations are queued, thus never
-                    // running into race conditions. This will imply that this code
-                    // will be stable regarding the scene count.
-                    Scene scene = new Scene{};
-                    AsyncOperation operation = SceneManager.LoadSceneAsync(reference.Path, new LoadSceneParameters(LoadSceneMode.Additive, physicsMode));
-                    int index = SceneManager.sceneCount;
-                    operation.completed += (op) =>
-                    {
-                        if (SceneManager.sceneCount != index)
-                        {
-                            scene = SceneManager.GetSceneAt(index);
-                        }
-                    };
-                    while (!operation.isDone)
-                    {
-                        await Tasks.Blink();
-                    }
+                    return await config.Load();
+                }
+                else
+                {
                     return scene;
                 }
-                else
+            }
+
+            private bool IsPlayer(NetworkIdentity identity)
+            {
+                return identity.connectionToClient.identity == identity;
+            }
+
+            
+            private bool IsActiveConnection(NetworkIdentity identity)
+            {
+                // This method only makes sense in server-side.
+                return identity.connectionToClient.isReady;
+            }
+
+            public void MovePlayer(NetworkIdentity identity, Scene newScene)
+            {
+                if (isServer)
                 {
-                    return new Scene{};
+                    if (newScene == null)
+                    {
+                        newScene = gameObject.scene;
+                    }
+
+                    if (!IsPlayer(identity))
+                    {
+                        // TODO error
+                    }
+                    else if (!IsActiveConnection(identity))
+                    {
+                        // TODO other error
+                    }
+                    else if (!newScene.isLoaded)
+                    {
+                        // TODO other error
+                    }
+                    else if (newScene == identity.gameObject.scene)
+                    {
+                        // Nothing to do here, except perhaps for a notify / log
+                    }
+                    else if (newScene == gameObject.scene)
+                    {
+                        // TODO case: the object moving from whatever its scene is,
+                        // TODO       to the main scene.
+                    }
+                    else if (identity.gameObject.scene == gameObject.scene)
+                    {
+                        // TODO case: the object moving from the main scene to another
+                        //            scene (which is loaded, additively).
+                    }
+                    else
+                    {
+                        // TODO case: the object moving from a non-main scene to another
+                        //            non-main scene.
+                    }
                 }
             }
         }

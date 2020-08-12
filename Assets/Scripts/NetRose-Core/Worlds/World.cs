@@ -149,6 +149,12 @@ namespace NetRose
                     newScene = gameObject.scene;
                 }
 
+                // TODO: Add assumption that each scene may have a WindRose
+                //       Map inside, and that the object being moved is a
+                //       WindRose Object. With this in mind, attempt the
+                //       attachments and detachments, notifying the events
+                //       in the meantime.
+
                 if (!IsPlayer(identity))
                 {
                     throw new NoPlayerException("Cannot move a network identity, across scenes, not being a client player object");

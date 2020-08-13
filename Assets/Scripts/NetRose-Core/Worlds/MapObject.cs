@@ -7,10 +7,13 @@ namespace NetRose
     {
         using WindRose.Behaviours.World;
         using WindRose.Behaviours.Entities.Objects;
+        using System.Runtime.Serialization.Formatters.Binary;
+        using System.IO;
 
         [RequireComponent(typeof(MapObject))]
         public class NetworkedMapObject : NetworkBehaviour
         {
+            private static BinaryFormatter formatter = new BinaryFormatter();
             private MapObject mapObject;
             private Movable movable;
             private Snapped snapped;
@@ -28,22 +31,24 @@ namespace NetRose
 
             private void Start()
             {
-                mapObject.onAttached.AddListener(RpcOnAttached);
+                mapObject.onAttached.AddListener(OnAttached);
                 mapObject.onTeleported.AddListener(RpcOnTeleported);
                 mapObject.onMovementStarted.AddListener(OnMovementStarted);
                 mapObject.onMovementFinished.AddListener(OnMovementFinished);
                 mapObject.onMovementCancelled.AddListener(OnMovementCancelled);
                 mapObject.onDetached.AddListener(RpcOnDetached);
+                mapObject.onPropertyUpdated.AddListener(OnPropertyUpdated);
             }
 
             private void OnDestroy()
             {
-                mapObject.onAttached.RemoveListener(RpcOnAttached);
+                mapObject.onAttached.RemoveListener(OnAttached);
                 mapObject.onTeleported.RemoveListener(RpcOnTeleported);
                 mapObject.onMovementStarted.RemoveListener(OnMovementStarted);
                 mapObject.onMovementFinished.RemoveListener(OnMovementFinished);
                 mapObject.onMovementCancelled.RemoveListener(OnMovementCancelled);
                 mapObject.onDetached.RemoveListener(RpcOnDetached);
+                mapObject.onPropertyUpdated.RemoveListener(OnPropertyUpdated);
             }
 
             /**
@@ -57,8 +62,13 @@ namespace NetRose
              * forced and the event is faked.
              */
 
+            private void OnAttached(Map map)
+            {
+                RpcOnAttached(map, mapObject.X, mapObject.Y);
+            }
+
             [ClientRpc]
-            private void RpcOnAttached(Map map)
+            private void RpcOnAttached(Map map, uint x, uint y)
             {
                 // TODO implement.
             }
@@ -81,7 +91,7 @@ namespace NetRose
 
             private void OnMovementCancelled(WindRose.Types.Direction? direction)
             {
-                RpcOnMovementCancelled(direction.HasValue ? direction.Value : default(WindRose.Types.Direction), direction.HasValue, mapObject.X, mapObject.Y);
+                RpcOnMovementCancelled(direction.HasValue ? direction.Value : default, direction.HasValue, mapObject.X, mapObject.Y);
             }
 
             [ClientRpc]
@@ -106,6 +116,31 @@ namespace NetRose
             private void RpcOnDetached()
             {
                 // TODO implement.
+            }
+
+            private byte[] ToByteArray(object source)
+            {
+                MemoryStream stream = new MemoryStream();
+                formatter.Serialize(stream, source);
+                return stream.ToArray();
+            }
+
+            private object FromByteArray(byte[] sourceBin)
+            {
+                return formatter.Deserialize(new MemoryStream(sourceBin));
+            }
+
+            private void OnPropertyUpdated(string property, object previous, object next)
+            {
+                RpcOnPropertyUpdated(property, ToByteArray(previous), ToByteArray(next));
+            }
+
+            [ClientRpc]
+            private void RpcOnPropertyUpdated(string property, byte[] previousBin, byte[] nextBin)
+            {
+                object previous = FromByteArray(previousBin);
+                object next = FromByteArray(nextBin);
+                // TODO implement / delegate.
             }
         }
     }

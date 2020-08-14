@@ -2664,7 +2664,6 @@ MonoBehaviour:
   width: 2
   height: 2
   mainVisual: {fileID: 0}
-  HUD: {fileID: 0}
 --- !u!114 &460658318
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3270,7 +3269,6 @@ MonoBehaviour:
   width: 16
   height: 12
   mainVisual: {fileID: 0}
-  HUD: {fileID: 0}
 --- !u!114 &560705191
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8713,7 +8711,6 @@ MonoBehaviour:
   width: 1
   height: 1
   mainVisual: {fileID: 0}
-  HUD: {fileID: 0}
 --- !u!114 &850159755
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9326,7 +9323,6 @@ MonoBehaviour:
   width: 1
   height: 1
   mainVisual: {fileID: 0}
-  HUD: {fileID: 0}
 --- !u!114 &934075503
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11472,6 +11468,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   strategy: {fileID: 1063698779}
+  Bypass: 0
 --- !u!114 &1063698782
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12629,7 +12626,6 @@ MonoBehaviour:
   width: 1
   height: 1
   mainVisual: {fileID: 0}
-  HUD: {fileID: 0}
 --- !u!114 &1186038019
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15843,6 +15839,7 @@ GameObject:
   - component: {fileID: 1358881525}
   - component: {fileID: 1358881528}
   - component: {fileID: 1358881529}
+  - component: {fileID: 1358881515}
   m_Layer: 0
   m_Name: WangLiUp
   m_TagString: Untagged
@@ -15878,6 +15875,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   orientation: 3
+--- !u!114 &1358881515
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1358881512}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a9cc7dfd2c827784fa73ef2ee7069e80, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  HUD: {fileID: 0}
 --- !u!114 &1358881517
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15905,7 +15915,6 @@ MonoBehaviour:
   width: 1
   height: 1
   mainVisual: {fileID: 0}
-  HUD: {fileID: 0}
 --- !u!114 &1358881521
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17006,7 +17015,6 @@ MonoBehaviour:
   width: 2
   height: 2
   mainVisual: {fileID: 1327191621}
-  HUD: {fileID: 0}
 --- !u!114 &1514043979
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17516,6 +17524,7 @@ GameObject:
   - component: {fileID: 1597479057}
   - component: {fileID: 1597479060}
   - component: {fileID: 1597479061}
+  - component: {fileID: 1597479047}
   m_Layer: 0
   m_Name: WangLiLeft
   m_TagString: Untagged
@@ -17551,6 +17560,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   orientation: 1
+--- !u!114 &1597479047
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1597479044}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a9cc7dfd2c827784fa73ef2ee7069e80, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  HUD: {fileID: 0}
 --- !u!114 &1597479049
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17578,7 +17600,6 @@ MonoBehaviour:
   width: 1
   height: 1
   mainVisual: {fileID: 0}
-  HUD: {fileID: 0}
 --- !u!114 &1597479053
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19766,6 +19787,7 @@ GameObject:
   - component: {fileID: 1732828879}
   - component: {fileID: 1732828880}
   - component: {fileID: 1732828863}
+  - component: {fileID: 1732828864}
   m_Layer: 0
   m_Name: Anne
   m_TagString: Untagged
@@ -19839,6 +19861,19 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0.5, y: 0.5, z: 0}
+--- !u!114 &1732828864
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1732828858}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a9cc7dfd2c827784fa73ef2ee7069e80, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  HUD: {fileID: 0}
 --- !u!114 &1732828865
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19878,7 +19913,6 @@ MonoBehaviour:
   width: 1
   height: 1
   mainVisual: {fileID: 0}
-  HUD: {fileID: 0}
 --- !u!114 &1732828873
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -20404,6 +20438,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   strategy: {fileID: 1764234098}
+  Bypass: 0
 --- !u!1 &1764890180
 GameObject:
   m_ObjectHideFlags: 0
@@ -22945,6 +22980,7 @@ GameObject:
   - component: {fileID: 2061497676}
   - component: {fileID: 2061497679}
   - component: {fileID: 2061497680}
+  - component: {fileID: 2061497666}
   m_Layer: 0
   m_Name: WangLiDown
   m_TagString: Untagged
@@ -22980,6 +23016,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   orientation: 0
+--- !u!114 &2061497666
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2061497663}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a9cc7dfd2c827784fa73ef2ee7069e80, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  HUD: {fileID: 0}
 --- !u!114 &2061497668
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -23007,7 +23056,6 @@ MonoBehaviour:
   width: 1
   height: 1
   mainVisual: {fileID: 0}
-  HUD: {fileID: 0}
 --- !u!114 &2061497672
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -23247,6 +23295,7 @@ GameObject:
   - component: {fileID: 2062477415}
   - component: {fileID: 2062477418}
   - component: {fileID: 2062477419}
+  - component: {fileID: 2062477403}
   m_Layer: 0
   m_Name: WangLiRight
   m_TagString: Untagged
@@ -23254,6 +23303,19 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &2062477403
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2062477402}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a9cc7dfd2c827784fa73ef2ee7069e80, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  HUD: {fileID: 0}
 --- !u!114 &2062477404
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -23294,7 +23356,6 @@ MonoBehaviour:
   width: 1
   height: 1
   mainVisual: {fileID: 0}
-  HUD: {fileID: 0}
 --- !u!114 &2062477410
 MonoBehaviour:
   m_ObjectHideFlags: 0

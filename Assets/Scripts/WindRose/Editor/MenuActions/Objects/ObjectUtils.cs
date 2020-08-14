@@ -160,13 +160,11 @@ namespace WindRose
                         switch(addStrategy)
                         {
                             case 0:
-                                Layout.AddComponent<Behaviours.Entities.Objects.Strategies.Base.BaseObjectStrategy>(gameObject);
                                 Layout.AddComponent<Behaviours.Entities.Objects.Strategies.Base.LayoutObjectStrategy>(gameObject);
                                 Layout.AddComponent<Behaviours.Entities.Objects.Strategies.Solidness.SolidnessObjectStrategy>(gameObject);
                                 mainStrategy = Layout.AddComponent<Behaviours.Entities.Objects.Strategies.Simple.SimpleObjectStrategy>(gameObject);
                                 break;
                             case 1:
-                                Layout.AddComponent<Behaviours.Entities.Objects.Strategies.Base.BaseObjectStrategy>(gameObject);
                                 mainStrategy = Layout.AddComponent<Behaviours.Entities.Objects.Strategies.Base.LayoutObjectStrategy>(gameObject);
                                 break;
                             default:

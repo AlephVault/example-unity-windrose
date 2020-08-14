@@ -149,13 +149,11 @@ namespace WindRose
                         switch (strategy)
                         {
                             case 0:
-                                Layout.AddComponent<Behaviours.World.Layers.Objects.ObjectsManagementStrategies.Base.BaseObjectsManagementStrategy>(objectsLayer);
                                 Layout.AddComponent<Behaviours.World.Layers.Objects.ObjectsManagementStrategies.Base.LayoutObjectsManagementStrategy>(objectsLayer);
                                 Layout.AddComponent<Behaviours.World.Layers.Objects.ObjectsManagementStrategies.Solidness.SolidnessObjectsManagementStrategy>(objectsLayer);
                                 mainStrategy = Layout.AddComponent<Behaviours.World.Layers.Objects.ObjectsManagementStrategies.Simple.SimpleObjectsManagementStrategy>(objectsLayer);
                                 break;
                             case 1:
-                                Layout.AddComponent<Behaviours.World.Layers.Objects.ObjectsManagementStrategies.Base.BaseObjectsManagementStrategy>(objectsLayer);
                                 mainStrategy = Layout.AddComponent<Behaviours.World.Layers.Objects.ObjectsManagementStrategies.Base.LayoutObjectsManagementStrategy>(objectsLayer);
                                 break;
                             default:

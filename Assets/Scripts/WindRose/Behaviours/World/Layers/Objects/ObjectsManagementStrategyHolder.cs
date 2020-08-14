@@ -144,6 +144,16 @@ namespace WindRose
                         /// </summary>
                         public ObjectsManagementStrategy Strategy { get { return strategy; } }
 
+                        /// <summary>
+                        ///   If set to true, the strategy check is bypassed. This means that
+                        ///     checks will always pass while Bypass is true, but also means
+                        ///     that related events (e.g. movement started, stopped, cancelled)
+                        ///     will also trigger. The logic behind the strategy, if any, must
+                        ///     keep the inner state consistent (like solidness strategy does
+                        ///     by accumulating indices / positions).
+                        /// </summary>
+                        public bool Bypass = false;
+
                         /**
                          * This is the list of tilemaps from the map.
                          */
@@ -523,6 +533,28 @@ namespace WindRose
                          */
                         private bool CanAllocateMovement(Entities.Objects.Strategies.ObjectStrategy objectStrategy, Status status, Types.Direction direction, bool continuated = false)
                         {
+                            if (status.Movement != null) return false;
+
+                            Entities.Objects.MapObject mapObject = objectStrategy.StrategyHolder.Object;
+
+                            switch (direction)
+                            {
+                                case Types.Direction.LEFT:
+                                    if (status.X == 0) return false;
+                                    break;
+                                case Types.Direction.UP:
+                                    if (status.Y + mapObject.Height >= strategy.StrategyHolder.Map.Height) return false;
+                                    break;
+                                case Types.Direction.RIGHT:
+                                    if (status.X + mapObject.Width >= strategy.StrategyHolder.Map.Width) return false;
+                                    break;
+                                case Types.Direction.DOWN:
+                                    if (status.Y == 0) return false;
+                                    break;
+                            }
+
+                            if (Bypass) return true;
+
                             return Collect(delegate (Dictionary<Type, bool> collected, ObjectsManagementStrategy strategy)
                             {
                                 return strategy.CanAllocateMovement(collected, GetCompatible(objectStrategy, strategy), status, direction, continuated);
@@ -588,6 +620,8 @@ namespace WindRose
                          */
                         private bool CanClearMovement(Entities.Objects.Strategies.ObjectStrategy objectStrategy, Status status)
                         {
+                            if (Bypass) return true;
+
                             return Collect(delegate (Dictionary<Type, bool> collected, ObjectsManagementStrategy strategy)
                             {
                                 return strategy.CanClearMovement(collected, GetCompatible(objectStrategy, strategy), status);

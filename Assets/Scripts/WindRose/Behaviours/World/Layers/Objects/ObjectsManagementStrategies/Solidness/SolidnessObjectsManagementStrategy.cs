@@ -32,7 +32,6 @@ namespace WindRose
                             ///     Its counterpart is <see cref="Entities.Objects.Strategies.Solidness.SolidnessObjectStrategy"/>.
                             ///   </para> 
                             /// </summary>
-                            [RequireComponent(typeof(Base.BaseObjectsManagementStrategy))]
                             public class SolidnessObjectsManagementStrategy : ObjectsManagementStrategy
                             {
                                 private SolidMask solidMask;
@@ -93,9 +92,7 @@ namespace WindRose
                                 ///   <para>
                                 ///     Allowing movement in certain direction involves checking for solidness according
                                 ///       to the objects occupying or not such cells and the solidness they add, and also
-                                ///       counting the current object's solidness. Additionally, the check value coming from
-                                ///       <see cref="Base.BaseObjectsManagementStrategy.CanAllocateMovement(Dictionary{Type, bool}, Objects.Strategies.ObjectStrategy, ObjectsManagementStrategyHolder.Status, Direction, bool)"/>
-                                ///       is also relevant here since we don't want to allow movement outside the map bounds.
+                                ///       counting the current object's solidness.
                                 ///   </para>
                                 ///   <para>
                                 ///     See <see cref="ObjectsManagementStrategy.CanAllocateMovement(Dictionary{Type, bool}, Objects.Strategies.ObjectStrategy, ObjectsManagementStrategyHolder.Status, Direction, bool)"/>
@@ -104,7 +101,6 @@ namespace WindRose
                                 /// </summary>
                                 public override bool CanAllocateMovement(Dictionary<Type, bool> otherComponentsResults, Entities.Objects.Strategies.ObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status, Direction direction, bool continuated)
                                 {
-                                    if (!otherComponentsResults[typeof(Base.BaseObjectsManagementStrategy)]) return false;
                                     Entities.Objects.Strategies.Solidness.SolidnessObjectStrategy solidnessStrategy = ((Entities.Objects.Strategies.Solidness.SolidnessObjectStrategy)strategy);
                                     SolidnessStatus solidness = solidnessStrategy.Solidness;
                                     if (solidness.Irregular()) return false;
@@ -113,14 +109,12 @@ namespace WindRose
 
                                 /// <summary>
                                 ///   <para>
-                                ///     Checking the ability to clear movement is directly obtained from the
-                                ///       result provided by the same method in <see cref="Base.BaseObjectsManagementStrategy"/>.
+                                ///     Always allows to clear the current movement.
                                 ///   </para>
                                 /// </summary>
                                 public override bool CanClearMovement(Dictionary<Type, bool> otherComponentsResults, Entities.Objects.Strategies.ObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status)
                                 {
-                                    // Just follows what the BaseStrategy tells
-                                    return otherComponentsResults[typeof(Base.BaseObjectsManagementStrategy)];
+                                    return true;
                                 }
 
                                 /// <summary>

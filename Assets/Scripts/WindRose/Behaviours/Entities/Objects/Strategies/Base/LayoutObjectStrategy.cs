@@ -14,7 +14,6 @@ namespace WindRose
                     /// <summary>
                     ///   This strategy is just the counterpart of <see cref="World.Layers.Objects.ObjectsManagementStrategies.Base.LayoutObjectsManagementStrategy"/>.
                     /// </summary>
-                    [RequireComponent(typeof(BaseObjectStrategy))]
                     public class LayoutObjectStrategy : ObjectStrategy
                     {
                         /// <summary>

@@ -33,7 +33,6 @@ namespace WindRose
                             ///   <seealso cref="ObjectsManagementStrategy"/>
                             ///   <seealso cref="Entities.Objects.Strategies.Base.LayoutObjectStrategy"/>
                             /// </summary>
-                            [RequireComponent(typeof(BaseObjectsManagementStrategy))]
                             public class LayoutObjectsManagementStrategy : ObjectsManagementStrategy
                             {
                                 private Bitmask blockMask;
@@ -67,23 +66,19 @@ namespace WindRose
                                 /// </summary>
                                 public override bool CanAllocateMovement(Dictionary<Type, bool> otherComponentsResults, ObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status, Direction direction, bool continuated)
                                 {
-                                    // First follows what the BaseStrategy tells
-                                    if (!otherComponentsResults[typeof(BaseObjectsManagementStrategy)]) return false;
-
                                     // Then check for cells being blocked
                                     return !IsAdjacencyBlocked(status.X, status.Y, strategy.StrategyHolder.Object.Width, strategy.StrategyHolder.Object.Height, direction);
                                 }
 
                                 /// <summary>
                                 ///   <para>
-                                ///     Checking the ability to clear movement is directly obtained from the
-                                ///       result provided by the same method in <see cref="BaseObjectsManagementStrategy"/>.
+                                ///     Always allows to clear the current movement.
                                 ///   </para>
                                 /// </summary>
                                 public override bool CanClearMovement(Dictionary<Type, bool> otherComponentsResults, ObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status)
                                 {
                                     // Just follows what the BaseStrategy tells
-                                    return otherComponentsResults[typeof(BaseObjectsManagementStrategy)];
+                                    return true;
                                 }
 
                                 /// <summary>

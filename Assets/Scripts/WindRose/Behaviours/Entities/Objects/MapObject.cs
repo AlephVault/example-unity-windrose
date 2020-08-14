@@ -410,14 +410,16 @@ namespace WindRose
                 }
 
                 /// <summary>
-                ///   Teleports the object to another position in the same map.
+                ///   Teleports the object to another position in the same map. It also triggers the <see cref="onTeleported"/>
+                ///     event unless <paramref name="silent"/> argument is set to true.
                 /// </summary>
                 /// <param name="x">The new x position of the object</param>
                 /// <param name="y">The new y position of the object</param>
+                /// <param name="silent">If true, this  teleportation will not trigger the <see cref="onTeleported"/> event</param>
                 /// <remarks>Does nothing if the object is paused.</remarks>
-                public void Teleport(uint x, uint y)
+                public void Teleport(uint x, uint y, bool silent = false)
                 {
-                    if (parentMap != null && !Paused) parentMap.ObjectsLayer.StrategyHolder.Teleport(StrategyHolder, x, y);
+                    if (parentMap != null && !Paused) parentMap.ObjectsLayer.StrategyHolder.Teleport(StrategyHolder, x, y, silent);
                 }
 
                 /// <summary>

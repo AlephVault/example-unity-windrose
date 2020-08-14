@@ -716,8 +716,9 @@ namespace WindRose
                         /// <param name="objectStrategyHolder">The object['s strategy holder] to teleport</param>
                         /// <param name="x">The X position to teleport the object to</param>
                         /// <param name="y">The Y position to teleport the object to</param>
+                        /// <param name="silent">If true, this  teleportation will not trigger the <see cref="onTeleported"/> event on the object</param>
                         /// <remarks>It is an error to detach an object that is not attached. Also, the object must have a compatible strategy.</remarks>
-                        public void Teleport(Entities.Objects.ObjectStrategyHolder objectStrategyHolder, uint x, uint y)
+                        public void Teleport(Entities.Objects.ObjectStrategyHolder objectStrategyHolder, uint x, uint y, bool silent = false)
                         {
                             Entities.Objects.Strategies.ObjectStrategy objectStrategy = GetMainCompatible(objectStrategyHolder);
 
@@ -735,7 +736,7 @@ namespace WindRose
                             status.X = x;
                             status.Y = y;
                             DoTeleport(objectStrategy, status, x, y, "AfterPositionChange");
-                            objectStrategy.Object.onTeleported.Invoke(x, y);
+                            if (!silent) objectStrategy.Object.onTeleported.Invoke(x, y);
                             DoTeleport(objectStrategy, status, x, y, "After");
                         }
 

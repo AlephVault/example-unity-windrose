@@ -1,10 +1,12 @@
 ﻿using UnityEngine;
 using WindRose.Behaviours.Entities.Objects;
+using WindRose.Behaviours.UI;
 using GabTab.Behaviours;
 using GabTab.Behaviours.Interactors;
 using System.Collections;
 using System.Threading.Tasks;
 
+[RequireComponent(typeof(HUDLinker))]
 [RequireComponent(typeof(Watcher))]
 public class SampleLoggingVisionRange : MonoBehaviour
 {
@@ -12,11 +14,11 @@ public class SampleLoggingVisionRange : MonoBehaviour
     private int x;
     private int y;
 
-    private MapObject underlyingObject;
+    private HUDLinker underlyingObject;
 
     void Awake()
     {
-        underlyingObject = GetComponent<MapObject>();
+        underlyingObject = GetComponent<HUDLinker>();
         GetComponent<Watcher>().onWatcherReady.AddListener(delegate ()
         {
             Invoke("StartChatListener", 0.5f);

@@ -4,16 +4,18 @@ using GabTab.Behaviours;
 using GabTab.Behaviours.Interactors;
 using WindRose.Behaviours.Entities.Objects;
 using WindRose.Behaviours.Entities.Objects.CommandExchange.Talk;
+using WindRose.Behaviours.UI;
 using System.Threading.Tasks;
 
 [RequireComponent(typeof(TalkReceiver))]
+[RequireComponent(typeof(HUDLinker))]
 public class SampleMeaninglessTalk : MonoBehaviour
 {
     void Awake()
     {
         GetComponent<TalkReceiver>().onTalkReceived.AddListener(delegate (GameObject sender)
         {
-            sender.GetComponent<MapObject>().RunInteraction(MeaninglessInteraction);
+            gameObject.GetComponent<HUDLinker>().RunInteraction(MeaninglessInteraction);
         });
     }
 

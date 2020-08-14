@@ -11,12 +11,7 @@ namespace WindRose
     {
         namespace Entities.Objects
         {
-            using GabTab.Behaviours;
-            using GabTab.Behaviours.Interactors;
-            using System.Collections;
-            using System.Threading.Tasks;
             using Types;
-            using UnityEngine.SceneManagement;
             using World;
             using World.Layers.Objects;
 
@@ -29,11 +24,6 @@ namespace WindRose
             ///       artificial intelligence) and the underlying map and object
             ///       strategies: They will provide the behaviour to move, teleport,
             ///       attach to -and detach from- maps, and look in different directions.
-            ///   </para>
-            ///   <para>
-            ///     They will also provide events to help other (dependent) behaviours
-            ///       to refresh appropriately (e.g. animation change, movement start,
-            ///       ...), and also they MAY be connected to a <see cref="UI.HUD"/>.
             ///   </para>
             /// </summary>
             [RequireComponent(typeof(Pausable))]
@@ -214,11 +204,6 @@ namespace WindRose
                 // These callbacks are run when this map object updates and is not paused.
                 private Action updateCallbacks = delegate () { };
 
-                /// <summary>
-                ///   The <see cref="HUD"/> this object is attached to.
-                /// </summary>
-                public UI.HUD HUD;
-
                 // Gets all the children visual objects.
                 private IEnumerable<Visuals.Visual> GetChildVisuals()
                 {
@@ -308,7 +293,7 @@ namespace WindRose
                     foreach (Visuals.Visual visual in visuals) visual.DoUpdate(); 
                 }
 
-                void OnDestroy()
+                private void OnDestroy()
                 {
                     Detach();
                     startCallbacks = delegate () {};
@@ -474,39 +459,6 @@ namespace WindRose
                 public float GetCellWidth()
                 {
                     return GetComponentInParent<ObjectsLayer>().GetCellWidth();
-                }
-
-                private UI.HUD GetTheOnlyHUDInScene()
-                {
-                    UI.HUD foundHud = null;
-                    foreach (UI.HUD hud in (from obj in SceneManager.GetActiveScene().GetRootGameObjects() select obj.GetComponent<UI.HUD>()))
-                    {
-                        if (hud)
-                        {
-                            if (foundHud)
-                            {
-                                throw new Exception("A HUD was not specified to this object, and there are two/+ top-level HUDs in the scene");
-                            }
-                            else
-                            {
-                                foundHud = hud;
-                            }
-                        }
-                    }
-                    if (!foundHud) throw new Exception("A HUD was not specified to this object, and there is no top-level HUD in the scene");
-                    return foundHud;
-                }
-
-                /// <summary>
-                ///   Executes an interaction, as described in <see cref="UI.HUD.RunInteraction(Func{InteractorsManager, InteractiveMessage, Task})"/>.
-                ///   The HUD to consider is one being specifically added to the scene (the only one) or, even better, the one assigned to this object
-                ///     under the <see cref="UI.HUD"/> property.
-                /// </summary>
-                /// <param name="interaction">The interaction to run</param>
-                public void RunInteraction(Func<InteractorsManager, InteractiveMessage, Task> interaction)
-                {
-                    UI.HUD hud = HUD ? HUD : GetTheOnlyHUDInScene();
-                    hud.RunInteraction(interaction);
                 }
 
                 /// <summary>

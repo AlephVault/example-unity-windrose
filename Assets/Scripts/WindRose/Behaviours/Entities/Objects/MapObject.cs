@@ -239,6 +239,12 @@ namespace WindRose
                 [Serializable]
                 public class UnityOptionalMovementEvent : UnityEvent<Direction?> { }
 
+                /// <summary>
+                ///   This event class notifies a speed change.
+                /// </summary>
+                [Serializable]
+                public class UnitySpeedEvent : UnityEvent<uint> { }
+
                 // Gets an offset vector for the movement given a direction and the map's cell size.
                 private Vector2 VectorForCurrentDirection()
                 {
@@ -275,7 +281,18 @@ namespace WindRose
                 /// <summary>
                 ///   The movement speed, in game units per second.
                 /// </summary>
-                public uint speed = 2;
+                [SerializeField]
+                private uint speed = 2;
+
+                public uint Speed
+                {
+                    get { return speed; }
+                    set
+                    {
+                        speed = value;
+                        onSpeedChanged.Invoke(value);
+                    }
+                }
 
                 // A runtime check to determine whether the object was moving in the previous frame
                 private bool wasMoving = false;
@@ -312,6 +329,11 @@ namespace WindRose
                 ///   Event that triggers when the object completes its movement into a cell.
                 /// </summary>
                 public readonly UnityMovementEvent onMovementFinished = new UnityMovementEvent();
+
+                /// <summary>
+                ///   Event that triggers when the object changes speed.
+                /// </summary>
+                public readonly UnitySpeedEvent onSpeedChanged = new UnitySpeedEvent();
 
                 /// <summary>
                 ///   Starts a movement in certain direction. It also allocates the internal

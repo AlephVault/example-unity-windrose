@@ -27,10 +27,6 @@ namespace WindRose
                     // Basic properties.
                     private string objectName = "New Object";
                     private Vector2Int objectSize = new Vector2Int(1, 1);
-                    // Optional behaviours for movement, animation, orientation.
-                    private bool addOriented = false;
-                    private bool addStatePicker = false;
-                    private bool addMovable = false; // depends on addStatePicker
                     // Optional behaviours to send commands.
                     private bool addCommandSender = false;
                     private bool addTalkSender = false; // depends on addCommandSender.
@@ -65,14 +61,6 @@ namespace WindRose
                         objectSize = EditorGUILayout.Vector2IntField("Object width (X) and height (Y) [1 to 32767]", objectSize);
                         objectSize = new Vector2Int(Values.Clamp(1, objectSize.x, 32767), Values.Clamp(1, objectSize.y, 32767));
 
-                        addOriented = EditorGUILayout.ToggleLeft("Oriented (Provides orientation - useful if holding RoseAnimated visuals)", addOriented);
-                        addStatePicker = EditorGUILayout.ToggleLeft("State Picker (Provides current stae - useful if holding MultiState visuals)", addStatePicker);
-                        if (addStatePicker)
-                        {
-                            EditorGUILayout.BeginVertical(indentedStyle);
-                            addMovable = EditorGUILayout.ToggleLeft("Movable (Adds a moving state, and actually performs movement when commanded to)", addMovable);
-                            EditorGUILayout.EndVertical();
-                        }
                         addCommandSender = EditorGUILayout.ToggleLeft("Close Command Sender (Provides feature to send a custom command to close objects)", addCommandSender);
                         if (addCommandSender)
                         {
@@ -113,18 +101,6 @@ namespace WindRose
                             { "width", (uint)objectSize.x },
                             { "height", (uint)objectSize.y }
                         });
-                        if (addOriented)
-                        {
-                            Layout.AddComponent<Behaviours.Entities.Objects.Oriented>(gameObject);
-                        }
-                        if (addStatePicker)
-                        {
-                            Layout.AddComponent<Behaviours.Entities.Objects.StatePicker>(gameObject);
-                            if (addMovable)
-                            {
-                                Layout.AddComponent<Behaviours.Entities.Objects.Movable>(gameObject);
-                            }
-                        }
                         if (addCommandSender)
                         {
                             Layout.AddComponent<Behaviours.Entities.Objects.CommandExchange.CloseCommandSender>(gameObject);

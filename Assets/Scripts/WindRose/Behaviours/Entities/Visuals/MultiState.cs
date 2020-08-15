@@ -60,7 +60,12 @@ namespace WindRose
 
                     // All the fallbacks
                     private Dictionary<string, string> fallbacks = new Dictionary<string, string>();
-                    
+
+                    /***************** Identity *****************/
+
+                    // The map object it is tied to
+                    private Objects.MapObject mapObject;
+
                     /***************** Data elements *****************/
 
                     /// <summary>
@@ -72,7 +77,7 @@ namespace WindRose
 
                     /// <summary>
                     ///   The key of the state being rendered. It will be grabbed from
-                    ///     a <see cref="Objects.StatePicker"/> component.
+                    ///     the <see cref="Objects.MapObject"/> component.
                     /// </summary>
                     private string selectedKey = IDLE;
 
@@ -165,9 +170,6 @@ namespace WindRose
                         fallbacks[key] = fallback;
                     }
                     
-                    // The current state picker (belongs to the related object)
-                    private Objects.StatePicker picker;
-
                     // Updates the currently selected key
                     private void OnSelectedKeyChanged(string newKey)
                     {
@@ -178,24 +180,24 @@ namespace WindRose
                         }
                     }
 
-                    // On enabled, takes the related object's state picker and binds the event
+                    // On enabled, takes the related object and binds the event
                     private void OnEnable()
                     {
-                        picker = visual.RelatedObject ? visual.RelatedObject.GetComponent<Objects.StatePicker>() : null;
-                        if (picker)
+                        mapObject = visual.RelatedObject;
+                        if (mapObject)
                         {
-                            picker.onStateKeyChanged.AddListener(OnSelectedKeyChanged);
+                            mapObject.onStateKeyChanged.AddListener(OnSelectedKeyChanged);
                         }
                     }
 
-                    // On disabled, releases the event and the picker
+                    // On disabled, releases the event and the related object
                     private void OnDisable()
                     {
-                        if (picker)
+                        if (mapObject)
                         {
-                            picker.onStateKeyChanged.RemoveListener(OnSelectedKeyChanged);
+                            mapObject.onStateKeyChanged.RemoveListener(OnSelectedKeyChanged);
                         }
-                        picker = null;
+                        mapObject = null;
                     }
 
                     protected override void Awake()

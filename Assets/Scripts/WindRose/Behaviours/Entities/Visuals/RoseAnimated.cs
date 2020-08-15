@@ -27,7 +27,7 @@ namespace WindRose
 
                     /// <summary>
                     ///   The current orientation. Different behaviours will set this value
-                    ///     in different moments, likely related to the <see cref="Objects.Oriented"/>
+                    ///     in different moments, likely related to the <see cref="MapObject.Oriented"/>
                     ///     behaviour subscription.
                     /// </summary>
                     private Types.Direction orientation = Types.Direction.FRONT;
@@ -71,7 +71,7 @@ namespace WindRose
                         animated = GetComponent<Animated>();
                     }
 
-                    private Objects.Oriented relatedOriented;
+                    private Objects.MapObject relatedObject;
 
                     private void OrientationChanged(Types.Direction newOrientation)
                     {
@@ -85,18 +85,18 @@ namespace WindRose
 
                     private void OnEnable()
                     {
-                        relatedOriented = visual.RelatedObject.GetComponent<Objects.Oriented>();
-                        if (relatedOriented)
+                        relatedObject = visual.RelatedObject;
+                        if (relatedObject)
                         {
-                            relatedOriented.onOrientationChanged.AddListener(OrientationChanged);
+                            relatedObject.onOrientationChanged.AddListener(OrientationChanged);
                             // After setting the event, force the call.
-                            OrientationChanged(relatedOriented.Orientation);
+                            OrientationChanged(relatedObject.Orientation);
                         }
                     }
 
                     private void OnDisable()
                     {
-                        if (relatedOriented) relatedOriented.onOrientationChanged.RemoveListener(OrientationChanged);
+                        if (relatedObject) relatedObject.onOrientationChanged.RemoveListener(OrientationChanged);
                     }
 
                     /// <summary>

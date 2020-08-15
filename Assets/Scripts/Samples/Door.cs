@@ -7,13 +7,12 @@ using WindRose.Behaviours.Entities.Objects.Teleport;
 
 [RequireComponent(typeof(TeleportTarget))]
 public class Door : LocalTeleporter {
-    protected override void DoTeleport(Action teleport, WindRose.Behaviours.Entities.Objects.MapObject objectToBeTeleported, TeleportTarget teleportTarget, WindRose.Behaviours.Entities.Objects.MapObject teleportTargetObject)
+    protected override void DoTeleport(Action teleport, MapObject objectToBeTeleported, TeleportTarget teleportTarget, MapObject teleportTargetObject)
     {
         base.DoTeleport(teleport, objectToBeTeleported, teleportTarget, teleportTargetObject);
-        Movable movable = objectToBeTeleported.GetComponent<Movable>();
-        if (movable && teleportTarget.ForceOrientation)
+        if (teleportTarget.ForceOrientation)
         {
-            movable.StartMovement(teleportTarget.NewOrientation);
+            objectToBeTeleported.StartMovement(teleportTarget.NewOrientation);
         }
     }
 }

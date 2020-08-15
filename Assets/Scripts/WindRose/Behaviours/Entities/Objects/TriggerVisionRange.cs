@@ -21,9 +21,9 @@ namespace WindRose
             ///   </para>
             ///   <para>
             ///     Vision ranges spread to certain direction (being specified or being taken from
-            ///       the related map object's <see cref="Oriented"/> component), with a given
-            ///       length (considering a base of 1), and a given width (considering a base
-            ///       of 1, and spreading to each side of the main, oriented, spread).
+            ///       the related map object's <see cref="MapObject.Orientation"/>property), with
+            ///       a given length (considering a base of 1), and a given width (considering a
+            ///       base of 1, and spreading to each side of the main, oriented, spread).
             ///   </para>
             /// </summary>
             [RequireComponent(typeof(BoxCollider))]
@@ -37,17 +37,6 @@ namespace WindRose
                 /// </summary>
                 [SerializeField]
                 private MapObject relatedObject;
-
-                // Perhaps the related object has an Oriented component. We will make use of it.
-                private Oriented oriented;
-
-                /// <summary>
-                ///   If the related map object has an <see cref="Oriented"/> component, this
-                ///     property is meaningless. However, if it doesn't, then this property
-                ///     tells which dimensions this vision range spreads to.
-                /// </summary>
-                [SerializeField]
-                private Types.Direction direction = Types.Direction.DOWN;
 
                 /// <summary>
                 ///   Size corresponds to half-width, rounded down. e.g. 0 corresponds
@@ -75,7 +64,6 @@ namespace WindRose
                 protected override void Awake()
                 {
                     base.Awake();
-                    oriented = mapObject.GetComponent<Oriented>();
                     if (mapObject.Width % 2 == 0 || mapObject.Height % 2 == 0)
                     {
                         Destroy(gameObject);
@@ -83,15 +71,12 @@ namespace WindRose
                     }
                     halfHeight = mapObject.Height / 2;
                     halfWidth = mapObject.Width / 2;
-                    if (oriented) oriented.onOrientationChanged.AddListener(OrientationChanged);
+                    mapObject.onOrientationChanged.AddListener(OrientationChanged);
                 }
 
                 private void OnDestroy()
                 {
-                    if (oriented)
-                    {
-                        oriented.onOrientationChanged.RemoveListener(OrientationChanged);
-                    }
+                    mapObject.onOrientationChanged.RemoveListener(OrientationChanged);
                 }
 
                 protected override void Start()
@@ -104,7 +89,7 @@ namespace WindRose
                 protected override int GetDeltaX()
                 {
                     int extra;
-                    switch (direction)
+                    switch (mapObject.Orientation)
                     {
                         case Types.Direction.RIGHT:
                             extra = (int)mapObject.Width;
@@ -123,7 +108,7 @@ namespace WindRose
                 protected override int GetDeltaY()
                 {
                     int extra;
-                    switch (direction)
+                    switch (mapObject.Orientation)
                     {
                         case Types.Direction.UP:
                             extra = (int)mapObject.Height;
@@ -169,7 +154,7 @@ namespace WindRose
                     float cellWidth = mapObject.GetCellWidth();
                     float cellHeight = mapObject.GetCellHeight();
                     // we set the size based on the direction we are looking, and also the offset back to the right-top corner
-                    switch (direction)
+                    switch (mapObject.Orientation)
                     {
                         case Types.Direction.UP:
                         case Types.Direction.DOWN:
@@ -183,7 +168,7 @@ namespace WindRose
                     // also we set the transform of this vision range, using global coordinates:
                     Vector3 basePosition = mapObject.transform.position;
                     Vector3 newPosition = Vector3.zero;
-                    switch (direction)
+                    switch (mapObject.Orientation)
                     {
                         case Types.Direction.UP:
                             newPosition = new Vector3(basePosition.x - visionSize * cellWidth, basePosition.y + mapObject.Height * cellHeight, basePosition.z);

@@ -19,7 +19,7 @@ namespace WindRose
                 {
                     /// <summary>
                     ///   Tells whether the just teleported object will look
-                    ///     (by setting its <see cref="Oriented.orientation"/>
+                    ///     (by setting its <see cref="MapObject.orientation"/>
                     ///     property to a new value) to the orientation specified
                     ///     in <see cref="NewOrientation"/>.
                     /// </summary>

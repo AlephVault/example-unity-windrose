@@ -11,7 +11,7 @@ namespace WindRose
             ///   Watchers instantiate their own vision range. Their range can be
             ///     referenced, and event handlers can be tied to it.
             /// </summary>
-            [RequireComponent(typeof(Oriented))]
+            [RequireComponent(typeof(MapObject))]
             public class Watcher : MonoBehaviour
             {
                 /// <summary>
@@ -46,13 +46,11 @@ namespace WindRose
                 void Start()
                 {
                     MapObject mapObject = GetComponent<MapObject>();
-                    Oriented oriented = GetComponent<Oriented>();
                     GameObject aNewGameObject = new GameObject("WatcherVisionRange");
                     GMM.Utils.Layout.AddComponent<BoxCollider>(aNewGameObject);
                     relatedVisionRange = GMM.Utils.Layout.AddComponent<TriggerVisionRange>(aNewGameObject, new System.Collections.Generic.Dictionary<string, object>()
                     {
                         { "relatedObject", mapObject },
-                        { "direction", oriented.Orientation },
                         { "visionSize", visionSize },
                         { "visionLength", visionLength }
                     });

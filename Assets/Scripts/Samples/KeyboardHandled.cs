@@ -3,17 +3,14 @@ using WindRose.Behaviours.Entities.Objects;
 using WindRose.Behaviours.Entities.Objects.CommandExchange.Talk;
 using WindRose.Types;
 
-[RequireComponent(typeof(Movable))]
 [RequireComponent(typeof(TalkSender))]
 public class KeyboardHandled : MonoBehaviour {
-    private Movable movable;
-    private Oriented oriented;
+    private MapObject mapObject;
     private TalkSender talkSender;
 
 	// Use this for initialization
 	void Awake () {
-        movable = GetComponent<Movable>();
-        oriented = GetComponent<Oriented>();
+        mapObject = GetComponent<MapObject>();
         talkSender = GetComponent<TalkSender>();
 	}
 	
@@ -34,46 +31,46 @@ public class KeyboardHandled : MonoBehaviour {
         {
             if (upHeld)
             {
-                if (oriented.Orientation == Direction.UP)
+                if (mapObject.Orientation == Direction.UP)
                 {
-                    movable.StartMovement(Direction.UP);
+                    mapObject.StartMovement(Direction.UP);
                 }
-                else if (!movable.IsMoving)
+                else if (!mapObject.IsMoving)
                 {
-                    oriented.Orientation = Direction.UP;
+                    mapObject.Orientation = Direction.UP;
                 }
             }
             else if (downHeld)
             {
-                if (oriented.Orientation == Direction.DOWN)
+                if (mapObject.Orientation == Direction.DOWN)
                 {
-                    movable.StartMovement(Direction.DOWN);
+                    mapObject.StartMovement(Direction.DOWN);
                 }
-                else if (!movable.IsMoving)
+                else if (!mapObject.IsMoving)
                 {
-                    oriented.Orientation = Direction.DOWN;
+                    mapObject.Orientation = Direction.DOWN;
                 }
             }
             else if (leftHeld)
             {
-                if (oriented.Orientation == Direction.LEFT)
+                if (mapObject.Orientation == Direction.LEFT)
                 {
-                    movable.StartMovement(Direction.LEFT);
+                    mapObject.StartMovement(Direction.LEFT);
                 }
-                else if (!movable.IsMoving)
+                else if (!mapObject.IsMoving)
                 {
-                    oriented.Orientation = Direction.LEFT;
+                    mapObject.Orientation = Direction.LEFT;
                 }
             }
             else if(rightHeld) // rightHeld
             {
-                if (oriented.Orientation == Direction.RIGHT)
+                if (mapObject.Orientation == Direction.RIGHT)
                 {
-                    movable.StartMovement(Direction.RIGHT);
+                    mapObject.StartMovement(Direction.RIGHT);
                 }
-                else if (!movable.IsMoving)
+                else if (!mapObject.IsMoving)
                 {
-                    oriented.Orientation = Direction.RIGHT;
+                    mapObject.Orientation = Direction.RIGHT;
                 }
             }
             if (spacebarJustPressed)

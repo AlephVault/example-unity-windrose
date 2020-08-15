@@ -12,8 +12,6 @@ namespace WindRose
         {
             namespace Teleport
             {
-                using World;
-
                 /// <summary>
                 ///   <para>
                 ///     A local teleporter will ensure that an object that enters
@@ -122,10 +120,9 @@ namespace WindRose
                             objectToBeTeleported.Teleport(x, y);
                         }
                         // Also set the orientation of the object being teleported.
-                        Oriented objectToBeOriented = objectToBeTeleported.GetComponent<Oriented>();
-                        if (objectToBeOriented && teleportTarget.ForceOrientation)
+                        if (teleportTarget.ForceOrientation)
                         {
-                            objectToBeOriented.Orientation = teleportTarget.NewOrientation;
+                            objectToBeTeleported.Orientation = teleportTarget.NewOrientation;
                         }
                     }
 

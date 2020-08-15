@@ -25,11 +25,10 @@ namespace WindRose
                     ///     direction the sender object is looking to, and then trigger the
                     ///     <see cref="onTalkReceived"/> event.
                     /// </remarks>
-                    [RequireComponent(typeof(Oriented))]
                     [RequireComponent(typeof(CommandReceiver))]
                     public class TalkReceiver : MonoBehaviour
                     {
-                        Oriented oriented;
+                        MapObject mapObject;
 
                         [Serializable]
                         public class UnityTalkReceivedEvent : UnityEvent<GameObject> { }
@@ -44,7 +43,7 @@ namespace WindRose
 
                         private void Start()
                         {
-                            oriented = GetComponent<Oriented>();
+                            mapObject = GetComponent<MapObject>();
 							GetComponent<CommandReceiver>().ListenCommand(TalkSender.COMMAND, (string commandName, object[] arguments, GameObject sender) => {
 								StartTalk(sender);
                             });
@@ -52,22 +51,22 @@ namespace WindRose
 
                         private async void StartTalk(GameObject sender)
                         {
-                            Oriented senderOriented = sender.GetComponent<Oriented>();
-                            if (senderOriented)
+                            MapObject senderMapObject = sender.GetComponent<MapObject>();
+                            if (senderMapObject)
                             {
-                                switch (senderOriented.Orientation)
+                                switch (senderMapObject.Orientation)
                                 {
                                     case Types.Direction.DOWN:
-                                        oriented.Orientation = Types.Direction.UP;
+                                        mapObject.Orientation = Types.Direction.UP;
                                         break;
                                     case Types.Direction.UP:
-                                        oriented.Orientation = Types.Direction.DOWN;
+                                        mapObject.Orientation = Types.Direction.DOWN;
                                         break;
                                     case Types.Direction.LEFT:
-                                        oriented.Orientation = Types.Direction.RIGHT;
+                                        mapObject.Orientation = Types.Direction.RIGHT;
                                         break;
                                     case Types.Direction.RIGHT:
-                                        oriented.Orientation = Types.Direction.LEFT;
+                                        mapObject.Orientation = Types.Direction.LEFT;
                                         break;
                                 }
                                 await Tasks.Blink();

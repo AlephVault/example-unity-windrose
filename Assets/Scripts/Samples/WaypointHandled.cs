@@ -7,11 +7,10 @@ using WindRose.Types;
 using System.Threading.Tasks;
 using GMM.Utils;
 
-[RequireComponent(typeof(Movable))]
+[RequireComponent(typeof(MapObject))]
 public class WaypointHandled : MonoBehaviour
 {
-    private Movable movable;
-    private Oriented oriented;
+    private MapObject mapObject;
 
     [Serializable]
     public struct WayStep
@@ -30,9 +29,7 @@ public class WaypointHandled : MonoBehaviour
     // Use this for initialization
     void Awake()
     {
-        movable = GetComponent<Movable>();
-        oriented = GetComponent<Oriented>();
-        MapObject mapObject = GetComponent<MapObject>();
+        mapObject = GetComponent<MapObject>();
         mapObject.onAttached.AddListener(delegate (Map map)
         {
             isDead = false;
@@ -68,17 +65,17 @@ public class WaypointHandled : MonoBehaviour
             }
 
             // Orienting the character to look in the same direction
-            oriented.Orientation = currentStep.movementDirection;
+            mapObject.Orientation = currentStep.movementDirection;
 
             // Starting a movement
             if (!currentStep.onlyLook)
             {
                 // Perform the movement until it is done.
-                bool result = movable.StartMovement(currentStep.movementDirection, false);
+                bool result = mapObject.StartMovement(currentStep.movementDirection, false);
                 if (result)
                 {
                     // Wait until the movement is done.
-                    while (movable.Movement != null)
+                    while (mapObject.Movement != null)
                     {
                         await Tasks.Blink();
                     }

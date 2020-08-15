@@ -33,24 +33,22 @@ namespace WindRose
                 ///     being cast again. A good practice is to drop instantaneous commands
                 ///     to avoid this case.
                 /// </remarks>
-                [RequireComponent(typeof(Oriented))]
+                [RequireComponent(typeof(MapObject))]
                 public class CloseCommandSender : MonoBehaviour, Common.Pausable.IPausable
                 {
-                    private Oriented oriented;
                     private MapObject mapObject;
                     private bool paused = false;
 					private static Collider[] targets = new Collider[ushort.MaxValue];
 
                     private void Start()
                     {
-                        oriented = GetComponent<Oriented>();
                         mapObject = GetComponent<MapObject>();
                     }
 
 					private Vector3 ComputeCommandPosition()
                     {
                         float x = 0, y = 0;
-                        switch (oriented.Orientation)
+                        switch (mapObject.Orientation)
                         {
                             case Types.Direction.DOWN:
                                 x = mapObject.transform.position.x + (mapObject.Width / 2f) * mapObject.GetCellWidth();

@@ -20,6 +20,7 @@ public class KeyboardHandled : MonoBehaviour {
         bool downHeld = Input.GetKey(KeyCode.DownArrow);
         bool leftHeld = Input.GetKey(KeyCode.LeftArrow);
         bool rightHeld = Input.GetKey(KeyCode.RightArrow);
+        bool fHeld = Input.GetKey(KeyCode.F);
         bool spacebarJustPressed = Input.GetKeyDown(KeyCode.Space);
         byte pressedKeys = 0;
         if (upHeld) pressedKeys++;
@@ -27,8 +28,13 @@ public class KeyboardHandled : MonoBehaviour {
         if (leftHeld) pressedKeys++;
         if (rightHeld) pressedKeys++;
         if (spacebarJustPressed) pressedKeys++;
+        if (fHeld) pressedKeys++;
         if (pressedKeys == 1)
         {
+            if (fHeld)
+            {
+                mapObject.FinishMovement();
+            }
             if (upHeld)
             {
                 if (mapObject.Orientation == Direction.UP)

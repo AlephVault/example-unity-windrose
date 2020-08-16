@@ -67,7 +67,6 @@ namespace WindRose
                             0
                         );
                         origin = transform.localPosition;
-                        wasMoving = false;
                         Snap();
                     });
                     onTeleported.AddListener(delegate (uint x, uint y)
@@ -294,9 +293,6 @@ namespace WindRose
                     }
                 }
 
-                // A runtime check to determine whether the object was moving in the previous frame
-                private bool wasMoving = false;
-
                 // This member hold the last movement being commanded to this object
                 private Direction? CommandedMovement = null;
 
@@ -472,10 +468,26 @@ namespace WindRose
                         CurrentStateKey = "";
                     }
 
-                    wasMoving = IsMoving;
                     // We clean up the last commanded movement, so future frames
                     //   do not interpret this command as a must, since it expired.
                     CommandedMovement = null;
+                }
+
+                /// <summary>
+                ///   Forces an active movement to finish: it moves straight to the target.
+                ///     WARNING: THIS METHOD MAY EVEN CAUSE INSTANTANEOUS MOVES IF USED TOO
+                ///     QUICKLY. While this may be a desired effect, it will NOT trigger
+                ///     teleports appropriately. This may be an issue to be faced in the
+                ///     future but, as of today, avoid abusing this on pure-client-side
+                ///     games.
+                /// </summary>
+                public void FinishMovement()
+                {
+                    if (IsMoving)
+                    {
+                        parentMap.ObjectsLayer.StrategyHolder.MovementFinish(StrategyHolder);
+                        Snap();
+                    }
                 }
                 #endregion
 

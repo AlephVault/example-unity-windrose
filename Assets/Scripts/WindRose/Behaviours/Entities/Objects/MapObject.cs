@@ -360,9 +360,16 @@ namespace WindRose
                         }
                         return false;
                     }
+                    else if (parentMap.ObjectsLayer.StrategyHolder.MovementStart(StrategyHolder, movement, continuated))
+                    {
+                        origin = transform.localPosition;
+                        target = origin + VectorForCurrentDirection();
+                        SetMovingState();
+                        return true;
+                    }
                     else
                     {
-                        return parentMap.ObjectsLayer.StrategyHolder.MovementStart(StrategyHolder, movement, continuated);
+                        return false;
                     }
                 }
 
@@ -384,17 +391,7 @@ namespace WindRose
 
                     if (IsMoving)
                     {
-                        Vector2 vector = VectorForCurrentDirection();
-                        Vector2 targetOffset = vector;
-
-                        // The object has to perform movement.
-                        // Initially, we must set the appropriate target.
-                        if (!wasMoving)
-                        {
-                            origin = transform.localPosition;
-                            target = origin + targetOffset;
-                            SetMovingState();
-                        }
+                        Vector2 targetOffset = VectorForCurrentDirection();
 
                         // We calculate the movement offset
                         float movementNorm = speed * Time.deltaTime;
@@ -431,7 +428,7 @@ namespace WindRose
                              *     we just increment the position.
                              * 2c. Otherwise (LOOPING) we ALSO mark the movement as completed, and start a new one (adapting origin and target)
                              */
-                            Vector2 movementDestination = target + vector * (1 + movementNorm);
+                            Vector2 movementDestination = target + targetOffset * (1 + movementNorm);
                             Vector2 movement = Vector2.MoveTowards(transform.localPosition, movementDestination, movementNorm);
                             // Adjusting the position as usual
                             transform.localPosition = new Vector3(movement.x, movement.y, transform.localPosition.z);
@@ -441,12 +438,12 @@ namespace WindRose
 
                                 // We break this loop if the delta is lower than cell dimension because we
                                 //   do not need to mark new movements anymore.
-                                if (traversedDistanceSinceOrigin < vector.magnitude) break;
+                                if (traversedDistanceSinceOrigin < targetOffset.magnitude) break;
 
                                 // We intend to at least finish this movement and perhaps continue with a new one
                                 Direction currentMovement = Movement.Value;
                                 parentMap.ObjectsLayer.StrategyHolder.MovementFinish(StrategyHolder);
-                                if (traversedDistanceSinceOrigin > vector.magnitude)
+                                if (traversedDistanceSinceOrigin > targetOffset.magnitude)
                                 {
                                     origin = target;
                                     target = target + targetOffset;
@@ -466,6 +463,9 @@ namespace WindRose
                     else if (CommandedMovement != null)
                     {
                         StartMovement(CommandedMovement.Value);
+                        origin = transform.localPosition;
+                        target = origin + VectorForCurrentDirection();
+                        SetMovingState();
                     }
                     else
                     {

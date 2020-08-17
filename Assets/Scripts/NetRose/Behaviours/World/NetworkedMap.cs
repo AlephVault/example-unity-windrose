@@ -16,7 +16,7 @@ namespace NetRose
             ///     to true (if server or host), or false (otherwise).
             /// </summary>
             [RequireComponent(typeof(Map))]
-            public class NetworkedMap : NetworkBehaviour
+            public class NetworkedMap : BaseBehaviour
             {
                 private void Start()
                 {

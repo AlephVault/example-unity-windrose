@@ -26,7 +26,7 @@ namespace NetRose
                 ///     side.
                 /// </summary>
                 [RequireComponent(typeof(MapObject))]
-                public class NetworkedMapObject : NetworkBehaviour
+                public class NetworkedMapObject : BaseBehaviour
                 {
                     /// <summary>
                     ///   Triggered when the new map to attach a networked map object, has no networked map behaviour.
@@ -95,7 +95,7 @@ namespace NetRose
 
                     private void OnAttached(Map map)
                     {
-                        NetworkedMap networkedMap = map.GetComponent<NetworkedMap>();
+                        World.NetworkedMap networkedMap = map.GetComponent<World.NetworkedMap>();
                         if (networkedMap)
                         {
                             RpcOnAttached(map.GetComponent<NetworkIdentity>(), mapObject.X, mapObject.Y);

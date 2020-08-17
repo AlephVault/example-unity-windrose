@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace NetRose
 {
-    namespace Worlds
+    namespace Types
     {
         /// <summary>
         ///   Tells whether a scene will be considered as a

@@ -8,11 +8,13 @@ using GMM.Utils;
 
 namespace NetRose
 {
-    namespace Worlds
+    namespace Behaviours
     {
+        using Types;
+
         /// <summary>
         ///   <para>
-        ///     World will define their layout of scenes. Each scene will
+        ///     This class will define the scenes layout. Each scene will
         ///     have a distinct key and they will be either singleton or
         ///     template scenes when trying to load.
         ///   </para>
@@ -24,8 +26,48 @@ namespace NetRose
         ///     This object, on itself, is a singleton.
         ///   </para>
         /// </summary>
-        public class World : NetworkBehaviour
+        public class NetworkedSceneLayout : NetworkBehaviour
         {
+            /// <summary>
+            ///   Triggered when trying to move a player object with inactive connection.
+            /// </summary>
+            public class InactiveConnectionException : Exception
+            {
+                public InactiveConnectionException() { }
+                public InactiveConnectionException(string message) : base(message) { }
+                public InactiveConnectionException(string message, System.Exception inner) : base(message, inner) { }
+            }
+
+            /// <summary>
+            ///   Triggered when trying to create another networked scene layout instance.
+            /// </summary>
+            public class SingletonException : Exception
+            {
+                public SingletonException() { }
+                public SingletonException(string message) : base(message) { }
+                public SingletonException(string message, System.Exception inner) : base(message, inner) { }
+            }
+
+            /// <summary>
+            ///   Triggered when trying to move a non-player across the scene layout.
+            /// </summary>
+            public class NoPlayerException : Exception
+            {
+                public NoPlayerException() { }
+                public NoPlayerException(string message) : base(message) { }
+                public NoPlayerException(string message, System.Exception inner) : base(message, inner) { }
+            }
+
+            /// <summary>
+            ///   Triggered when trying to move a player object to a scene that is not loaded.
+            /// </summary>
+            public class SceneNotLoadedException : Exception
+            {
+                public SceneNotLoadedException() { }
+                public SceneNotLoadedException(string message) : base(message) { }
+                public SceneNotLoadedException(string message, System.Exception inner) : base(message, inner) { }
+            }
+
             /// <summary>
             ///   The list of scenes to load. Those scenes can be either
             ///   template or singleton scenes.
@@ -41,7 +83,7 @@ namespace NetRose
             private bool autoPreload = false;
 
             // The tracked instance.
-            private static World instance = null;
+            private static NetworkedSceneLayout instance = null;
 
             private void Start()
             {
@@ -85,7 +127,7 @@ namespace NetRose
             /// </summary>
             public async Task Preload()
             {
-                foreach(KeyValuePair<string, SceneConfig> pair in scenes)
+                foreach (KeyValuePair<string, SceneConfig> pair in scenes)
                 {
                     if (pair.Value.LoadMode == SceneLoadMode.Singleton)
                     {
@@ -108,7 +150,7 @@ namespace NetRose
             public async Task<Scene> Load(string sceneKey)
             {
                 SceneConfig config;
-                Scene scene = new Scene{};
+                Scene scene = new Scene { };
                 if (scenes.TryGetValue(sceneKey, out config))
                 {
                     return await config.Load();

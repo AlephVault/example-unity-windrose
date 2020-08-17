@@ -6,7 +6,7 @@ using GMM.Utils;
 
 namespace NetRose
 {
-    namespace Worlds
+    namespace Types
     {
         /// <summary>
         ///   This works as a scene domain to load a scene one or

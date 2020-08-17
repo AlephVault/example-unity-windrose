@@ -2,7 +2,7 @@
 
 namespace NetRose
 {
-    namespace Worlds
+    namespace Types
     {
         [System.Serializable]
         public class SceneConfigDictionary : SerializableDictionary<string, SceneConfig> { }

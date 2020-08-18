@@ -16,6 +16,7 @@ namespace NetRose
                 using WindRose.Types;
                 using WindRose.Behaviours.World;
                 using WindRose.Behaviours.Entities.Objects;
+                using UnityEngine.Events;
 
                 /// <summary>
                 ///   In non-host connections, this object synchronizes via events all that happens
@@ -81,6 +82,129 @@ namespace NetRose
                         }
                     }
 
+                    // Command class that starts a movement for the object.
+                    // The movement is started in certain direction, and this
+                    // command is stored so it can told to finish, or can be
+                    // forced to cancel. The logic will imply waiting for the
+                    // current movement to end, then the command will start
+                    // the movement, and an asynchronous task to check whether
+                    // the movement should accelerate or not.
+                    private class StartMovementCommand : ClientRpcCommand
+                    {
+                        private NetworkedMapObject owner;
+                        private MapObject mapObject;
+                        private uint startX, startY;
+                        private Direction movement;
+
+                        private bool willFinish = false;
+                        private bool cancelled = false;
+                        private bool currentMovementIsActive = false;
+
+                        public StartMovementCommand(NetworkedMapObject me, MapObject target, Direction toward, uint x, uint y)
+                        {
+                            owner = me;
+                            mapObject = target;
+                            movement = toward;
+                            startX = x;
+                            startY = y;
+                        }
+
+                        /// <summary>
+                        ///   Marks this start-movement command as the last one in the
+                        ///     queue (being added sequentially).
+                        /// </summary>
+                        public override void OnEnqueued()
+                        {
+                            owner.lastStartMovementCommandEnqueued = this;
+                        }
+
+                        /// <summary>
+                        ///   When dequeued, if this start-movement command was the one
+                        ///     marked as "last" in the queue, such "last" will be cleared.
+                        /// </summary>
+                        public override void OnDequeued()
+                        {
+                            if (owner.lastStartMovementCommandEnqueued == this) owner.lastStartMovementCommandEnqueued = null;
+                        }
+
+                        /// <summary>
+                        ///   This invocation waits until the movement is available,
+                        ///     then attempts to start the movement (if not marked
+                        ///     as cancelled), and while there, it will register
+                        ///     event callbacks to clear its "single current movement"
+                        ///     flag when finished/cancelled. Then, another async
+                        ///     function will run, which will check whether the queue
+                        ///     must be accelerated or not and, if the case, it will
+                        ///     force the movement to finish. This, while the "single
+                        ///     current movement" flag is active. After the movement
+                        ///     ended or was cancelled, the callbacks are cleared.
+                        /// </summary>
+                        /// <param name="mustAccelerate">A function telling that the queue was marked to accelerate</param>
+                        public override async Task Invoke(Func<bool> mustAccelerate)
+                        {
+                            while (mapObject.IsMoving) await Tasks.Blink();
+                            // If the movement is cancelled (was cancelled beforehand)
+                            // then do not even start the movement.
+                            if (cancelled) return;
+                            // If the coordinates do not match, force a SILENT teleport
+                            // on the map object to the new coordinates.
+                            if (mapObject.X != startX || mapObject.Y != startY) mapObject.Teleport(startX, startY, true);
+                            // If the movement is not cancelled beforehand, it will
+                            // attempt to start. The new movement will NOT be marked
+                            // as continuated, but may be "queued" in the movement
+                            // management itself to allow a smooth transition.
+                            if (mapObject.StartMovement(movement, false, true))
+                            {
+                                currentMovementIsActive = true;
+                                UnityAction<Direction> finished = delegate (Direction direction)
+                                {
+                                    currentMovementIsActive = false;
+                                };
+                                UnityAction<Direction?> cancelled = delegate (Direction? direction)
+                                {
+                                    currentMovementIsActive = false;
+                                };
+                                mapObject.onMovementFinished.AddListener(finished);
+                                mapObject.onMovementCancelled.AddListener(cancelled);
+                                TrackMovement(mustAccelerate, finished, cancelled);
+                            }
+                        }
+
+                        // Tracks whether the movement should continue normally or accelerated.
+                        private async void TrackMovement(Func<bool> mustAccelerate, UnityAction<Direction> finished, UnityAction<Direction?> cancelled)
+                        {
+                            while (currentMovementIsActive)
+                            {
+                                await Tasks.Blink();
+                                if (mustAccelerate()) mapObject.FinishMovement();
+                            }
+                            // To this point, either the movement finished or it was cancelled.
+                            // Said this, the event callbacks must be removed.
+                            mapObject.onMovementFinished.RemoveListener(finished);
+                            mapObject.onMovementCancelled.RemoveListener(cancelled);
+                        }
+
+                        /// <summary>
+                        ///   Marks this command as: "it is guaranteed that this movement finishes".
+                        /// </summary>
+                        public void WillFinish()
+                        {
+                            if (!cancelled) willFinish = true;
+                        }
+
+                        /// <summary>
+                        ///   Marks this command as potentially cancelled or even it actualy cancels it.
+                        /// </summary>
+                        public void Cancel()
+                        {
+                            if (!willFinish)
+                            {
+                                cancelled = true;
+                                if (currentMovementIsActive) mapObject.CancelMovement();
+                            }
+                        }
+                    }
+
                     // Command class that updates the speed of the object.
                     private class SpeedChangeCommand : ClientRpcCommand
                     {
@@ -133,7 +257,11 @@ namespace NetRose
                         }
                     }
 
+                    // The underlying object being synchronized.
                     private MapObject mapObject;
+
+                    // The LAST movement command being enqueued.
+                    private StartMovementCommand lastStartMovementCommandEnqueued = null;
 
                     /// <summary>
                     ///   The limit of the movements queue for this object. At minimum, this value
@@ -230,7 +358,7 @@ namespace NetRose
                     {
                         if (!isServer)
                         {
-                            // TODO implement.
+                            AddToQueue(new StartMovementCommand(this, mapObject, direction, startX, startY));
                         }
                     }
 
@@ -239,7 +367,7 @@ namespace NetRose
                     {
                         if (!isServer)
                         {
-                            // TODO Implement.
+                            if (lastStartMovementCommandEnqueued != null) lastStartMovementCommandEnqueued.WillFinish();
                         }
                     }
 
@@ -248,7 +376,7 @@ namespace NetRose
                     {
                         if (!isServer)
                         {
-                            // TODO implement.
+                            if (lastStartMovementCommandEnqueued != null) lastStartMovementCommandEnqueued.Cancel();
                         }
                     }
 

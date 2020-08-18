@@ -190,7 +190,7 @@ namespace WindRose
                 ///   This event class notifies a property change.
                 /// </summary>
                 [Serializable]
-                public class UnityPropertyUpdateEvent : UnityEvent<string, object, object> { }
+                public class UnityPropertyUpdateEvent : UnityEvent<Strategies.ObjectStrategy, string, object, object> { }
 
                 /// <summary>
                 ///   Event that triggers when the object changes one of its properties.

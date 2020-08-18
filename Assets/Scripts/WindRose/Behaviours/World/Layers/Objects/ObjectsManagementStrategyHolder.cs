@@ -783,7 +783,7 @@ namespace WindRose
 
                             (GetComponent(objectStrategy.CounterpartType) as ObjectsManagementStrategy).DoProcessPropertyUpdate(objectStrategy, attachedStrategies[mainObjectStrategy], property, oldValue, newValue);
 
-                            mainObjectStrategy.Object.onPropertyUpdated.Invoke(property, oldValue, newValue);
+                            mainObjectStrategy.Object.onPropertyUpdated.Invoke(objectStrategy, property, oldValue, newValue);
                         }
                     }
 

@@ -89,7 +89,7 @@ namespace WindRose
                     private void OwnerOnTeleported(uint x, uint y) { Resort(); }
                     private void OwnerMandatoryDirectionEvent(Types.Direction direction) { Resort(); }
                     private void OwnerOptionalDirectionEvent(Types.Direction? direction) { Resort(); }
-                    private void OwnerPropertyUpdated(string p, object o, object n) { Resort(); }
+                    private void OwnerPropertyUpdated(Objects.Strategies.ObjectStrategy strategy, string p, object o, object n) { Resort(); }
 
                     /// <summary>
                     ///   Invoked by new owner <see cref="Objects.MapObject"/> when attaching

@@ -38,6 +38,101 @@ namespace NetRose
                         public MapNotSynchronized(string message, System.Exception inner) : base(message, inner) { }
                     }
 
+                    // Command class that performs an attachment to a map.
+                    private class AttachCommand : ClientRpcCommand
+                    {
+                        private MapObject mapObject;
+                        private Map map;
+                        private uint newX, newY;
+
+                        public AttachCommand(MapObject target, Map to, uint x, uint y)
+                        {
+                            mapObject = target;
+                            map = to;
+                            newX = x;
+                            newY = y;
+                        }
+
+                        public override async Task Invoke(Func<bool> mustAccelerate)
+                        {
+                            mapObject.Attach(map, newX, newY, true);
+                        }
+                    }
+
+                    // Command class that performs a teleport on the object.
+                    // Positions will be consistent, since this comes from
+                    // server-side objects in the same condition.
+                    private class TeleportCommand : ClientRpcCommand
+                    {
+                        private MapObject mapObject;
+                        private uint newX, newY;
+
+                        public TeleportCommand(MapObject target, uint x, uint y)
+                        {
+                            mapObject = target;
+                            newX = x;
+                            newY = y;
+                        }
+
+                        public override async Task Invoke(Func<bool> mustAccelerate)
+                        {
+                            // The teleportation will NOT be silent.
+                            mapObject.Teleport(newX, newY);
+                        }
+                    }
+
+                    // Command class that updates the speed of the object.
+                    private class SpeedChangeCommand : ClientRpcCommand
+                    {
+                        private MapObject mapObject;
+                        private uint newSpeed;
+
+                        public SpeedChangeCommand(MapObject target, uint speed)
+                        {
+                            mapObject = target;
+                            newSpeed = speed;
+                        }
+
+                        public override async Task Invoke(Func<bool> mustAccelerate)
+                        {
+                            mapObject.Speed = newSpeed;
+                        }
+                    }
+
+                    // Command class that updates the orientation of the object.
+                    private class OrientationChangeCommand : ClientRpcCommand
+                    {
+                        private MapObject mapObject;
+                        private Direction newOrientation;
+
+                        public OrientationChangeCommand(MapObject target, Direction orientation)
+                        {
+                            mapObject = target;
+                            newOrientation = orientation;
+                        }
+
+                        public override async Task Invoke(Func<bool> mustAccelerate)
+                        {
+                            mapObject.Orientation = newOrientation;
+                        }
+                    }
+
+                    // Command class that detaches the object.
+                    private class DetachCommand : ClientRpcCommand
+                    {
+                        private MapObject mapObject;
+
+                        public DetachCommand(MapObject target)
+                        {
+                            mapObject = target;
+                        }
+
+                        public override async Task Invoke(Func<bool> mustAccelerate)
+                        {
+                            mapObject.Detach();
+                        }
+                    }
+
                     private MapObject mapObject;
 
                     /// <summary>
@@ -84,15 +179,6 @@ namespace NetRose
                         //        object-strategy synchronizing components.
                     }
 
-                    /// <summary>
-                    ///   Invoked when this object is activated on the network in the client side,
-                    ///     starts the queue processing.
-                    /// </summary>
-                    public override void OnStartClient()
-                    {
-                        // TODO prepare queue locally.
-                    }
-
                     private void OnAttached(Map map)
                     {
                         World.NetworkedMap networkedMap = map.GetComponent<World.NetworkedMap>();
@@ -111,7 +197,7 @@ namespace NetRose
                     {
                         if (!isServer)
                         {
-                            // TODO implement.
+                            AddToQueue(new AttachCommand(mapObject, map.GetComponent<Map>(), x, y), true);
                         }
                     }
 
@@ -120,7 +206,7 @@ namespace NetRose
                     {
                         if (!isServer)
                         {
-                            // TODO implement.
+                            AddToQueue(new TeleportCommand(mapObject, x, y), true);
                         }
                     }
 
@@ -171,16 +257,7 @@ namespace NetRose
                     {
                         if (!isServer)
                         {
-                            // TODO implement.
-                        }
-                    }
-
-                    [ClientRpc]
-                    private void RpcOnStateKeyChanged(string stateKey)
-                    {
-                        if (!isServer)
-                        {
-                            // TODO implement.
+                            AddToQueue(new SpeedChangeCommand(mapObject, speed));
                         }
                     }
 
@@ -189,7 +266,7 @@ namespace NetRose
                     {
                         if (!isServer)
                         {
-                            // TODO implement.
+                            AddToQueue(new OrientationChangeCommand(mapObject, orientation));
                         }
                     }
 
@@ -198,28 +275,9 @@ namespace NetRose
                     {
                         if (!isServer)
                         {
-                            // TODO implement.
+                            AddToQueue(new DetachCommand(mapObject), true);
                         }
                     }
-
-                    /**
-                     * Los mensajes recibidos tienen diferentes funciones:
-                     * 
-                     * MovementStart:
-                     *   i. Tienen un
-                     * 
-                     *   1. Esperamos a que se quede quieto. Esto significa: esperamos
-                     *      a que los movimientos (MovementStart) anteriores de la cola
-                     *      se terminen/cancelen (esto vale por el hecho de que este
-                     *      debería ser el único medio por el que se mueva el objeto).
-                     *   2. Iniciar el movimiento (MovementStart).
-                     *   3. Lanza el procedimiento asíncrono (async void) de esta forma:
-                     *      i. Mientras existe el movimiento iniciado recientemente
-                     *         (o sea: Movement != null), y esta acción no est
-                     * MovementFinish:
-                     *   En realidad no hace nada, pero sirve de "marcador" para
-                     *   cuando "aceleremos" el movimiento de la cola de comandos.
-                     */
                 }
             }
         }

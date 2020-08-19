@@ -29,6 +29,31 @@ namespace NetRose
         public abstract class BaseBehaviour : NetworkBehaviour
         {
             /// <summary>
+            ///   This class is a dependent behaviour. It depends on
+            ///   <see cref="BaseBehaviour" /> and also has access to
+            ///   its queue.
+            /// </summary>
+            [RequireComponent(typeof(BaseBehaviour))]
+            public abstract class RelatedBehaviour : NetworkBehaviour
+            {
+                private BaseBehaviour baseBehaviour;
+
+                private void Awake()
+                {
+                    baseBehaviour = GetComponent<BaseBehaviour>();
+                }
+
+                /// <summary>
+                ///   Forwards a call to add a command to the queue.
+                /// </summary>
+                /// <param name="forceAccelerate">If true, it accelerates regardless of the size</param>
+                protected void AddToQueue(ClientRpcCommand command, bool forceAccelerate = false)
+                {
+                    baseBehaviour.AddToQueue(command, forceAccelerate);
+                }
+            }
+
+            /// <summary>
             ///   Triggered when trying to add an RPC command when the queue is not
             ///     initialized.
             /// </summary>

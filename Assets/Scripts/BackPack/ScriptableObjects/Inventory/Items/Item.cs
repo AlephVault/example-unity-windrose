@@ -46,7 +46,7 @@ namespace BackPack
                     ///   You may disregard the existence of registries and not use them
                     ///     in your game. They are not needed, but useful for complex games.
                     /// </remarks>
-                    public bool Attached
+                    public bool Registered
                     {
                         get; private set;
                     }
@@ -58,7 +58,8 @@ namespace BackPack
                     /// </summary>
                     /// <remarks>
                     ///   You may disregard the existence of registries and not use them
-                    ///     in your game. They are not needed, but useful for complex games.
+                    ///     in your game. They are not needed, but useful for complex games
+                    ///     and purposes where a kind of namespacing is needed.
                     /// </remarks>
                     [SerializeField]
                     private ItemRegistry registry;
@@ -207,7 +208,7 @@ namespace BackPack
                             if (registry != null && key != 0)
                             {
                                 registry.Init();
-                                Attached = registry.AddItem(this);
+                                Registered = registry.AddItem(this);
                             }
 
                             // Flatten (and check!) dependencies among all of them

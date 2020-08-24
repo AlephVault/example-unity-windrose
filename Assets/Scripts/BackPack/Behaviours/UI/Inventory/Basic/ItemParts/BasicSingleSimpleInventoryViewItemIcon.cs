@@ -14,6 +14,10 @@ namespace BackPack
 			{
 				namespace Basic
 				{
+                    /// <summary>
+                    ///   This is a marker behaviour so the <see cref="BasicSingleSimpleInventoryViewItem" />
+                    ///     ancestor can identify the image to put the item's sprite into.
+                    /// </summary>
 					[RequireComponent(typeof(Image))]
 					public class BasicSingleSimpleInventoryViewItemIcon : MonoBehaviour {
 						/**

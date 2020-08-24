@@ -13,18 +13,12 @@ namespace BackPack
 			{
 				namespace Basic
 				{
-					public class BasicSingleSimpleInventoryViewItemSelectionGlow : MonoBehaviour {
-
-						// Use this for initialization
-						void Start () {
-
-						}
-
-						// Update is called once per frame
-						void Update () {
-
-						}
-					}
+                    /// <summary>
+                    ///   This is a marker behaviour so the <see cref="BasicSingleSimpleInventoryViewItem" />
+                    ///     ancestor can identify the imagae to put the item's selection glow into (by
+                    ///     activating/deactivating the owner gameObject of this component).
+                    /// </summary>
+					public class BasicSingleSimpleInventoryViewItemSelectionGlow : MonoBehaviour {}
 				}
 			}
 		}

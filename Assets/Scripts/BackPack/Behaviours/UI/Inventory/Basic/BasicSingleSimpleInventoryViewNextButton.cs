@@ -15,15 +15,13 @@ namespace BackPack
 			{
 				namespace Basic
 				{
+                    /// <summary>
+                    ///   This is a marker behaviour so the <see cref="BasicSingleSimpleInventoryView" />
+                    ///     ancestor can identify it and add the corresponding click event to move one
+                    ///     page forward in the view.
+                    /// </summary>
 					[RequireComponent(typeof(Button))]
-					public class BasicSingleSimpleInventoryViewNextButton : MonoBehaviour {
-						/**
-					     * The parent SimpleInventoryView object installs a handler for
-					     *   onClick event. This behaviour is just a marker/profiler for
-					     *   the parent to correctly identify the button to install
-					     *   the handler.
-					     */
-					}
+					public class BasicSingleSimpleInventoryViewNextButton : MonoBehaviour {}
 				}
 			}
 		}

@@ -18,6 +18,13 @@ namespace BackPack
 			{
 				namespace Basic
 				{
+                    /// <summary>
+                    ///   Adds the notion of an element being selected in the view. The selection
+                    ///     will exist in only one page, only one slot, and will be reflected
+                    ///     appropriately since child elements in the hierarchy now also account
+                    ///     for the chance of being selected, and now also a label will exist
+                    ///     telling the name/caption of the selected item.
+                    /// </summary>
 					[RequireComponent(typeof(Image))]
 					public class BasicSingleSimpleInventoryView : SingleSimpleInventoryView {
 						/**

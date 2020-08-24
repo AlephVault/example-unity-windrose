@@ -17,6 +17,10 @@ namespace BackPack
 			{
 				namespace Basic
 				{
+                    /// <summary>
+                    ///   A single-simple inventory item that accounts for being selected, as well. Used in conjunction to
+                    ///     <see cref="BasicSingleSimpleInventoryView" />.
+                    /// </summary>
 					[RequireComponent(typeof(Button))]
 					public class BasicSingleSimpleInventoryViewItem : SingleSimpleInventoryView.SingleSimpleInventoryViewItem {
 						/**

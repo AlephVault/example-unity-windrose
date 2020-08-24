@@ -37,12 +37,6 @@ namespace BackPack
                     }
 
                     /// <summary>
-                    ///   This is a wrapper for the sub-renderer interface, to be used / registered in the editor.
-                    /// </summary>
-                    [Serializable]
-                    public class SingleSimpleInventorySubRendererContainer : IUnifiedContainer<SingleSimpleInventorySubRenderer> {}
-
-                    /// <summary>
 					///   Tells when trying to add a null <see cref="SingleSimpleInventorySubRenderer"/>
 					///     when calling <see cref="AddSubRenderer(SingleSimpleInventorySubRenderer)"/>.
                     /// </summary>
@@ -50,13 +44,6 @@ namespace BackPack
                     {
                         public InvalidSubRendererException(string message) : base(message) { }
                     }
-
-                    /// <summary>
-					///   The initial list of <see cref="SingleSimpleInventorySubRenderer"/> instances to add to
-                    ///     this rendering strategy.
-                    /// </summary>
-                    [SerializeField]
-                    private List<SingleSimpleInventorySubRendererContainer> subRenderers = new List<SingleSimpleInventorySubRendererContainer>();
 
                     // Effective set of the renderers to be used, either by preloading from the editor or by
                     //   adding / removing sub-renderers.
@@ -84,20 +71,6 @@ namespace BackPack
                         base.Awake();
                         MaxSize = spatialStrategy.GetSize();
 						SingleInventory = GetComponent<SingleSimpleInventory>();
-                    }
-
-                    void Start()
-                    {
-                        foreach(SingleSimpleInventorySubRendererContainer subRenderer in subRenderers)
-                        {
-                            if (subRenderer == null) continue;
-                            subRenderersSet.Add(subRenderer.Result);
-                            subRenderer.Result.Connected();
-                            // We will force the sub-renderer to be cleared, and
-                            // also refresh each item. This, to decouple from the
-                            // inventory itself.
-                            FullUpdate(subRenderer.Result);
-                        }
                     }
 
                     void OnDestroy()

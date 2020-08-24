@@ -8,8 +8,6 @@ namespace WindRose
     {
         namespace World
         {
-			using WindRose.Behaviours.World;
-
 			namespace Layers
             {
                 namespace Drop

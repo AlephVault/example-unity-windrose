@@ -2756,7 +2756,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 511731307}
-  - component: {fileID: 511731316}
   - component: {fileID: 511731315}
   - component: {fileID: 511731314}
   - component: {fileID: 511731313}
@@ -2766,6 +2765,7 @@ GameObject:
   - component: {fileID: 511731309}
   - component: {fileID: 511731308}
   - component: {fileID: 511731317}
+  - component: {fileID: 511731316}
   m_Layer: 0
   m_Name: DropLayer
   m_TagString: Untagged
@@ -12249,7 +12249,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1142018239}
-  - component: {fileID: 1142018248}
   - component: {fileID: 1142018247}
   - component: {fileID: 1142018246}
   - component: {fileID: 1142018245}
@@ -12259,6 +12258,7 @@ GameObject:
   - component: {fileID: 1142018241}
   - component: {fileID: 1142018240}
   - component: {fileID: 1142018249}
+  - component: {fileID: 1142018248}
   m_Layer: 0
   m_Name: DropLayer
   m_TagString: Untagged
@@ -19433,7 +19433,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d85422bbd8934675a5a79bdfcb5d2d9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  subRenderers: []
 --- !u!114 &1680133223
 MonoBehaviour:
   m_ObjectHideFlags: 0

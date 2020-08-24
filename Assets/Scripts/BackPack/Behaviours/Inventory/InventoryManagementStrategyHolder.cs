@@ -233,7 +233,6 @@ namespace BackPack
                  */
                 private bool OptimalPut(object containerPosition, object stackPosition, Stack stack, out object finalStackPosition)
                 {
-
                     // This list is to queue stacks that will saturate on optimal put for cases when position
                     //   is not chosen by the user, and optimal put is chosen/preset.
                     List<Stack> stacksToSaturate = new List<Stack>();
@@ -397,6 +396,7 @@ namespace BackPack
                         bool result = spatialStrategy.Put(containerPosition, stackPosition, stack, out finalStackPosition);
                         if (result)
                         {
+                            // TODO event here
                             renderingStrategy.StackWasUpdated(containerPosition, stackPosition, stack);
                         }
                         return result;
@@ -415,6 +415,7 @@ namespace BackPack
                     bool result = spatialStrategy.Remove(containerPosition, stackPosition);
                     if (result)
                     {
+                        // TODO event here
                         renderingStrategy.StackWasRemoved(containerPosition, stackPosition);
                     }
                     return result;                    
@@ -439,17 +440,75 @@ namespace BackPack
                 /// </remarks>
                 public bool Merge(object containerPosition, object destinationStackPosition, object sourceStackPosition)
                 {
-                    positioningStrategy.CheckPosition(containerPosition);
-                    return Merge(containerPosition, destinationStackPosition, this, containerPosition, sourceStackPosition);
+                    return Merge(containerPosition, destinationStackPosition, containerPosition, sourceStackPosition);
                 }
 
                 /// <summary>
-                ///   See <see cref="Merge(object, object, object)"/>. This is an alternate version (actually: this is the
-                ///     generic one) which can merge across different inventories. The logic will remain the same.
+                ///   Merges two stacks in different containers, provided both stacks are "mergeable" between them.
+                ///     The source stack will be merged into the destination stack, and both stacks will be merged
+                ///     creating a new stack with added quantities and interpolated properties. For this to work,
+                ///     stacks must have usage strategies that CAN be interpolated.
                 /// </summary>
                 /// <param name="destinationContainerPosition">The ID of the destination spatial container</param>
+                /// <param name="destinationStackPosition">The destination stack position</param>
+                /// <param name="sourceContainerPosition">The ID of the source spatial container</param>
+                /// <param name="sourceStackPosition">The source stack position</param>
+                /// <returns>
+                ///   Whether both source and destination stacks were found, quantities could be added, and they
+                ///     were compatible enough to succeed in the final step of merge/interpolation.
+                /// </returns>
+                /// <remarks>
+                ///   If quantities are saturated, there will be a partial merge and part of the source stack will
+                ///     still exist. Otherwise, the merge will be total and the source stack will be deleted.
+                /// </remarks>
+                public bool Merge(object destinationContainerPosition, object destinationStackPosition, object sourceContainerPosition, object sourceStackPosition)
+                {
+                    positioningStrategy.CheckPosition(sourceContainerPosition);
+                    positioningStrategy.CheckPosition(destinationContainerPosition);
+                    Stack destination = Find(destinationContainerPosition, destinationStackPosition);
+                    if (destination == null)
+                    {
+                        return false;
+                    }
+
+                    Stack source = Find(sourceContainerPosition, sourceStackPosition);
+                    if (source == null)
+                    {
+                        return false;
+                    }
+
+                    object quantityLeft;
+                    Stack.MergeResult result = destination.Merge(source, out quantityLeft);
+
+                    if (result != Stack.MergeResult.Denied)
+                    {
+                        if (result == Stack.MergeResult.Total)
+                        {
+                            renderingStrategy.StackWasUpdated(destinationContainerPosition, destinationStackPosition, destination);
+                            Remove(sourceContainerPosition, sourceStackPosition);
+                        }
+                        else
+                        {
+                            source.ChangeQuantityTo(quantityLeft);
+                            // TODO event here.
+                            renderingStrategy.StackWasUpdated(destinationContainerPosition, destinationStackPosition, destination);
+                            renderingStrategy.StackWasUpdated(sourceContainerPosition, sourceStackPosition, source);
+                        }
+                        return true;
+                    }
+
+                    return false;
+                }
+
+                /// <summary>
+                ///   This is an alternate version (actually: this is the most generic one) which can merge across
+                ///     different inventories. The logic will remain the same, but the events to be triggered will
+                ///     be different.
+                /// </summary>
+                /// <param name="sourceHolder">The destination inventory managemnt strategy holder</param>
+                /// <param name="destinationContainerPosition">The ID of the destination spatial container</param>
                 /// <param name="destinationStackPosition">The position of the destination stack</param>
-                /// <param name="sourceHolder">The source inventory managemnt strategy holder (our current instance is the destination one)</param>
+                /// <param name="sourceHolder">The source inventory managemnt strategy holder</param>
                 /// <param name="sourceContainerPosition">The ID of the source spatial container</param>
                 /// <param name="sourceStackPosition">The position of the source stack</param>
                 /// <returns>
@@ -460,11 +519,12 @@ namespace BackPack
                 ///   If quantities are saturated, there will be a partial merge and part of the source stack will
                 ///     still exist. Otherwise, the merge will be total and the source stack will be deleted.
                 /// </remarks>
-                public bool Merge(object destinationContainerPosition, object destinationStackPosition,
-                                  InventoryManagementStrategyHolder sourceHolder, object sourceContainerPosition, object sourceStackPosition)
+                public static bool Merge(InventoryManagementStrategyHolder destinationHolder, object destinationContainerPosition, object destinationStackPosition,
+                                         InventoryManagementStrategyHolder sourceHolder, object sourceContainerPosition, object sourceStackPosition)
                 {
-                    positioningStrategy.CheckPosition(destinationContainerPosition);
-                    Stack destination = Find(destinationContainerPosition, destinationStackPosition);
+                    sourceHolder.positioningStrategy.CheckPosition(sourceContainerPosition);
+                    destinationHolder.positioningStrategy.CheckPosition(destinationContainerPosition);
+                    Stack destination = destinationHolder.Find(destinationContainerPosition, destinationStackPosition);
                     if (destination == null)
                     {
                         return false;
@@ -479,17 +539,20 @@ namespace BackPack
                     object quantityLeft;
                     Stack.MergeResult result = destination.Merge(source, out quantityLeft);
 
-                    if (result == Stack.MergeResult.Denied)
+                    if (result != Stack.MergeResult.Denied)
                     {
                         if (result == Stack.MergeResult.Total)
                         {
-                            renderingStrategy.StackWasUpdated(destinationContainerPosition, destinationStackPosition, destination);
                             sourceHolder.Remove(sourceContainerPosition, sourceStackPosition);
+                            // TODO event (the same in Put, I think) in the destination.
+                            destinationHolder.renderingStrategy.StackWasUpdated(destinationContainerPosition, destinationStackPosition, destination);
                         }
                         else
                         {
-                            renderingStrategy.StackWasUpdated(destinationContainerPosition, destinationStackPosition, destination);
                             source.ChangeQuantityTo(quantityLeft);
+                            // TODO event here (the same in Put, I think) in the destination.
+                            // TODO event here (the same in Take, I think) in the source.
+                            destinationHolder.renderingStrategy.StackWasUpdated(destinationContainerPosition, destinationStackPosition, destination);
                             sourceHolder.renderingStrategy.StackWasUpdated(sourceContainerPosition, sourceStackPosition, source);
                         }
                         return true;
@@ -520,10 +583,12 @@ namespace BackPack
                             if (found.IsEmpty())
                             {
                                 spatialStrategy.Remove(containerPosition, stackPosition);
+                                // TODO event here (removal).
                                 renderingStrategy.StackWasRemoved(containerPosition, stackPosition);
                             }
                             else
                             {
+                                // TODO event here (partial removal).
                                 renderingStrategy.StackWasUpdated(containerPosition, stackPosition, found);
                             }
                         }
@@ -539,18 +604,18 @@ namespace BackPack
                 /// <param name="sourceContainerPosition">The ID of the source spatial container</param>
                 /// <param name="sourceStackPosition">The position of the source stack</param>
                 /// <param name="quantity">The quantity to take from the source stack</param>
-                /// <param name="newStackContainerPosition">The ID of the destination spatial container</param>
+                /// <param name="newContainerPosition">The ID of the destination spatial container</param>
                 /// <param name="newStackPosition">The position of the destination stack</param>
                 /// <param name="finalNewStackPosition">Output parameter returning the final position given for the new stack</param>
                 /// <returns>Whether the split could be performed (stack was found, quantity was available, and destination was free)</returns>
                 public bool Split(object sourceContainerPosition, object sourceStackPosition, object quantity,
-                                  object newStackContainerPosition, object newStackPosition, out object finalNewStackPosition)
+                                  object newContainerPosition, object newStackPosition, out object finalNewStackPosition)
                 {
                     Stack found = Find(sourceContainerPosition, sourceStackPosition);
                     if (found != null)
                     {
                         Stack newStack = found.Take(quantity, true);
-                        if (!Put(newStackContainerPosition, newStackPosition, newStack, out finalNewStackPosition))
+                        if (!Put(newContainerPosition, newStackPosition, newStack, out finalNewStackPosition))
                         {
                             // Could not put the new stack - refund its quantity.
                             found.ChangeQuantityBy(quantity);
@@ -559,7 +624,7 @@ namespace BackPack
                         else
                         {
                             renderingStrategy.StackWasUpdated(sourceContainerPosition, sourceStackPosition, found);
-                            renderingStrategy.StackWasUpdated(newStackContainerPosition, newStackPosition, newStack);
+                            renderingStrategy.StackWasUpdated(newContainerPosition, newStackPosition, newStack);
                             return true;
                         }
                     }

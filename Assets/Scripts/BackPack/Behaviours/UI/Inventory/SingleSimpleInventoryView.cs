@@ -16,12 +16,12 @@ namespace BackPack
 				using Behaviours.Inventory.Single;
 
                 /// <summary>
-                ///   Single views are a subclass of <see cref="InventorySingleRenderingManagementStrategy.SingleInventorySubRenderer"/>
-                ///     that account for an internal array of items being visible: such items will be cleared or set (according to what actually
-                ///     happens in the sub-renderer and renderer in general)
+                ///   Single views are a subclass of <see cref="BaseSingleSimpleInventorySubRenderer"/> that account for an
+                ///     internal array of items being visible: such items will be cleared or set (according to what actually
+                ///     happens in the sub-renderer and renderer in general).
                 /// </summary>
                 [RequireComponent(typeof(Image))]
-                public class SingleSimpleInventoryView : InventorySingleSimpleRenderingManagementStrategy.SingleInventorySubRenderer
+                public class SingleSimpleInventoryView : BaseSingleSimpleInventorySubRenderer
                 {
                     /// <summary>
                     ///   An UI item that will know how to render and clear itself according to "simple" data.

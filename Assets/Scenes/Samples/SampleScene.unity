@@ -16553,7 +16553,7 @@ PrefabInstance:
     - target: {fileID: 114059319192993692, guid: 4d49ab3f52c28d44c93e06dc49b8ea0c,
         type: 3}
       propertyPath: speed
-      value: 4
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 114099831494430252, guid: 4d49ab3f52c28d44c93e06dc49b8ea0c,
         type: 3}
@@ -19433,7 +19433,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   subRenderers:
-  - {fileID: 57371258}
+  - ObjectField: {fileID: 57371258}
+    ResultType: 
 --- !u!114 &1680133223
 MonoBehaviour:
   m_ObjectHideFlags: 0

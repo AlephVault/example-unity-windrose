@@ -61,7 +61,7 @@ namespace WindRose
                             image.AddComponent<SpriteRenderer>();
                             image.transform.parent = prefab.transform;
                         }
-                        GameObject result = PrefabUtility.CreatePrefab(relativePrefabPath, prefab);
+                        GameObject result = PrefabUtility.SaveAsPrefabAsset(prefab, relativePrefabPath);
                         Undo.RegisterCreatedObjectUndo(result, "Create Drop Container Renderer Prefab");
                         DestroyImmediate(prefab);
                         Close();

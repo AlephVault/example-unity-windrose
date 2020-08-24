@@ -23,14 +23,6 @@ namespace BackPack
                 /// </summary>
                 public abstract class BaseSingleSimpleInventorySubRenderer : MonoBehaviour, InventorySingleSimpleRenderingManagementStrategy.SingleSimpleInventorySubRenderer
                 {
-                    /**
-                     * This is a reference to the only rendering strategy one of this
-                     *   subrenderers can be bound to. If you attach this component to
-                     *   another renderer, the former renderer will disconnect from
-                     *   this object.
-                     */
-                    private InventorySingleSimpleRenderingManagementStrategy sourceRenderer;
-
                     /// <summary>
                     ///   Contains the elements to render, in terms of its position
                     ///     and the simple data fields: icon, caption, and quantity.
@@ -47,15 +39,6 @@ namespace BackPack
                      *   The page value will determine an offset of: N*PageSize elements.
                      * - There is a protected method if you want to change the paging later.
                      */
-
-                    /// <summary>
-                    ///   Returns the underlying simple simple inventory (which is tied to
-                    ///     the related renderer).
-                    /// </summary>
-                    public SingleSimpleInventory SourceSingleInventory
-                    {
-                        get { return sourceRenderer != null ? sourceRenderer.SingleInventory : null; }
-                    }
 
                     /// <summary>
                     ///   This value will be 0 if no paging is meant to be used in this
@@ -140,7 +123,7 @@ namespace BackPack
                     ///     steps are abstract and must be implemented by subclasses (since it
                     ///     is just a matter of the particular UI to create for them).
                     /// </summary>
-                    public virtual void Refresh()
+                    public void Refresh()
                     {
                         if (PageSize == 0)
                         {
@@ -221,14 +204,8 @@ namespace BackPack
                     ///     to. Although this logic may be overridden, it is needed a call to <c>base.Connected</c>
                     ///     somewhere in the code.
                     /// </summary>
-                    public virtual void Connected(InventorySingleSimpleRenderingManagementStrategy sbRenderer)
+                    public virtual void Connected()
                     {
-                        if (sourceRenderer != null)
-                        {
-                            sourceRenderer.RemoveSubRenderer(this);
-                        }
-                        sourceRenderer = sbRenderer;
-
                         // After a renderer was connected, clean and refresh everything inside.
                         if (elements != null)
                         {
@@ -238,14 +215,6 @@ namespace BackPack
                         {
                             elements = new SortedDictionary<int, Tuple<Sprite, string, object>>();
                         }
-                        IEnumerable<Tuple<int, BackPack.Types.Inventory.Stacks.Stack>> pairs = sourceRenderer.SingleInventory.StackPairs();
-                        foreach (Tuple<int, BackPack.Types.Inventory.Stacks.Stack> pair in pairs)
-                        {
-                            Dictionary<string, object> target = new Dictionary<string, object>();
-                            pair.Item2.MainRenderingStrategy.DumpRenderingData(target);
-                            elements.Add(pair.Item1, new Tuple<Sprite, string, object>((Sprite)target["icon"], (string)target["caption"], target["quantity"]));
-                        }
-                        Refresh();
                     }
 
                     /// <summary>
@@ -255,7 +224,6 @@ namespace BackPack
                     /// </summary>
                     public virtual void Disconnected()
                     {
-                        sourceRenderer = null;
                         Clear();
                     }
 

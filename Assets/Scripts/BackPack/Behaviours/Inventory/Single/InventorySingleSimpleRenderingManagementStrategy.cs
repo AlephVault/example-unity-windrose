@@ -29,7 +29,7 @@ namespace BackPack
                     /// </summary>
                     public interface SingleSimpleInventorySubRenderer
                     {
-                        void Connected(InventorySingleSimpleRenderingManagementStrategy source);
+                        void Connected();
                         void UpdateStack(int stackPosition, Sprite icon, string caption, object quantity);
                         void RemoveStack(int position);
                         void Clear();
@@ -92,7 +92,11 @@ namespace BackPack
                         {
                             if (subRenderer == null) continue;
                             subRenderersSet.Add(subRenderer.Result);
-                            subRenderer.Result.Connected(this);
+                            subRenderer.Result.Connected();
+                            // We will force the sub-renderer to be cleared, and
+                            // also refresh each item. This, to decouple from the
+                            // inventory itself.
+                            FullUpdate(subRenderer.Result);
                         }
                     }
 
@@ -103,6 +107,19 @@ namespace BackPack
                         foreach (SingleSimpleInventorySubRenderer subRenderer in cloned)
                         {
                             subRenderer.Disconnected();
+                        }
+                    }
+
+                    // Clears and fully updates a given sub-renderer.
+                    private void FullUpdate(SingleSimpleInventorySubRenderer subRenderer)
+                    {
+                        subRenderer.Clear();
+                        IEnumerable<Tuple<int, Types.Inventory.Stacks.Stack>> pairs = SingleInventory.StackPairs();
+                        foreach (Tuple<int, Types.Inventory.Stacks.Stack> pair in pairs)
+                        {
+                            Dictionary<string, object> target = new Dictionary<string, object>();
+                            pair.Item2.MainRenderingStrategy.DumpRenderingData(target);
+                            subRenderer.UpdateStack(pair.Item1, (Sprite)target["icon"], (string)target["caption"], target["quantity"]);
                         }
                     }
 
@@ -126,7 +143,11 @@ namespace BackPack
                         }
 
                         subRenderersSet.Add(subRenderer);
-                        subRenderer.Connected(this);
+                        subRenderer.Connected();
+                        // We will force the sub-renderer to be cleared, and
+                        // also refresh each item. This, to decouple from the
+                        // inventory itself.
+                        FullUpdate(subRenderer);
                         return true;
                     }
 

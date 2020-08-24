@@ -45,11 +45,6 @@ namespace BackPack
 						private BasicSingleSimpleInventoryViewPageLabel pageLabel;
 						private BasicSingleSimpleInventoryViewSelectedItemLabel selectedItemLabel;
 						public int? SelectedPosition { get; private set; }
-						public Types.Inventory.Stacks.Stack SelectedItem {
-							get {
-								return (SelectedPosition != null) ? SourceSingleInventory.Find(SelectedPosition.Value) : null;
-							}
-						}
 
 						protected override void Awake()
 						{
@@ -60,23 +55,19 @@ namespace BackPack
 							Layout.RequireComponentInChildren<BasicSingleSimpleInventoryViewPrevButton>(this).GetComponent<Button>().onClick.AddListener(delegate () { Prev(); });
 						}
 
-						protected void Start()
+                        /// <summary>
+                        ///   Tries to change the selection of an element in the view.
+                        /// </summary>
+                        /// <param name="position">The position to change the selection to</param>
+                        public void Select(int position)
 						{
-						}
-
-						public void Select(int position)
-						{
-							if (SourceSingleInventory.Find(position) != null)
+                            Tuple<Sprite, string, object> element;
+                            if (elements.TryGetValue(position, out element))
 							{
 								if (position == SelectedPosition) return;
 
 								int? positionToUnselect = SelectedPosition;
 								SelectedPosition = position;
-								if (positionToUnselect != null)
-								{
-									SourceSingleInventory.Blink(positionToUnselect.Value);
-								}
-								SourceSingleInventory.Blink(position);
 								// Go to that page (useful if automatically selected)
 								Go(PageFor(position));
 								// Force refresh on general components as well
@@ -84,13 +75,15 @@ namespace BackPack
 							}
 						}
 
+                        /// <summary>
+                        ///   Tries to remove the selection of an element in the view.
+                        /// </summary>
 						public void Unselect()
 						{
 							if (SelectedPosition != null)
 							{
 								int positionToUnselect = SelectedPosition.Value;
 								SelectedPosition = null;
-								SourceSingleInventory.Blink(positionToUnselect);
 								// Force refresh on general components as well
 								AfterRefresh();
 							}

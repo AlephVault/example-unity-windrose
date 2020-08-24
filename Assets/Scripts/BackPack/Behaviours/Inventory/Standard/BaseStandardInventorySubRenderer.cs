@@ -7,7 +7,7 @@ namespace BackPack
     {
         namespace Inventory
         {
-            namespace Single
+            namespace Standard
             {
                 using GMM.Utils;
                 using System.Collections.Generic;
@@ -15,13 +15,13 @@ namespace BackPack
 
                 /// <summary>
                 ///   A sub-renderer is, basically, a view than can be connected
-                ///     to an <see cref="InventorySingleSimpleRenderingManagementStrategy"/>.
+                ///     to an <see cref="InventoryStandardRenderingManagementStrategy"/>.
                 ///   It is not just a way to render items, but also a way to
                 ///     interact with them by -e.g.- pagination: different sub
                 ///     renderers may show different pages, but they will render
                 ///     the same underlying items.
                 /// </summary>
-                public abstract class BaseSingleSimpleInventorySubRenderer : MonoBehaviour, InventorySingleSimpleRenderingManagementStrategy.SingleSimpleInventorySubRenderer
+                public abstract class BaseStandardInventorySubRenderer : MonoBehaviour, InventoryStandardRenderingManagementStrategy.InventorySubRenderer
                 {
                     /// <summary>
                     ///   Contains the elements to render, in terms of its position

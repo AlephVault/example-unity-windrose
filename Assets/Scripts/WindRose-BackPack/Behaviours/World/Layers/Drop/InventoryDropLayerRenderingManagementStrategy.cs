@@ -10,7 +10,9 @@ namespace WindRose
     {
 		using Drops;
 		using BackPack.Behaviours.Inventory;
-		using BackPack.Behaviours.Inventory.ManagementStrategies.RenderingStrategies;
+        using BackPack.ScriptableObjects.Inventory.Items;
+        using BackPack.ScriptableObjects.Inventory.Items.RenderingStrategies;
+        using BackPack.Behaviours.Inventory.ManagementStrategies.RenderingStrategies;
 
         namespace World
         {
@@ -25,7 +27,7 @@ namespace WindRose
                     ///     <see cref="DropLayer"/>. It will do this by creating/refreshing/destroying a lot of
                     ///     <see cref="SimpleDropContainerRenderer"/> instances (one on each map's position).
                     /// </summary>
-                    public class InventoryDropLayerRenderingManagementStrategy : InventorySimpleRenderingManagementStrategy
+                    public class InventoryDropLayerRenderingManagementStrategy : Inventory1DIndexedStaticRenderingManagementStrategy
                     {
                         private SimpleDropContainerRenderer[,] dropContainers;
                         // We are completely sure we have a PositioningStrategy in the underlying object
@@ -92,17 +94,17 @@ namespace WindRose
                         ///       for more information on the method's signature.
                         ///   </para>
                         /// </summary>
-                        /// <param name="containerPosition"></param>
-                        /// <param name="stackPosition"></param>
-                        /// <param name="icon"></param>
-                        /// <param name="caption"></param>
-                        /// <param name="quantity"></param>
-                        protected override void StackWasUpdated(object containerPosition, int stackPosition, Sprite icon, string caption, object quantity)
+                        /// <param name="containerPosition">The (x, y) in-map position</param>
+                        /// <param name="stackPosition">The in-place index</param>
+                        /// <param name="item">The item to render</param>
+                        /// <param name="quantity">The quantity to render</param>
+                        protected override void StackWasUpdated(object containerPosition, int stackPosition, Item item, object quantity)
                         {
                             // Adds a stack to a container (creates the container if absent).
                             Vector2Int containerVector = (Vector2Int)containerPosition;
                             SimpleDropContainerRenderer container = getContainerFor(containerVector, true);
-                            container.RefreshWithPutting(stackPosition, icon, caption, quantity);
+                            ItemIconTextRenderingStrategy strategy = item.GetRenderingStrategy<ItemIconTextRenderingStrategy>();
+                            container.RefreshWithPutting(stackPosition, strategy.Icon, strategy.Caption, quantity);
                         }
 
                         /// <summary>

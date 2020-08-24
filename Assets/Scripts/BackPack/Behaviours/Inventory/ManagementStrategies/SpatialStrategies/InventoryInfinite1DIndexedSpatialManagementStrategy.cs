@@ -18,14 +18,14 @@ namespace BackPack
                     ///   Infinite containers do not have an upper bound. Their sparse array MAY be huge if high indices
                     ///     are occupied.
                     /// </summary>
-                    public class InventoryInfiniteSimpleSpatialManagementStrategy : InventorySimpleSpatialManagementStrategy
+                    public class InventoryInfinite1DIndexedSpatialManagementStrategy : Inventory1DIndexedSpatialManagementStrategy
                     {
                         /// <summary>
-                        ///   Infinite simple containers are unbounded.
+                        ///   Infinite 1D indexed containers are unbounded.
                         /// </summary>
-                        public class SimpleInfiniteSpatialContainer : SimpleSpatialContainer
+                        public new class Container : Inventory1DIndexedSpatialManagementStrategy.Container
                         {
-                            public SimpleInfiniteSpatialContainer(InventorySpatialManagementStrategy spatialStrategy, object position) : base(spatialStrategy, position)
+                            public Container(InventorySpatialManagementStrategy spatialStrategy, object position) : base(spatialStrategy, position)
                             {
                             }
 
@@ -40,7 +40,7 @@ namespace BackPack
                         /// </summary>
                         protected override SpatialContainer InitializeContainer(object position)
                         {
-                            return new SimpleInfiniteSpatialContainer(this, position);
+                            return new Container(this, position);
                         }
 
                         /// <summary>

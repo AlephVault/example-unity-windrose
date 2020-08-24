@@ -14,7 +14,7 @@ namespace WindRose
 				{
 					using World.Layers.Drop;
 					using BackPack.Types.Inventory.Stacks;
-					using BackPack.Behaviours.Inventory.Single;
+					using BackPack.Behaviours.Inventory.Standard;
 
 					/// <summary>
 					///   Bags are single inventories that belong to a map object.
@@ -23,7 +23,7 @@ namespace WindRose
 					///   have features to interact with the underlying map's
 					///   drop layer.
 					/// </summary>
-					[RequireComponent(typeof(SingleSimpleInventory))]
+					[RequireComponent(typeof(StandardInventory))]
 					[RequireComponent(typeof(MapObject))]
 					public class SimpleBag : MonoBehaviour
 					{
@@ -31,12 +31,12 @@ namespace WindRose
 						public MapObject MapObject { get; private set; }
 
 						// The underlying single inventory.
-						public SingleSimpleInventory Inventory { get; private set; }
+						public StandardInventory Inventory { get; private set; }
 
 						private void Awake()
 						{
 							MapObject = GetComponent<MapObject>();
-							Inventory = GetComponent<SingleSimpleInventory>();
+							Inventory = GetComponent<StandardInventory>();
 						}
 
 						/**

@@ -16,20 +16,20 @@ namespace BackPack
                     using Types.Inventory.Stacks;
 
                     /// <summary>
-                    ///   Simple spatial management strategies involve indexed accesses. They are a finite or infinite
+                    ///   1D indexed spatial management strategies involve indexed accesses. They are a finite or infinite
                     ///     array managers.
                     /// </summary>
-                    public abstract class InventorySimpleSpatialManagementStrategy : InventorySpatialManagementStrategy
+                    public abstract class Inventory1DIndexedSpatialManagementStrategy : InventorySpatialManagementStrategy
                     {
                         /// <summary>
-                        ///   A simple container mantains a sparse array of stacks in the container.
+                        ///   An 1D container mantains a sparse array of stacks in the container.
                         /// </summary>
-                        public abstract class SimpleSpatialContainer : SpatialContainer
+                        public abstract class Container : SpatialContainer
                         {
                             // Flags to occupy the respective positions
                             private List<bool> elements = new List<bool>();
 
-                            public SimpleSpatialContainer(InventorySpatialManagementStrategy spatialStrategy, object position) : base(spatialStrategy, position)
+                            public Container(InventorySpatialManagementStrategy spatialStrategy, object position) : base(spatialStrategy, position)
                             {
                             }
 
@@ -43,7 +43,7 @@ namespace BackPack
                                     if (!elements[index]) return index;
                                 }
 
-                                int size = ((InventorySimpleSpatialManagementStrategy)SpatialStrategy).GetSize();
+                                int size = ((Inventory1DIndexedSpatialManagementStrategy)SpatialStrategy).GetSize();
                                 if (size == 0 || elements.Count < size)
                                 {
                                     // Return the count as the new position to add the new element.
@@ -160,11 +160,11 @@ namespace BackPack
                         public abstract int GetSize();
 
                         /// <summary>
-                        ///   Counterpart type is <see cref="ItemSimpleSpatialStrategy"/>.
+                        ///   Counterpart type is <see cref="Item1DIndexedSpatialStrategy"/>.
                         /// </summary>
                         protected override Type GetItemSpatialStrategyCounterpartType()
                         {
-                            return typeof(ItemSimpleSpatialStrategy);
+                            return typeof(Item1DIndexedSpatialStrategy);
                         }
                     }
                 }

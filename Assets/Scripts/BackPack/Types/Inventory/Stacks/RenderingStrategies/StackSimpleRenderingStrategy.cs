@@ -17,26 +17,21 @@ namespace BackPack
                     using ScriptableObjects.Inventory.Items.RenderingStrategies;
 
                     /// <summary>
-                    ///   Simple rendering strategies provide icon, caption, and quantity to be rendered
-                    ///     on compatible inventories. This will be the most common one.
+                    ///   Static rendering strategies provide nothing as render data.
+                    ///     They are intended to be used with variants of the static
+                    ///     rendering management strategies.
                     /// </summary>
-                    public class StackSimpleRenderingStrategy : StackRenderingStrategy
+                    public class StackStaticRenderingStrategy : StackRenderingStrategy
                     {
-                        public StackSimpleRenderingStrategy(ItemRenderingStrategy itemStrategy) : base(itemStrategy)
-                        {
-                        }
+                        public StackStaticRenderingStrategy(ItemRenderingStrategy itemStrategy) : base(itemStrategy) {}
 
                         /// <summary>
-                        ///   Dumps icon, caption and quantity into the <paramref name="target"/>.
+                        ///   Adds nothing to <paramref name="target"/>. This, because
+                        ///     nothing conditions what is specified in the item's data
+                        ///     (since this element is conceived as static).
                         /// </summary>
                         /// <param name="target">Target object on which to dump the render data</param>
-                        public override void DumpRenderingData(Dictionary<string, object> target)
-                        {
-                            ItemSimpleRenderingStrategy strategy = ((ItemSimpleRenderingStrategy)ItemStrategy);
-                            target["icon"] = strategy.Icon;
-                            target["caption"] = strategy.Caption;
-                            target["quantity"] = Stack.QuantifyingStrategy.Quantity;
-                        }
+                        public override void DumpRenderingData(Dictionary<string, object> target) {}
                     }
                 }
             }

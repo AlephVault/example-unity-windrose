@@ -9,7 +9,7 @@ namespace BackPack
     {
         namespace Inventory
         {
-            namespace Single
+            namespace Standard
             {
                 /// <summary>
                 ///   A singleton position. The only expression that matters here is

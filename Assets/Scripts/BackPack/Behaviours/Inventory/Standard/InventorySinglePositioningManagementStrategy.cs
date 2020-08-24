@@ -6,7 +6,7 @@ namespace BackPack
     {
         namespace Inventory
         {
-            namespace Single
+            namespace Standard
             {
 				using ManagementStrategies.PositioningStrategies;
 

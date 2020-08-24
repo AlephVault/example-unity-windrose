@@ -34,7 +34,7 @@ namespace WindRose
                     ///   </para>
                     /// </summary>
                     [RequireComponent(typeof(InventoryMapSizedPositioningManagementStrategy))]
-                    [RequireComponent(typeof(InventoryInfiniteSimpleSpatialManagementStrategy))]
+                    [RequireComponent(typeof(InventoryInfinite1DIndexedSpatialManagementStrategy))]
                     [RequireComponent(typeof(InventoryManagementStrategyHolder))]
                     [RequireComponent(typeof(InventoryDropLayerRenderingManagementStrategy))]
                     public class DropLayer : MapLayer

@@ -138,13 +138,13 @@ namespace WindRose
                             });
                             if (finiteBag)
                             {
-                                InventoryFiniteSimpleSpatialManagementStrategy simpleSpatialManagementStrategy = MenuActionUtils.AddUndoableComponent<InventoryFiniteSimpleSpatialManagementStrategy>(gameObject, new Dictionary<string, object>() {
+                                InventoryFinite1DIndexedSpatialManagementStrategy simpleSpatialManagementStrategy = MenuActionUtils.AddUndoableComponent<InventoryFinite1DIndexedSpatialManagementStrategy>(gameObject, new Dictionary<string, object>() {
                                     { "size", bagSize }
                                 });
                             }
                             else
                             {
-                                MenuActionUtils.AddUndoableComponent<InventoryInfiniteSimpleSpatialManagementStrategy>(gameObject);
+                                MenuActionUtils.AddUndoableComponent<InventoryInfinite1DIndexedSpatialManagementStrategy>(gameObject);
                             }
                             MenuActionUtils.AddUndoableComponent<Behaviours.Entities.Objects.Bags.SimpleBag>(gameObject);
                             return holder;
@@ -203,7 +203,7 @@ namespace WindRose
                         dropLayer.SetActive(false);
                         Layout.AddComponent<SortingGroup>(dropLayer);
                         Layout.AddComponent<GMM.Behaviours.Normalized>(dropLayer);
-                        Layout.AddComponent<InventoryInfiniteSimpleSpatialManagementStrategy>(dropLayer);
+                        Layout.AddComponent<InventoryInfinite1DIndexedSpatialManagementStrategy>(dropLayer);
                         Layout.AddComponent<InventoryMapSizedPositioningManagementStrategy>(dropLayer);
                         InventoryNullUsageManagementStrategy usageStrategy = Layout.AddComponent<InventoryNullUsageManagementStrategy>(dropLayer);
                         Layout.AddComponent<InventoryDropLayerRenderingManagementStrategy>(dropLayer);

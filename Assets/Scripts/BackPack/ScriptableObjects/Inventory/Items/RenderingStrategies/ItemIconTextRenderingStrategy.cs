@@ -10,17 +10,14 @@ namespace BackPack
             {
                 namespace RenderingStrategies
                 {
-                    using Types.Inventory.Stacks.RenderingStrategies;
-
                     /// <summary>
-                    ///   Simple rendering strategies are the most common in games
+                    ///   Icon/Text rendering strategies are the most common in games
                     ///     dealing with inventories: They consider an image, a caption
-                    ///     and related data (like quantities) to be rendered as a
-                    ///     single item in a single slot.
+                    ///     to be rendered as a single item in a single slot (according
+                    ///     to the quantity).
                     /// </summary>
-                    [CreateAssetMenu(fileName = "NewInventoryItemSimpleRenderingStrategy", menuName = "Wind Rose/Inventory/Item Strategies/Rendering/Simple", order = 101)]
-                    [RequireSpatialStrategy(typeof(SpatialStrategies.ItemSimpleSpatialStrategy))]
-                    public class ItemSimpleRenderingStrategy : ItemRenderingStrategy
+                    [CreateAssetMenu(fileName = "NewInventoryItemIconTextRenderingStrategy", menuName = "Wind Rose/Inventory/Item Strategies/Rendering/Icon & Text", order = 101)]
+                    public class ItemIconTextRenderingStrategy : ItemStaticRenderingStrategy
                     {
                         /// <summary>
                         ///   The icon to render.
@@ -48,15 +45,6 @@ namespace BackPack
                         public string Caption
                         {
                             get { return caption; }
-                        }
-
-                        /// <summary>
-                        ///   Instantiates a simple rendering stack strategy.
-                        /// </summary>
-                        /// <returns>A simple rendering stack strategy</returns>
-                        public override StackRenderingStrategy CreateStackStrategy()
-                        {
-                            return new StackSimpleRenderingStrategy(this);
                         }
                     }
                 }

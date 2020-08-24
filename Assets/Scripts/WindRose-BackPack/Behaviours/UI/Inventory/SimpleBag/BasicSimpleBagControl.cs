@@ -15,7 +15,7 @@ namespace WindRose
 				namespace SimpleBag
 				{
 					using BackPack.Behaviours.UI.Inventory.Basic;
-                    using BackPack.Behaviours.Inventory.Single;
+                    using BackPack.Behaviours.Inventory.Standard;
                     using BackPack.Types.Inventory.Stacks;
                     using Entities.Objects.Bags;
 
@@ -48,7 +48,7 @@ namespace WindRose
 
                         private void Start()
                         {
-                            if (bag) bag.GetComponent<InventorySingleSimpleRenderingManagementStrategy>().AddSubRenderer(inventoryView);
+                            if (bag) bag.GetComponent<InventoryStandardRenderingManagementStrategy>().AddSubRenderer(inventoryView);
                         }
 
                         /// <summary>
@@ -64,9 +64,9 @@ namespace WindRose
                             }
                             set
                             {
-                                if (bag) bag.GetComponent<InventorySingleSimpleRenderingManagementStrategy>().RemoveSubRenderer(inventoryView);
+                                if (bag) bag.GetComponent<InventoryStandardRenderingManagementStrategy>().RemoveSubRenderer(inventoryView);
                                 bag = value;
-                                if (bag) bag.GetComponent<InventorySingleSimpleRenderingManagementStrategy>().AddSubRenderer(inventoryView);
+                                if (bag) bag.GetComponent<InventoryStandardRenderingManagementStrategy>().AddSubRenderer(inventoryView);
                             }
                         }
 

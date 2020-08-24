@@ -8,7 +8,7 @@ namespace BackPack
     {
         namespace Inventory
         {
-            namespace Single
+            namespace Standard
             {
                 using Types.Inventory.Stacks;
 				using ManagementStrategies.SpatialStrategies;
@@ -20,22 +20,20 @@ namespace BackPack
 
                 /// <summary>
                 ///   <para>
-                ///     Single-Simple inventories are intended to be an implementation of just
-				///       1 inventory position (most of the inventories in most games are of
-				///       size = 1), and rendering of simple items (label, picture, quantity).
-				///       The user is saved from referencing the only container, and so the
-				///       usual "container" (position) argument is not present here.
+                ///     A standard inventory has 3 characteristics: single container, 1D indexed
+                ///       elements inside the container, each represented by an icon and its
+                ///       caption.
                 ///   </para>
                 ///   <para>
                 ///     They are tightly related to <see cref="InventoryManagementStrategyHolder"/>
-                ///       and <see cref="InventorySingleSimpleRenderingManagementStrategy"/>.
+                ///       and <see cref="InventoryStandardRenderingManagementStrategy"/>.
                 ///   </para>
                 /// </summary>
                 [RequireComponent(typeof(InventorySinglePositioningManagementStrategy))]
-                [RequireComponent(typeof(InventorySimpleSpatialManagementStrategy))]
+                [RequireComponent(typeof(Inventory1DIndexedSpatialManagementStrategy))]
                 [RequireComponent(typeof(InventoryManagementStrategyHolder))]
-                [RequireComponent(typeof(InventorySingleSimpleRenderingManagementStrategy))]
-                public class SingleSimpleInventory : MonoBehaviour
+                [RequireComponent(typeof(InventoryStandardRenderingManagementStrategy))]
+                public class StandardInventory : MonoBehaviour
                 {
                     private InventoryManagementStrategyHolder inventoryHolder;
 

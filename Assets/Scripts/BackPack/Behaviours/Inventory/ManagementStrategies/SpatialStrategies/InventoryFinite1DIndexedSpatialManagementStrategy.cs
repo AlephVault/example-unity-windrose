@@ -15,16 +15,16 @@ namespace BackPack
                     using ScriptableObjects.Inventory.Items.SpatialStrategies;
 
                     /// <summary>
-                    ///   Finite simple spatial management strategies have a limit on the elements that can be
+                    ///   Finite 1D indexed spatial management strategies have a limit on the elements that can be
                     ///     added (indexes).
                     /// </summary>
-                    public class InventoryFiniteSimpleSpatialManagementStrategy : InventorySimpleSpatialManagementStrategy
+                    public class InventoryFinite1DIndexedSpatialManagementStrategy : Inventory1DIndexedSpatialManagementStrategy
                     {
                         /// <summary>
                         ///   This spatial container checks bounds to disallow arbitrarily large
                         ///     containers.
                         /// </summary>
-                        public class SimpleFiniteSpatialContainer : SimpleSpatialContainer
+                        public class SimpleFiniteSpatialContainer : Container
                         {
                             public SimpleFiniteSpatialContainer(InventorySpatialManagementStrategy spatialStrategy, object position) : base(spatialStrategy, position)
                             {
@@ -35,7 +35,7 @@ namespace BackPack
                             /// </summary>
                             protected override bool ValidateStackPositionAgainstUpperBound(int index)
                             {
-                                return index < ((InventoryFiniteSimpleSpatialManagementStrategy)SpatialStrategy).Size;
+                                return index < ((InventoryFinite1DIndexedSpatialManagementStrategy)SpatialStrategy).Size;
                             }
                         }
 

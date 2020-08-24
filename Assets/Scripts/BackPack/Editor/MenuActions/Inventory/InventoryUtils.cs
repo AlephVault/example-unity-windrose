@@ -241,7 +241,7 @@ namespace BackPack
                     {
                         Image inventoryBackground = inventory.AddComponent<Image>();
                         RectTransform inventoryRectTransform = inventory.GetComponent<RectTransform>();
-                        inventory.AddComponent<BasicSingleSimpleInventoryView>();
+                        inventory.AddComponent<BasicStandardInventoryView>();
                         Vector2 v01 = new Vector2(0, 1);
                         inventoryRectTransform.localScale = Vector3.one;
                         inventoryRectTransform.anchorMin = v01;
@@ -258,14 +258,14 @@ namespace BackPack
                     {
                         Vector2 position = new Vector2(gapSize, 3 * gapSize + selectedItemLabelHeight + gridHeight);
                         Button button = MenuActionUtils.AddButton(inventory.GetComponent<RectTransform>(), position, new Vector2(buttonWidth, buttonHeight), "◀◀", "Prev", Color.black, prevPageButtonColor);
-                        button.gameObject.AddComponent<BasicSingleSimpleInventoryViewPrevButton>();
+                        button.gameObject.AddComponent<BasicStandardInventoryViewPrevButton>();
                     }
 
                     private void MakeNextButtonControl(GameObject inventory)
                     {
                         Vector2 position = new Vector2(3 * gapSize + buttonWidth + pageLabelWidth, 3 * gapSize + selectedItemLabelHeight + gridHeight);
                         Button button = MenuActionUtils.AddButton(inventory.GetComponent<RectTransform>(), position, new Vector2(buttonWidth, buttonHeight), "▶▶", "Next", Color.black, nextPageButtonColor);
-                        button.gameObject.AddComponent<BasicSingleSimpleInventoryViewNextButton>();
+                        button.gameObject.AddComponent<BasicStandardInventoryViewNextButton>();
                     }
 
                     private void MakePageLabelControl(GameObject inventory)
@@ -285,7 +285,7 @@ namespace BackPack
                         pageLabelText.fontSize = pageLabelFontSize;
                         pageLabelText.text = "(page) / (total)";
                         pageLabelText.color = Color.black;
-                        pageLabelControl.AddComponent<BasicSingleSimpleInventoryViewPageLabel>();
+                        pageLabelControl.AddComponent<BasicStandardInventoryViewPageLabel>();
                     }
 
                     private void MakeHeaderControls(GameObject inventory)
@@ -312,7 +312,7 @@ namespace BackPack
                         selectedItemLabelText.fontSize = selectedItemLabelFontSize;
                         selectedItemLabelText.text = "";
                         selectedItemLabelText.color = Color.black;
-                        selectedItemLabelControl.AddComponent<BasicSingleSimpleInventoryViewSelectedItemLabel>();
+                        selectedItemLabelControl.AddComponent<BasicStandardInventoryViewSelectedItemLabel>();
                     }
 
                     private GameObject MakeGridControl(GameObject inventory)
@@ -346,7 +346,7 @@ namespace BackPack
 						iconRectTransform.localPosition = Vector3.zero;
 						iconRectTransform.offsetMin = new Vector2(iconWidth, iconHeight) / -2;
 						iconRectTransform.offsetMax = new Vector2(iconWidth, iconHeight) / 2;
-						icon.AddComponent<BasicSingleSimpleInventoryViewItemIcon>();
+						icon.AddComponent<BasicStandardInventoryViewItemIcon>();
 					}
 
 					private void AddSelectionGlow(GameObject slot)
@@ -365,7 +365,7 @@ namespace BackPack
 						selectionGlowRectTransform.localPosition = Vector3.zero;
 						selectionGlowRectTransform.offsetMin = new Vector2(cellWidth, cellHeight) / -2;
 						selectionGlowRectTransform.offsetMax = new Vector2(cellWidth, cellHeight) / 2;
-						selectionGlow.AddComponent<BasicSingleSimpleInventoryViewItemSelectionGlow>();
+						selectionGlow.AddComponent<BasicStandardInventoryViewItemSelectionGlow>();
 					}
 
 					private void AddQuantityLabel(GameObject slot)
@@ -383,7 +383,7 @@ namespace BackPack
 						quantityRectTransform.offsetMax = new Vector2(labelWidth/2, labelHeight);
 						quantityRectTransform.localPosition = new Vector3(0.0f, labelBottomMargin, 0.0f);
 						quantityRectTransform.SetParent(slot.transform, false);
-						quantity.AddComponent<BasicSingleSimpleInventoryViewItemQuantityLabel>();
+						quantity.AddComponent<BasicStandardInventoryViewItemQuantityLabel>();
 					}
 
 					private void MakeSlotControl(GameObject parentGrid, int row, int column)
@@ -399,7 +399,7 @@ namespace BackPack
 						AddIcon(slot);
 						AddSelectionGlow(slot);
 						AddQuantityLabel(slot);
-						slot.AddComponent<BasicSingleSimpleInventoryViewItem>();
+						slot.AddComponent<BasicStandardInventoryViewItem>();
                     }
 
                     private void MakeBodyControls(GameObject inventory)

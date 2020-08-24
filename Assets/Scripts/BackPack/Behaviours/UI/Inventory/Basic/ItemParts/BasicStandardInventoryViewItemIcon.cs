@@ -15,11 +15,11 @@ namespace BackPack
 				namespace Basic
 				{
                     /// <summary>
-                    ///   This is a marker behaviour so the <see cref="BasicSingleSimpleInventoryViewItem" />
+                    ///   This is a marker behaviour so the <see cref="BasicStandardInventoryViewItem" />
                     ///     ancestor can identify the image to put the item's sprite into.
                     /// </summary>
 					[RequireComponent(typeof(Image))]
-					public class BasicSingleSimpleInventoryViewItemIcon : MonoBehaviour {
+					public class BasicStandardInventoryViewItemIcon : MonoBehaviour {
 						/**
 					     * This class is the icon of a SampleSimpleInventoryViewItemIton.
 					     */

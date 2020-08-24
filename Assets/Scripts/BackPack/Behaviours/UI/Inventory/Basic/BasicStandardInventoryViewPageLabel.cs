@@ -15,11 +15,11 @@ namespace BackPack
 				namespace Basic
 				{
                     /// <summary>
-                    ///   This is a marker behaviour so the <see cref="BasicSingleSimpleInventoryView" />
+                    ///   This is a marker behaviour so the <see cref="BasicStandardInventoryView" />
                     ///     ancestor can identify the label to put the current page.
                     /// </summary>
 					[RequireComponent(typeof(Text))]
-					public class BasicSingleSimpleInventoryViewPageLabel : MonoBehaviour {
+					public class BasicStandardInventoryViewPageLabel : MonoBehaviour {
 						/**
 					     * Updates the content of the paging into its text as "page / total-pages"
 					     */

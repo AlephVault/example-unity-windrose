@@ -15,11 +15,11 @@ namespace BackPack
 				namespace Basic
 				{
                     /// <summary>
-                    ///   This is a marker behaviour so the <see cref="BasicSingleSimpleInventoryView" />
+                    ///   This is a marker behaviour so the <see cref="BasicStandardInventoryView" />
                     ///     ancestor can identify the label to put the selected item's caption.
                     /// </summary>
 					[RequireComponent(typeof(Text))]
-					public class BasicSingleSimpleInventoryViewSelectedItemLabel : MonoBehaviour {
+					public class BasicStandardInventoryViewSelectedItemLabel : MonoBehaviour {
 						/**
 					     * Updates the content of the item into its text.
 					     */

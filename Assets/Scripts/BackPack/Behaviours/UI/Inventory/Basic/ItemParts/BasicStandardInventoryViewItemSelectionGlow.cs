@@ -14,11 +14,11 @@ namespace BackPack
 				namespace Basic
 				{
                     /// <summary>
-                    ///   This is a marker behaviour so the <see cref="BasicSingleSimpleInventoryViewItem" />
+                    ///   This is a marker behaviour so the <see cref="BasicStandardInventoryViewItem" />
                     ///     ancestor can identify the imagae to put the item's selection glow into (by
                     ///     activating/deactivating the owner gameObject of this component).
                     /// </summary>
-					public class BasicSingleSimpleInventoryViewItemSelectionGlow : MonoBehaviour {}
+					public class BasicStandardInventoryViewItemSelectionGlow : MonoBehaviour {}
 				}
 			}
 		}

@@ -22,7 +22,7 @@ namespace WindRose
                     /// <summary>
                     ///   This is a basic control for the SimpleBag component. It will have
                     ///     two involved parts: It will, to start, need a component of type
-                    ///     <see cref="BasicSingleSimpleInventoryView" />, and a reference
+                    ///     <see cref="BasicStandardInventoryView" />, and a reference
                     ///     to a <see cref="SimpleBag"/> component (which can be changed
                     ///     any time). On start, and/or when the reference is changed, the
                     ///     control's view will be connected to the start/new value of the
@@ -30,10 +30,10 @@ namespace WindRose
                     ///     that both objects belong to the same scope (e.g. local games)
                     ///     and also that these components will interact.
                     /// </summary>
-					[RequireComponent(typeof(BasicSingleSimpleInventoryView))]
+					[RequireComponent(typeof(BasicStandardInventoryView))]
 					public class BasicSimpleBagControl : MonoBehaviour {
 
-                        private BasicSingleSimpleInventoryView inventoryView;
+                        private BasicStandardInventoryView inventoryView;
 
                         /// <summary>
                         ///   The bag this control will be bound to on start.
@@ -43,7 +43,7 @@ namespace WindRose
 
                         private void Awake()
                         {
-                            inventoryView = GetComponent<BasicSingleSimpleInventoryView>();
+                            inventoryView = GetComponent<BasicStandardInventoryView>();
                         }
 
                         private void Start()

@@ -21,7 +21,7 @@ namespace BackPack
                 ///     happens in the sub-renderer and renderer in general).
                 /// </summary>
                 [RequireComponent(typeof(Image))]
-                public class SingleSimpleInventoryView : BaseStandardInventorySubRenderer
+                public class StandardInventoryView : BaseStandardInventorySubRenderer
                 {
                     /// <summary>
                     ///   An UI item that will know how to render and clear itself according to "simple" data.
@@ -33,7 +33,7 @@ namespace BackPack
                          * This class is the renderer of each item. Rendering an item like this
                          *   requires another Panel component (i.e. another image). This
                          *   element is contained -directly or not- inside in-scene-hierarchy
-                         *   a <see cref="SingleSimpleInventoryView"/> instance.
+                         *   a <see cref="StandardInventoryView"/> instance.
                          */
 
                         public abstract void Clear();

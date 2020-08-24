@@ -15,11 +15,11 @@ namespace BackPack
 				namespace Basic
 				{
                     /// <summary>
-                    ///   This is a marker behaviour so the <see cref="BasicSingleSimpleInventoryViewItem" />
+                    ///   This is a marker behaviour so the <see cref="BasicStandardInventoryViewItem" />
                     ///     ancestor can identify the label to put the item's quantity into.
                     /// </summary>
 					[RequireComponent(typeof(Text))]
-					public class BasicSingleSimpleInventoryViewItemQuantityLabel : MonoBehaviour {
+					public class BasicStandardInventoryViewItemQuantityLabel : MonoBehaviour {
 						/**
 					     * This class represents the quantity on its label.
 					     */

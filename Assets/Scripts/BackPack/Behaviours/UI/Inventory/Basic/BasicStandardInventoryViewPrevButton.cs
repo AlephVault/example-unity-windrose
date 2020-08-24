@@ -16,12 +16,12 @@ namespace BackPack
 				namespace Basic
 				{
                     /// <summary>
-                    ///   This is a marker behaviour so the <see cref="BasicSingleSimpleInventoryView" />
+                    ///   This is a marker behaviour so the <see cref="BasicStandardInventoryView" />
                     ///     ancestor can identify it and add the corresponding click event to move one
                     ///     page backward in the view.
                     /// </summary>
 					[RequireComponent(typeof(Button))]
-					public class BasicSingleSimpleInventoryViewPrevButton : MonoBehaviour {}
+					public class BasicStandardInventoryViewPrevButton : MonoBehaviour {}
 				}
 			}
 		}

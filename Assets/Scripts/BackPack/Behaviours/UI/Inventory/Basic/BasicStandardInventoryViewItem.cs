@@ -19,10 +19,10 @@ namespace BackPack
 				{
                     /// <summary>
                     ///   A single-simple inventory item that accounts for being selected, as well. Used in conjunction to
-                    ///     <see cref="BasicSingleSimpleInventoryView" />.
+                    ///     <see cref="BasicStandardInventoryView" />.
                     /// </summary>
 					[RequireComponent(typeof(Button))]
-					public class BasicSingleSimpleInventoryViewItem : SingleSimpleInventoryView.SingleSimpleInventoryViewItem {
+					public class BasicStandardInventoryViewItem : StandardInventoryView.SingleSimpleInventoryViewItem {
 						/**
 					     * This component will have three parts:
 					     * - The selection glow: It will become visible on SetSelection().
@@ -32,17 +32,17 @@ namespace BackPack
 					     * This component will be a button as well.
 					     */
 
-						private BasicSingleSimpleInventoryViewItemIcon iconHolder;
-						private BasicSingleSimpleInventoryViewItemSelectionGlow glow;
-						private BasicSingleSimpleInventoryViewItemQuantityLabel quantityLabel;
+						private BasicStandardInventoryViewItemIcon iconHolder;
+						private BasicStandardInventoryViewItemSelectionGlow glow;
+						private BasicStandardInventoryViewItemQuantityLabel quantityLabel;
 						private int? targetPosition;
 
 						void Awake()
 						{
-							quantityLabel = GetComponentInChildren<BasicSingleSimpleInventoryViewItemQuantityLabel>();
-							iconHolder = GetComponentInChildren<BasicSingleSimpleInventoryViewItemIcon>();
-							glow = GetComponentInChildren<BasicSingleSimpleInventoryViewItemSelectionGlow>();
-							BasicSingleSimpleInventoryView parent = Layout.RequireComponentInParent<BasicSingleSimpleInventoryView>(Layout.RequireComponentInParent<GridLayoutGroup>(this).gameObject);
+							quantityLabel = GetComponentInChildren<BasicStandardInventoryViewItemQuantityLabel>();
+							iconHolder = GetComponentInChildren<BasicStandardInventoryViewItemIcon>();
+							glow = GetComponentInChildren<BasicStandardInventoryViewItemSelectionGlow>();
+							BasicStandardInventoryView parent = Layout.RequireComponentInParent<BasicStandardInventoryView>(Layout.RequireComponentInParent<GridLayoutGroup>(this).gameObject);
 							GetComponent<Button>().onClick.AddListener(delegate ()
 								{
 									if (targetPosition != null)

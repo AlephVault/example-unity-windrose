@@ -25,7 +25,7 @@ namespace WindRose
 					/// </summary>
 					[RequireComponent(typeof(StandardInventory))]
 					[RequireComponent(typeof(MapObject))]
-					public class SimpleBag : MonoBehaviour
+					public class StandardBag : MonoBehaviour
 					{
 						// The map object this bag belongs to.
 						public MapObject MapObject { get; private set; }

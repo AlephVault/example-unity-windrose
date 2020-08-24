@@ -146,7 +146,7 @@ namespace WindRose
                             {
                                 MenuActionUtils.AddUndoableComponent<InventoryInfinite1DIndexedSpatialManagementStrategy>(gameObject);
                             }
-                            MenuActionUtils.AddUndoableComponent<Behaviours.Entities.Objects.Bags.SimpleBag>(gameObject);
+                            MenuActionUtils.AddUndoableComponent<Behaviours.Entities.Objects.Bags.StandardBag>(gameObject);
                             return holder;
                         });
                         Close();

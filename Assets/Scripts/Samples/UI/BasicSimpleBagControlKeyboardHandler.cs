@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 using GMM.Behaviours;
-using WindRose.Behaviours.UI.Inventory.SimpleBag;
+using WindRose.Behaviours.UI.Inventory.StandardBag;
 
 [RequireComponent(typeof(Throttler))]
-[RequireComponent(typeof(WindRose.Behaviours.UI.Inventory.SimpleBag.BasicSimpleBagControl))]
+[RequireComponent(typeof(WindRose.Behaviours.UI.Inventory.StandardBag.BasicStandardInventoryControl))]
 public class BasicSimpleBagControlKeyboardHandler : MonoBehaviour {
 
     [SerializeField]
@@ -14,12 +14,12 @@ public class BasicSimpleBagControlKeyboardHandler : MonoBehaviour {
 
     private Throttler throttler;
 
-    private WindRose.Behaviours.UI.Inventory.SimpleBag.BasicSimpleBagControl bagView;
+    private WindRose.Behaviours.UI.Inventory.StandardBag.BasicStandardInventoryControl bagView;
 
     void Awake()
     {
         throttler = GetComponent<Throttler>();
-        bagView = GetComponent<WindRose.Behaviours.UI.Inventory.SimpleBag.BasicSimpleBagControl>();
+        bagView = GetComponent<WindRose.Behaviours.UI.Inventory.StandardBag.BasicStandardInventoryControl>();
     }
 
     void Update()

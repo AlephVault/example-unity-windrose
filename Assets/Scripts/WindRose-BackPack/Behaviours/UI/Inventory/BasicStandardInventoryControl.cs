@@ -12,7 +12,7 @@ namespace WindRose
 		{
 			namespace Inventory
 			{
-				namespace SimpleBag
+				namespace StandardBag
 				{
 					using BackPack.Behaviours.UI.Inventory.Basic;
                     using BackPack.Behaviours.Inventory.Standard;
@@ -20,10 +20,10 @@ namespace WindRose
                     using Entities.Objects.Bags;
 
                     /// <summary>
-                    ///   This is a basic control for the SimpleBag component. It will have
+                    ///   This is a basic control for the StandardBag component. It will have
                     ///     two involved parts: It will, to start, need a component of type
                     ///     <see cref="BasicStandardInventoryView" />, and a reference
-                    ///     to a <see cref="SimpleBag"/> component (which can be changed
+                    ///     to a <see cref="StandardBag"/> component (which can be changed
                     ///     any time). On start, and/or when the reference is changed, the
                     ///     control's view will be connected to the start/new value of the
                     ///     bag's underlying invetory's rendering strategy. This implies
@@ -31,7 +31,7 @@ namespace WindRose
                     ///     and also that these components will interact.
                     /// </summary>
 					[RequireComponent(typeof(BasicStandardInventoryView))]
-					public class BasicSimpleBagControl : MonoBehaviour {
+					public class BasicStandardInventoryControl : MonoBehaviour {
 
                         private BasicStandardInventoryView inventoryView;
 
@@ -39,7 +39,7 @@ namespace WindRose
                         ///   The bag this control will be bound to on start.
                         /// </summary>
                         [SerializeField]
-                        private SimpleBag bag;
+                        private StandardBag bag;
 
                         private void Awake()
                         {
@@ -56,7 +56,7 @@ namespace WindRose
                         ///     the former bag will not be watched anymore by this control, and
                         ///     the new bag will start to be watched by this control.
                         /// </summary>
-                        public SimpleBag Bag
+                        public StandardBag Bag
                         {
                             get
                             {

@@ -32,16 +32,12 @@ namespace WindRose
                     /// </summary>
 					[RequireComponent(typeof(BasicSingleSimpleInventoryView))]
 					public class BasicSimpleBagControl : MonoBehaviour {
-                        /**
-						 * This is an implementation of SimpleInventoryView to be straight used
-						 *   by a WindRose-BackPack Bag object (this is an inventory existing as
-						 *   tied to an object, and thus living inside a map). Since it belongs
-						 *   to a map, it will be able to drop / grab items in / from the floor
-						 *   (drop layer) of the map.
-						 */
 
                         private BasicSingleSimpleInventoryView inventoryView;
 
+                        /// <summary>
+                        ///   The bag this control will be bound to on start.
+                        /// </summary>
                         [SerializeField]
                         private SimpleBag bag;
 
@@ -52,9 +48,25 @@ namespace WindRose
 
                         private void Start()
                         {
-                            if (bag)
+                            if (bag) bag.GetComponent<InventorySingleSimpleRenderingManagementStrategy>().AddSubRenderer(inventoryView);
+                        }
+
+                        /// <summary>
+                        ///   Sets or gets the current bag this control is bound to. On change,
+                        ///     the former bag will not be watched anymore by this control, and
+                        ///     the new bag will start to be watched by this control.
+                        /// </summary>
+                        public SimpleBag Bag
+                        {
+                            get
                             {
-                                bag.GetComponent<InventorySingleSimpleRenderingManagementStrategy>().AddSubRenderer(inventoryView);
+                                return bag;
+                            }
+                            set
+                            {
+                                if (bag) bag.GetComponent<InventorySingleSimpleRenderingManagementStrategy>().RemoveSubRenderer(inventoryView);
+                                bag = value;
+                                if (bag) bag.GetComponent<InventorySingleSimpleRenderingManagementStrategy>().AddSubRenderer(inventoryView);
                             }
                         }
 

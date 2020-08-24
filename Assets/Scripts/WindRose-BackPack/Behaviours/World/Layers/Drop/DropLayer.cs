@@ -17,7 +17,6 @@ namespace WindRose
                 {
                     using BackPack.Types.Inventory.Stacks;
                     using BackPack.Behaviours.Inventory;
-                    using BackPack.Behaviours.Inventory.ManagementStrategies.SpatialStrategies;
                     using GMM.Types;
                     using System.Linq;
                     using WindRose.Behaviours.World.Layers.Drop;
@@ -33,8 +32,6 @@ namespace WindRose
                     ///     Container IDs are <see cref="Vector2Int"/> instances.
                     ///   </para>
                     /// </summary>
-                    [RequireComponent(typeof(InventoryMapSizedPositioningManagementStrategy))]
-                    [RequireComponent(typeof(InventoryInfinite1DIndexedSpatialManagementStrategy))]
                     [RequireComponent(typeof(InventoryManagementStrategyHolder))]
                     [RequireComponent(typeof(InventoryDropLayerRenderingManagementStrategy))]
                     public class DropLayer : MapLayer

@@ -12,6 +12,7 @@ namespace WindRose
 		using BackPack.Behaviours.Inventory;
         using BackPack.ScriptableObjects.Inventory.Items;
         using BackPack.ScriptableObjects.Inventory.Items.RenderingStrategies;
+        using BackPack.Behaviours.Inventory.ManagementStrategies.SpatialStrategies;
         using BackPack.Behaviours.Inventory.ManagementStrategies.RenderingStrategies;
 
         namespace World
@@ -27,6 +28,8 @@ namespace WindRose
                     ///     <see cref="DropLayer"/>. It will do this by creating/refreshing/destroying a lot of
                     ///     <see cref="SimpleDropContainerRenderer"/> instances (one on each map's position).
                     /// </summary>
+                    [RequireComponent(typeof(InventoryMapSizedPositioningManagementStrategy))]
+                    [RequireComponent(typeof(InventoryInfinite1DIndexedSpatialManagementStrategy))]
                     public class InventoryDropLayerRenderingManagementStrategy : Inventory1DIndexedStaticRenderingManagementStrategy
                     {
                         private SimpleDropContainerRenderer[,] dropContainers;

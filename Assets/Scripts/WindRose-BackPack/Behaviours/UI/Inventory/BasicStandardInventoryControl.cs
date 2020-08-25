@@ -48,7 +48,7 @@ namespace WindRose
 
                         private void Start()
                         {
-                            if (bag) bag.GetComponent<InventoryStandardRenderingManagementStrategy>().AddSubRenderer(inventoryView);
+                            if (bag) bag.GetComponent<InventoryStandardRenderingManagementStrategy>().AddListener(inventoryView);
                         }
 
                         /// <summary>
@@ -64,9 +64,9 @@ namespace WindRose
                             }
                             set
                             {
-                                if (bag) bag.GetComponent<InventoryStandardRenderingManagementStrategy>().RemoveSubRenderer(inventoryView);
+                                if (bag) bag.GetComponent<InventoryStandardRenderingManagementStrategy>().RemoveListener(inventoryView);
                                 bag = value;
-                                if (bag) bag.GetComponent<InventoryStandardRenderingManagementStrategy>().AddSubRenderer(inventoryView);
+                                if (bag) bag.GetComponent<InventoryStandardRenderingManagementStrategy>().AddListener(inventoryView);
                             }
                         }
 

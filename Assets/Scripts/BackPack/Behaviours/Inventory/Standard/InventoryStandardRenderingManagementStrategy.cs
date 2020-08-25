@@ -21,15 +21,15 @@ namespace BackPack
                 /// <summary>
                 ///   This is a rendering strategy for <see cref="StandardInventory"/>
 				///     behaviours. This strategy will allow the connection of several
-				///     objects acting as "viewers" (<see cref="InventorySubRenderer"/>).
+				///     objects acting as "viewers" (<see cref="RenderingListener"/>).
                 /// </summary>
                 public class InventoryStandardRenderingManagementStrategy : Inventory1DIndexedStaticRenderingManagementStrategy
                 {
                     /// <summary>
-                    ///   Sub-renderers will refresh icon and text for the stack, and will account for
+                    ///   Listeners will refresh icon and text for the stack, and will account for
                     ///     a single container and an 1D-indexed intra-container positioning.
                     /// </summary>
-                    public interface InventorySubRenderer
+                    public interface RenderingListener
                     {
                         void Connected();
                         void UpdateStack(int stackPosition, Sprite icon, string caption, object quantity);
@@ -39,17 +39,17 @@ namespace BackPack
                     }
 
                     /// <summary>
-					///   Tells when trying to add a null <see cref="InventorySubRenderer"/>
-					///     when calling <see cref="AddSubRenderer(InventorySubRenderer)"/>.
+					///   Tells when trying to add a null <see cref="RenderingListener"/>
+					///     when calling <see cref="AddListener(RenderingListener)"/>.
                     /// </summary>
-                    public class InvalidSubRendererException : GMM.Types.Exception
+                    public class InvalidListenerException : GMM.Types.Exception
                     {
-                        public InvalidSubRendererException(string message) : base(message) { }
+                        public InvalidListenerException(string message) : base(message) { }
                     }
 
-                    // Effective set of the renderers to be used, either by preloading from the editor or by
-                    //   adding / removing sub-renderers.
-                    private HashSet<InventorySubRenderer> subRenderersSet = new HashSet<InventorySubRenderer>();
+                    // Effective set of the listeners to be used, either by preloading from the editor or by
+                    //   adding / removing listeners.
+                    private HashSet<RenderingListener> listenersSet = new HashSet<RenderingListener>();
 
                     /// <summary>
                     ///   The <see cref="StandardInventory"/> this strategy is linked to.
@@ -77,114 +77,114 @@ namespace BackPack
 
                     void OnDestroy()
                     {
-                        HashSet<InventorySubRenderer> cloned = new HashSet<InventorySubRenderer>(subRenderersSet);
-                        subRenderersSet.Clear();
-                        foreach (InventorySubRenderer subRenderer in cloned)
+                        HashSet<RenderingListener> cloned = new HashSet<RenderingListener>(listenersSet);
+                        listenersSet.Clear();
+                        foreach (RenderingListener listener in cloned)
                         {
-                            subRenderer.Disconnected();
+                            listener.Disconnected();
                         }
                     }
 
-                    // Clears and fully updates a given sub-renderer.
-                    private void FullUpdate(InventorySubRenderer subRenderer)
+                    // Clears and fully updates a given listener.
+                    private void FullUpdate(RenderingListener listener)
                     {
-                        subRenderer.Clear();
+                        listener.Clear();
                         IEnumerable<Tuple<int, Types.Inventory.Stacks.Stack>> pairs = SingleInventory.StackPairs();
                         foreach (Tuple<int, Types.Inventory.Stacks.Stack> pair in pairs)
                         {
                             Dictionary<string, object> target = new Dictionary<string, object>();
                             pair.Item2.MainRenderingStrategy.DumpRenderingData(target);
-                            subRenderer.UpdateStack(pair.Item1, (Sprite)target["icon"], (string)target["caption"], target["quantity"]);
+                            listener.UpdateStack(pair.Item1, (Sprite)target["icon"], (string)target["caption"], target["quantity"]);
                         }
                     }
 
                     /// <summary>
-                    ///   Adds a sub-renderer to this rendering management strategy. The sub-renderer will
-                    ///     refresh with this renderer's data accordingly, and will be synchronized until
-					///     it is removed by a call to <see cref="RemoveSubRenderer(SingleInventorySubRenderer)"/>.
+                    ///   Adds a listener to this rendering management strategy. The listener will
+                    ///     refresh with this listener's data accordingly, and will be synchronized until
+					///     it is removed by a call to <see cref="RemoveListener(RenderingListener)"/>.
                     /// </summary>
-					/// <param name="subRenderer">The <see cref="InventorySubRenderer"/> to add</param>
+					/// <param name="listener">The <see cref="RenderingListener"/> to add</param>
                     /// <returns>Whether it could be added, or it was already added</returns>
-                    public bool AddSubRenderer(InventorySubRenderer subRenderer)
+                    public bool AddListener(RenderingListener listener)
                     {
-                        if (subRenderer == null)
+                        if (listener == null)
                         {
-                            throw new InvalidSubRendererException("Sub-renderer to add cannot be null");
+                            throw new InvalidListenerException("Listener to add cannot be null");
                         }
 
-                        if (subRenderersSet.Contains(subRenderer))
+                        if (listenersSet.Contains(listener))
                         {
                             return false;
                         }
 
-                        subRenderersSet.Add(subRenderer);
-                        subRenderer.Connected();
-                        // We will force the sub-renderer to be cleared, and
-                        // also refresh each item. This, to decouple from the
-                        // inventory itself.
-                        FullUpdate(subRenderer);
+                        listenersSet.Add(listener);
+                        listener.Connected();
+                        // We will force the listener to be cleared, and
+                        // also refresh each item. This, to decouple from
+                        // the inventory itself.
+                        FullUpdate(listener);
                         return true;
                     }
 
                     /// <summary>
-                    ///   Removes a sub-renderer from this rendering management strategy. The sub-renderer will
+                    ///   Removes a listener from this rendering management strategy. The listener will
                     ///     be cleared and removed.
                     /// </summary>
-					/// <param name="subRenderer">The <see cref="SingleInventorySubRenderer"/> to remove</param>
+					/// <param name="listener">The <see cref="RenderingListener"/> to remove</param>
                     /// <returns>Whether it could be removed, or it wasn't connected here on first place</returns>
-                    public bool RemoveSubRenderer(InventorySubRenderer subRenderer)
+                    public bool RemoveListener(RenderingListener listener)
                     {
-                        if (!subRenderersSet.Contains(subRenderer))
+                        if (!listenersSet.Contains(listener))
                         {
                             return false;
                         }
 
-                        subRenderersSet.Remove(subRenderer);
-                        subRenderer.Disconnected();
+                        listenersSet.Remove(listener);
+                        listener.Disconnected();
                         return true;
                     }
 
                     /**************************************
-                     * Methods to delegate the rendering on the sub-renderers
+                     * Methods to delegate the rendering on the listener
                      **************************************/
 
                     /// <summary>
                     ///   This method is invoked by the related inventory management strategy holder
-                    ///     and will delegate everything in the underlying sub-renderers: clearing
+                    ///     and will delegate everything in the underlying : clearing
                     ///     its contents.
                     /// </summary>
                     public override void EverythingWasCleared()
                     {
-                        foreach(InventorySubRenderer subRenderer in subRenderersSet)
+                        foreach(RenderingListener listener in listenersSet)
                         {
-                            subRenderer.Clear();
+                            listener.Clear();
                         }
                     }
 
                     /// <summary>
                     ///   This method is invoked by the related inventory management strategy holder
-                    ///     and will delegate everything in the underlying sub-renderers: updating
+                    ///     and will delegate everything in the underlying listeners: updating
                     ///     a stack.
                     /// </summary>
                     protected override void StackWasUpdated(object containerPosition, int stackPosition, Item item, object quantity)
                     {
-                        foreach (InventorySubRenderer subRenderer in subRenderersSet)
+                        foreach (RenderingListener listener in listenersSet)
                         {
                             ItemIconTextRenderingStrategy strategy = item.GetRenderingStrategy<ItemIconTextRenderingStrategy>();
-                            subRenderer.UpdateStack(stackPosition, strategy.Icon, strategy.Caption, quantity);
+                            listener.UpdateStack(stackPosition, strategy.Icon, strategy.Caption, quantity);
                         }
                     }
 
                     /// <summary>
                     ///   This method is invoked by the related inventory management strategy holder
-                    ///     and will delegate everything in the underlying sub-renderers: removing
-                    ///     a stack.
+                    ///     and will delegate everything in the underlying listeners: removing a
+                    ///     stack.
                     /// </summary>
                     protected override void StackWasRemoved(object containerPosition, int stackPosition)
                     {
-                        foreach (InventorySubRenderer subRenderer in subRenderersSet)
+                        foreach (RenderingListener listener in listenersSet)
                         {
-                            subRenderer.RemoveStack(stackPosition);
+                            listener.RemoveStack(stackPosition);
                         }
                     }
                 }

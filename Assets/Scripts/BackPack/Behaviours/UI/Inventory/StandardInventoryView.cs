@@ -16,12 +16,12 @@ namespace BackPack
 				using Behaviours.Inventory.Standard;
 
                 /// <summary>
-                ///   Single views are a subclass of <see cref="BaseStandardInventorySubRenderer"/> that account for an
+                ///   Single views are a subclass of <see cref="BaseStandardRenderingListener"/> that account for an
                 ///     internal array of items being visible: such items will be cleared or set (according to what actually
-                ///     happens in the sub-renderer and renderer in general).
+                ///     happens in the listener and renderer in general).
                 /// </summary>
                 [RequireComponent(typeof(Image))]
-                public class StandardInventoryView : BaseStandardInventorySubRenderer
+                public class StandardInventoryView : BaseStandardRenderingListener
                 {
                     /// <summary>
                     ///   An UI item that will know how to render and clear itself according to "simple" data.
@@ -30,7 +30,7 @@ namespace BackPack
                     public abstract class SingleSimpleInventoryViewItem : MonoBehaviour
                     {
                         /**
-                         * This class is the renderer of each item. Rendering an item like this
+                         * This class is the listener of each item. Rendering an item like this
                          *   requires another Panel component (i.e. another image). This
                          *   element is contained -directly or not- inside in-scene-hierarchy
                          *   a <see cref="StandardInventoryView"/> instance.

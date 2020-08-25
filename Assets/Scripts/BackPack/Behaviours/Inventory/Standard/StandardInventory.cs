@@ -38,7 +38,7 @@ namespace BackPack
                     private InventoryManagementStrategyHolder inventoryHolder;
 
                     /**
-                     * Awake/Start pre-register the renderers (if they are set).
+                     * Awake/Start pre-register the listeners (if they are set).
                      */
 
                     void Awake()

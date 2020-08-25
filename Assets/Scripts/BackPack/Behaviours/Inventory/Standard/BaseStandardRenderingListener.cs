@@ -14,14 +14,14 @@ namespace BackPack
                 using System.Linq;
 
                 /// <summary>
-                ///   A sub-renderer is, basically, a view than can be connected
+                ///   A listaner is, basically, a view than can be connected
                 ///     to an <see cref="InventoryStandardRenderingManagementStrategy"/>.
                 ///   It is not just a way to render items, but also a way to
-                ///     interact with them by -e.g.- pagination: different sub
-                ///     renderers may show different pages, but they will render
+                ///     interact with them by -e.g.- pagination: different
+                ///     listeners may show different pages, but they will render
                 ///     the same underlying items.
                 /// </summary>
-                public abstract class BaseStandardInventorySubRenderer : MonoBehaviour, InventoryStandardRenderingManagementStrategy.InventorySubRenderer
+                public abstract class BaseStandardRenderingListener : MonoBehaviour, InventoryStandardRenderingManagementStrategy.RenderingListener
                 {
                     /// <summary>
                     ///   Contains the elements to render, in terms of its position
@@ -55,7 +55,7 @@ namespace BackPack
                     public uint Page { get; protected set; }
 
                     /// <summary>
-                    ///   Tells whether this sub-renderer applies pagination. This will happen
+                    ///   Tells whether this listener applies pagination. This will happen
                     ///     when <see cref="PageSize"/> is > 0.
                     /// </summary>
                     public bool Paginates { get { return PageSize > 0; } }
@@ -192,10 +192,10 @@ namespace BackPack
                     protected virtual void AfterRefresh() { }
 
                     /**
-                     * This callback tells what happens when this sub-renderer is connected to a management
+                     * This callback tells what happens when this listener is connected to a management
                      *   rendering strategy.
                      * 
-                     * You can override it but, if you do, ensure you call base.Connected(sbRenderer) somewhere.
+                     * You can override it but, if you do, ensure you call base.Connected(listener) somewhere.
                      */
 
                     /// <summary>
@@ -206,7 +206,7 @@ namespace BackPack
                     /// </summary>
                     public virtual void Connected()
                     {
-                        // After a renderer was connected, clean and refresh everything inside.
+                        // After a listener was connected, clean and refresh everything inside.
                         if (elements != null)
                         {
                             elements.Clear();

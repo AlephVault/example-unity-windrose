@@ -2766,6 +2766,7 @@ GameObject:
   - component: {fileID: 511731308}
   - component: {fileID: 511731317}
   - component: {fileID: 511731316}
+  - component: {fileID: 511731318}
   m_Layer: 0
   m_Name: DropLayer
   m_TagString: Untagged
@@ -2889,8 +2890,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b4e132055c6b8994d847201ae148c9ec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  containerPrefab: {fileID: 114194054388298026, guid: 5bb5ea9e828fb454cb1fde3f215aeb02,
-    type: 3}
 --- !u!114 &511731316
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2916,6 +2915,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lapse: 1
+--- !u!114 &511731318
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 511731306}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a07291d90aab8a74698caf1f9af2a4b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  containerPrefab: {fileID: 114194054388298026, guid: 5bb5ea9e828fb454cb1fde3f215aeb02,
+    type: 3}
 --- !u!1 &520040692
 GameObject:
   m_ObjectHideFlags: 0
@@ -12259,6 +12272,7 @@ GameObject:
   - component: {fileID: 1142018240}
   - component: {fileID: 1142018249}
   - component: {fileID: 1142018248}
+  - component: {fileID: 1142018250}
   m_Layer: 0
   m_Name: DropLayer
   m_TagString: Untagged
@@ -12382,8 +12396,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b4e132055c6b8994d847201ae148c9ec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  containerPrefab: {fileID: 114194054388298026, guid: 5bb5ea9e828fb454cb1fde3f215aeb02,
-    type: 3}
 --- !u!114 &1142018248
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12409,6 +12421,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lapse: 1
+--- !u!114 &1142018250
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1142018238}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a07291d90aab8a74698caf1f9af2a4b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  containerPrefab: {fileID: 114194054388298026, guid: 5bb5ea9e828fb454cb1fde3f215aeb02,
+    type: 3}
 --- !u!1001 &1158247216
 PrefabInstance:
   m_ObjectHideFlags: 0

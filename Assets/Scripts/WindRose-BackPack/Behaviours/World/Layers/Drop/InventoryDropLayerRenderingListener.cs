@@ -96,7 +96,6 @@ namespace WindRose
                             // Adds a stack to a container (creates the container if absent).
                             SimpleDropContainerRenderer container = getContainerFor(containerPosition, true);
                             ItemIconTextRenderingStrategy strategy = item.GetRenderingStrategy<ItemIconTextRenderingStrategy>();
-                            Debug.Log("UpdateStack on " + containerPosition + ", " + stackPosition);
                             container.RefreshWithPutting(stackPosition, strategy.Icon, strategy.Caption, quantity);
                         }
 
@@ -119,7 +118,6 @@ namespace WindRose
                             SimpleDropContainerRenderer container = getContainerFor(containerPosition, false);
                             if (container != null)
                             {
-                                Debug.Log("RemoveStack on " + containerPosition + ", " + stackPosition);
                                 container.RefreshWithRemoving(stackPosition);
                                 if (container.Empty())
                                 {
@@ -134,7 +132,6 @@ namespace WindRose
                         /// </summary>
                         public void Clear()
                         {
-                            Debug.Log("Clear");
                             // Destroys all the containers.
                             foreach (object position in positioningStrategy.Positions())
                             {

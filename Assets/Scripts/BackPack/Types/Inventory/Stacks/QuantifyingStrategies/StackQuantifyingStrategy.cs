@@ -90,18 +90,21 @@ namespace BackPack
                         /// <param name="quantity">The quantity to check</param>
                         /// <returns>Whether it is allowed or not</returns>
                         protected abstract bool IsAllowedQuantity(object quantity);
+
                         /// <summary>
                         ///   Zero-checks the quantity. Empty stacks are destroyed by the inventory.
                         /// </summary>
                         /// <param name="quantity">The quantity to check</param>
                         /// <returns>Whether is zero/empty</returns>
                         protected abstract bool IsEmptyQuantity(object quantity);
+
                         /// <summary>
                         ///   Full-checks the quanttiy.
                         /// </summary>
                         /// <param name="quantity">The quantity to check</param>
                         /// <returns>Whether is full</returns>
                         protected abstract bool IsFullQuantity(object quantity);
+
                         /// <summary>
                         ///   Performs addition of quantities. This is the arithmetical addition for
                         ///     the arbitrary type to be implemented.
@@ -111,6 +114,7 @@ namespace BackPack
                         /// <returns>The result after the addition</returns>
                         /// <remarks>No side effect occurs in this method</remarks>
                         protected abstract object QuantityAdd(object quantity, object delta);
+
                         /// <summary>
                         ///   Performs addition of quantities. This is the arithmetical subtraction for
                         ///     the arbitrary type to be implemented.
@@ -120,6 +124,7 @@ namespace BackPack
                         /// <returns>The result after the subtraction</returns>
                         /// <remarks>No side effect occurs on this method</remarks>
                         protected abstract object QuantitySub(object quantity, object delta);
+
                         /**
                          * Calculates the quantity that cannot be held by this object.
                          * It will be taken into account:

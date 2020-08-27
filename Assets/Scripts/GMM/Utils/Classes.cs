@@ -9,7 +9,8 @@ namespace GMM
     namespace Utils
     {
         /// <summary>
-        ///   This is an extension class with utility methods for types. Please refers to its members.
+        ///   This is an extension class with utility methods for types. Many different
+        ///     but class-related utility functions are defined in this class.
         /// </summary>
         public static class Classes
         {
@@ -27,12 +28,23 @@ namespace GMM
 
             /// <summary>
             ///   Enumerates all the types that are not generic and are
-            ///     defined in all the currently loaded assemblies.
+            ///     defined in all the currently loaded assemblies in
+            ///     the current application domain.
             /// </summary>
             /// <returns>An enumerator of all those types</returns>
             public static IEnumerable<Type> GetTypes()
             {
-                return from assembly in AppDomain.CurrentDomain.GetAssemblies()
+                return GetTypes(AppDomain.CurrentDomain.GetAssemblies());
+            }
+
+            /// <summary>
+            ///   Enumerates all the types that are not generic and are
+            ///     defined in the given assemblies.
+            /// </summary>
+            /// <returns>An enumerator of all those types</returns>
+            public static IEnumerable<Type> GetTypes(params Assembly[] assemblies)
+            {
+                return from assembly in assemblies
                        from collectedType in GetTypes(assembly)
                        select collectedType;
             }
@@ -51,10 +63,13 @@ namespace GMM
 
             private static IEnumerable<Type> CollectTypes(Type assemblyType)
             {
-                if (!assemblyType.IsGenericType) yield return assemblyType;
+                if (assemblyType.IsGenericType) yield break;
+
+                yield return assemblyType;
+
                 foreach (Type childType in assemblyType.GetNestedTypes())
                 {
-                    foreach(Type collectedType in CollectTypes(childType))
+                    foreach (Type collectedType in CollectTypes(childType))
                     {
                         yield return collectedType;
                     }

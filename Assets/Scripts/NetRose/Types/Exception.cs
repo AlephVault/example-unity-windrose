@@ -3,7 +3,7 @@
     namespace Types
     {
         /// <summary>
-        ///   A base exception class for the World singleton.
+        ///   A base exception class for all the NetRose package exceptions.
         /// </summary>
         public class Exception : GMM.Types.Exception
         {

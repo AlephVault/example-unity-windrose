@@ -161,7 +161,7 @@ namespace NetRose
                 /// </summary>
                 /// <param name="writer">The writer to write into</param>
                 /// <param name="quantity">The quantity to write</param>
-                public static void WriteQuantity(NetworkWriter writer, object quantity)
+                private static void WriteRawQuantity(NetworkWriter writer, object quantity)
                 {
                     // First, an attempt to build the registries will be used.
                     // If you don't want to have this call while writing a quantity
@@ -187,7 +187,7 @@ namespace NetRose
                 /// </summary>
                 /// <param name="reader">The reader to read from</param>
                 /// <returns>The read quantity, of the appropriate type</returns>
-                public static object ReadQuantity(NetworkReader reader)
+                private static object ReadRawQuantity(NetworkReader reader)
                 {
                     // First, an attempt to build the registries will be used.
                     // If you don't want to have this call while writing a quantity
@@ -203,6 +203,43 @@ namespace NetRose
                     {
                         return registered[typeByCode[index]].Item1(reader);
                     }
+                }
+
+                /// <summary>
+                ///   Wraps a quantity, to be able to serialize it using the
+                ///     registered functions.
+                /// </summary>
+                public class Quantity
+                {
+                    /// <summary>
+                    ///   The raw, underlying, quantity.
+                    /// </summary>
+                    public readonly object Raw;
+
+                    public Quantity(object raw)
+                    {
+                        Raw = raw;
+                    }
+                }
+
+                /// <summary>
+                ///   Writes a wrapped quantity on the network writer.
+                /// </summary>
+                /// <param name="writer">The network writer to write the quantity on</param>
+                /// <param name="quantity">The wrapped quantity to write</param>
+                public static void WriteQuantity(this NetworkWriter writer, Quantity quantity)
+                {
+                    WriteRawQuantity(writer, quantity.Raw);
+                }
+
+                /// <summary>
+                ///   Reads a wrapped quantity from the network reader.
+                /// </summary>
+                /// <param name="reader">The network reader to read from</param>
+                /// <returns>The read quantity from the network reader</returns>
+                public static Quantity ReadQuantity(this NetworkReader reader)
+                {
+                    return new Quantity(ReadRawQuantity(reader));
                 }
             }
         }

@@ -22,7 +22,7 @@ namespace BackPack
                     ///     <see cref="BasicStandardInventoryView" />.
                     /// </summary>
 					[RequireComponent(typeof(Button))]
-					public class BasicStandardInventoryViewItem : StandardInventoryView.SingleSimpleInventoryViewItem {
+					public class BasicStandardInventoryViewItem : StandardInventoryView.StandardInventoryViewItem {
 						/**
 					     * This component will have three parts:
 					     * - The selection glow: It will become visible on SetSelection().

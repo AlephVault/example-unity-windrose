@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace WindRose
 {
@@ -45,12 +48,30 @@ namespace WindRose
                             void Clear();
                         }
 
-                        private RenderingListener listener;
+                        /// <summary>
+                        ///   Just a container for <see cref="RenderingListener"/> interfaces. 
+                        /// </summary>
+                        [Serializable]
+                        public class RenderingListenerContainer : IUnifiedContainer<RenderingListener> {}
+
+                        /// <summary>
+                        ///   The listener chosen as the main one. It is the one that will receive
+                        ///     updates from the inventory. The listener must be a component in the
+                        ///     same object.
+                        /// </summary>
+                        [SerializeField]
+                        private RenderingListenerContainer mainListener;
 
                         protected override void Awake()
                         {
                             base.Awake();
-                            listener = GetComponent<RenderingListener>();
+                            Debug.LogWarning("Initial listener: " + mainListener.Result);
+                            if (mainListener.Result == null)
+                            {
+                                Debug.LogWarning("Picking the first available listener!");
+                                mainListener.Result = GetComponent<RenderingListener>();
+                            }
+                            // The component WILL be a MonoBehaviour, and with the same gameObject.
                         }
 
                         /// <summary>
@@ -69,7 +90,7 @@ namespace WindRose
                         protected override void StackWasUpdated(object containerPosition, int stackPosition, Item item, object quantity)
                         {
                             // Adds a stack to a container (creates the container if absent).
-                            listener.UpdateStack((Vector2Int)containerPosition, stackPosition, item, quantity);
+                            mainListener.Result.UpdateStack((Vector2Int)containerPosition, stackPosition, item, quantity);
                         }
 
                         /// <summary>
@@ -86,7 +107,7 @@ namespace WindRose
                         protected override void StackWasRemoved(object containerPosition, int stackPosition)
                         {
                             // Tells the listener to remove a stack from a container (if the container exists).
-                            listener.RemoveStack((Vector2Int)containerPosition, stackPosition);
+                            mainListener.Result.RemoveStack((Vector2Int)containerPosition, stackPosition);
                         }
 
                         /// <summary>
@@ -94,9 +115,43 @@ namespace WindRose
                         /// </summary>
                         public override void EverythingWasCleared()
                         {
-                            listener.Clear();
+                            mainListener.Result.Clear();
                         }
                     }
+
+#if UNITY_EDITOR
+                    [CustomEditor(typeof(InventoryDropLayerRenderingManagementStrategy))]
+                    [CanEditMultipleObjects]
+                    public class InventoryDropLayerRenderingManagementStrategyEditor : Editor
+                    {
+                        SerializedProperty mainListener;
+                        SerializedProperty mainListenerObject;
+                        SerializedProperty mainListenerType;
+
+                        protected virtual void OnEnable()
+                        {
+                            mainListener = serializedObject.FindProperty("mainListener");
+                            mainListenerObject = mainListener.FindPropertyRelative("ObjectField");
+                            mainListenerType = mainListener.FindPropertyRelative("ResultType");
+                        }
+
+                        public override void OnInspectorGUI()
+                        {
+                            serializedObject.Update();
+
+                            InventoryDropLayerRenderingManagementStrategy underlyingObject = (serializedObject.targetObject as InventoryDropLayerRenderingManagementStrategy);
+                            MonoBehaviour[] listeners = (from listener in underlyingObject.GetComponents<InventoryDropLayerRenderingManagementStrategy.RenderingListener>() select (MonoBehaviour)listener).ToArray();
+                            GUIContent[] listenerNames = (from listener in listeners select new GUIContent(listener.GetType().Name)).ToArray();
+
+                            int index = ArrayUtility.IndexOf(listeners, mainListenerObject.objectReferenceValue as MonoBehaviour);
+                            index = EditorGUILayout.Popup(new GUIContent("Main Listener"), index, listenerNames);
+                            mainListenerObject.objectReferenceValue = index >= 0 ? (listeners[index]) : null;
+                            mainListenerType.stringValue = index >= 0 ? IUnifiedContainerBase.IUnifiedContainerBase.ConstructResolvedName(listeners[index].GetType()) : "";
+
+                            serializedObject.ApplyModifiedProperties();
+                        }
+                    }
+#endif
                 }
             }
         }

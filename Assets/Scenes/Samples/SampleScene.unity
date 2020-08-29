@@ -2890,6 +2890,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b4e132055c6b8994d847201ae148c9ec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mainListener:
+    ObjectField: {fileID: 511731318}
+    ResultType: InventoryDropLayerRenderingListener
 --- !u!114 &511731316
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12396,6 +12399,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b4e132055c6b8994d847201ae148c9ec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mainListener:
+    ObjectField: {fileID: 1142018250}
+    ResultType: InventoryDropLayerRenderingListener
 --- !u!114 &1142018248
 MonoBehaviour:
   m_ObjectHideFlags: 0

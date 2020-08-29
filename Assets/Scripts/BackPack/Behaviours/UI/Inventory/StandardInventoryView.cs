@@ -27,7 +27,7 @@ namespace BackPack
                     ///   An UI item that will know how to render and clear itself according to "simple" data.
                     /// </summary>
                     [RequireComponent(typeof(Image))]
-                    public abstract class SingleSimpleInventoryViewItem : MonoBehaviour
+                    public abstract class StandardInventoryViewItem : MonoBehaviour
                     {
                         /**
                          * This class is the listener of each item. Rendering an item like this
@@ -49,7 +49,7 @@ namespace BackPack
                         public NoSingleInventoryViewItemException(string message) : base(message) {}
                     }
 
-					protected SingleSimpleInventoryViewItem[] items;
+					protected StandardInventoryViewItem[] items;
 
                     protected virtual void Awake()
                     {
@@ -57,7 +57,7 @@ namespace BackPack
                          * Get the slots from the children elements. Require at least one children.
                          */
 
-						items = GetComponentsInChildren<SingleSimpleInventoryViewItem>();
+						items = GetComponentsInChildren<StandardInventoryViewItem>();
                         PageSize = (uint)items.Length;
                         if (PageSize == 0)
                         {
@@ -71,7 +71,7 @@ namespace BackPack
                     /// </summary>
                     public override void Clear()
                     {
-						foreach(SingleSimpleInventoryViewItem item in items)
+						foreach(StandardInventoryViewItem item in items)
                         {
                             item.Clear();
                         }

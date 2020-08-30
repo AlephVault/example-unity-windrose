@@ -35,7 +35,7 @@ namespace NetRose
                 ///       element to actually sync the data.
                 ///   </para>
                 /// </summary>
-                class NetworkedStandardInventoryView : NetworkBehaviour, InventoryStandardRenderingManagementStrategy.RenderingListener
+                public class NetworkedStandardInventoryView : NetworkBehaviour, InventoryStandardRenderingManagementStrategy.RenderingListener
                 {
                     /// <summary>
                     ///   Holds the data in the stack to pass it via network,

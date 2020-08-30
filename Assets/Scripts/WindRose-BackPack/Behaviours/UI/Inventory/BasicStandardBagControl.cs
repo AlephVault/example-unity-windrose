@@ -30,44 +30,18 @@ namespace WindRose
                     ///     that both objects belong to the same scope (e.g. local games)
                     ///     and also that these components will interact.
                     /// </summary>
-					[RequireComponent(typeof(BasicStandardInventoryView))]
-					public class BasicStandardBagControl : MonoBehaviour {
-
+                    [RequireComponent(typeof(BasicStandardInventoryLink))]
+					public class BasicStandardBagControl : MonoBehaviour
+                    {
+                        // The view component to perform the link.
                         private BasicStandardInventoryView inventoryView;
-
-                        /// <summary>
-                        ///   The bag this control will be bound to on start.
-                        /// </summary>
-                        [SerializeField]
-                        private StandardBag bag;
+                        // The link component
+                        private BasicStandardInventoryLink inventoryLink;
 
                         private void Awake()
                         {
                             inventoryView = GetComponent<BasicStandardInventoryView>();
-                        }
-
-                        private void Start()
-                        {
-                            if (bag) bag.GetComponent<InventoryStandardRenderingManagementStrategy>().Broadcaster.AddListener(inventoryView);
-                        }
-
-                        /// <summary>
-                        ///   Sets or gets the current bag this control is bound to. On change,
-                        ///     the former bag will not be watched anymore by this control, and
-                        ///     the new bag will start to be watched by this control.
-                        /// </summary>
-                        public StandardBag Bag
-                        {
-                            get
-                            {
-                                return bag;
-                            }
-                            set
-                            {
-                                if (bag) bag.GetComponent<InventoryStandardRenderingManagementStrategy>().Broadcaster.RemoveListener(inventoryView);
-                                bag = value;
-                                if (bag) bag.GetComponent<InventoryStandardRenderingManagementStrategy>().Broadcaster.AddListener(inventoryView);
-                            }
+                            inventoryLink = GetComponent<BasicStandardInventoryLink>();
                         }
 
                         /// <summary>
@@ -75,10 +49,14 @@ namespace WindRose
                         ///     underlying <see cref="World.Layers.Drop.DropLayer"/> will get
                         ///     such dropped item, if the drop layer is in use. It will also
                         ///     refresh the related view to clear the selection, but because
-                        ///     of the drop.
+                        ///     of the drop. This method does nothing if the inventory is not
+                        ///     a bag.
                         /// </summary>
                         public void DropSelected()
 						{
+                            StandardBag bag = inventoryLink.Inventory.GetComponent<StandardBag>();
+                            if (!bag) return;
+
 							if (inventoryView.SelectedPosition != null)
 							{
 								int position = inventoryView.SelectedPosition.Value;
@@ -91,11 +69,15 @@ namespace WindRose
                         /// <summary>
                         ///   Picks an item from the ground, if the map has a layer of type
                         ///     <see cref="World.Layers.Drop.DropLayer"/>. The just-picked
-                        ///     item will be the selected one in the view.
+                        ///     item will be the selected one in the view. This method does
+                        ///     nothing if the inventory is not a bag.
                         /// </summary>
 						public void Pick()
 						{
-							int? finalPosition;
+                            StandardBag bag = inventoryLink.Inventory.GetComponent<StandardBag>();
+                            if (!bag) return;
+
+                            int? finalPosition;
 							bag.Pick(out finalPosition);
 							if (finalPosition != null && inventoryView.SelectedPosition == null)
 							{
@@ -112,7 +94,7 @@ namespace WindRose
                         {
                             get
                             {
-                                return (inventoryView.SelectedPosition != null) ? bag.Inventory.Find(inventoryView.SelectedPosition.Value) : null;
+                                return (inventoryView.SelectedPosition != null) ? inventoryLink.Inventory.Find(inventoryView.SelectedPosition.Value) : null;
                             }
                         }
                     }

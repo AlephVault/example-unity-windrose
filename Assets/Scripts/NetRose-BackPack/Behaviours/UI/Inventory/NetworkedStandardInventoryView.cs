@@ -19,6 +19,7 @@ namespace NetRose
                 using BackPack.ScriptableObjects.Inventory.Items;
                 using BackPack.Behaviours.UI.Inventory;
                 using ScriptableObjects.Inventory.Items;
+                using BackPack.Types.Inventory.Standard;
 
                 /// <summary>
                 ///   <para>
@@ -31,11 +32,12 @@ namespace NetRose
                 ///       sending stuff via networking. On client, it cares about
                 ///       attending synchronization callbacks (in the inventory
                 ///       data) and linking the synchronization operations with
-                ///       calls to a newly related <see cref="StandardInventoryView"/>
-                ///       element to actually sync the data.
+                ///       broadcasts to all the related client-side listeners, to
+                ///       decouple this server-side object from the client-side UI
+                ///       objects.
                 ///   </para>
                 /// </summary>
-                public class NetworkedStandardInventoryView : NetworkBehaviour, InventoryStandardRenderingManagementStrategy.RenderingListener
+                public class NetworkedStandardInventoryView : NetworkBehaviour, RenderingListener
                 {
                     /// <summary>
                     ///   Holds the data in the stack to pass it via network,
@@ -56,6 +58,10 @@ namespace NetRose
                         public StackData() { }
                     }
 
+                    // The rendering broadcaster for this listener, to forward the
+                    //   updates right to the UI, client-side, listeners.
+                    public RenderingBroadcaster Broadcaster { get; private set; }
+
                     /// <summary>
                     ///   This class keeps a track of the whole data to be
                     ///     synchronized via network related to the inventory
@@ -67,9 +73,6 @@ namespace NetRose
                     // The inventory to synchronize.
                     private SyncStandardInventory inventory = new SyncStandardInventory();
 
-                    // On the client side, the target of the syncronization.
-                    private StandardInventoryView clientTarget;
-
                     private void Awake()
                     {
                         // This behaviour must only synchronize on Owner.
@@ -78,11 +81,17 @@ namespace NetRose
                         // and the target view must also be recognized.
                         if (isClient)
                         {
-                            clientTarget = GetComponent<StandardInventoryView>();
-                            if (clientTarget)
-                            {
-                                inventory.Callback += Inventory_Callback;
-                            }
+                            inventory.Callback += Inventory_Callback;
+                            Broadcaster = new RenderingBroadcaster(FullStart);
+                        }
+                    }
+
+                    private void FullStart(RenderingListener listener)
+                    {
+                        listener.Clear();
+                        foreach (KeyValuePair<int, StackData> pair in inventory)
+                        {
+                            listener.UpdateStack(pair.Key, pair.Value.Item, pair.Value.Quantity);
                         }
                     }
 
@@ -91,14 +100,14 @@ namespace NetRose
                         switch(op)
                         {
                             case SyncIDictionary<int, StackData>.Operation.OP_CLEAR:
-                                clientTarget.Clear();
+                                Broadcaster.Clear();
                                 break;
                             case SyncIDictionary<int, StackData>.Operation.OP_ADD:
                             case SyncIDictionary<int, StackData>.Operation.OP_SET:
-                                clientTarget.UpdateStack(key, item.Item, item.Quantity.Raw);
+                                Broadcaster.Update(key, item.Item, item.Quantity.Raw);
                                 break;
                             case SyncIDictionary<int, StackData>.Operation.OP_REMOVE:
-                                clientTarget.RemoveStack(key);
+                                Broadcaster.Remove(key);
                                 break;
                         }
                     }

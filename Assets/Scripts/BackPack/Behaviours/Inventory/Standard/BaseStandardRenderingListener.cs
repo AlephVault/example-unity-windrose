@@ -13,6 +13,7 @@ namespace BackPack
                 using ScriptableObjects.Inventory.Items;
                 using System.Collections.Generic;
                 using System.Linq;
+                using Types.Inventory.Standard;
 
                 /// <summary>
                 ///   A listaner is, basically, a view than can be connected
@@ -22,7 +23,7 @@ namespace BackPack
                 ///     listeners may show different pages, but they will render
                 ///     the same underlying items.
                 /// </summary>
-                public abstract class BaseStandardRenderingListener : MonoBehaviour, InventoryStandardRenderingManagementStrategy.RenderingListener
+                public abstract class BaseStandardRenderingListener : MonoBehaviour, RenderingListener
                 {
                     /// <summary>
                     ///   Contains the elements to render, in terms of its position

@@ -1,8 +1,7 @@
 ﻿using UnityEngine;
-using BackPack.Behaviours.UI.Inventory.Basic;
 using BackPack.Behaviours.Inventory.Standard;
 
-namespace WindRose
+namespace NetRose
 {
     namespace Behaviours
     {
@@ -15,13 +14,16 @@ namespace WindRose
                 ///     exposed property to select the inventory. Once
                 ///     selected, the view will also be linked to it.
                 ///     Also, on component startup, if an inventory is
-                ///     selected, it will also link the view to it.
+                ///     selected, it will also link the view to it. This
+                ///     method is the networked counterpart of the
+                ///     Basic Standard Inventory View in the BackPack
+                ///     integration to WindRose.
                 /// </summary>
-                [RequireComponent(typeof(BasicStandardInventoryView))]
-                public class BasicStandardInventoryLink : MonoBehaviour
+                [RequireComponent(typeof(NetworkedStandardInventoryView))]
+                public class NetworkedStandardInventoryLink : MonoBehaviour
                 {
                     // The view component to perform the link.
-                    private BasicStandardInventoryView inventoryView;
+                    private NetworkedStandardInventoryView inventoryView;
 
                     /// <summary>
                     ///   The inventory this control will be bound to on start.
@@ -31,7 +33,7 @@ namespace WindRose
 
                     private void Awake()
                     {
-                        inventoryView = GetComponent<BasicStandardInventoryView>();
+                        inventoryView = GetComponent<NetworkedStandardInventoryView>();
                     }
 
                     private void Start()

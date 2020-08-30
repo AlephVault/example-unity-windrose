@@ -37,10 +37,6 @@ namespace WindRose
                         protected void Awake()
                         {
                             positioningStrategy = GetComponent<InventoryMapSizedPositioningManagementStrategy>();
-                        }
-
-                        private void Start()
-                        {
                             try
                             {
                                 Map map = GetComponent<DropLayer>().Map;

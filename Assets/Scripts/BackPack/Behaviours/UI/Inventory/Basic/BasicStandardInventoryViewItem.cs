@@ -4,8 +4,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using BackPack.Behaviours.UI.Inventory;
-
 
 namespace BackPack
 {
@@ -17,11 +15,15 @@ namespace BackPack
 			{
 				namespace Basic
 				{
+                    using Behaviours.Inventory.ManagementStrategies.RenderingStrategies;
+                    using ScriptableObjects.Inventory.Items;
+                    using ScriptableObjects.Inventory.Items.RenderingStrategies;
+
                     /// <summary>
                     ///   A single-simple inventory item that accounts for being selected, as well. Used in conjunction to
                     ///     <see cref="BasicStandardInventoryView" />.
                     /// </summary>
-					[RequireComponent(typeof(Button))]
+                    [RequireComponent(typeof(Button))]
 					public class BasicStandardInventoryViewItem : StandardInventoryView.StandardInventoryViewItem {
 						/**
 					     * This component will have three parts:
@@ -65,11 +67,12 @@ namespace BackPack
 							quantityLabel.SetQuantity(null);
 						}
 
-						public override void Set(int position, Sprite icon, string caption, object quantity)
+						public override void Set(int position, Item item, object quantity)
 						{
 							// Caption will be ignored in this example.        
 							targetPosition = position;
-							iconHolder.SetIcon(icon);
+                            ItemIconTextRenderingStrategy strategy = (ItemIconTextRenderingStrategy)item.MainRenderingStrategy;
+                            iconHolder.SetIcon(strategy.Icon);
 							quantityLabel.SetQuantity(quantity);
 						}
 

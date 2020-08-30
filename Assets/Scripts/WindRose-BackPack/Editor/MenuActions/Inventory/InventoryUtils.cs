@@ -87,7 +87,6 @@ namespace WindRose
                     {
                         newAssetPath = Path.GetDirectoryName(newAssetPath);
                     }
-                    Debug.Log("Using path: " + newAssetPath);
                     window.prefabPath = newAssetPath;
                     window.ShowUtility();
                 }

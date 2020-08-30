@@ -65,7 +65,6 @@ namespace WindRose
                         protected override void Awake()
                         {
                             base.Awake();
-                            Debug.LogWarning("Initial listener: " + mainListener.Result);
                             if (mainListener.Result == null)
                             {
                                 Debug.LogWarning("Picking the first available listener!");

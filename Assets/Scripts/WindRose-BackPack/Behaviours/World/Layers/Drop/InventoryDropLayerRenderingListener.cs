@@ -48,7 +48,7 @@ namespace WindRose
                             }
                             catch (NullReferenceException)
                             {
-                                Debug.Log("This rendering listener must be bound to an object being also a DropLayer");
+                                Debug.LogError("This rendering listener must be bound to an object being also a DropLayer");
                                 Destroy(gameObject);
                             }
                         }

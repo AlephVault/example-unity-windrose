@@ -90,8 +90,6 @@ namespace BackPack
                             longLabelStyle
 						);
 
-                        Debug.LogFormat("Size: {0}, Position: {1}", position.size, position.position);
-
                         EditorGUILayout.Space();
 
                         /// General Section Styles

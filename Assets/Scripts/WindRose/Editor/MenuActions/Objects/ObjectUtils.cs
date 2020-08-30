@@ -144,7 +144,6 @@ namespace WindRose
                                 mainStrategy = Layout.AddComponent<Behaviours.Entities.Objects.Strategies.Base.LayoutObjectStrategy>(gameObject);
                                 break;
                             default:
-                                Debug.LogWarning("An object is being just created with no main strategy. This object will be destroyed on play if no main strategy is set.");
                                 break;
                         }
                         Behaviours.Entities.Objects.ObjectStrategyHolder currentHolder = gameObject.GetComponent<Behaviours.Entities.Objects.ObjectStrategyHolder>();

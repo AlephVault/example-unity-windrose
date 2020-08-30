@@ -10,6 +10,7 @@ namespace BackPack
             namespace Standard
             {
                 using GMM.Utils;
+                using ScriptableObjects.Inventory.Items;
                 using System.Collections.Generic;
                 using System.Linq;
 
@@ -25,9 +26,9 @@ namespace BackPack
                 {
                     /// <summary>
                     ///   Contains the elements to render, in terms of its position
-                    ///     and the simple data fields: icon, caption, and quantity.
+                    ///     and the simple data fields: item and quantity.
                     /// </summary>
-                    protected SortedDictionary<int, Tuple<Sprite, string, object>> elements;
+                    protected SortedDictionary<int, Tuple<Item, object>> elements;
 
                     /**
                      * Paging will imply two properties: PageSize and Page. Both properties
@@ -128,13 +129,13 @@ namespace BackPack
                         if (PageSize == 0)
                         {
                             Clear();
-                            foreach (KeyValuePair<int, Tuple<Sprite, string, object>> pair in elements)
+                            foreach (KeyValuePair<int, Tuple<Item, object>> pair in elements)
                             {
                                 /**
                                  * In these listings, position will match the slot because you are
                                  *   rendering everything (so the match will be automatic here).
                                  */
-                                SetStack(pair.Key, pair.Key, pair.Value.Item1, pair.Value.Item2, pair.Value.Item3);
+                                SetStack(pair.Key, pair.Key, pair.Value.Item1, pair.Value.Item2);
                             }
                         }
                         else
@@ -148,10 +149,10 @@ namespace BackPack
                                  *   slot to offset.
                                  */
                                 int position = (int)(slot + offset);
-                                Tuple<Sprite, string, object> element;
+                                Tuple<Item, object> element;
                                 if (elements.TryGetValue(position, out element))
                                 {
-                                    SetStack(slot, position, element.Item1, element.Item2, element.Item3);
+                                    SetStack(slot, position, element.Item1, element.Item2);
                                 }
                                 else
                                 {
@@ -174,10 +175,9 @@ namespace BackPack
                     /// </summary>
                     /// <param name="slot">The slot to render into. It will be constrained by <see cref="PageSize"/></param>
                     /// <param name="position">The source position</param>
-                    /// <param name="icon">The stack's icon</param>
-                    /// <param name="caption">The stack's caption</param>
+                    /// <param name="item">The stack's item</param>
                     /// <param name="quantity">The stackc's quantity</param>
-                    protected abstract void SetStack(int slot, int position, Sprite icon, string caption, object quantity);
+                    protected abstract void SetStack(int slot, int position, Item item, object quantity);
 
                     /// <summary>
                     ///   Clears a particular slot. No stack will be rendered there.
@@ -213,7 +213,7 @@ namespace BackPack
                         }
                         else
                         {
-                            elements = new SortedDictionary<int, Tuple<Sprite, string, object>>();
+                            elements = new SortedDictionary<int, Tuple<Item, object>>();
                         }
                     }
 
@@ -262,20 +262,19 @@ namespace BackPack
                     /// <summary>
                     ///   Updates a single stack position. Intended to be called by the rendering 
                     ///     management strategy, this method will account only for visible items.
-                    ///     See <see cref="SetStack(int, int, Sprite, string, object)"/> for more
+                    ///     See <see cref="SetStack(int, int, Item, object)"/> for more
                     ///     details.
                     /// </summary>
                     /// <param name="position">The position to update its data</param>
-                    /// <param name="icon">The stack's icon</param>
-                    /// <param name="caption">The stack's caption</param>
+                    /// <param name="icon">The stack's item</param>
                     /// <param name="quantity">The stack's quantity</param>
-                    public void UpdateStack(int position, Sprite icon, string caption, object quantity)
+                    public void UpdateStack(int position, Item item, object quantity)
                     {
-                        elements[position] = new Tuple<Sprite, string, object>(icon, caption, quantity);
+                        elements[position] = new Tuple<Item, object>(item, quantity);
                         int slot = SlotFor(position);
                         if (slot != -1)
                         {
-                            SetStack(slot, position, icon, caption, quantity);
+                            SetStack(slot, position, item, quantity);
                             AfterRefresh();
                         }
                     }

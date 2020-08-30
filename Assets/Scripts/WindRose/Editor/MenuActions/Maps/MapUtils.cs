@@ -157,7 +157,6 @@ namespace WindRose
                                 mainStrategy = Layout.AddComponent<Behaviours.World.Layers.Objects.ObjectsManagementStrategies.Base.LayoutObjectsManagementStrategy>(objectsLayer);
                                 break;
                             default:
-                                Debug.LogWarning("A map is being just created with no main strategy. This map will be destroyed on play if no main strategy is set.");
                                 break;
                         }
                         Behaviours.World.Layers.Objects.ObjectsManagementStrategyHolder currentHolder = objectsLayer.AddComponent<Behaviours.World.Layers.Objects.ObjectsManagementStrategyHolder>();

@@ -8,7 +8,7 @@ using System.Collections.Generic;
 
 namespace NetRose
 {
-    namespace Core
+    namespace Types
     {
         namespace Inventory
         {

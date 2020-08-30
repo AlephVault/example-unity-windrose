@@ -14,6 +14,7 @@ namespace BackPack
             namespace Inventory
             {
 				using Behaviours.Inventory.Standard;
+                using ScriptableObjects.Inventory.Items;
 
                 /// <summary>
                 ///   Single views are a subclass of <see cref="BaseStandardRenderingListener"/> that account for an
@@ -37,7 +38,7 @@ namespace BackPack
                          */
 
                         public abstract void Clear();
-                        public abstract void Set(int position, Sprite icon, string caption, object quantity);
+                        public abstract void Set(int position, Item item, object quantity);
                     }
 
                     /// <summary>
@@ -89,9 +90,9 @@ namespace BackPack
                     /// <summary>
                     ///   Delegates the behaviour in the <see cref="SingleInventoryViewItem"/> in the given slot by calling <see cref="SingleInventoryViewItem.Set(int, Sprite, string, object)"/>.
                     /// </summary>
-                    protected override void SetStack(int slot, int position, Sprite icon, string caption, object quantity)
+                    protected override void SetStack(int slot, int position, Item item, object quantity)
                     {
-                        items[slot].Set(position, icon, caption, quantity);
+                        items[slot].Set(position, item, quantity);
                     }
 
                     // Remember: AfterRefresh() is a method that can be overriden.

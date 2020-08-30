@@ -6,7 +6,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using BackPack.Behaviours.UI.Inventory;
-
+using BackPack.ScriptableObjects.Inventory.Items;
+using BackPack.ScriptableObjects.Inventory.Items.RenderingStrategies;
 
 namespace BackPack
 {
@@ -68,7 +69,7 @@ namespace BackPack
                         /// <param name="position">The position to change the selection to</param>
                         public void Select(int position)
 						{
-                            Tuple<Sprite, string, object> element;
+                            Tuple<Item, object> element;
                             if (elements.TryGetValue(position, out element))
 							{
 								if (position == SelectedPosition) return;
@@ -102,11 +103,12 @@ namespace BackPack
 						protected override void AfterRefresh()
 						{
 							pageLabel.SetPaginationLabel(Page, MaxPage());
-							selectedItemLabel.SetCaption(SelectedPosition != null ? elements[SelectedPosition.Value].Item2 : "");
 							// display the selection square over the appropriate slot, if the page is matched.
 							if (SelectedPosition != null)
 							{
-								int slot = SlotFor(SelectedPosition.Value);
+                                ItemIconTextRenderingStrategy strategy = (ItemIconTextRenderingStrategy)(elements[SelectedPosition.Value].Item1.MainRenderingStrategy);
+                                selectedItemLabel.SetCaption(SelectedPosition != null ? strategy.Caption : "");
+                                int slot = SlotFor(SelectedPosition.Value);
 								for(int iSlot = 0; iSlot < items.Length; iSlot++)
 								{
 									((BasicStandardInventoryViewItem)items[iSlot]).SetSelection(iSlot == slot);

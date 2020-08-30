@@ -32,7 +32,7 @@ namespace BackPack
                     public interface RenderingListener
                     {
                         void Connected();
-                        void UpdateStack(int stackPosition, Sprite icon, string caption, object quantity);
+                        void UpdateStack(int stackPosition, Item item, object quantity);
                         void RemoveStack(int position);
                         void Clear();
                         void Disconnected();
@@ -92,9 +92,7 @@ namespace BackPack
                         IEnumerable<Tuple<int, Types.Inventory.Stacks.Stack>> pairs = SingleInventory.StackPairs();
                         foreach (Tuple<int, Types.Inventory.Stacks.Stack> pair in pairs)
                         {
-                            Dictionary<string, object> target = new Dictionary<string, object>();
-                            pair.Item2.MainRenderingStrategy.DumpRenderingData(target);
-                            listener.UpdateStack(pair.Item1, (Sprite)target["icon"], (string)target["caption"], target["quantity"]);
+                            listener.UpdateStack(pair.Item1, pair.Item2.Item, pair.Item2.Quantity);
                         }
                     }
 
@@ -171,7 +169,7 @@ namespace BackPack
                         foreach (RenderingListener listener in listenersSet)
                         {
                             ItemIconTextRenderingStrategy strategy = item.GetRenderingStrategy<ItemIconTextRenderingStrategy>();
-                            listener.UpdateStack(stackPosition, strategy.Icon, strategy.Caption, quantity);
+                            listener.UpdateStack(stackPosition, item, quantity);
                         }
                     }
 

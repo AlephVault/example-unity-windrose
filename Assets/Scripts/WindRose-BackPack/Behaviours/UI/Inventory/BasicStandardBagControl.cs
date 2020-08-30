@@ -31,7 +31,7 @@ namespace WindRose
                     ///     and also that these components will interact.
                     /// </summary>
 					[RequireComponent(typeof(BasicStandardInventoryView))]
-					public class BasicStandardInventoryControl : MonoBehaviour {
+					public class BasicStandardBagControl : MonoBehaviour {
 
                         private BasicStandardInventoryView inventoryView;
 

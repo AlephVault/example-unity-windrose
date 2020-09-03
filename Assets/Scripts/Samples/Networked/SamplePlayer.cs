@@ -7,6 +7,7 @@ using WindRose.Behaviours.Entities.Objects.Bags;
 using NetRose.Behaviours;
 using UnityEngine.SceneManagement;
 
+
 [RequireComponent(typeof(NetworkTransform))]
 [RequireComponent(typeof(NetworkedStandardInventoryView))]
 public class SamplePlayer : NetworkBehaviour
@@ -50,11 +51,7 @@ public class SamplePlayer : NetworkBehaviour
 
     // The object being tracked.
     [SyncVar]
-    private NetworkedMapObject mapObject;
-
-    // The bag of the object being tracked.
-    [SyncVar]
-    private StandardBag bag;
+    private NetworkIdentity mapObject;
 
     /// <summary>
     ///   The object being tracked. This stands for the
@@ -67,21 +64,11 @@ public class SamplePlayer : NetworkBehaviour
     {
         get
         {
-            return mapObject;
+            return mapObject.GetComponent<NetworkedMapObject>();
         }
         set
         {
-            if (mapObject)
-            {
-                bag = mapObject.GetComponent<StandardBag>();
-                if (bag) bag.Inventory.RenderingStrategy.Broadcaster.RemoveListener(inventoryView);
-            }
-            mapObject = value;
-            if (mapObject)
-            {
-                bag = mapObject.GetComponent<StandardBag>();
-                if (bag) bag.Inventory.RenderingStrategy.Broadcaster.AddListener(inventoryView);
-            }
+            mapObject = value ? value.GetComponent<NetworkIdentity>() : null;
         }
     }
 

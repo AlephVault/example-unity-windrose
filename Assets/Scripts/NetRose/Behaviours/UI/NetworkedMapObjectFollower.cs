@@ -1,4 +1,5 @@
-﻿using UnityEngine.Events;
+﻿using UnityEngine;
+using UnityEngine.Events;
 using Mirror;
 
 namespace NetRose
@@ -10,14 +11,31 @@ namespace NetRose
             using Entities.Objects;
 
             /// <summary>
-            ///   This behaviour tracks a target object across scenes.
-            ///     The target object is followed continually and even
-            ///     across world scenes.
+            ///   <para>
+            ///     This behaviour tracks a target object across scenes.
+            ///       The target object is followed continually and even
+            ///       across world scenes. In the client, this will imply
+            ///       also a camera being used to follow the player (which
+            ///       has this behaviour and follows a target object).
+            ///   </para>
+            ///   <para>
+            ///     This behaviour is intended to be used in player prefab
+            ///       objects.
+            ///   </para>
             /// </summary>
             public class NetworkedObjectFollower : NetworkBehaviour
             {
+                // The underlying identity of the target object.
                 [SyncVar]
                 private NetworkIdentity target;
+
+                /// <summary>
+                ///   The camera being tracked. Such camera will
+                ///     be the one tracking the target object, if
+                ///     any. On client this camera must be explicitly
+                ///     set to a camera.
+                /// </summary>
+                public new Camera camera = null;
 
                 /// <summary>
 				///   This event is triggered when the target is
@@ -27,11 +45,12 @@ namespace NetRose
 
                 /// <summary>
 				///   This event is triggered when the target object
-				///     is changed.
+				///     is changed. Possible uses involve considering
+                ///     the inventory of the target object.
 				/// </summary>
                 public readonly NetworkedMapObjectChangedEvent onTargetChanged = new NetworkedMapObjectChangedEvent();
 
-                // The underlying identity.
+                // The underlying identity. Used to change scenes.
                 private NetworkIdentity identity;
 
                 private void Awake()
@@ -85,6 +104,19 @@ namespace NetRose
                             NetworkedSceneLayout.Instance.MovePlayer(identity, NetworkedSceneLayout.Instance.gameObject.scene);
                         }
                     }
+
+                    // On clients, when the camera is set, it will update its position
+                    // based on the follower's position as well. Since additive scenes
+                    // are fully overlapped, the camera will have to exist in the world
+                    // scene (this will NOT be checked/enforced but should be a rule of
+                    // thumb for all games) and its (x, y) position will be updated, but
+                    // not its z-position. Its rotation will also be updated.
+                    if (isClient && camera)
+                    {
+                        if (!camera.orthographic) camera.orthographic = true;
+                        camera.transform.position = new Vector3(transform.position.x, transform.position.y, camera.transform.position.z);
+                        camera.transform.rotation = transform.rotation;
+                    } 
                 }
             }
         }

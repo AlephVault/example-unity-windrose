@@ -36,7 +36,7 @@ namespace WindRose
 
                     private void Start()
                     {
-                        if (inventory) inventory.GetComponent<InventoryStandardRenderingManagementStrategy>().Broadcaster.AddListener(inventoryView);
+                        if (inventory) inventory.RenderingStrategy.Broadcaster.AddListener(inventoryView);
                     }
 
                     /// <summary>
@@ -52,9 +52,9 @@ namespace WindRose
                         }
                         set
                         {
-                            if (inventory) inventory.GetComponent<InventoryStandardRenderingManagementStrategy>().Broadcaster.RemoveListener(inventoryView);
+                            if (inventory) inventory.RenderingStrategy.Broadcaster.RemoveListener(inventoryView);
                             inventory = value;
-                            if (inventory) inventory.GetComponent<InventoryStandardRenderingManagementStrategy>().Broadcaster.AddListener(inventoryView);
+                            if (inventory) inventory.RenderingStrategy.Broadcaster.AddListener(inventoryView);
                         }
                     }
                 }

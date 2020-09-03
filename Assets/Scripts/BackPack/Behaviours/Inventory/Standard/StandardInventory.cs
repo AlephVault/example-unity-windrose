@@ -37,6 +37,18 @@ namespace BackPack
                 {
                     private InventoryManagementStrategyHolder inventoryHolder;
 
+                    /// <summary>
+                    ///   The underlying spatial strategy, which is an indexed one
+                    ///     and can be either finite or infinite.
+                    /// </summary>
+                    public Inventory1DIndexedSpatialManagementStrategy SpatialStrategy { get; private set; }
+
+                    /// <summary>
+                    ///   The underlying rendering strategy, which is a standard
+                    ///     rendering strategy with its broadcaster for views.
+                    /// </summary>
+                    public InventoryStandardRenderingManagementStrategy RenderingStrategy { get; private set; }
+
                     /**
                      * Awake/Start pre-register the listeners (if they are set).
                      */
@@ -44,6 +56,8 @@ namespace BackPack
                     void Awake()
                     {
                         inventoryHolder = GetComponent<InventoryManagementStrategyHolder>();
+                        SpatialStrategy = GetComponent<Inventory1DIndexedSpatialManagementStrategy>();
+                        RenderingStrategy = GetComponent<InventoryStandardRenderingManagementStrategy>();
                     }
 
                     /**

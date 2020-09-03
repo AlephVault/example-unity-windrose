@@ -83,21 +83,21 @@ namespace NetRose
             private bool autoPreload = false;
 
             // The tracked instance.
-            private static NetworkedSceneLayout instance = null;
+            public static NetworkedSceneLayout Instance { get; private set; }
 
             private void Start()
             {
                 // This object must exist into a normally-loaded scene.
                 // With this, it is guaranteed that only one instance
                 // will be used.
-                if (instance != null && instance != this)
+                if (Instance != null && Instance != this)
                 {
                     Destroy(this);
                     throw new SingletonException("A world instance already exists");
                 }
                 else
                 {
-                    instance = this;
+                    Instance = this;
                 }
             }
 
@@ -118,7 +118,7 @@ namespace NetRose
 
             private void OnDestroy()
             {
-                if (instance == this) instance = null;
+                if (Instance == this) Instance = null;
             }
 
             /// <summary>
@@ -186,7 +186,7 @@ namespace NetRose
             {
                 if (isServer) return;
 
-                if (newScene == null)
+                if (newScene.IsValid())
                 {
                     newScene = gameObject.scene;
                 }

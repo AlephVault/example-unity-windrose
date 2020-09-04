@@ -19,88 +19,11 @@ namespace NetRose
         ///     template scenes when trying to load.
         ///   </para>
         ///   <para>
-        ///     It has several features involving the underlying scenes,
-        ///     and moving players across scenes.
-        ///   </para>
-        ///   <para>
         ///     This object, on itself, is a singleton.
         ///   </para>
         /// </summary>
         public class NetworkedSceneLayout : NetworkBehaviour
         {
-            /// <summary>
-            ///   Triggered when trying to move a player object with inactive connection.
-            /// </summary>
-            public class InactiveConnectionException : Exception
-            {
-                public InactiveConnectionException() { }
-                public InactiveConnectionException(string message) : base(message) { }
-                public InactiveConnectionException(string message, System.Exception inner) : base(message, inner) { }
-            }
-
-            /// <summary>
-            ///   Triggered when trying to create another networked scene layout instance.
-            /// </summary>
-            public class SingletonException : Exception
-            {
-                public SingletonException() { }
-                public SingletonException(string message) : base(message) { }
-                public SingletonException(string message, System.Exception inner) : base(message, inner) { }
-            }
-
-            /// <summary>
-            ///   Triggered when trying to move a non-player across the scene layout.
-            /// </summary>
-            public class NoPlayerException : Exception
-            {
-                public NoPlayerException() { }
-                public NoPlayerException(string message) : base(message) { }
-                public NoPlayerException(string message, System.Exception inner) : base(message, inner) { }
-            }
-
-            /// <summary>
-            ///   Triggered when trying to move a player object to a scene that is not loaded.
-            /// </summary>
-            public class SceneNotLoadedException : Exception
-            {
-                public SceneNotLoadedException() { }
-                public SceneNotLoadedException(string message) : base(message) { }
-                public SceneNotLoadedException(string message, System.Exception inner) : base(message, inner) { }
-            }
-
-            /// <summary>
-            ///   The list of scenes to load. Those scenes can be either
-            ///   template or singleton scenes.
-            /// </summary>
-            [SerializeField]
-            SceneConfigDictionary scenes = new SceneConfigDictionary();
-
-            /// <summary>
-            ///   Set this property to true to cause a preload to be triggered
-            ///   when this component starts in the server.
-            /// </summary>
-            [SerializeField]
-            private bool autoPreload = false;
-
-            // The tracked instance.
-            public static NetworkedSceneLayout Instance { get; private set; }
-
-            private void Start()
-            {
-                // This object must exist into a normally-loaded scene.
-                // With this, it is guaranteed that only one instance
-                // will be used.
-                if (Instance != null && Instance != this)
-                {
-                    Destroy(this);
-                    throw new SingletonException("A world instance already exists");
-                }
-                else
-                {
-                    Instance = this;
-                }
-            }
-
             // When this object's spawned identity started on a server,
             // it must preload all the singleton sub-scenes.
             public override void OnStartServer()
@@ -127,13 +50,6 @@ namespace NetRose
             /// </summary>
             public async Task Preload()
             {
-                foreach (KeyValuePair<string, SceneConfig> pair in scenes)
-                {
-                    if (pair.Value.LoadMode == SceneLoadMode.Singleton)
-                    {
-                        await pair.Value.Load();
-                    }
-                }
             }
 
             /// <summary>

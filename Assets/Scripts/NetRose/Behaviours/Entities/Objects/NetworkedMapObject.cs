@@ -258,7 +258,7 @@ namespace NetRose
                     }
 
                     // The underlying object being synchronized.
-                    private MapObject mapObject;
+                    public MapObject MapObject { get; private set; }
 
                     // The LAST movement command being enqueued.
                     private StartMovementCommand lastStartMovementCommandEnqueued = null;
@@ -276,33 +276,33 @@ namespace NetRose
                     private void Awake()
                     {
                         queueLimit = (queueLimit < MIN_QUEUE_LIMIT) ? MIN_QUEUE_LIMIT : queueLimit;
-                        mapObject = GetComponent<MapObject>();
+                        MapObject = GetComponent<MapObject>();
                     }
 
                     private void Start()
                     {
-                        mapObject.onAttached.AddListener(OnAttached);
-                        mapObject.onTeleported.AddListener(RpcOnTeleported);
-                        mapObject.onMovementStarted.AddListener(OnMovementStarted);
-                        mapObject.onMovementFinished.AddListener(OnMovementFinished);
-                        mapObject.onMovementCancelled.AddListener(OnMovementCancelled);
-                        mapObject.onDetached.AddListener(RpcOnDetached);
-                        mapObject.onSpeedChanged.AddListener(RpcOnSpeedChanged);
-                        mapObject.onOrientationChanged.AddListener(RpcOnOrientationChanged);
+                        MapObject.onAttached.AddListener(OnAttached);
+                        MapObject.onTeleported.AddListener(RpcOnTeleported);
+                        MapObject.onMovementStarted.AddListener(OnMovementStarted);
+                        MapObject.onMovementFinished.AddListener(OnMovementFinished);
+                        MapObject.onMovementCancelled.AddListener(OnMovementCancelled);
+                        MapObject.onDetached.AddListener(RpcOnDetached);
+                        MapObject.onSpeedChanged.AddListener(RpcOnSpeedChanged);
+                        MapObject.onOrientationChanged.AddListener(RpcOnOrientationChanged);
                         // Notes: onPropertyUpdated will not be listened here, but in
                         //        object-strategy synchronizing components.
                     }
 
                     private void OnDestroy()
                     {
-                        mapObject.onAttached.RemoveListener(OnAttached);
-                        mapObject.onTeleported.RemoveListener(RpcOnTeleported);
-                        mapObject.onMovementStarted.RemoveListener(OnMovementStarted);
-                        mapObject.onMovementFinished.RemoveListener(OnMovementFinished);
-                        mapObject.onMovementCancelled.RemoveListener(OnMovementCancelled);
-                        mapObject.onDetached.RemoveListener(RpcOnDetached);
-                        mapObject.onSpeedChanged.RemoveListener(RpcOnSpeedChanged);
-                        mapObject.onOrientationChanged.RemoveListener(RpcOnOrientationChanged);
+                        MapObject.onAttached.RemoveListener(OnAttached);
+                        MapObject.onTeleported.RemoveListener(RpcOnTeleported);
+                        MapObject.onMovementStarted.RemoveListener(OnMovementStarted);
+                        MapObject.onMovementFinished.RemoveListener(OnMovementFinished);
+                        MapObject.onMovementCancelled.RemoveListener(OnMovementCancelled);
+                        MapObject.onDetached.RemoveListener(RpcOnDetached);
+                        MapObject.onSpeedChanged.RemoveListener(RpcOnSpeedChanged);
+                        MapObject.onOrientationChanged.RemoveListener(RpcOnOrientationChanged);
                         // Notes: onPropertyUpdated will not be removed here, but in
                         //        object-strategy synchronizing components.
                     }
@@ -312,7 +312,7 @@ namespace NetRose
                         World.NetworkedMap networkedMap = map.GetComponent<World.NetworkedMap>();
                         if (networkedMap)
                         {
-                            RpcOnAttached(map.GetComponent<NetworkIdentity>(), mapObject.X, mapObject.Y);
+                            RpcOnAttached(map.GetComponent<NetworkIdentity>(), MapObject.X, MapObject.Y);
                         }
                         else
                         {
@@ -325,7 +325,7 @@ namespace NetRose
                     {
                         if (!isServer)
                         {
-                            AddToQueue(new AttachCommand(mapObject, map.GetComponent<Map>(), x, y), true);
+                            AddToQueue(new AttachCommand(MapObject, map.GetComponent<Map>(), x, y), true);
                         }
                     }
 
@@ -334,23 +334,23 @@ namespace NetRose
                     {
                         if (!isServer)
                         {
-                            AddToQueue(new TeleportCommand(mapObject, x, y), true);
+                            AddToQueue(new TeleportCommand(MapObject, x, y), true);
                         }
                     }
 
                     private void OnMovementStarted(Direction direction)
                     {
-                        RpcOnMovementStarted(direction, mapObject.X, mapObject.Y);
+                        RpcOnMovementStarted(direction, MapObject.X, MapObject.Y);
                     }
 
                     private void OnMovementFinished(Direction direction)
                     {
-                        RpcOnMovementFinished(direction, mapObject.X, mapObject.Y);
+                        RpcOnMovementFinished(direction, MapObject.X, MapObject.Y);
                     }
 
                     private void OnMovementCancelled(Direction? direction)
                     {
-                        RpcOnMovementCancelled((direction.HasValue ? direction.Value : default(Direction)), direction.HasValue, mapObject.X, mapObject.Y);
+                        RpcOnMovementCancelled((direction.HasValue ? direction.Value : default(Direction)), direction.HasValue, MapObject.X, MapObject.Y);
                     }
 
                     [ClientRpc]
@@ -358,7 +358,7 @@ namespace NetRose
                     {
                         if (!isServer)
                         {
-                            AddToQueue(new StartMovementCommand(this, mapObject, direction, startX, startY));
+                            AddToQueue(new StartMovementCommand(this, MapObject, direction, startX, startY));
                         }
                     }
 
@@ -385,7 +385,7 @@ namespace NetRose
                     {
                         if (!isServer)
                         {
-                            AddToQueue(new SpeedChangeCommand(mapObject, speed));
+                            AddToQueue(new SpeedChangeCommand(MapObject, speed));
                         }
                     }
 
@@ -394,7 +394,7 @@ namespace NetRose
                     {
                         if (!isServer)
                         {
-                            AddToQueue(new OrientationChangeCommand(mapObject, orientation));
+                            AddToQueue(new OrientationChangeCommand(MapObject, orientation));
                         }
                     }
 
@@ -403,7 +403,7 @@ namespace NetRose
                     {
                         if (!isServer)
                         {
-                            AddToQueue(new DetachCommand(mapObject), true);
+                            AddToQueue(new DetachCommand(MapObject), true);
                         }
                     }
                 }

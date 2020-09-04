@@ -23,7 +23,7 @@ namespace NetRose
             ///       objects.
             ///   </para>
             /// </summary>
-            public class NetworkedObjectFollower : NetworkBehaviour
+            public class NetworkedMapObjectFollower : NetworkBehaviour
             {
                 // The underlying identity of the target object.
                 [SyncVar]

@@ -3,103 +3,132 @@ using Mirror;
 using NetRose.Behaviours.Entities.Objects;
 using NetRose.Behaviours.UI.Inventory;
 using BackPack.Behaviours.Inventory.Standard;
+using BackPack.Behaviours.UI.Inventory.Basic;
 using WindRose.Behaviours.Entities.Objects.Bags;
 using NetRose.Behaviours;
+using NetRose.Behaviours.UI;
 using UnityEngine.SceneManagement;
 
 
-[RequireComponent(typeof(NetworkTransform))]
+[RequireComponent(typeof(NetworkedMapObjectFollower))]
 [RequireComponent(typeof(NetworkedStandardInventoryView))]
 public class SamplePlayer : NetworkBehaviour
 {
-    // A sample player keeps several references.
-    // In server:
-    // 1. The MapObject being tracked.
-    // 2. The inventory, of such object, being tracked.
-    //    Even better if it is a bag as well, since it
-    //    can run Drop/Pick as well. An inventory
-    //    listener will be added to this player object
-    //    to do that. Only one inventory will be managed.
-    // And will follow such MapObject:
-    // i. One-to-one object's transform's position.
-    // ii. When the object changes scene, the player
-    //     will also change scene but via the only
-    //     NetworkedSceneLayout instance methods.
-    // In client:
-    // 1. The player will find the main camera by its
-    //    Camera.main method, and also will find the
-    //    main UI method as a Basic Standard Inventory
-    //    View item with a tag: "MainInventoryView".
-    //    Such view, if found, will connect to the
-    //    client-side of the networked inventory.
-    // 2. The main camera will always follow the player.
-
-    // The underlying identity.
-    private NetworkIdentity identity;
+    // The integrated follower.
+    private NetworkedMapObjectFollower follower;
 
     // The integrated single inventory view.
     private NetworkedStandardInventoryView inventoryView;
 
-    // The main camera (cached for speed).
-    private Camera mainCamera;
+    // The inventory of the followed object (if any).
+    private StandardInventory inventory;
+
+    // The bag of the followed object (if any).
+    private StandardBag bag;
 
     private void Awake()
     {
-        identity = GetComponent<NetworkIdentity>();
         inventoryView = GetComponent<NetworkedStandardInventoryView>();
+        follower = GetComponent<NetworkedMapObjectFollower>();
+        follower.onTargetChanged.AddListener(delegate (NetworkedMapObject oldObject, NetworkedMapObject newObject)
+        {
+            if (oldObject)
+            {
+                oldObject.MapObject.onMovementStarted.RemoveListener(OnMovementStarted);
+                inventory = oldObject.GetComponent<StandardInventory>();
+                if (inventory)
+                {
+                    inventory.RenderingStrategy.Broadcaster.RemoveListener(inventoryView);
+                }
+            }
+            if (newObject)
+            {
+                newObject.MapObject.onMovementStarted.AddListener(OnMovementStarted);
+                inventory = newObject.GetComponent<StandardInventory>();
+                if (inventory)
+                {
+                    inventory.RenderingStrategy.Broadcaster.AddListener(inventoryView);
+                }
+            }
+
+            if (inventory)
+            {
+                bag = inventory.GetComponent<StandardBag>();
+            }
+            else
+            {
+                bag = null;
+            }
+        });
     }
 
-    // The object being tracked.
-    [SyncVar]
-    private NetworkIdentity mapObject;
+    private void OnMovementStarted(WindRose.Types.Direction direction)
+    {
+        follower.Target.MapObject.Orientation = direction;
+    }
 
     /// <summary>
-    ///   The object being tracked. This stands for the
-    ///     object receiving the commands, in the end,
-    ///     that are issued from the client. If no object
-    ///     is tied, then the whole sample player does
-    ///     nothing.
+    ///   On clients, a camera will be searched (<see cref="Camera.main" />), and
+    ///     also a <see cref="BasicStandardInventoryView"/> will be searched, via
+    ///     the tag: "Inventory".
     /// </summary>
-    public NetworkedMapObject MapObject
+    public override void OnStartClient()
     {
-        get
+        follower.camera = Camera.main;
+        GameObject basicViewObj = GameObject.FindGameObjectWithTag("Inventory");
+        if (basicViewObj)
         {
-            return mapObject.GetComponent<NetworkedMapObject>();
-        }
-        set
-        {
-            mapObject = value ? value.GetComponent<NetworkIdentity>() : null;
+            BasicStandardInventoryView basicView = basicViewObj.GetComponent<BasicStandardInventoryView>();
+            if (basicView) inventoryView.Broadcaster.AddListener(basicView);
         }
     }
 
-    // Updating the object involves following the related
-    // map object's position, rotation and scene.
-    private void Update()
+    [Command]
+    public void Pick()
     {
-        if (isServer)
-        {
-            // Follow the object's position and scene.
-            if (mapObject)
-            {
-                if (gameObject.scene != mapObject.gameObject.scene)
-                {
-                    NetworkedSceneLayout.Instance.MovePlayer(identity, mapObject.gameObject.scene);
-                }
-                transform.position = mapObject.transform.position;
-                transform.rotation = mapObject.transform.rotation;
-            }
-            else if (gameObject.scene != NetworkedSceneLayout.Instance.gameObject.scene)
-            {
-                // Move the player to the main scene.
-                NetworkedSceneLayout.Instance.MovePlayer(identity, NetworkedSceneLayout.Instance.gameObject.scene);
-            }
-        }
+        int? pos = null;
+        if (bag) bag.Pick(out pos);
+    }
 
-        if (isClient)
+    [Command]
+    public void Drop(int position)
+    {
+        if (bag) bag.Drop(position);
+    }
+
+    [Command]
+    public void Right()
+    {
+        if (follower.Target)
         {
-            // TODO:
-            // I must ensure HUD.Focus() is called on a HUD in the client, so the map object is stalked.
-            // Also the HUD will contain an inventory, that must be connected accordingly.
+            follower.Target.MapObject.StartMovement(WindRose.Types.Direction.RIGHT);
+        }
+    }
+
+    [Command]
+    public void Up()
+    {
+        if (follower.Target)
+        {
+            follower.Target.MapObject.StartMovement(WindRose.Types.Direction.UP);
+        }
+    }
+
+    [Command]
+    public void Left()
+    {
+        if (follower.Target)
+        {
+            follower.Target.MapObject.StartMovement(WindRose.Types.Direction.LEFT);
+        }
+    }
+
+    [Command]
+    public void Down()
+    {
+        if (follower.Target)
+        {
+            follower.Target.MapObject.StartMovement(WindRose.Types.Direction.DOWN);
         }
     }
 }

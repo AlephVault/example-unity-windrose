@@ -9,6 +9,7 @@ namespace NetRose
         namespace UI
         {
             using Entities.Objects;
+            using UnityEngine.SceneManagement;
 
             /// <summary>
             ///   <para>
@@ -86,7 +87,7 @@ namespace NetRose
                         {
                             if (isServer)
                             {
-                                NetworkedSceneLayout.Instance.MovePlayer(identity, target.gameObject.scene);
+                                (NetworkManager.singleton as NetworkWorldManager).MovePlayer(identity, target.gameObject.scene);
                             }
                         }
                         // Both client and server will run this code on their own:
@@ -96,12 +97,12 @@ namespace NetRose
                         transform.position = target.transform.position;
                         transform.rotation = target.transform.rotation;
                     }
-                    else if (gameObject.scene != NetworkedSceneLayout.Instance.gameObject.scene)
+                    else if (gameObject.scene != SceneManager.GetActiveScene())
                     {
                         // If server side, move to the main world/"online" scene.
                         if (isServer)
                         {
-                            NetworkedSceneLayout.Instance.MovePlayer(identity, NetworkedSceneLayout.Instance.gameObject.scene);
+                            (NetworkManager.singleton as NetworkWorldManager).MovePlayer(identity, SceneManager.GetActiveScene());
                         }
                     }
 

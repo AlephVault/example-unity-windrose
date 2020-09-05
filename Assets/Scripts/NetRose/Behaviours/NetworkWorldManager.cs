@@ -1,6 +1,7 @@
-﻿using System.Collections;
+﻿using System.Threading.Tasks;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Mirror;
 using NetRose.Types;
 
@@ -170,7 +171,7 @@ namespace NetRose
             ///     changed) to the offline one, and in that case all the loaded
             ///     scenes must be unloaded.
             /// </summary>
-            /// <param name="newSceneName"></param>
+            /// <param name="newSceneName">The new scene (either the online or offline scene)</param>
             public override void OnServerChangeScene(string newSceneName)
             {
                 isWorldReady = false;
@@ -180,7 +181,9 @@ namespace NetRose
                 }
             }
 
-            // Unloads all the singleton scenes.
+            // Unloads all the singleton scenes. This is only useful to clear all
+            // the references, for the scenes per se will be deleted anyway on
+            // active scene change (i.e. after this event).
             private async void UnloadSingletonScenes()
             {
                 try
@@ -192,8 +195,119 @@ namespace NetRose
                 }
                 catch (System.Exception)
                 {
-                    StopClient();
+                    // Stop client first, so the server cleans up the client.
+                    if (NetworkClient.isConnected)
+                    {
+                        StopClient();
+                    }
+                    // Stop server after stopping client (in particular needed
+                    // to do in this order for the host game type).
+                    if (NetworkServer.active)
+                    {
+                        StopServer();
+                    }
                     Destroy(gameObject);
+                }
+            }
+
+            /// <summary>
+            ///   Loads a scene, identified by its key. If the key does not
+            ///     exist, an invalid scene will be returned. Depending on the
+            ///     scene mode, an existing scene instance will be returned or
+            ///     a new scene instance will be created. This is an asynchronous
+            ///     task that must be waited for. A reference to the loaded
+            ///     <see cref="Scene"/> is then returned, either existing or
+            ///     instantiated.
+            /// </summary>
+            /// <param name="sceneKey">The scene key to load</param>
+            /// <returns>The loaded scene</returns>
+            [Server]
+            public async Task<Scene> Load(string sceneKey)
+            {
+                SceneConfig config;
+                Scene scene = new Scene { };
+                if (scenes.TryGetValue(sceneKey, out config))
+                {
+                    return await config.Load();
+                }
+                else
+                {
+                    return scene;
+                }
+            }
+
+            // Server-side: Checks whether the object is a player
+            // for the current connection.
+            private bool IsPlayer(NetworkIdentity identity)
+            {
+                return identity.connectionToClient.identity == identity;
+            }
+
+            // Server-side: Checks whether the object is networked
+            // and active.
+            private bool IsActiveConnection(NetworkIdentity identity)
+            {
+                return identity.connectionToClient.isReady;
+            }
+
+            /// <summary>
+            ///   Moves a player across different scenes. The target
+            ///     scene must be already loaded, and the source scene
+            ///     will be. Either scene must be a valid and additively
+            ///     loaded scene, or the main scene (which contains this
+            ///     world object).
+            /// </summary>
+            /// <param name="identity">The player object to move</param>
+            /// <param name="newScene">The target scene to move the object to</param>
+            [Server]
+            public void MovePlayer(NetworkIdentity identity, Scene newScene)
+            {
+                if (newScene.IsValid())
+                {
+                    newScene = gameObject.scene;
+                }
+
+                if (!IsPlayer(identity))
+                {
+                    throw new NoPlayerException("Cannot move a network identity, across scenes, not being a client player object");
+                }
+                else if (!IsActiveConnection(identity))
+                {
+                    throw new InactiveConnectionException("Cannot move a network identity, across scenes, with an inactive connection");
+                }
+                else if (!newScene.isLoaded)
+                {
+                    throw new SceneNotLoadedException("Cannot move a network identity, across scenes, to a target scene that is not loaded");
+                }
+                else if (newScene == identity.gameObject.scene)
+                {
+                    // Nothing to do here, except perhaps for a notify / log
+                }
+                else if (newScene == gameObject.scene)
+                {
+                    // The current additive scene must be unloaded from the client.
+                    identity.connectionToClient.Send(new SceneMessage { sceneName = identity.gameObject.scene.name, sceneOperation = SceneOperation.UnloadAdditive });
+                    // The player must be moved to the parent scene.
+                    SceneManager.MoveGameObjectToScene(identity.gameObject, newScene);
+                    // The player will be, in the end, refreshed into the parent scene.
+                }
+                else if (identity.gameObject.scene == gameObject.scene)
+                {
+                    // The player must be moved to the new scene.
+                    SceneManager.MoveGameObjectToScene(identity.gameObject, newScene);
+                    // The new scene must be loaded into the client.
+                    identity.connectionToClient.Send(new SceneMessage { sceneName = newScene.name, sceneOperation = SceneOperation.LoadAdditive });
+                    // The player will be, in the end, refreshed into the new scene.
+                }
+                else
+                {
+                    // The current additive scene must be unloaded from the client.
+                    identity.connectionToClient.Send(new SceneMessage { sceneName = identity.gameObject.scene.name, sceneOperation = SceneOperation.UnloadAdditive });
+                    // The player must be moved to the new scene.
+                    SceneManager.MoveGameObjectToScene(identity.gameObject, newScene);
+                    // The new scene must be loaded into the client.
+                    identity.connectionToClient.Send(new SceneMessage { sceneName = newScene.name, sceneOperation = SceneOperation.LoadAdditive });
+                    // The player will be, in the end, refreshed into the new scene.
                 }
             }
         }

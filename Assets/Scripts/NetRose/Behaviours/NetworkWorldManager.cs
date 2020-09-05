@@ -54,6 +54,17 @@ namespace NetRose
             }
 
             /// <summary>
+            ///   Triggered when trying to run a method involving scenes / players
+            ///     manipulations in a non-server context.
+            /// </summary>
+            public class OnlyAvailableInServer : Exception
+            {
+                public OnlyAvailableInServer() { }
+                public OnlyAvailableInServer(string message) : base(message) { }
+                public OnlyAvailableInServer(string message, System.Exception inner) : base(message, inner) { }
+            }
+
+            /// <summary>
             ///   Triggered when trying to move a player object with inactive connection.
             /// </summary>
             public class InactiveConnectionException : Exception
@@ -100,6 +111,13 @@ namespace NetRose
             /// </summary>
             public bool isWorldReady { get; private set; }
 
+            // This is the list of players being added. When a player is added while the world
+            // is not ready (this will most likely happen while the scenes are being loaded)
+            // the connection will be queued instead of immediately being added. When the world
+            // is ready, this list will empty and all the players in it will be immediately
+            // added to the game.
+            private HashSet<NetworkConnection> pendingPlayers = new HashSet<NetworkConnection>();
+
             /// <summary>
             ///   The list of scenes to load. Those scenes can be either
             ///     template or singleton scenes. Template scenes will
@@ -116,10 +134,30 @@ namespace NetRose
             /// </summary>
             public override void Awake()
             {
+                isWorldReady = false;
                 authenticator = GetComponent<NetworkAuthenticator>();
+                transport.OnServerDisconnected.AddListener(OnClientDisconnectedFromServer);
                 // TODO Check authenticator to be of a generic implementation of PlayerSourceAuthenticator<?, ?, ?>.
                 // TODO or raise an exception.
+                // TODO Also check the prefab has the expected player component, compatible with the PlayerSourceAuthenticator.
                 base.Awake();
+            }
+
+            public override void OnDestroy()
+            {
+                transport.OnServerDisconnected.RemoveListener(OnClientDisconnectedFromServer);
+                base.OnDestroy();
+            }
+
+            // When a client disconnects from the transport, then all the
+            // entries involving this connection will be removed from the
+            // pending players list.
+            private void OnClientDisconnectedFromServer(int connectionId)
+            {
+                pendingPlayers.RemoveWhere((NetworkConnection connection) =>
+                {
+                    return connection.connectionId == connectionId;
+                });
             }
 
             /// <summary>
@@ -133,6 +171,11 @@ namespace NetRose
                 if (sceneName == onlineScene)
                 {
                     PreloadSingletonScenes();
+                }
+                isWorldReady = true;
+                foreach(NetworkConnection connection in pendingPlayers)
+                {
+                    base.OnServerAddPlayer(connection);
                 }
             }
 
@@ -221,9 +264,12 @@ namespace NetRose
             /// </summary>
             /// <param name="sceneKey">The scene key to load</param>
             /// <returns>The loaded scene</returns>
-            [Server]
             public async Task<Scene> Load(string sceneKey)
             {
+                if (!NetworkServer.active) throw new OnlyAvailableInServer("Cannot invoke Load method in a non-server context");
+
+                if (!isWorldReady) throw new WorldNotReady("Cannot invoke MovePlayer method when the world scenes are not ready");
+
                 SceneConfig config;
                 Scene scene = new Scene { };
                 if (scenes.TryGetValue(sceneKey, out config))
@@ -259,9 +305,12 @@ namespace NetRose
             /// </summary>
             /// <param name="identity">The player object to move</param>
             /// <param name="newScene">The target scene to move the object to</param>
-            [Server]
             public void MovePlayer(NetworkIdentity identity, Scene newScene)
             {
+                if (!NetworkServer.active) throw new OnlyAvailableInServer("Cannot invoke MovePlayer method in a non-server context");
+
+                if (!isWorldReady) throw new WorldNotReady("Cannot invoke MovePlayer method when the world scenes are not ready");
+
                 if (newScene.IsValid())
                 {
                     newScene = gameObject.scene;
@@ -308,6 +357,23 @@ namespace NetRose
                     // The new scene must be loaded into the client.
                     identity.connectionToClient.Send(new SceneMessage { sceneName = newScene.name, sceneOperation = SceneOperation.LoadAdditive });
                     // The player will be, in the end, refreshed into the new scene.
+                }
+            }
+
+            /// <summary>
+            ///   The player will be added immediately if the world is ready, but
+            ///     if not ready, it will be queued until it is ready.
+            /// </summary>
+            /// <param name="conn">The connection for which the player must be added</param>
+            public override void OnServerAddPlayer(NetworkConnection conn)
+            {
+                if (isWorldReady)
+                {
+                    base.OnServerAddPlayer(conn);
+                }
+                else
+                {
+                    pendingPlayers.Add(conn);
                 }
             }
         }

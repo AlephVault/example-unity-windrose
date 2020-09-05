@@ -145,8 +145,8 @@ namespace NetRose
 
             public override void OnDestroy()
             {
-                transport.OnServerDisconnected.RemoveListener(OnClientDisconnectedFromServer);
                 base.OnDestroy();
+                transport.OnServerDisconnected.RemoveListener(OnClientDisconnectedFromServer);
             }
 
             // When a client disconnects from the transport, then all the

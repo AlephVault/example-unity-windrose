@@ -15,8 +15,7 @@ namespace GMM
         public static class Classes
         {
             /// <summary>
-            ///   An add-on on <see cref="Type"/> class to check whether another type is the
-            ///     same or is a subclass of a base type.
+            ///   Checks whether another type is the same or is a subclass of a base type.
             /// </summary>
             /// <param name="derivedType">The derived type to check.</param>
             /// <param name="baseType">The base type to check against.</param>
@@ -24,6 +23,28 @@ namespace GMM
             public static bool IsSameOrSubclassOf(Type derivedType, Type baseType)
             {
                 return baseType == derivedType || derivedType.IsSubclassOf(baseType);
+            }
+
+            /// <summary>
+            ///   Checks whether another type is the same or is a subclass of a generic type.
+            ///     This is done by unwrapping the generic class on every possible inheritance
+            ///     step in the chain until the top of the hierarchy is reached.
+            /// </summary>
+            /// <param name="genericType">The class to check against - a generic one</param>
+            /// <param name="derivedType">The class to check</param>
+            /// <returns>Whether that class implements, directly or indirectly, the given generic</returns>
+            public static bool IsSubclassOfRawGeneric(Type derivedType, Type genericType)
+            {
+                while (derivedType != null && derivedType != typeof(object))
+                {
+                    var cur = derivedType.IsGenericType ? derivedType.GetGenericTypeDefinition() : derivedType;
+                    if (genericType == cur)
+                    {
+                        return true;
+                    }
+                    derivedType = derivedType.BaseType;
+                }
+                return false;
             }
 
             /// <summary>

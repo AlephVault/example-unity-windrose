@@ -126,7 +126,7 @@ namespace NetRose
             ///     one, and in that case it will load all the required scenes
             ///     which are singleton.
             /// </summary>
-            /// <param name="sceneName"></param>
+            /// <param name="sceneName">The new scene (either the online or offline scene)</param>
             public override void OnServerSceneChanged(string sceneName)
             {
                 if (sceneName == onlineScene)
@@ -149,6 +149,48 @@ namespace NetRose
                     }
                 }
                 catch(System.Exception)
+                {
+                    // Stop client first, so the server cleans up the client.
+                    if (NetworkClient.isConnected)
+                    {
+                        StopClient();
+                    }
+                    // Stop server after stopping client (in particular needed
+                    // to do in this order for the host game type).
+                    if (NetworkServer.active)
+                    {
+                        StopServer();
+                    }
+                    Destroy(gameObject);
+                }
+            }
+
+            /// <summary>
+            ///   This hook tests for when the scene is being changed (not yet
+            ///     changed) to the offline one, and in that case all the loaded
+            ///     scenes must be unloaded.
+            /// </summary>
+            /// <param name="newSceneName"></param>
+            public override void OnServerChangeScene(string newSceneName)
+            {
+                isWorldReady = false;
+                if (newSceneName == onlineScene)
+                {
+                    UnloadSingletonScenes();
+                }
+            }
+
+            // Unloads all the singleton scenes.
+            private async void UnloadSingletonScenes()
+            {
+                try
+                {
+                    foreach (KeyValuePair<string, SceneConfig> pair in scenes)
+                    {
+                        await pair.Value.Unload();
+                    }
+                }
+                catch (System.Exception)
                 {
                     StopClient();
                     Destroy(gameObject);

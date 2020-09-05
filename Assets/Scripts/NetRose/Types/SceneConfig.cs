@@ -10,11 +10,11 @@ namespace NetRose
     {
         /// <summary>
         ///   This works as a scene domain to load a scene one or
-        ///   more times, according to the scene load mode. If it
-        ///   is configured as a singleton, then only one scene
-        ///   load will be performed (as long as the scene remains
-        ///   loaded). If not a singleton, no check will be done,
-        ///   and so no constraint will be applied.
+        ///     more times, according to the scene load mode. If it
+        ///     is configured as a singleton, then only one scene
+        ///     load will be performed (as long as the scene remains
+        ///     loaded). If not a singleton, no check will be done,
+        ///     and so no constraint will be applied.
         /// </summary>
         [System.Serializable]
         public class SceneConfig
@@ -48,14 +48,14 @@ namespace NetRose
 
             /// <summary>
             ///   Attempts to load the scene and returns its
-            ///   reference. If this config uses the singleton
-            ///   mode, and an instance of the scene was already
-            ///   loaded, then the same scene is returned and
-            ///   not fetched again. This is an asynchronous
-            ///   task that must be waited for. The scene is
-            ///   loaded additively, and using a new 3D physics
-            ///   scene (so objects do not collide with others
-            ///   in other scenes).
+            ///     reference. If this config uses the singleton
+            ///     mode, and an instance of the scene was already
+            ///     loaded, then the same scene is returned and
+            ///     not fetched again. This is an asynchronous
+            ///     task that must be waited for. The scene is
+            ///     loaded additively, and using a new 3D physics
+            ///     scene (so objects do not collide with others
+            ///     in other scenes).
             /// </summary>
             /// <returns>The loaded scene</returns>
             public async Task<Scene> Load()
@@ -86,6 +86,23 @@ namespace NetRose
                     sceneInstance = scene;
                 }
                 return scene;
+            }
+
+            /// <summary>
+            ///   Unloads the current scene. It only makes sense when
+            ///     the configuration is for a singleton instance. This
+            ///     is an asynchronous task that must be waited for.
+            /// </summary>
+            public async Task Unload()
+            {
+                if (loadMode == SceneLoadMode.Singleton)
+                {
+                    AsyncOperation operation = SceneManager.UnloadSceneAsync(sceneInstance);
+                    while (!operation.isDone)
+                    {
+                        await Tasks.Blink();
+                    }
+                }
             }
         }
     }

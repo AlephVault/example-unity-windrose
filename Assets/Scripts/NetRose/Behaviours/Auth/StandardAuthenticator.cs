@@ -1,6 +1,8 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
+using System;
 
 namespace NetRose
 {
@@ -9,129 +11,185 @@ namespace NetRose
         namespace Auth
         {
             /// <summary>
-            ///   Allows login with just specifying the username and password. Usually, Two
-            ///   connections logged with the same username will not be allowed, and the password
-            ///   is matched against an encrypted version in some sort of database. This mode is
-            ///   standard to most games that do not rely on social networking.
+            ///   <para>
+            ///     A standard authenticator involves several steps like:
+            ///     - Building and sending an auth message to the server.
+            ///     - Authenticating from the received auth message in server.
+            ///       The result is a response, and a session object.
+            ///   </para>
             /// </summary>
-            public abstract class StandardAuthenticator : NetworkAuthenticator
+            /// <typeparam name="AuthMessage">The type of the auth message to send to the server to perform login</typeparam>
+            /// <typeparam name="Session">The type of the authenticated data to use as session</typeparam>
+            public abstract class StandardAuthenticator<AuthMessage, Session> : NetworkAuthenticator where AuthMessage : IMessageBase, new()
             {
-                static readonly ILogger logger = LogFactory.GetLogger(typeof(StandardAuthenticator));
+                // The logger to use for these authenticators.
+                private static readonly ILogger logger = LogFactory.GetLogger(typeof(StandardAuthenticator<AuthMessage, Session>));
 
                 /// <summary>
-                ///   The username to use as login. This field only makes sense for
-                ///   clients and is not used at all in servers.
+                ///   An authentication response has 3 fields: whether the request was
+                ///     successful, its code, and more details.
                 /// </summary>
-                public string Username;
-
-                /// <summary>
-                ///   The password to use as login. This field only makes sense for
-                ///   clients and is not used at all in servers.
-                /// </summary>
-                public string Password;
-
-                /// <summary>
-                ///   An authentication request will hold a username and 
-                ///   password, and will validate the login.
-                /// </summary>
-                public class AuthRequestMessage : MessageBase
+                public class AuthResponse : MessageBase
                 {
-                    // use whatever credentials make sense for your game
-                    // for example, you might want to pass the accessToken if using oauth
-                    public string Username;
-                    public string Password;
+                    /// <summary>
+                    ///   Whether the request was successful (i.e. the user successfully
+                    ///     logged in).
+                    /// </summary>
+                    public bool IsSuccess = true;
+
+                    /// <summary>
+                    ///   A custom code, either for success or failure, for the status
+                    ///     of the authentication attempt.
+                    /// </summary>
+                    public string Code = "success";
+
+                    /// <summary>
+                    ///   More optional details regarding the result of the login attempt.
+                    /// </summary>
+                    public Dictionary<string, string> Details = new Dictionary<string, string>();
+
+                    /// <summary>
+                    ///   Serializes all the fields of this message. The details are serialized
+                    ///     as pairs of strings.
+                    /// </summary>
+                    /// <param name="writer">The writer to serialize this message into</param>
+                    public override void Serialize(NetworkWriter writer)
+                    {
+                        writer.WriteBoolean(IsSuccess);
+                        writer.WriteString(Code);
+                        writer.WriteInt32(Details.Count);
+                        foreach(KeyValuePair<string, string> pair in Details)
+                        {
+                            writer.WriteString(pair.Key);
+                            writer.WriteString(pair.Value);
+                        }
+                    }
+
+                    /// <summary>
+                    ///   Deserializes all the fields of this message. The details are deserialized
+                    ///     from pairs of strings.
+                    /// </summary>
+                    /// <param name="reader">The reader to deserialize this message from</param>
+                    public override void Deserialize(NetworkReader reader)
+                    {
+                        IsSuccess = reader.ReadBoolean();
+                        Code = reader.ReadString();
+                        int count = reader.ReadInt32();
+                        for(int index = 0; index < count; index++)
+                        {
+                            string key = reader.ReadString();
+                            string value = reader.ReadString();
+                            Details[key] = value;
+                        }
+                        base.Deserialize(reader);
+                    }
                 }
 
                 /// <summary>
-                ///   The authentication response will hold one code and message.
+                ///   Builds an authentication request from the data in the current object.
                 /// </summary>
-                public class AuthResponseMessage : MessageBase
-                {
-                    public const byte SUCCESS = 200;
-                    public byte code;
-                    public string message;
-                }
+                /// <returns>The newly built message</returns>
+                protected abstract AuthMessage BuildAuthMessage();
+
+                /// <summary>
+                ///   Tries to authenticate by using the given authentication message.
+                /// </summary>
+                /// <param name="request">The authentication message</param>
+                /// <returns>A pair (response, session) as the result of the auth process</returns>
+                protected abstract Tuple<AuthResponse, Session> Authenticate(AuthMessage request);
 
                 public override void OnStartServer()
                 {
-                    // register a handler for the authentication request we expect from client
-                    NetworkServer.RegisterHandler<AuthRequestMessage>(OnAuthRequestMessage, false);
+                    // Register a handler for the authentication request we expect from client.
+                    NetworkServer.RegisterHandler<AuthMessage>(OnAuthRequestMessage, false);
                 }
 
                 public override void OnStartClient()
                 {
-                    // register a handler for the authentication response we expect from server
-                    NetworkClient.RegisterHandler<AuthResponseMessage>(OnAuthResponseMessage, false);
-                }
-
-                public override void OnServerAuthenticate(NetworkConnection conn)
-                {
-                    // do nothing...wait for AuthRequestMessage from client
-                }
-
-                public override void OnClientAuthenticate(NetworkConnection conn)
-                {
-                    conn.Send(new AuthRequestMessage
-                    {
-                        Username = Username,
-                        Password = Password
-                    });
+                    // Register a handler for the authentication response we expect from server.
+                    NetworkClient.RegisterHandler<AuthResponse>(OnAuthResponseMessage, false);
                 }
 
                 /// <summary>
-                ///   Attempts a username/password authentication. This is intended for common games.
+                ///   When starting the authentication on client side, it
+                ///     builds and sends the authentication request.
                 /// </summary>
-                /// <param name="username">The username to login with</param>
-                /// <param name="password">The password to login with</param>
-                /// <returns>The result, as an authentication response</returns>
-                protected abstract AuthResponseMessage Authenticate(string username, string password);
-
-                private void OnAuthRequestMessage(NetworkConnection conn, AuthRequestMessage msg)
+                /// <param name="conn">The connection to server to send the auth message to</param>
+                public override void OnClientAuthenticate(NetworkConnection conn)
                 {
-                    if (logger.LogEnabled()) logger.LogFormat(LogType.Log, "Authentication Request: {0} {1}", msg.Username, msg.Password);
+                    conn.Send(BuildAuthMessage());
+                }
 
-                    AuthResponseMessage result = Authenticate(msg.Username, msg.Password);
+                /// <summary>
+                ///   When starting the authentication on server side, nothing
+                ///     is expected to be done (however, subclasses may add more
+                ///     behaviour here).
+                /// </summary>
+                /// <param name="conn">The connection to the client trying to login</param>
+                public override void OnServerAuthenticate(NetworkConnection conn)
+                {
+                    // There is nothing to do here.
+                }
 
-                    conn.Send(result);
+                // Tries the authentication and, if success, the server-side workflow
+                //   continues. On failure, it notifies and closes the connection.
+                private void OnAuthRequestMessage(NetworkConnection conn, AuthMessage message)
+                {
+                    if (logger.LogEnabled()) logger.LogFormat(LogType.Log, "Authentication Request: {0}", message);
 
-                    if (result.code == AuthResponseMessage.SUCCESS)
+                    // Step 1.a: Tries to authenticate.
+                    Tuple<AuthResponse, Session> result = Authenticate(message);
+
+                    // Step 1.b: Sends the response to the client side.
+                    conn.Send(result.Item1);
+
+                    if (result.Item1.IsSuccess)
                     {
-                        // Invoke the event to complete a successful authentication
+                        // Step 2: Succeeds authentication and continues the workflow.
+                        //
+                        // Stores the current session in the connection.
+                        conn.authenticationData = result.Item2;
+                        // Invoke the event to complete a successful authentication.
+                        // It will also involve conn.isAuthenticated = true.
                         OnServerAuthenticated.Invoke(conn);
                     }
                     else
                     {
-                        // must set NetworkConnection isAuthenticated = false
+                        // Step 2: Fails authentication and aborts the workflow and connection.
+                        //
+                        // Clears isAuthenticated and session.
                         conn.isAuthenticated = false;
-
-                        // disconnect the client after 1 second so that response message gets delivered
+                        conn.authenticationData = null;
+                        // Finally, disconnect the client after 1 second so that response message gets delivered.
                         StartCoroutine(DelayedDisconnect(conn, 1));
                     }
                 }
 
+                // This coroutine disconnects the client after one second.
                 private IEnumerator DelayedDisconnect(NetworkConnection conn, float waitTime)
                 {
                     yield return new WaitForSeconds(waitTime);
                     conn.Disconnect();
                 }
 
-                private void OnAuthResponseMessage(NetworkConnection conn, AuthResponseMessage msg)
+                // Receives the authentication response. On success, it continues the
+                //   client-side workflow.
+                private void OnAuthResponseMessage(NetworkConnection conn, AuthResponse msg)
                 {
-                    if (msg.code == 100)
+                    if (msg.IsSuccess)
                     {
-                        if (logger.LogEnabled()) logger.LogFormat(LogType.Log, "Authentication Response: {0}", msg.message);
+                        if (logger.LogEnabled()) logger.LogFormat(LogType.Log, "Authentication Response: {0}", msg.Code);
 
-                        // Invoke the event to complete a successful authentication
+                        // Invoke the event to complete a successful authentication.
                         OnClientAuthenticated.Invoke(conn);
                     }
                     else
                     {
-                        logger.LogFormat(LogType.Error, "Authentication Response: {0}", msg.message);
+                        logger.LogFormat(LogType.Error, "Authentication Response: {0}", msg.Code);
 
-                        // Set this on the client for local reference
+                        // Clears isAuthenticated.
                         conn.isAuthenticated = false;
-
-                        // disconnect the client
+                        // Finally, disconnects the client immediately.
                         conn.Disconnect();
                     }
                 }

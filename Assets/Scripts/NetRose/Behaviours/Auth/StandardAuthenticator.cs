@@ -19,11 +19,14 @@ namespace NetRose
             ///   </para>
             /// </summary>
             /// <typeparam name="AuthMessage">The type of the auth message to send to the server to perform login</typeparam>
-            /// <typeparam name="Session">The type of the authenticated data to use as session</typeparam>
-            public abstract class StandardAuthenticator<AuthMessage, Session> : NetworkAuthenticator where AuthMessage : IMessageBase, new()
+            /// <typeparam name="AccountID">The type of the id for the player's account</typeparam>
+            /// <typeparam name="CharacterID">The type of the id for the player's characters</typeparam>
+            /// <typeparam name="PreviewCharacterData">The type of the preview data for the player's characters</typeparam>
+            /// <typeparam name="FullCharacterData">The type of the full data for the player's characters</typeparam>
+            public abstract class StandardAuthenticator<AuthMessage, AccountID, CharacterID, PreviewCharacterData, FullCharacterData> : NetworkAuthenticator where AuthMessage : IMessageBase, new()
             {
                 // The logger to use for these authenticators.
-                private static readonly ILogger logger = LogFactory.GetLogger(typeof(StandardAuthenticator<AuthMessage, Session>));
+                private static readonly ILogger logger = LogFactory.GetLogger(typeof(StandardAuthenticator<AuthMessage, AccountID, CharacterID, PreviewCharacterData, FullCharacterData>));
 
                 /// <summary>
                 ///   An authentication response has 3 fields: whether the request was
@@ -95,8 +98,8 @@ namespace NetRose
                 ///   Tries to authenticate by using the given authentication message.
                 /// </summary>
                 /// <param name="request">The authentication message</param>
-                /// <returns>A pair (response, session) as the result of the auth process</returns>
-                protected abstract Tuple<AuthResponse, Session> Authenticate(AuthMessage request);
+                /// <returns>A pair (response, accountId) as the result of the auth process</returns>
+                protected abstract Tuple<AuthResponse, AccountID> Authenticate(AuthMessage request);
 
                 public override void OnStartServer()
                 {
@@ -138,7 +141,7 @@ namespace NetRose
                     if (logger.LogEnabled()) logger.LogFormat(LogType.Log, "Authentication Request: {0}", message);
 
                     // Step 1.a: Tries to authenticate.
-                    Tuple<AuthResponse, Session> result = Authenticate(message);
+                    Tuple<AuthResponse, AccountID> result = Authenticate(message);
 
                     // Step 1.b: Sends the response to the client side.
                     conn.Send(result.Item1);

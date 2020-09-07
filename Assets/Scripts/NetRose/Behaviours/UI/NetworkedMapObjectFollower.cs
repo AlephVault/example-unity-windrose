@@ -87,7 +87,7 @@ namespace NetRose
                         {
                             if (isServer)
                             {
-                                (NetworkManager.singleton as NetworkWorldManager).MovePlayer(identity, target.gameObject.scene);
+                                NetworkManager.singleton.GetComponent<NetworkedWorld>().MovePlayer(identity, target.gameObject.scene);
                             }
                         }
                         // Both client and server will run this code on their own:
@@ -102,7 +102,7 @@ namespace NetRose
                         // If server side, move to the main world/"online" scene.
                         if (isServer)
                         {
-                            (NetworkManager.singleton as NetworkWorldManager).MovePlayer(identity, SceneManager.GetActiveScene());
+                            NetworkManager.singleton.GetComponent<NetworkedWorld>().MovePlayer(identity, SceneManager.GetActiveScene());
                         }
                     }
 

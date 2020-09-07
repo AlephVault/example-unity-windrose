@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using Mirror;
 using NetRose.Types;
+using NetRose.Behaviours.Auth;
 
 namespace NetRose
 {
@@ -30,17 +31,33 @@ namespace NetRose
         ///       scene to complete their usual lifecycle.
         ///   </para>
         ///   <para>
-        ///     This behaviour will require an authenticator to be
-        ///       added as component, but since this behaviour is
-        ///       generic, a runtime type check will be done to
-        ///       ensure the authenticator being used is of the
-        ///       appropriate type (i.e. a "player source" one with
-        ///       the appropriate types).
+        ///     A runtime type check will be done to ensure the
+        ///       authenticator being used is of the appropriate
+        ///       type (i.e. a "standard" one with the appropriate
+        ///       types). Such behaviour can be extracted from the
+        ///       same object this behaviour belongs to, or from
+        ///       the <see cref="NetworkManager.authenticator"/>
+        ///       property.
         ///   </para>
         /// </summary>
-        [RequireComponent(typeof(NetworkAuthenticator))]
-        public class NetworkWorldManager : NetworkManager
+        /// <typeparam name="AuthMessage">The type of the auth message to send to the server to perform login</typeparam>
+        /// <typeparam name="AccountID">The type of the id for the player's account</typeparam>
+        /// <typeparam name="CharacterID">The type of the id for the player's characters</typeparam>
+        /// <typeparam name="PreviewCharacterData">The type of the preview data for the player's characters</typeparam>
+        /// <typeparam name="FullCharacterData">The type of the full data for the player's characters</typeparam>
+        public class NetworkWorldManager<AuthMessage, AccountID, CharacterID, PreviewCharacterData, FullCharacterData> : NetworkManager where AuthMessage : IMessageBase, new()
         {
+            /// <summary>
+            ///   Triggered when detecting that a bad type of <see cref="NetworkAuthenticator"/>
+            ///     is added as a requirement to this component, or when no instance is added.
+            /// </summary>
+            public class InvalidAuthenticator : Exception
+            {
+                public InvalidAuthenticator() { }
+                public InvalidAuthenticator(string message) : base(message) { }
+                public InvalidAuthenticator(string message, System.Exception inner) : base(message, inner) { }
+            }
+
             /// <summary>
             ///   Triggered when trying to run a method involving scenes / players
             ///     manipulations while the world is not ready (i.e. offline or
@@ -135,10 +152,24 @@ namespace NetRose
             public override void Awake()
             {
                 isWorldReady = false;
-                authenticator = GetComponent<NetworkAuthenticator>();
                 transport.OnServerDisconnected.AddListener(OnClientDisconnectedFromServer);
-                // TODO Check authenticator to be of a generic implementation of PlayerSourceAuthenticator<?, ?, ?>.
-                // TODO or raise an exception.
+                // Try to extract the authenticator from the current property,
+                // or from the same object (as an attached behaviour).
+                if (authenticator == null)
+                {
+                    authenticator = GetComponent<NetworkAuthenticator>();
+                }
+                // If the authenticator is still null, then this is an error.
+                // Also, if not set to an expected type (Standard with the
+                // same type parameters) an error is to be triggered.
+                if (authenticator == null)
+                {
+                    throw new InvalidAuthenticator("No authenticator is set/attached to this network behaviour");
+                }
+                else if (!(authenticator is StandardAuthenticator<AuthMessage, AccountID, CharacterID, PreviewCharacterData, FullCharacterData>))
+                {
+                    throw new InvalidAuthenticator("An incompatible authenticator was assigned. A standard authenticator of the same type parameters must be used");
+                }
                 // TODO Also check the prefab has the expected player component, compatible with the PlayerSourceAuthenticator.
                 base.Awake();
             }

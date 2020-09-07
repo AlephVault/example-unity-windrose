@@ -29,6 +29,38 @@ namespace NetRose
                 private static readonly ILogger logger = LogFactory.GetLogger(typeof(StandardAuthenticator<AuthMessage, AccountID, CharacterID, PreviewCharacterData, FullCharacterData>));
 
                 /// <summary>
+                ///   This exception is thrown on auth/lookup-related errors.
+                /// </summary>
+                public class AccountException : Exception
+                {
+                    /// <summary>
+                    ///   The error code to be serialized.
+                    /// </summary>
+                    public readonly string Code;
+
+                    /// <summary>
+                    ///   The error details to be serialized.
+                    /// </summary>
+                    public readonly Dictionary<string, string> Details;
+
+                    public AccountException(string code, Dictionary<string, string> details)
+                    {
+                        Code = code;
+                        Details = details == null ? new Dictionary<string, string>() : details;
+                    }
+                }
+
+                /// <summary>
+                ///   Throws an <see cref="AccountException"/> with the given details.
+                /// </summary>
+                /// <param name="code">The code for the thrown exception</param>
+                /// <param name="details">More details of the thrown exception</param>
+                protected void AccountError(string code, Dictionary<string, string> details)
+                {
+                    throw new AccountException(code, details);
+                }
+
+                /// <summary>
                 ///   An authentication response has 3 fields: whether the request was
                 ///     successful, its code, and more details.
                 /// </summary>
@@ -86,6 +118,21 @@ namespace NetRose
                         }
                         base.Deserialize(reader);
                     }
+
+                    /// <summary>
+                    ///   Empty constructor for response objects.
+                    /// </summary>
+                    public AuthResponse() {}
+
+                    /// <summary>
+                    ///   Quick constructor for response objects.
+                    /// </summary>
+                    public AuthResponse(bool isSuccess, string code, Dictionary<string, string> details)
+                    {
+                        IsSuccess = isSuccess;
+                        Code = code;
+                        Details = details == null ? new Dictionary<string, string>() : details;
+                    }
                 }
 
                 /// <summary>
@@ -98,8 +145,41 @@ namespace NetRose
                 ///   Tries to authenticate by using the given authentication message.
                 /// </summary>
                 /// <param name="request">The authentication message</param>
-                /// <returns>A pair (response, accountId) as the result of the auth process</returns>
-                protected abstract Tuple<AuthResponse, AccountID> Authenticate(AuthMessage request);
+                /// <returns>The result of the auth process: an account id</returns>
+                protected abstract AccountID Authenticate(AuthMessage request);
+
+                /// <summary>
+                ///   Tells whether the accounts support having several characters or
+                ///     each account is its only character.
+                /// </summary>
+                protected abstract bool AllowsMultipleCharactersPerAccount();
+
+                /// <summary>
+                ///   Lists the characters for a given account ID. For single-character
+                ///     games, the key will be <c>default(CharacterID)</c>, while for
+                ///     multi-character (per account) games, no key will be such default
+                ///     value. On error, this method should raise <see cref="AccountException"/>.
+                /// </summary>
+                /// <param name="accountId">The id of the account to get the characters from</param>
+                /// <returns>A dictionary with the preview of available characters</returns>
+                protected abstract Dictionary<CharacterID, PreviewCharacterData> ListCharacters(AccountID accountId);
+
+                /// <summary>
+                ///   Lists the characters for a given connection. For single-character
+                ///     games, the key will be <c>default(CharacterID)</c>, while for
+                ///     multi-character (per account) games, no key will be such default
+                ///     value. On error, this method should raise <see cref="AccountException"/>.
+                /// </summary>
+                /// <param name="accountId">The connection of the account to get the characters from</param>
+                /// <returns>A dictionary with the preview of available characters</returns>
+                public Dictionary<CharacterID, PreviewCharacterData> ListCharacters(NetworkConnection connection)
+                {
+                    if (!connection.isAuthenticated || connection.authenticationData != null || ((AccountID)(connection.authenticationData)).Equals(default(AccountID)))
+                    {
+                        AccountError("authorization-required", null);
+                    }
+                    return ListCharacters(((AccountID)(connection.authenticationData)));
+                }
 
                 public override void OnStartServer()
                 {
@@ -140,23 +220,21 @@ namespace NetRose
                 {
                     if (logger.LogEnabled()) logger.LogFormat(LogType.Log, "Authentication Request: {0}", message);
 
-                    // Step 1.a: Tries to authenticate.
-                    Tuple<AuthResponse, AccountID> result = Authenticate(message);
-
-                    // Step 1.b: Sends the response to the client side.
-                    conn.Send(result.Item1);
-
-                    if (result.Item1.IsSuccess)
+                    try
                     {
+                        // Step 1.a: Tries to authenticate.
+                        AccountID result = Authenticate(message);
+                        // Step 1.b: Sends a success response to the client side.
+                        conn.Send(new AuthResponse(true, "success", new Dictionary<string, string>()));
                         // Step 2: Succeeds authentication and continues the workflow.
                         //
                         // Stores the current session in the connection.
-                        conn.authenticationData = result.Item2;
+                        conn.authenticationData = result;
                         // Invoke the event to complete a successful authentication.
                         // It will also involve conn.isAuthenticated = true.
                         OnServerAuthenticated.Invoke(conn);
                     }
-                    else
+                    catch (AccountException e)
                     {
                         // Step 2: Fails authentication and aborts the workflow and connection.
                         //

@@ -13,22 +13,18 @@ namespace NetRose
         {
             /// <summary>
             ///   <para>
-            ///     A standard authenticator involves several steps like:
+            ///     A standard authenticator involves two steps:
             ///     - Building and sending an auth message to the server.
             ///     - Authenticating from the received auth message in server.
             ///       The result is a response, and a session object.
-            ///     - Get an account's characters.
             ///   </para>
             /// </summary>
             /// <typeparam name="AuthMessage">The type of the auth message to send to the server to perform login</typeparam>
             /// <typeparam name="AccountID">The type of the id for the player's account</typeparam>
-            /// <typeparam name="CharacterID">The type of the id for the player's characters</typeparam>
-            /// <typeparam name="PreviewCharacterData">The type of the preview data for the player's characters</typeparam>
-            /// <typeparam name="FullCharacterData">The type of the full data for the player's characters</typeparam>
-            public abstract class StandardAuthenticator<AuthMessage, AccountID, CharacterID, PreviewCharacterData, FullCharacterData> : NetworkAuthenticator where AuthMessage : IMessageBase, new()
+            public abstract class StandardAuthenticator<AuthMessage, AccountID> : NetworkAuthenticator where AuthMessage : IMessageBase, new()
             {
                 // The logger to use for these authenticators.
-                private static readonly ILogger logger = LogFactory.GetLogger(typeof(StandardAuthenticator<AuthMessage, AccountID, CharacterID, PreviewCharacterData, FullCharacterData>));
+                private static readonly ILogger logger = LogFactory.GetLogger(typeof(StandardAuthenticator<AuthMessage, AccountID>));
 
                 /// <summary>
                 ///   This exception is thrown on auth/lookup-related errors.
@@ -156,78 +152,6 @@ namespace NetRose
                 /// <returns>The result of the auth process: an account id</returns>
                 protected abstract AccountID Authenticate(AuthMessage request);
 
-                /// <summary>
-                ///   Tells whether the accounts support having several characters or
-                ///     each account is its only character.
-                /// </summary>
-                public abstract bool AllowsMultipleCharactersPerAccount();
-
-                /// <summary>
-                ///   Lists the characters for a given account ID. For single-character
-                ///     games, the key will be <c>default(CharacterID)</c>, while for
-                ///     multi-character (per account) games, no key will be such default
-                ///     value. On error, this method should raise <see cref="AccountException"/>.
-                ///     This method should be implemented as asynchronous.
-                /// </summary>
-                /// <param name="accountId">The id of the account to get the characters from</param>
-                /// <returns>A dictionary with the preview of available characters</returns>
-                protected abstract Task<Dictionary<CharacterID, PreviewCharacterData>> ListCharacters(AccountID accountId);
-
-                /// <summary>
-                ///   Lists the characters for a given connection. For single-character
-                ///     games, the key will be <c>default(CharacterID)</c>, while for
-                ///     multi-character (per account) games, no key will be such default
-                ///     value. On error, this method will raise <see cref="AccountException"/>.
-                ///     On missing authentication data, this method will also raise the
-                ///     same type of error. This task is asynchronous and must be waited for.
-                /// </summary>
-                /// <param name="connection">The connection of the account to get the characters from</param>
-                /// <returns>A dictionary with the preview of available characters</returns>
-                public async Task<Dictionary<CharacterID, PreviewCharacterData>> ListCharacters(NetworkConnection connection)
-                {
-                    if (!connection.isAuthenticated || connection.authenticationData != null || ((AccountID)connection.authenticationData).Equals(default(AccountID)))
-                    {
-                        AccountError("authorization-required", null);
-                    }
-                    return await ListCharacters((AccountID)connection.authenticationData);
-                }
-
-                /// <summary>
-                ///   Gets the full data for a character in an account, give both the account
-                ///     id and the character id as well. For single-character games, the only
-                ///     valid character id is <c>default(CharacterID)</c>. For multi-character
-                ///     games, no id will be <c>default(CharacterID)</c>. On invalid character
-                ///     id error, an <see cref="AccountException"/> should be raised. Custom
-                ///     conditions can also trigger an <see cref="AccountException"/> as needed.
-                ///     This method should be implemented as asynchronous.
-                /// </summary>
-                /// <param name="accountID">The id of the account to get a character's full data from</param>
-                /// <param name="characterID">The id of the character for which the data is being retrieved</param>
-                /// <returns>The full data of the chosen character</returns>
-                protected abstract Task<FullCharacterData> Load(AccountID accountID, CharacterID characterID);
-
-                /// <summary>
-                ///   Gets the full data for a character in an account, give both the connection
-                ///     and the character id as well. For single-character games, the only valid
-                ///     character id is <c>default(CharacterID)</c>. For multi-character games,
-                ///     no id will be <c>default(CharacterID)</c>. On invalid character id error,
-                ///     an <see cref="AccountException"/> will be risen. Custom conditions will
-                ///     also trigger an <see cref="AccountException"/> as needed. On missing
-                ///     authentication data, this method will also raise the same type of error.
-                ///     This task is asynchronous and must be waited for.
-                /// </summary>
-                /// <param name="accountID">The connection to get a character's full data from</param>
-                /// <param name="characterID">The id of the character for which the data is being retrieved</param>
-                /// <returns>The full data of the chosen character</returns>
-                public async Task<FullCharacterData> Load(NetworkConnection connection, CharacterID characterID)
-                {
-                    if (!connection.isAuthenticated || connection.authenticationData != null || ((AccountID)(connection.authenticationData)).Equals(default(AccountID)))
-                    {
-                        AccountError("authorization-required", null);
-                    }
-                    return await Load((AccountID)connection.authenticationData, characterID);
-                }
-
                 public override void OnStartServer()
                 {
                     // Register a handler for the authentication request we expect from client.
@@ -283,6 +207,8 @@ namespace NetRose
                     }
                     catch (AccountException e)
                     {
+                        // Step 1.b: Send a failure response to the client side.
+                        conn.Send(new AuthResponse(false, e.Code, e.Details));
                         // Step 2: Fails authentication and aborts the workflow and connection.
                         //
                         // Clears isAuthenticated and session.

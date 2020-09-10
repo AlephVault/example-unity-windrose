@@ -236,7 +236,7 @@ namespace NetRose
             private void RefreshPlayerTrack(NetworkIdentity player)
             {
                 Scene scene = player.gameObject.scene;
-                if (scene == gameObject.scene || singletonLoadedScenes.ContainsValue(scene) || templateLoadedScenes.ContainsValue(scene))
+                if (scene == gameObject.scene || ContainsScene(scene))
                 {
                     Scene oldScene;
                     HashSet<NetworkIdentity> players;
@@ -423,7 +423,7 @@ namespace NetRose
                 {
                     throw new InactiveConnectionException("Cannot move a network identity, across scenes, with an inactive connection");
                 }
-                else if (!singletonLoadedScenes.ContainsValue(newScene) && !templateLoadedScenes.ContainsValue(newScene) && newScene != gameObject.scene)
+                else if (!ContainsScene(newScene) && newScene != gameObject.scene)
                 {
                     throw new SceneNotLoadedException("Cannot move a network identity, across scenes, to a target scene that does not belong to this world manager");
                 }
@@ -460,6 +460,16 @@ namespace NetRose
                     identity.connectionToClient.Send(new SceneMessage { sceneName = newScene.name, sceneOperation = SceneOperation.LoadAdditive });
                     // The player will be, in the end, refreshed into the new scene.
                 }
+            }
+
+            /// <summary>
+            ///   Checks whether a scene belongs to this world or not.
+            /// </summary>
+            /// <param name="scene">The scene to check</param>
+            /// <returns>Whether is among the template loaded or the singleton loaded scenes</returns>
+            public bool ContainsScene(Scene scene)
+            {
+                return singletonLoadedScenes.ContainsValue(scene) || templateLoadedScenes.ContainsValue(scene);
             }
 
             /* ************************* Events will start here *********************** */

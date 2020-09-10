@@ -70,9 +70,24 @@ namespace NetRose
                     }
                     set
                     {
+                        // Sets null if the new target is null.
+                        // If the new target is not null, it will
+                        // only take it if it belongs to a scene
+                        // in the same world.
+
+                        NetworkWorldManager manager = NetworkManager.singleton.GetComponent<NetworkWorldManager>();
                         NetworkedMapObject oldTarget = target ? target.GetComponent<NetworkedMapObject>() : null;
-                        target = value.GetComponent<NetworkIdentity>();
-                        onTargetChanged.Invoke(oldTarget, value);
+
+                        if (value == null)
+                        {
+                            target = null;
+                            onTargetChanged.Invoke(oldTarget, value);
+                        }
+                        else if (manager.ContainsScene(value.gameObject.scene))
+                        {
+                            target = value.GetComponent<NetworkIdentity>();
+                            onTargetChanged.Invoke(oldTarget, value);
+                        }
                     }
                 }
 
@@ -87,7 +102,21 @@ namespace NetRose
                         {
                             if (isServer)
                             {
-                                NetworkManager.singleton.GetComponent<NetworkedWorld>().MovePlayer(identity, target.gameObject.scene);
+                                // If the target belongs to an in-world scene,
+                                //   Move to that scene.
+                                // Otherwise,
+                                //   Release the target, for it went out of the reach
+                                //   (in the next frame, it will move this follower
+                                //    object to the main scene).
+                                NetworkWorldManager manager = NetworkManager.singleton.GetComponent<NetworkWorldManager>();
+                                if (manager.ContainsScene(target.gameObject.scene))
+                                {
+                                    manager.MovePlayer(identity, target.gameObject.scene);
+                                }
+                                else
+                                {
+                                    Target = null;
+                                }
                             }
                         }
                         // Both client and server will run this code on their own:
@@ -102,7 +131,7 @@ namespace NetRose
                         // If server side, move to the main world/"online" scene.
                         if (isServer)
                         {
-                            NetworkManager.singleton.GetComponent<NetworkedWorld>().MovePlayer(identity, SceneManager.GetActiveScene());
+                            NetworkManager.singleton.GetComponent<NetworkWorldManager>().MovePlayer(identity, SceneManager.GetActiveScene());
                         }
                     }
 

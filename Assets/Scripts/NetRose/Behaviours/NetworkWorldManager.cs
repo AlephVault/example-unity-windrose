@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using Mirror;
 using NetRose.Types;
@@ -472,29 +473,60 @@ namespace NetRose
                 return singletonLoadedScenes.ContainsValue(scene) || templateLoadedScenes.ContainsValue(scene);
             }
 
+            /// <summary>
+            ///   Event class to forward what happens to a connection.
+            /// </summary>
+            public class ConnectionEvent : UnityEvent<NetworkConnection> {};
+
+            /// <summary>
+            ///   This event triggers when a new connection is established.
+            ///     This happens right after authentication, if any
+            ///     authenticator is set to this network manager, and
+            ///     before the client sends the message to create the
+            ///     player (which creates the player and refreshes the
+            ///     occupancy state for the first time).
+            /// </summary>
+            public readonly ConnectionEvent onConnected = new ConnectionEvent();
+
+            /// <summary>
+            ///   This event triggers when a connection is terminated.
+            ///     The occupancy state is cleared, the player identity
+            ///     is destroyed, and finally this event is triggered.
+            /// </summary>
+            public readonly ConnectionEvent onDisconnected = new ConnectionEvent();
+
             /* ************************* Events will start here *********************** */
 
             public override void Awake()
             {
                 isWorldReady = false;
-                transport.OnServerDisconnected.AddListener(OnClientDisconnectedFromServer);
             }
 
-            public override void OnDestroy()
+            /// <summary>
+            ///   Invokes the <see cref="onConnected"/> event to notify
+            ///     the initialization of the connection.
+            /// </summary>
+            /// <param name="conn">The connection being started</param>
+            public override void OnServerConnect(NetworkConnection conn)
             {
-                base.OnDestroy();
-                transport.OnServerDisconnected.RemoveListener(OnClientDisconnectedFromServer);
+                onConnected.Invoke(conn);
             }
 
-            // When a client disconnects from the transport, then all the
-            // entries involving this connection will be removed from the
-            // pending players list.
-            private void OnClientDisconnectedFromServer(int connectionId)
+            /// <summary>
+            ///   Removes the connection also from the pending players set.
+            ///     Also the player must be popped out from the tracked state.
+            ///     Then the player will be destroyed, and implementations
+            ///     must attend OnStopServer to perform the related cleanups.
+            ///     In the end, it invokes the <see cref="onDisconnected"/>
+            ///     event to notify the termination of the connection.
+            /// </summary>
+            /// <param name="conn">The connection being terminated</param>
+            public override void OnServerDisconnect(NetworkConnection conn)
             {
-                pendingPlayers.RemoveWhere((NetworkConnection connection) =>
-                {
-                    return connection.connectionId == connectionId;
-                });
+                if (conn.identity) ClearPlayerTrack(conn.identity);
+                pendingPlayers.Remove(conn);
+                base.OnServerDisconnect(conn);
+                onDisconnected.Invoke(conn);
             }
 
             /// <summary>
@@ -541,18 +573,6 @@ namespace NetRose
                 {
                     pendingPlayers.Add(conn);
                 }
-            }
-
-            /// <summary>
-            ///   On client disconnection from the server, the player must be
-            ///     popped out. The player will be destroyed, and implementations
-            ///     must attend OnStopServer to perform the related cleanups.
-            /// </summary>
-            /// <param name="conn"></param>
-            public override void OnServerDisconnect(NetworkConnection conn)
-            {
-                if (conn.identity) ClearPlayerTrack(conn.identity);
-                base.OnServerDisconnect(conn);
             }
         }
     }

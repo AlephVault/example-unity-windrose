@@ -141,7 +141,7 @@ namespace NetRose
                     // scene (this will NOT be checked/enforced but should be a rule of
                     // thumb for all games) and its (x, y) position will be updated, but
                     // not its z-position. Its rotation will also be updated.
-                    if (isClient && camera)
+                    if (isLocalPlayer && camera)
                     {
                         if (!camera.orthographic) camera.orthographic = true;
                         camera.transform.position = new Vector3(transform.position.x, transform.position.y, camera.transform.position.z);

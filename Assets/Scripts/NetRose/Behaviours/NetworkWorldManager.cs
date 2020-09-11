@@ -218,16 +218,17 @@ namespace NetRose
             // this instance of network manager.
             private void StopAll()
             {
-                // Stop client first, so the server cleans up the client.
-                if (NetworkClient.isConnected)
-                {
-                    StopClient();
-                }
-                // Stop server after stopping client (in particular needed
-                // to do in this order for the host game type).
-                if (NetworkServer.active)
+                if (mode == NetworkManagerMode.ServerOnly)
                 {
                     StopServer();
+                }
+                else if (manager.mode == NetworkManagerMode.Host)
+                {
+                    StopHost();
+                }
+                else if (manager.mode == NetworkManagerMode.ClientOnly)
+                {
+                    StopClient();
                 }
                 Destroy(gameObject);
             }

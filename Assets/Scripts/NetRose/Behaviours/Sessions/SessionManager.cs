@@ -22,6 +22,8 @@ namespace NetRose
             ///       makes sense in server side).
             ///   </para>
             ///   <para>
+            ///     Sessions will mostly have an autonomous behaviour
+            ///       regarding maintenance and termination.
             ///   </para>
             /// </summary>
             /// <typeparam name="AccountID">The type of the id of an account</typeparam>
@@ -190,6 +192,14 @@ namespace NetRose
                 /// <returns>The message to send</returns>
                 public abstract Messages.InvalidCharacterID<CharacterID> MakeInvalidCharacterMessage(CharacterID characterId);
 
+                /// <summary>
+                ///   Builds a custom message to send that a certain character id
+                ///     does not exist for a given account.
+                /// </summary>
+                /// <param name="characterId">The id to serialize</param>
+                /// <returns>The message to send</returns>
+                public abstract Messages.InvalidCharacterID<CharacterID> MakeNonExistingCharacterMessage(CharacterID characterId);
+
                 /***********************************************************************************/
                 /***********************************************************************************/
                 /***********************************************************************************/
@@ -206,6 +216,7 @@ namespace NetRose
                         if (ResolveDuplicates == DuplicateAccountRule.Kick)
                         {
                             connection.Send(new Messages.DupeKicked());
+                            connection.authenticationData = null;
                             connection.Disconnect();
                         }
                         else // DuplicateAccountRule.Ghost

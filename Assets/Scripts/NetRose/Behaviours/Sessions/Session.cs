@@ -168,8 +168,15 @@ namespace NetRose
                 {
                     try
                     {
-                        CurrentCharacterData = await Manager.GetCharacterData(AccountID, CurrentCharacterID);
-                        // TODO event: character data refreshed.
+                        CharacterFullData data = await Manager.GetCharacterData(AccountID, CurrentCharacterID);
+                        if (!data.Equals(default(CharacterFullData)))
+                        {
+                            // TODO event: character data refreshed.
+                        }
+                        else
+                        {
+                            // TODO force the release of the current character.
+                        }
                     }
                     catch(Exception e)
                     {
@@ -228,7 +235,8 @@ namespace NetRose
                 /// <param name="characterId">The ID of the character to pick</param>
                 public async Task PickCharacter(CharacterID characterId)
                 {
-                    if (Manager.AccountsHaveMultipleCharacters())
+                    bool multiple = Manager.AccountsHaveMultipleCharacters();
+                    if (multiple)
                     {
                         if (CurrentCharacterID.Equals(default(CharacterID)))
                         {
@@ -256,14 +264,26 @@ namespace NetRose
 
                     try
                     {
-                        CurrentCharacterData = await Manager.GetCharacterData(AccountID, characterId);
-                        // TODO event: character selected.
-                        // TODO message: character selected.
+                        CharacterFullData data = await Manager.GetCharacterData(AccountID, characterId);
+                        if (!data.Equals(default(CharacterFullData)))
+                        {
+                            CurrentCharacterID = characterId;
+                            Connection.Send(Manager.MakeCurrentCharacterMessage(characterId, CurrentCharacterData));
+                            // TODO event: character selected.
+                        }
+                        else if (multiple)
+                        {
+                            Connection.Send(Manager.MakeNonExistingCharacterMessage(characterId));
+                        }
+                        else
+                        {
+                            Connection.Send(new Messages.NoCharacterAvailable());
+                            // TODO event: no character available.
+                        }
                     }
                     catch (Exception e)
                     {
                         AnErrorOccurred(string.Format("An exception was thrown while [re]loading the current character data for the session with account id: {0} and character id: {1}", AccountID, CurrentCharacterID), e);
-                        return;
                     }
                 }
 
@@ -273,28 +293,33 @@ namespace NetRose
                 ///     be invoked in multi-character account games.
                 /// </summary>
                 /// <returns></returns>
-                public void ReleaseCharacter()
+                public async void ReleaseCharacter()
                 {
                     if (!Manager.AccountsHaveMultipleCharacters())
                     {
-                        // TODO message: cannot release a character in single-character games.
-                        Connection.Disconnect();
+                        Connection.Send(new Messages.CannotReleaseCharacterInSingleMode());
                         return;
                     }
 
                     if (CurrentCharacterData.Equals(default(CharacterFullData)))
                     {
-                        // TODO message: cannot release a character while none is picked.
-                        Connection.Disconnect();
+                        Connection.Send(new Messages.NotUsingCharacter());
                         return;
                     }
 
                     CurrentCharacterID = default(CharacterID);
                     CurrentCharacterData = default(CharacterFullData);
-                    // TODO message: character released.
+                    Connection.Send(new Messages.ReleasingCharacter());
                     // TODO event: character released.
-                    // TODO reload character list.
-                    // TODO message: please select character.
+                    try
+                    {
+                        List<Tuple<CharacterID, CharacterPreviewData>> characters = await Manager.ListCharacters(AccountID);
+                        Connection.Send(Manager.MakeChooseCharacterMessage(characters));
+                    }
+                    catch (Exception e)
+                    {
+                        // TODO error occurred. Also kill connection.
+                    }
                 }
 
                 /// <summary>
@@ -322,7 +347,7 @@ namespace NetRose
                     {
                         // Checking that the character full data is not empty
                         // should always be enough.
-                        return !CurrentCharacterData.Equals(default(CharacterFullData));
+                        return IsActive && !CurrentCharacterData.Equals(default(CharacterFullData));
                     }
                 }
 

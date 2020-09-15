@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 using Mirror;
 
 namespace NetRose
@@ -16,8 +17,15 @@ namespace NetRose
             ///   This is not just a session structure, but also notifies
             ///     all their changes to the listeners attached to it.
             /// </summary>
-            public class Session<AID, AData, CharacterID, CharacterFullData>
+            public class Session<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData>
             {
+                static readonly ILogger logger = LogFactory.GetLogger(typeof(Session<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData>));
+
+                /// <summary>
+                ///   The manager this session is bound to.
+                /// </summary>
+                public readonly SessionManager<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData> Manager;
+
                 /// <summary>
                 ///   The connection this session is related to.
                 /// </summary>
@@ -63,16 +71,25 @@ namespace NetRose
                 /// <param name="connection">The connection supporting the session</param>
                 /// <param name="accountId">The account id linked to the session</param>
                 /// <param name="accountData">The current data of the account</param>
-                public Session(NetworkConnection connection, AID accountId, AData accountData)
-                {
+                public Session(
+                    SessionManager<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData> manager,
+                    NetworkConnection connection, AID accountId
+                ) {
+                    Manager = manager;
                     Connection = connection;
                     AccountID = accountId;
-                    AccountData = accountData;
+                    AccountData = default(AData);
                     CurrentCharacterID = default(CharacterID);
                     CurrentCharacterData = default(CharacterFullData);
                     customData = new Dictionary<string, object>();
+                    Connection.Send(new Messages.SessionStarted());
                 }
 
+                /// <summary>
+                ///   Sets and retrieves custom session data.
+                /// </summary>
+                /// <param name="key">The key to set/retrieve the data for</param>
+                /// <returns>The ression data for that key</returns>
                 public object this[string key]
                 {
                     get
@@ -86,6 +103,12 @@ namespace NetRose
                     }
                 }
 
+                /// <summary>
+                ///   Removes a single field from the custom /preferences
+                ///     session data.
+                /// </summary>
+                /// <param name="key">The key to remove</param>
+                /// <returns>Whether it was removed or not</returns>
                 public bool Remove(string key)
                 {
                     if (customData.Remove(key))
@@ -99,10 +122,193 @@ namespace NetRose
                     }
                 }
 
+                /// <summary>
+                ///   Clears all the custom / preferences data from
+                ///     the session.
+                /// </summary>
                 public void Clear()
                 {
                     customData.Clear();
                     // TODO event: custom data cleared.
+                }
+
+                /// <summary>
+                ///   Reloads the account data for this session. This
+                ///     task is asynchronous and must be waited for.
+                /// </summary>
+                public async Task RefreshAccountData()
+                {
+                    try
+                    {
+                        AccountData = await Manager.GetAccountData(AccountID);
+                    }
+                    catch(Exception e)
+                    {
+                        AnErrorOccurred(string.Format("An exception was thrown while [re]loading the account data for the session with account id: {0}", AccountID), e);
+                        return;
+                    }
+
+                    if (AccountData.Equals(default(AData)))
+                    {
+                        logger.LogFormat(LogType.Log, "Missing account data for account id: {0}", AccountID);
+                        Connection.Send(new Messages.MissingAccountData());
+                        Connection.Disconnect();
+                    }
+                    else
+                    {
+                        // TODO event: account data refreshed.
+                    }
+                }
+
+                /// <summary>
+                ///   Reloads the character data for this session. This
+                ///     task is asynchronous and must be waited for.
+                /// </summary>
+                public async Task RefreshCharacterData()
+                {
+                    try
+                    {
+                        CurrentCharacterData = await Manager.GetCharacterData(AccountID, CurrentCharacterID);
+                        // TODO event: character data refreshed.
+                    }
+                    catch(Exception e)
+                    {
+                        AnErrorOccurred(string.Format("An exception was thrown while [re]loading the current character data for the session with account id: {0} and character id: {1}", AccountID, CurrentCharacterID), e);
+                        return;
+                    }
+                }
+
+                // Clears the current character, restarting the
+                // appropriate flow to pick one.
+                private async Task InitDefaultCharacterStatus()
+                {
+                    // TODO fix this method - it is considered to work the first time
+                    // TODO but it is allowed to be called multiple times. So the logic
+                    // TODO must be changed as well.
+                    try
+                    {
+                        if (Manager.AccountsHaveMultipleCharacters())
+                        {
+                            Connection.Send(Manager.MakeChooseCharacterMessage(await Manager.ListCharacters(AccountID)));
+                            // TODO event: no character selected.
+                        }
+                        else
+                        {
+                            CharacterFullData data = await Manager.GetCharacterData(AccountID, default(CharacterID));
+                            if (data.Equals(default(CharacterFullData)))
+                            {
+                                Connection.Send(new Messages.NoCharacterAvailable());
+                                // TODO event: no character available.
+                            }
+                            else
+                            {
+                                CurrentCharacterID = default(CharacterID);
+                                CurrentCharacterData = data;
+                                Connection.Send(Manager.MakeCurrentCharacterMessage(CurrentCharacterID, CurrentCharacterData));
+                                // TODO event: character selected.
+                            }
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        AnErrorOccurred(string.Format("An exception was thrown while [re]starting the whole session flow for a session with account id: {0}", AccountID), e);
+                    }
+                }
+
+                /// <summary>
+                ///   Picks a character from the available ones. The character
+                ///     id must be valid, and this method can only be invoked
+                ///     while not already having a character. The id of the
+                ///     character must be the default in single-character
+                ///     account games, and not the default in multi-character
+                ///     account games. Failure to meet the conditions, or errors
+                ///     being raised, will result in the session being terminated.
+                ///     This task is asynchronous and must be waited for.
+                /// </summary>
+                /// <param name="characterId">The ID of the character to pick</param>
+                public async Task PickCharacter(CharacterID characterId)
+                {
+                    if (Manager.AccountsHaveMultipleCharacters())
+                    {
+                        if (CurrentCharacterID.Equals(default(CharacterID)))
+                        {
+                            Connection.Send(Manager.MakeInvalidCharacterMessage(characterId));
+                            Connection.Disconnect();
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        if (!CurrentCharacterID.Equals(default(CharacterID)))
+                        {
+                            Connection.Send(Manager.MakeInvalidCharacterMessage(characterId));
+                            Connection.Disconnect();
+                            return;
+                        }
+                    }
+
+                    if (!CurrentCharacterData.Equals(default(CharacterFullData)))
+                    {
+                        Connection.Send(new Messages.AlreadyUsingCharacter());
+                        Connection.Disconnect();
+                        return;
+                    }
+
+                    try
+                    {
+                        CurrentCharacterData = await Manager.GetCharacterData(AccountID, characterId);
+                        // TODO event: character selected.
+                        // TODO message: character selected.
+                    }
+                    catch (Exception e)
+                    {
+                        AnErrorOccurred(string.Format("An exception was thrown while [re]loading the current character data for the session with account id: {0} and character id: {1}", AccountID, CurrentCharacterID), e);
+                        return;
+                    }
+                }
+
+                /// <summary>
+                ///   Releases the currently selected character. A character
+                ///     must currently be selected, and this method can only
+                ///     be invoked in multi-character account games.
+                /// </summary>
+                /// <returns></returns>
+                public void ReleaseCharacter()
+                {
+                    if (!Manager.AccountsHaveMultipleCharacters())
+                    {
+                        // TODO message: cannot release a character in single-character games.
+                        Connection.Disconnect();
+                        return;
+                    }
+
+                    if (CurrentCharacterData.Equals(default(CharacterFullData)))
+                    {
+                        // TODO message: cannot release a character while none is picked.
+                        Connection.Disconnect();
+                        return;
+                    }
+
+                    CurrentCharacterID = default(CharacterID);
+                    CurrentCharacterData = default(CharacterFullData);
+                    // TODO message: character released.
+                    // TODO event: character released.
+                    // TODO reload character list.
+                    // TODO message: please select character.
+                }
+
+                /// <summary>
+                ///   Resets the session to its default state. This implies:
+                ///     - [Re]Loads the account data.
+                ///     - Starts a flow for the multi/single character(s).
+                ///     - Clears all the user data.
+                /// </summary>
+                /// <returns></returns>
+                public async Task Reset()
+                {
+                    await RefreshAccountData();
+                    await InitDefaultCharacterStatus();
+                    Clear();
                 }
 
                 /// <summary>
@@ -114,14 +320,30 @@ namespace NetRose
                 {
                     get
                     {
-                        // Two distinct cases are covered here: the current
-                        //   character ID is not the default one (for the
-                        //   multi-character mode) or (for the single-character
-                        //   account mode which uses the default value for
-                        //   character id) the character full data is not the
-                        //   default value.
-                        return !CurrentCharacterID.Equals(default(CharacterID)) || !CurrentCharacterData.Equals(default(CharacterFullData));
+                        // Checking that the character full data is not empty
+                        // should always be enough.
+                        return !CurrentCharacterData.Equals(default(CharacterFullData));
                     }
+                }
+
+                /// <summary>
+                ///   Tells whether this session is active or was terminated.
+                /// </summary>
+                public bool IsActive
+                {
+                    get
+                    {
+                        return Manager.HasSession(this);
+                    }
+                }
+
+                // Logs the error, blindly notifies to the client, and ends.
+                private void AnErrorOccurred(string message, Exception e)
+                {
+                    logger.LogError(message);
+                    logger.LogException(e);
+                    Connection.Send(new Messages.SessionUnknownError());
+                    Connection.Disconnect();
                 }
             }
         }

@@ -36,6 +36,9 @@ namespace NetRose
                 // The singleton network manager, which must be a world manager.
                 private NetworkWorldManager manager;
 
+                // Keeps and retrieves the sessions given their account id.
+                private Dictionary<AccountID, Session<AccountID, AccountData, CharacterID, CharacterPreviewData, CharacterFullData>> sessions = new Dictionary<AccountID, Session<AccountID, AccountData, CharacterID, CharacterPreviewData, CharacterFullData>>();
+
                 /// <summary>
                 ///   What to do if an account is logging again (i.e. how to handle
                 ///     multiple temporary simultaneous copies of the same accounts).
@@ -94,6 +97,7 @@ namespace NetRose
 
                 /***********************************************************************************/
                 /*********** Methods of account/character(s) data-fetching *************************/
+                /*********** and also serialization to the client(s)       *************************/
                 /***********************************************************************************/
 
                 /// <summary>
@@ -161,65 +165,81 @@ namespace NetRose
                     return GetAccountCharacterFetcher().AccountsHaveMultipleCharacters();
                 }
 
+                /// <summary>
+                ///   Builds a custom message to send the characters list to the
+                ///     client side.
+                /// </summary>
+                /// <param name="characters">The characters to serialize</param>
+                /// <returns>The message to send</returns>
+                public abstract Messages.ChooseCharacter<CharacterID, CharacterPreviewData> MakeChooseCharacterMessage(IReadOnlyList<Tuple<CharacterID, CharacterPreviewData>> characters);
+
+                /// <summary>
+                ///   Builds a custom message to send the currently selected
+                ///     character's full data.
+                /// </summary>
+                /// <param name="characterId">The id to serialize</param>
+                /// <param name="characterFullData">The full data to serialize</param>
+                /// <returns>The message to send</returns>
+                public abstract Messages.ChooseCharacter<CharacterID, CharacterPreviewData> MakeCurrentCharacterMessage(CharacterID characterId, CharacterFullData characterFullData);
+
+                /// <summary>
+                ///   Builds a custom message to send that a certain character id
+                ///     is invalid.
+                /// </summary>
+                /// <param name="characterId">The id to serialize</param>
+                /// <returns>The message to send</returns>
+                public abstract Messages.InvalidCharacterID<CharacterID> MakeInvalidCharacterMessage(CharacterID characterId);
+
                 /***********************************************************************************/
                 /***********************************************************************************/
                 /***********************************************************************************/
 
                 private async void InitSession(NetworkConnection connection, AccountID accountId)
                 {
-                    AccountData data;
-                    try
+                    // If there is a connection with the same account id, it must
+                    // kick either of the connections. If the new connection is
+                    // not kicked (due to ghost mode, or to not having duplicate
+                    // logins) then the process must start for the session.
+                    Session<AccountID, AccountData, CharacterID, CharacterPreviewData, CharacterFullData> currentSession;
+                    if (sessions.TryGetValue(accountId, out currentSession))
                     {
-                        data = await GetAccountData(accountId);
-                    }
-                    catch(Exception e)
-                    {
-                        // This is a kind of diaper: all the exceptions will be captured,
-                        // logged, and blind-notified to the client.
-                        logger.LogError("An exception was thrown while initializing a new session");
-                        logger.LogException(e);
-                        connection.Send(new Messages.SessionInitializationError());
-                        return;
-                    }
-
-                    if (data.Equals(default(AccountData)))
-                    {
-                        connection.Send(new Messages.MissingAccountData());
-                        connection.Disconnect();
+                        if (ResolveDuplicates == DuplicateAccountRule.Kick)
+                        {
+                            connection.Send(new Messages.DupeKicked());
+                            connection.Disconnect();
+                        }
+                        else // DuplicateAccountRule.Ghost
+                        {
+                            connection.Send(new Messages.DupeGhosted());
+                            currentSession.Connection.Disconnect();
+                            await InstallAndLaunchSession(connection, accountId);
+                        }
                     }
                     else
                     {
-                        // If there is a connection with the same account id, it must
-                        // kick either of the connections.
-                        NetworkConnection otherConnection;
-                        if (connectionByAccountID.TryGetValue(accountId, out otherConnection))
-                        {
-                            if (ResolveDuplicates == DuplicateAccountRule.Kick)
-                            {
-                                connection.Send(new Messages.DupeKicked());
-                                connection.Disconnect();
-                                // Nothing else occurs here to this connection.
-                            }
-                            else // DuplicateAccountRule.Ghost
-                            {
-                                connection.Send(new Messages.DupeGhosted());
-                                otherConnection.Disconnect();
-                                // TODO:
-                                // - PUT session data.
-                                // - Network-Notify session started.
-                                // - Start session flow (e.g. "empty" or "pick character").
-                                //   - Notify session started (callbacks).
-                            }
-                        }
-                        else
-                        {
-                            // TODO:
-                            // - PUT session data.
-                            // - Network-Notify session started.
-                            // - Start session flow (e.g. "empty" or "pick character").
-                            //   - Notify session stopped (callbacks).
-                        }
+                        await InstallAndLaunchSession(connection, accountId);
                     }
+                }
+
+                // Installs and launches the newly-approved session.
+                private async Task InstallAndLaunchSession(NetworkConnection connection, AccountID accountId)
+                {
+                    Session<AccountID, AccountData, CharacterID, CharacterPreviewData, CharacterFullData> session = new Session<AccountID, AccountData, CharacterID, CharacterPreviewData, CharacterFullData>(
+                        this, connection, accountId
+                    );
+                    sessions.Add(accountId, session);
+                    await session.Reset();
+                }
+
+                /// <summary>
+                ///   Tells whether a session is active in this manager.
+                /// </summary>
+                /// <param name="session">The session to check</param>
+                /// <returns>Whether it is active or not</returns>
+                public bool HasSession(Session<AccountID, AccountData, CharacterID, CharacterPreviewData, CharacterFullData> session)
+                {
+                    Session<AccountID, AccountData, CharacterID, CharacterPreviewData, CharacterFullData> outSession;
+                    return sessions.TryGetValue(session.AccountID, out outSession) && outSession == session;
                 }
 
                 /***************************************************************************/

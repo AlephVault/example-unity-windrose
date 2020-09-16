@@ -222,11 +222,11 @@ namespace NetRose
                 {
                     StopServer();
                 }
-                else if (manager.mode == NetworkManagerMode.Host)
+                else if (mode == NetworkManagerMode.Host)
                 {
                     StopHost();
                 }
-                else if (manager.mode == NetworkManagerMode.ClientOnly)
+                else if (mode == NetworkManagerMode.ClientOnly)
                 {
                     StopClient();
                 }
@@ -480,6 +480,18 @@ namespace NetRose
             public class ConnectionEvent : UnityEvent<NetworkConnection> {};
 
             /// <summary>
+            ///   This event triggers when this manager starts in server
+            ///     mode (which includes host mode).
+            /// </summary>
+            public readonly UnityEvent onServer = new UnityEvent();
+
+            /// <summary>
+            ///   This event triggers when this manager starts in client
+            ///     mode (which includes host mode).
+            /// </summary>
+            public readonly UnityEvent onClient = new UnityEvent();
+
+            /// <summary>
             ///   This event triggers when a new connection is established.
             ///     This happens right after authentication, if any
             ///     authenticator is set to this network manager, and
@@ -501,6 +513,24 @@ namespace NetRose
             public override void Awake()
             {
                 isWorldReady = false;
+            }
+
+            /// <summary>
+            ///   Invokes the <see cref="onServer"/> event to notify
+            ///     that this network manager started as server.
+            /// </summary>
+            public override void OnStartServer()
+            {
+                onServer.Invoke();
+            }
+
+            /// <summary>
+            ///   Invokes the <see cref="onClient"/> event to notify
+            ///     that this network manager started as client.
+            /// </summary>
+            public override void OnStartClient()
+            {
+                onClient.Invoke();
             }
 
             /// <summary>

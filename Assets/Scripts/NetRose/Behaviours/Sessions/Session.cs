@@ -31,6 +31,9 @@ namespace NetRose
                 /// </summary>
                 public readonly NetworkConnection Connection;
 
+                // Keeps the session listeners.
+                private HashSet<SessionListener<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData>> listeners = new HashSet<SessionListener<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData>>();
+
                 /// <summary>
                 ///   The id of the account in the current session.
                 /// </summary>
@@ -99,7 +102,9 @@ namespace NetRose
                     set
                     {
                         customData[key] = value;
-                        // TODO event: custom data set (key, value).
+                        EachListener(delegate (SessionListener<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData> listener) {
+                            listener.CustomDataSet(key, value);
+                        }, "custom-data-set");
                     }
                 }
 
@@ -113,7 +118,9 @@ namespace NetRose
                 {
                     if (customData.Remove(key))
                     {
-                        // TODO event: custom data removed (key).
+                        EachListener(delegate (SessionListener<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData> listener) {
+                            listener.CustomDataRemoved(key);
+                        }, "custom-data-removed");
                         return true;
                     }
                     else
@@ -129,7 +136,9 @@ namespace NetRose
                 public void Clear()
                 {
                     customData.Clear();
-                    // TODO event: custom data cleared.
+                    EachListener(delegate (SessionListener<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData> listener) {
+                        listener.CustomDataCleared();
+                    }, "custom-data-cleared");
                 }
 
                 /// <summary>
@@ -142,7 +151,7 @@ namespace NetRose
                     {
                         AccountData = await Manager.GetAccountData(AccountID);
                     }
-                    catch(Exception e)
+                    catch(System.Exception e)
                     {
                         AnErrorOccurred(string.Format("An exception was thrown while [re]loading the account data for the session with account id: {0}", AccountID), e);
                         return;
@@ -156,7 +165,9 @@ namespace NetRose
                     }
                     else
                     {
-                        // TODO event: account data refreshed.
+                        EachListener(delegate (SessionListener<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData> listener) {
+                            listener.AccountData();
+                        }, "account-data");
                     }
                 }
 
@@ -171,14 +182,12 @@ namespace NetRose
                         CharacterFullData data = await Manager.GetCharacterData(AccountID, CurrentCharacterID);
                         if (!data.Equals(default(CharacterFullData)))
                         {
-                            // TODO event: character data refreshed.
-                        }
-                        else
-                        {
-                            // TODO force the release of the current character.
+                            EachListener(delegate (SessionListener<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData> listener) {
+                                listener.UsingCharacter();
+                            }, "using-character");
                         }
                     }
-                    catch(Exception e)
+                    catch(System.Exception e)
                     {
                         AnErrorOccurred(string.Format("An exception was thrown while [re]loading the current character data for the session with account id: {0} and character id: {1}", AccountID, CurrentCharacterID), e);
                         return;
@@ -189,15 +198,35 @@ namespace NetRose
                 // appropriate flow to pick one.
                 private async Task InitDefaultCharacterStatus()
                 {
-                    // TODO fix this method - it is considered to work the first time
-                    // TODO but it is allowed to be called multiple times. So the logic
-                    // TODO must be changed as well.
                     try
                     {
                         if (Manager.AccountsHaveMultipleCharacters())
                         {
-                            Connection.Send(Manager.MakeChooseCharacterMessage(await Manager.ListCharacters(AccountID)));
-                            // TODO event: no character selected.
+                            if (IsUsingACharacter)
+                            {
+                                CurrentCharacterID = default(CharacterID);
+                                CurrentCharacterData = default(CharacterFullData);
+                                Connection.Send(new Messages.ReleasingCharacter());
+                                EachListener(delegate (SessionListener<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData> listener) {
+                                    listener.UsingNoCharacter();
+                                }, "using-no-character");
+                                try
+                                {
+                                    List<Tuple<CharacterID, CharacterPreviewData>> characters = await Manager.ListCharacters(AccountID);
+                                    Connection.Send(Manager.MakeChooseCharacterMessage(characters));
+                                }
+                                catch (Exception e)
+                                {
+                                    AnErrorOccurred(string.Format("An exception was thrown while trying to load all the characters after releasing the current one for session with account id: {0}", AccountID), e);
+                                }
+                            }
+                            else
+                            {
+                                Connection.Send(Manager.MakeChooseCharacterMessage(await Manager.ListCharacters(AccountID)));
+                                EachListener(delegate (SessionListener<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData> listener) {
+                                    listener.UsingNoCharacter();
+                                }, "using-no-character");
+                            }
                         }
                         else
                         {
@@ -205,14 +234,18 @@ namespace NetRose
                             if (data.Equals(default(CharacterFullData)))
                             {
                                 Connection.Send(new Messages.NoCharacterAvailable());
-                                // TODO event: no character available.
+                                EachListener(delegate (SessionListener<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData> listener) {
+                                    listener.UsingNoCharacter();
+                                }, "using-no-character");
                             }
                             else
                             {
                                 CurrentCharacterID = default(CharacterID);
                                 CurrentCharacterData = data;
-                                Connection.Send(Manager.MakeCurrentCharacterMessage(CurrentCharacterID, CurrentCharacterData));
-                                // TODO event: character selected.
+                                Connection.Send(Manager.MakeCurrentCharacterMessage(default(CharacterID), CurrentCharacterData));
+                                EachListener(delegate (SessionListener<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData> listener) {
+                                    listener.UsingCharacter();
+                                }, "using-character");
                             }
                         }
                     }
@@ -268,8 +301,11 @@ namespace NetRose
                         if (!data.Equals(default(CharacterFullData)))
                         {
                             CurrentCharacterID = characterId;
+                            CurrentCharacterData = data;
                             Connection.Send(Manager.MakeCurrentCharacterMessage(characterId, CurrentCharacterData));
-                            // TODO event: character selected.
+                            EachListener(delegate (SessionListener<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData> listener) {
+                                listener.UsingCharacter();
+                            }, "using-character");
                         }
                         else if (multiple)
                         {
@@ -278,7 +314,9 @@ namespace NetRose
                         else
                         {
                             Connection.Send(new Messages.NoCharacterAvailable());
-                            // TODO event: no character available.
+                            EachListener(delegate (SessionListener<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData> listener) {
+                                listener.UsingNoCharacter();
+                            }, "using-no-character");
                         }
                     }
                     catch (Exception e)
@@ -310,7 +348,9 @@ namespace NetRose
                     CurrentCharacterID = default(CharacterID);
                     CurrentCharacterData = default(CharacterFullData);
                     Connection.Send(new Messages.ReleasingCharacter());
-                    // TODO event: character released.
+                    EachListener(delegate (SessionListener<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData> listener) {
+                        listener.UsingNoCharacter();
+                    }, "using-no-character");
                     try
                     {
                         List<Tuple<CharacterID, CharacterPreviewData>> characters = await Manager.ListCharacters(AccountID);
@@ -318,7 +358,7 @@ namespace NetRose
                     }
                     catch (Exception e)
                     {
-                        // TODO error occurred. Also kill connection.
+                        AnErrorOccurred(string.Format("An exception was thrown while trying to load all the characters after releasing the current one for session with account id: {0}", AccountID), e);
                     }
                 }
 
@@ -328,12 +368,73 @@ namespace NetRose
                 ///     - Starts a flow for the multi/single character(s).
                 ///     - Clears all the user data.
                 /// </summary>
-                /// <returns></returns>
                 public async Task Reset()
                 {
                     await RefreshAccountData();
                     await InitDefaultCharacterStatus();
                     Clear();
+                }
+
+                /// <summary>
+                ///   Adds a listener to this session, and notifies.
+                /// </summary>
+                /// <param name="listener">The listener to add</param>
+                public void AddListener(SessionListener<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData> listener)
+                {
+                    if (!listeners.Contains(listener))
+                    {
+                        listeners.Add(listener);
+                        try
+                        {
+                            listener.Started(this);
+                        }
+                        catch (System.Exception e)
+                        {
+                            logger.LogError("Exception while forwarding an event: started");
+                            logger.LogException(e);
+                        }
+                    }
+                }
+
+                /// <summary>
+                ///   Removes a listener from this session, and notifies.
+                /// </summary>
+                /// <param name="listener">The listener to add</param>
+                public void RemoveListener(SessionListener<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData> listener)
+                {
+                    if (listeners.Contains(listener))
+                    {
+                        try
+                        {
+                            listener.Terminated();
+                        }
+                        catch (System.Exception e)
+                        {
+                            logger.LogError("Exception while forwarding an event: terminated");
+                            logger.LogException(e);
+                        }
+                        listeners.Remove(listener);
+                    }
+                }
+
+                /// <summary>
+                ///   Clears all the listenrs from this session, and notifies.
+                /// </summary>
+                public void ClearListeners()
+                {
+                    foreach(SessionListener<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData> listener in listeners)
+                    {
+                        try
+                        {
+                            listener.Terminated();
+                        }
+                        catch (System.Exception e)
+                        {
+                            logger.LogError("Exception while forwarding an event: terminated");
+                            logger.LogException(e);
+                        }
+                    }
+                    listeners.Clear();
                 }
 
                 /// <summary>
@@ -363,12 +464,29 @@ namespace NetRose
                 }
 
                 // Logs the error, blindly notifies to the client, and ends.
-                private void AnErrorOccurred(string message, Exception e)
+                private void AnErrorOccurred(string message, System.Exception e)
                 {
                     logger.LogError(message);
                     logger.LogException(e);
                     Connection.Send(new Messages.SessionUnknownError());
                     Connection.Disconnect();
+                }
+
+                // Runs a single event.
+                private void EachListener(Action<SessionListener<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData>> action, string key)
+                {
+                    foreach (SessionListener<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData> listener in listeners)
+                    {
+                        try
+                        {
+                            action(listener);
+                        }
+                        catch(System.Exception e)
+                        {
+                            logger.LogError("Exception while forwarding an event: " + key);
+                            logger.LogException(e);
+                        }
+                    }
                 }
             }
         }

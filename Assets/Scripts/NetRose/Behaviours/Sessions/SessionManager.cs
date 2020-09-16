@@ -56,12 +56,16 @@ namespace NetRose
                         Destroy(gameObject);
                         throw new Exception("The NetworkManager singleton must be of type NetworkWorldManager");
                     }
+                    manager.onServer.AddListener(SetupServerMessageHandlers);
+                    manager.onClient.AddListener(SetupClientMessageHandlers);
                     manager.onConnected.AddListener(OnConnectionStarted);
                     manager.onDisconnected.AddListener(OnConnectionEnded);
                 }
 
                 private void OnDestroy()
                 {
+                    manager.onServer.RemoveListener(SetupServerMessageHandlers);
+                    manager.onClient.RemoveListener(SetupClientMessageHandlers);
                     manager.onConnected.RemoveListener(OnConnectionStarted);
                     manager.onDisconnected.RemoveListener(OnConnectionEnded);
                 }
@@ -89,12 +93,31 @@ namespace NetRose
                     // silently destroy the session.
                     if (connection.authenticationData is AccountID)
                     {
-                        // To this point, the player does not exist.
-                        // Just initialize the sessions without calling
-                        // any callback.
                         AccountID accountId = (AccountID)connection.authenticationData;
                         ClearSession(accountId);
                     }
+                }
+
+                /// <summary>
+                ///   Sets the handlers for some to-server messages.
+                ///     This method must be overriden to register
+                ///     handlers for the subclasses of the abstract
+                ///     generic messages.
+                /// </summary>
+                protected virtual void SetupServerMessageHandlers()
+                {
+                    // TODO a base implementation
+                }
+
+                /// <summary>
+                ///   Sets the handlers for some to-client messages.
+                ///     This method must be overriden to register
+                ///     handlers for the subclasses of the abstract
+                ///     generic messages.
+                /// </summary>
+                protected virtual void SetupClientMessageHandlers()
+                {
+                    // TODO a base implementation
                 }
 
                 /***********************************************************************************/
@@ -242,6 +265,17 @@ namespace NetRose
                     await session.Reset();
                 }
 
+                // Clearing the session is only needed INSIDE this class.
+                private void ClearSession(AccountID accountId)
+                {
+                    Session<AccountID, AccountData, CharacterID, CharacterPreviewData, CharacterFullData> outSession;
+                    if (sessions.TryGetValue(accountId, out outSession))
+                    {
+                        outSession.ClearListeners();
+                        sessions.Remove(accountId);
+                    }
+                }
+
                 /// <summary>
                 ///   Tells whether a session is active in this manager.
                 /// </summary>
@@ -251,16 +285,6 @@ namespace NetRose
                 {
                     Session<AccountID, AccountData, CharacterID, CharacterPreviewData, CharacterFullData> outSession;
                     return sessions.TryGetValue(session.AccountID, out outSession) && outSession == session;
-                }
-
-                /***************************************************************************/
-
-                // Clearing the session is only needed INSIDE this class.
-                private void ClearSession(AccountID accountId)
-                {
-                    // TODO:
-                    // - CLEAR session data, if any.
-                    //   - Notify session clear (callbacks, behaviours).
                 }
             }
         }

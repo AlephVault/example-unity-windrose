@@ -22,16 +22,36 @@ namespace NetRose
                     public CharacterID ID { get; protected set; }
 
                     /// <summary>
-                    ///   Implement this to correctly populate the character id from a reader.
+                    ///   Reads a character id from the reader.
+                    /// </summary>
+                    /// <param name="reader">The reader to read the character id from</param>
+                    /// <returns>The read character id</returns>
+                    protected abstract CharacterID ReadCharacterID(NetworkReader reader);
+
+                    /// <summary>
+                    ///   Writes a character id into the writer.
+                    /// </summary>
+                    /// <param name="writer">The writer to write the character id into</param>
+                    /// <param name="id">The character id to write</param>
+                    protected abstract void WriteCharacterID(NetworkWriter writer, CharacterID id);
+
+                    /// <summary>
+                    ///   Populates the non-existing character id from the reader.
                     /// </summary>
                     /// <param name="reader">The reader to populate from</param>
-                    public abstract void Deserialize(NetworkReader reader);
+                    public void Deserialize(NetworkReader reader)
+                    {
+                        ID = ReadCharacterID(reader);
+                    }
 
                     /// <summary>
                     ///   Implement this to correctly dump the character id into the reader.
                     /// </summary>
                     /// <param name="writer">The reader to dump the data into</param>
-                    public abstract void Serialize(NetworkWriter writer);
+                    public void Serialize(NetworkWriter writer)
+                    {
+                        WriteCharacterID(writer, ID);
+                    }
                 }
             }
         }

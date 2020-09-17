@@ -92,36 +92,14 @@ namespace NetRose
                     ///     as pairs of strings.
                     /// </summary>
                     /// <param name="writer">The writer to serialize this message into</param>
-                    public override void Serialize(NetworkWriter writer)
-                    {
-                        writer.WriteBoolean(IsSuccess);
-                        writer.WriteString(Code);
-                        writer.WriteInt32(Details.Count);
-                        foreach(KeyValuePair<string, string> pair in Details)
-                        {
-                            writer.WriteString(pair.Key);
-                            writer.WriteString(pair.Value);
-                        }
-                    }
+                    public override void Serialize(NetworkWriter writer) {}
 
                     /// <summary>
                     ///   Deserializes all the fields of this message. The details are deserialized
                     ///     from pairs of strings.
                     /// </summary>
                     /// <param name="reader">The reader to deserialize this message from</param>
-                    public override void Deserialize(NetworkReader reader)
-                    {
-                        IsSuccess = reader.ReadBoolean();
-                        Code = reader.ReadString();
-                        int count = reader.ReadInt32();
-                        for(int index = 0; index < count; index++)
-                        {
-                            string key = reader.ReadString();
-                            string value = reader.ReadString();
-                            Details[key] = value;
-                        }
-                        base.Deserialize(reader);
-                    }
+                    public override void Deserialize(NetworkReader reader) {}
 
                     /// <summary>
                     ///   Empty constructor for response objects.

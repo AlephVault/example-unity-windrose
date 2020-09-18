@@ -7,7 +7,7 @@ namespace NetworkedSamples
     {
         namespace Sessions
         {
-            public class SampleAuthMessage : IMessageBase
+            public class SampleAuthMessage : MessageBase
             {
                 public string Username;
                 public string Password;
@@ -20,8 +20,8 @@ namespace NetworkedSamples
                     Password = password;
                 }
 
-                public void Deserialize(NetworkReader reader) {}
-                public void Serialize(NetworkWriter writer) {}
+                public override void Deserialize(NetworkReader reader) {}
+                public override void Serialize(NetworkWriter writer) {}
             }
         }
     }

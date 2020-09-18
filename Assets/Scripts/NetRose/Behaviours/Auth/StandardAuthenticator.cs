@@ -65,59 +65,6 @@ namespace NetRose
                 }
 
                 /// <summary>
-                ///   An authentication response has 3 fields: whether the request was
-                ///     successful, its code, and more details.
-                /// </summary>
-                public class AuthResponse : MessageBase
-                {
-                    /// <summary>
-                    ///   Whether the request was successful (i.e. the user successfully
-                    ///     logged in).
-                    /// </summary>
-                    public bool IsSuccess = true;
-
-                    /// <summary>
-                    ///   A custom code, either for success or failure, for the status
-                    ///     of the authentication attempt.
-                    /// </summary>
-                    public string Code = "success";
-
-                    /// <summary>
-                    ///   More optional details regarding the result of the login attempt.
-                    /// </summary>
-                    public Dictionary<string, string> Details = new Dictionary<string, string>();
-
-                    /// <summary>
-                    ///   Serializes all the fields of this message. The details are serialized
-                    ///     as pairs of strings.
-                    /// </summary>
-                    /// <param name="writer">The writer to serialize this message into</param>
-                    public override void Serialize(NetworkWriter writer) {}
-
-                    /// <summary>
-                    ///   Deserializes all the fields of this message. The details are deserialized
-                    ///     from pairs of strings.
-                    /// </summary>
-                    /// <param name="reader">The reader to deserialize this message from</param>
-                    public override void Deserialize(NetworkReader reader) {}
-
-                    /// <summary>
-                    ///   Empty constructor for response objects.
-                    /// </summary>
-                    public AuthResponse() {}
-
-                    /// <summary>
-                    ///   Quick constructor for response objects.
-                    /// </summary>
-                    public AuthResponse(bool isSuccess, string code, Dictionary<string, string> details)
-                    {
-                        IsSuccess = isSuccess;
-                        Code = code;
-                        Details = details == null ? new Dictionary<string, string>() : details;
-                    }
-                }
-
-                /// <summary>
                 ///   Builds an authentication request from the data in the current object.
                 /// </summary>
                 /// <returns>The newly built message</returns>

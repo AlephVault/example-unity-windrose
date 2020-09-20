@@ -263,19 +263,8 @@ namespace NetRose
                     // The LAST movement command being enqueued.
                     private StartMovementCommand lastStartMovementCommandEnqueued = null;
 
-                    /// <summary>
-                    ///   The limit of the movements queue for this object. At minimum, this value
-                    ///     is <see cref="MIN_QUEUE_LIMIT" />, and when the movement queue passes
-                    ///     this maximum size, all the movement actions will be forced, not waited.
-                    /// </summary>
-                    [SerializeField]
-                    private uint queueLimit = MIN_QUEUE_LIMIT;
-
-                    private const uint MIN_QUEUE_LIMIT = 3;
-
                     private void Awake()
                     {
-                        queueLimit = (queueLimit < MIN_QUEUE_LIMIT) ? MIN_QUEUE_LIMIT : queueLimit;
                         MapObject = GetComponent<MapObject>();
                     }
 

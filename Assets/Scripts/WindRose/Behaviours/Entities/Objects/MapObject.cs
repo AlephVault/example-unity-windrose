@@ -38,6 +38,9 @@ namespace WindRose
             [RequireComponent(typeof(ObjectStrategyHolder))]
             public class MapObject : MonoBehaviour, Common.Pausable.IPausable
             {
+                [SerializeField]
+                private bool debug = false;
+
                 #region Lifecycle
                 private bool initialized = false;
 
@@ -281,7 +284,7 @@ namespace WindRose
                 ///   The movement speed, in game units per second.
                 /// </summary>
                 [SerializeField]
-                private uint speed = 2;
+                private uint speed = 4;
 
                 public uint Speed
                 {
@@ -358,8 +361,9 @@ namespace WindRose
                     }
                     else if (parentMap.ObjectsLayer.StrategyHolder.MovementStart(StrategyHolder, movement, continuated))
                     {
-                        origin = transform.localPosition;
+                        origin = new Vector3(X * GetCellWidth(), Y * GetCellHeight(), transform.localPosition.z);
                         target = origin + VectorForCurrentDirection();
+                        if (debug) Debug.LogFormat("Setting target to: {0} + {1} = {2}", origin, target, origin + target);
                         SetMovingState();
                         return true;
                     }
@@ -402,6 +406,7 @@ namespace WindRose
                         if (CommandedMovement != Movement)
                         {
                             Vector2 movement = Vector2.MoveTowards(transform.localPosition, target, movementNorm);
+                            if (debug) Debug.Log("Moving toward:" + target);
                             if ((Vector2)transform.localPosition == movement)
                             {
                                 // If the movement and the localPosition (converted to 2D vector) are the same,

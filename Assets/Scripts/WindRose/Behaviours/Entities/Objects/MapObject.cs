@@ -14,6 +14,7 @@ namespace WindRose
             using Types;
             using World;
             using World.Layers.Objects;
+            using Entities.Common;
 
             /// <summary>
             ///   <para>
@@ -363,7 +364,6 @@ namespace WindRose
                     {
                         origin = new Vector3(X * GetCellWidth(), Y * GetCellHeight(), transform.localPosition.z);
                         target = origin + VectorForCurrentDirection();
-                        if (debug) Debug.LogFormat("Setting target to: {0} + {1} = {2}", origin, target, origin + target);
                         SetMovingState();
                         return true;
                     }
@@ -406,7 +406,6 @@ namespace WindRose
                         if (CommandedMovement != Movement)
                         {
                             Vector2 movement = Vector2.MoveTowards(transform.localPosition, target, movementNorm);
-                            if (debug) Debug.Log("Moving toward:" + target);
                             if ((Vector2)transform.localPosition == movement)
                             {
                                 // If the movement and the localPosition (converted to 2D vector) are the same,

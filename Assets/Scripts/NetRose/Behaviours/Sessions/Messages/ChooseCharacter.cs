@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Mirror;
 
 namespace NetRose
@@ -19,7 +20,7 @@ namespace NetRose
                     /// <summary>
                     ///   The character list to send to the client.
                     /// </summary>
-                    public Dictionary<CharacterID, CharacterPreviewData> Characters { get; protected set; }
+                    public IReadOnlyList<Tuple<CharacterID, CharacterPreviewData>> Characters { get; protected set; }
 
                     /// <summary>
                     ///   Reads a character id from the reader.
@@ -55,13 +56,14 @@ namespace NetRose
                     /// <param name="reader">The reader to populate from</param>
                     public void Deserialize(NetworkReader reader)
                     {
-                        Characters = new Dictionary<CharacterID, CharacterPreviewData>();
+                        List<Tuple<CharacterID, CharacterPreviewData>> characters = new List<Tuple<CharacterID, CharacterPreviewData>>();
                         int count = reader.ReadInt32();
                         for (int i = 0; i < count; i++) {
                             CharacterID key = ReadCharacterID(reader);
                             CharacterPreviewData value = ReadCharacterPreviewData(reader);
-                            Characters[key] = value;
+                            characters.Append(new Tuple<CharacterID, CharacterPreviewData>(key, value));
                         }
+                        Characters = characters;
                     }
 
                     /// <summary>
@@ -77,10 +79,10 @@ namespace NetRose
                         else
                         {
                             writer.WriteInt32(Characters.Count);
-                            foreach (KeyValuePair<CharacterID, CharacterPreviewData> pair in Characters)
+                            foreach (Tuple<CharacterID, CharacterPreviewData> pair in Characters)
                             {
-                                WriteCharacterID(writer, pair.Key);
-                                WriteCharacterPreviewData(writer, pair.Value);
+                                WriteCharacterID(writer, pair.Item1);
+                                WriteCharacterPreviewData(writer, pair.Item2);
                             }
                         }
                     }

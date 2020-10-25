@@ -4,6 +4,8 @@ using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using NetRose.Behaviours.Sessions.Contracts;
+using System.Threading.Tasks;
 
 namespace NetworkedSamples
 {
@@ -11,7 +13,7 @@ namespace NetworkedSamples
     {
         namespace Sessions
         {
-            public class SampleDatabase : MonoBehaviour
+            public class SampleDatabase : MonoBehaviour, AccountFetcher<int, SampleDatabase.Account>, AccountCharacterFetcher<int, int, string, SampleDatabase.Character>
             {
                 public class DBException : GMM.Types.Exception
                 {
@@ -129,6 +131,36 @@ namespace NetworkedSamples
                         characters[characterId] = CharactersTable[characterId];
                     }
                     return characters;
+                }
+
+                // Here starts all the SessionManager contracts implementation.
+
+                public async Task<Account> GetAccountData(int accountId)
+                {
+                    // Synchronous dummy task.
+                    return GetAccount(accountId);
+                }
+
+                public bool AccountsHaveMultipleCharacters()
+                {
+                    return true;
+                }
+
+                public async Task<List<Tuple<int, string>>> ListCharacters(int accountId)
+                {
+                    // Synchronous dummy task.
+                    List<Tuple<int, string>> result = new List<Tuple<int, string>>();
+                    foreach(KeyValuePair<int, Character> pair in ListAccountCharacters(accountId))
+                    {
+                        result.Append(new Tuple<int, string>(pair.Key, pair.Value.CharName));
+                    }
+                    return result;
+                }
+
+                public async Task<Character> GetCharacterData(int accountId, int characterId)
+                {
+                    // Synchronous dummy task.
+                    return GetAccountCharacter(accountId, characterId);
                 }
             }
         }

@@ -48,7 +48,7 @@ namespace NetRose
                 [SerializeField]
                 DuplicateAccountRule ResolveDuplicates = DuplicateAccountRule.Kick;
 
-                private void Awake()
+                protected virtual void Awake()
                 {
                     manager = (NetworkManager.singleton as NetworkWorldManager);
                     if (manager == null)
@@ -62,7 +62,7 @@ namespace NetRose
                     manager.onDisconnected.AddListener(OnConnectionEnded);
                 }
 
-                private void OnDestroy()
+                protected virtual void OnDestroy()
                 {
                     manager.onServer.RemoveListener(SetupServerMessageHandlers);
                     manager.onClient.RemoveListener(SetupClientMessageHandlers);
@@ -205,7 +205,7 @@ namespace NetRose
                 /// <param name="characterId">The id to serialize</param>
                 /// <param name="characterFullData">The full data to serialize</param>
                 /// <returns>The message to send</returns>
-                public abstract Messages.ChooseCharacter<CharacterID, CharacterPreviewData> MakeCurrentCharacterMessage(CharacterID characterId, CharacterFullData characterFullData);
+                public abstract Messages.UsingCharacter<CharacterID, CharacterFullData> MakeCurrentCharacterMessage(CharacterID characterId, CharacterFullData characterFullData);
 
                 /// <summary>
                 ///   Builds a custom message to send that a certain character id
@@ -221,7 +221,7 @@ namespace NetRose
                 /// </summary>
                 /// <param name="characterId">The id to serialize</param>
                 /// <returns>The message to send</returns>
-                public abstract Messages.InvalidCharacterID<CharacterID> MakeNonExistingCharacterMessage(CharacterID characterId);
+                public abstract Messages.CharacterDoesNotExist<CharacterID> MakeNonExistingCharacterMessage(CharacterID characterId);
 
                 /***********************************************************************************/
                 /***********************************************************************************/

@@ -11,7 +11,7 @@ namespace NetRose
             namespace Messages
             {
                 /// <summary>
-                ///   This message is sent from the server to tell that
+                ///   This message is sent by the server to tell that
                 ///     the client is not using a character.
                 /// </summary>
                 public class NotUsingCharacter : IMessageBase

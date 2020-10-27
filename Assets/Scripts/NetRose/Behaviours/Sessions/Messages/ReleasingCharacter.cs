@@ -11,7 +11,7 @@ namespace NetRose
             namespace Messages
             {
                 /// <summary>
-                ///   This message is sent from the server to the client
+                ///   This message is sent by the server to the client
                 ///     when successfully releasing the current in-use
                 ///     character.
                 /// </summary>

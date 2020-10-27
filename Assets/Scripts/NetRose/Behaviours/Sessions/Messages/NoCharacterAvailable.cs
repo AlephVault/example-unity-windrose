@@ -11,7 +11,7 @@ namespace NetRose
             namespace Messages
             {
                 /// <summary>
-                ///   This message is sent from the server to the client
+                ///   This message is sent by the server to the client
                 ///     when the only character (this is for the single
                 ///     character account games) has not yet been created
                 ///     or is somehow not available.

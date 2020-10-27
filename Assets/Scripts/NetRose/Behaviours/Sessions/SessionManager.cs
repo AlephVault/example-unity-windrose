@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Events;
 using Mirror;
+using UnityEditor.MemoryProfiler;
 
 namespace NetRose
 {
@@ -48,6 +49,31 @@ namespace NetRose
                 [SerializeField]
                 DuplicateAccountRule ResolveDuplicates = DuplicateAccountRule.Kick;
 
+                /// <summary>
+                ///   This event carries information of the current session in the server.
+                /// </summary>
+                public class ServerSessionEvent : UnityEvent<Session<AccountID, AccountData, CharacterID, CharacterPreviewData, CharacterFullData>> {}
+
+                /// <summary>
+                ///   This event is triggered when a session started in the server.
+                /// </summary>
+                public readonly ServerSessionEvent onServerSessionStarted = new ServerSessionEvent();
+
+                /// <summary>
+                ///   This event is triggered when a session ended in the server.
+                /// </summary>
+                public readonly ServerSessionEvent onServerSessionEnded = new ServerSessionEvent();
+
+                /// <summary>
+                ///   This event is triggered when a session started in the client.
+                /// </summary>
+                public readonly UnityEvent onClientSessionStarted = new UnityEvent();
+
+                /// <summary>
+                ///   This event is triggered when a session ended in the client.
+                /// </summary>
+                public readonly UnityEvent onClientSessionEnded = new UnityEvent();
+
                 protected virtual void Awake()
                 {
                     manager = (NetworkManager.singleton as NetworkWorldManager);
@@ -56,18 +82,26 @@ namespace NetRose
                         Destroy(gameObject);
                         throw new Exception("The NetworkManager singleton must be of type NetworkWorldManager");
                     }
-                    manager.onServer.AddListener(SetupServerMessageHandlers);
-                    manager.onClient.AddListener(SetupClientMessageHandlers);
+                    manager.onServerStart.AddListener(SetupServerMessageHandlers);
+                    manager.onClientStart.AddListener(SetupClientMessageHandlers);
+                    manager.onServerStop.AddListener(TeardownServerMessageHandlers);
+                    manager.onClientStop.AddListener(TeardownClientMessageHandlers);
                     manager.onConnected.AddListener(OnConnectionStarted);
                     manager.onDisconnected.AddListener(OnConnectionEnded);
+                    if ((manager.mode & NetworkManagerMode.ServerOnly) == NetworkManagerMode.ServerOnly) SetupServerMessageHandlers();
+                    if ((manager.mode & NetworkManagerMode.ClientOnly) == NetworkManagerMode.ClientOnly) SetupClientMessageHandlers();
                 }
 
                 protected virtual void OnDestroy()
                 {
-                    manager.onServer.RemoveListener(SetupServerMessageHandlers);
-                    manager.onClient.RemoveListener(SetupClientMessageHandlers);
+                    manager.onServerStart.RemoveListener(SetupServerMessageHandlers);
+                    manager.onClientStart.RemoveListener(SetupClientMessageHandlers);
+                    manager.onServerStop.RemoveListener(TeardownServerMessageHandlers);
+                    manager.onClientStop.RemoveListener(TeardownClientMessageHandlers);
                     manager.onConnected.RemoveListener(OnConnectionStarted);
                     manager.onDisconnected.RemoveListener(OnConnectionEnded);
+                    if ((manager.mode & NetworkManagerMode.ServerOnly) == NetworkManagerMode.ServerOnly) TeardownServerMessageHandlers();
+                    if ((manager.mode & NetworkManagerMode.ClientOnly) == NetworkManagerMode.ClientOnly) TeardownClientMessageHandlers();
                 }
 
                 private void OnConnectionStarted(NetworkConnection connection)
@@ -94,7 +128,7 @@ namespace NetRose
                     if (connection.authenticationData is AccountID)
                     {
                         AccountID accountId = (AccountID)connection.authenticationData;
-                        ClearSession(accountId);
+                        ClearSession(accountId, true);
                     }
                 }
 
@@ -116,6 +150,22 @@ namespace NetRose
                 ///     generic messages.
                 /// </summary>
                 protected virtual void SetupClientMessageHandlers()
+                {
+                    // TODO a base implementation
+                }
+
+                /// <summary>
+                ///   Clears the handlers for some to-server messages.
+                /// </summary>
+                protected virtual void TeardownServerMessageHandlers()
+                {
+                    // TODO a base implementation
+                }
+
+                /// <summary>
+                ///   Clears the handlers for some to-client messages.
+                /// </summary>
+                protected virtual void TeardownClientMessageHandlers()
                 {
                     // TODO a base implementation
                 }
@@ -262,18 +312,48 @@ namespace NetRose
                         this, connection, accountId
                     );
                     sessions.Add(accountId, session);
+                    connection.Send(new Messages.SessionStarted()); // Will trigger: session started (client side).
+                    onServerSessionStarted.Invoke(session);
                     await session.Reset();
                 }
 
                 // Clearing the session is only needed INSIDE this class.
-                private void ClearSession(AccountID accountId)
+                // Returns the cleared session, if any.
+                private Session<AccountID, AccountData, CharacterID, CharacterPreviewData, CharacterFullData> ClearSession(AccountID accountId, bool alreadyDisconnected)
                 {
                     Session<AccountID, AccountData, CharacterID, CharacterPreviewData, CharacterFullData> outSession;
                     if (sessions.TryGetValue(accountId, out outSession))
                     {
                         outSession.ClearListeners();
+                        if (!alreadyDisconnected)
+                        {
+                            outSession.Connection.Send(new Messages.SessionEnded()); // Will trigger: session ended (client side).
+                            //   - Clients must process the "session ended" when they receive this message, or
+                            //     when they disconnect, if they did not receive this message just before.
+                        }
+                        onServerSessionEnded.Invoke(outSession);
                         sessions.Remove(accountId);
                     }
+                    return outSession;
+                }
+
+                /// <summary>
+                ///   Forcefully closes a session and sends the reason to the client.
+                /// </summary>
+                /// <typeparam name="T">The message type</typeparam>
+                /// <param name="accountId">The ID of the session</param>
+                /// <param name="message">The nessage to send to the client</param>
+                /// <returns>Whether a session was found (and kicked)</returns>
+                public bool Kick<T>(AccountID accountId, T message) where T : IMessageBase
+                {
+                    Session<AccountID, AccountData, CharacterID, CharacterPreviewData, CharacterFullData> session = ClearSession(accountId, false);
+                    if (session != null)
+                    {
+                        session.Connection.Send<T>(message);
+                        session.Connection.Disconnect();
+                        return true;
+                    }
+                    return false;
                 }
 
                 /// <summary>

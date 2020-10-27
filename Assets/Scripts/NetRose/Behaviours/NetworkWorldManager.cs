@@ -483,13 +483,25 @@ namespace NetRose
             ///   This event triggers when this manager starts in server
             ///     mode (which includes host mode).
             /// </summary>
-            public readonly UnityEvent onServer = new UnityEvent();
+            public readonly UnityEvent onServerStart = new UnityEvent();
+
+            /// <summary>
+            ///   This event triggers when this manager stops in server
+            ///     mode (which includes host mode).
+            /// </summary>
+            public readonly UnityEvent onServerStop = new UnityEvent();
 
             /// <summary>
             ///   This event triggers when this manager starts in client
             ///     mode (which includes host mode).
             /// </summary>
-            public readonly UnityEvent onClient = new UnityEvent();
+            public readonly UnityEvent onClientStart = new UnityEvent();
+
+            /// <summary>
+            ///   This event triggers when this manager stops in client
+            ///     mode (which includes host mode).
+            /// </summary>
+            public readonly UnityEvent onClientStop = new UnityEvent();
 
             /// <summary>
             ///   This event triggers when a new connection is established.
@@ -516,21 +528,39 @@ namespace NetRose
             }
 
             /// <summary>
-            ///   Invokes the <see cref="onServer"/> event to notify
+            ///   Invokes the <see cref="onServerStart"/> event to notify
             ///     that this network manager started as server.
             /// </summary>
             public override void OnStartServer()
             {
-                onServer.Invoke();
+                onServerStart.Invoke();
             }
 
             /// <summary>
-            ///   Invokes the <see cref="onClient"/> event to notify
+            ///   Invokes the <see cref="onServerStop"/> event to notify
+            ///     that this network manager stopped as server.
+            /// </summary>
+            public override void OnStopServer()
+            {
+                onServerStop.Invoke();
+            }
+
+            /// <summary>
+            ///   Invokes the <see cref="onClientStart"/> event to notify
             ///     that this network manager started as client.
             /// </summary>
             public override void OnStartClient()
             {
-                onClient.Invoke();
+                onClientStart.Invoke();
+            }
+
+            /// <summary>
+            ///   Invokes the <see cref="onClientStop"/> event to notify
+            ///     that this network manager stopped as client.
+            /// </summary>
+            public override void OnStopClient()
+            {
+                onClientStop.Invoke();
             }
 
             /// <summary>

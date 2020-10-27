@@ -85,7 +85,6 @@ namespace NetRose
                     CurrentCharacterID = default(CharacterID);
                     CurrentCharacterData = default(CharacterFullData);
                     customData = new Dictionary<string, object>();
-                    Connection.Send(new Messages.SessionStarted());
                 }
 
                 /// <summary>

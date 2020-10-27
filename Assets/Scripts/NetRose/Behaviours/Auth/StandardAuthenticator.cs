@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 using Mirror;
+using UnityEngine.Events;
 
 namespace NetRose
 {
@@ -55,6 +56,22 @@ namespace NetRose
                 }
 
                 /// <summary>
+                ///   Event class to forward what happens to a login attempt in the client
+                ///     side (this may race-condition with the player object being created).
+                ///     This class will be used for both the success and failure events.
+                /// </summary>
+                public class AuthenticationEvent : UnityEvent<Messages.AuthResponse> { };
+
+                /// <summary>
+                ///   Triggered in the client side when a successful or failed authentication
+                ///     event has completed. This event may race-condition with other features
+                ///     and should only be used to refresh global UI elements (not meant to:
+                ///     change the active scene between online/offline, add/change/dispose
+                ///     the Player object for this connection).
+                /// </summary>
+                public readonly AuthenticationEvent onClientAuthFlowCompleted = new AuthenticationEvent();
+
+                /// <summary>
                 ///   Throws an <see cref="AccountException"/> with the given details.
                 /// </summary>
                 /// <param name="code">The code for the thrown exception</param>
@@ -86,7 +103,7 @@ namespace NetRose
                 public override void OnStartClient()
                 {
                     // Register a handler for the authentication response we expect from server.
-                    NetworkClient.RegisterHandler<AuthResponse>(OnAuthResponseMessage, false);
+                    NetworkClient.RegisterHandler<Messages.AuthResponse>(OnAuthResponseMessage, false);
                 }
 
                 /// <summary>
@@ -121,7 +138,7 @@ namespace NetRose
                         // Step 1.a: Tries to authenticate.
                         AccountID result = Authenticate(message);
                         // Step 1.b: Sends a success response to the client side.
-                        conn.Send(new AuthResponse(true, "success", new Dictionary<string, string>()));
+                        conn.Send(new Messages.AuthResponse(true, "success", new Dictionary<string, string>()));
                         // Step 2: Succeeds authentication and continues the workflow.
                         //
                         // Stores the current session in the connection.
@@ -133,7 +150,7 @@ namespace NetRose
                     catch (AccountException e)
                     {
                         // Step 1.b: Send a failure response to the client side.
-                        conn.Send(new AuthResponse(false, e.Code, e.Details));
+                        conn.Send(new Messages.AuthResponse(false, e.Code, e.Details));
                         // Step 2: Fails authentication and aborts the workflow and connection.
                         //
                         // Clears isAuthenticated and session.
@@ -153,7 +170,7 @@ namespace NetRose
 
                 // Receives the authentication response. On success, it continues the
                 //   client-side workflow.
-                private void OnAuthResponseMessage(NetworkConnection conn, AuthResponse msg)
+                private void OnAuthResponseMessage(NetworkConnection conn, Messages.AuthResponse msg)
                 {
                     if (msg.IsSuccess)
                     {
@@ -171,6 +188,7 @@ namespace NetRose
                         // Finally, disconnects the client immediately.
                         conn.Disconnect();
                     }
+                    onClientAuthFlowCompleted.Invoke(msg);
                 }
             }
         }

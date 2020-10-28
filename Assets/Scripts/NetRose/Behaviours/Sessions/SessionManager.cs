@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using Mirror;
 using UnityEditor.MemoryProfiler;
+using NetRose.Behaviours.Sessions.Messages;
 
 namespace NetRose
 {
@@ -65,14 +66,84 @@ namespace NetRose
                 public readonly ServerSessionEvent onServerSessionEnded = new ServerSessionEvent();
 
                 /// <summary>
-                ///   This event is triggered when a session started in the client.
+                ///   This event is triggered when, after a successful login, the account id
+                ///     fails to be present. Typically, this occurs when an authenticator other
+                ///     than the Standard, with compatible types, was used.  A disconnection is
+                ///     being issued immediately after.
+                /// </summary>
+                public readonly UnityEvent onClientAuthMissingAccountID = new UnityEvent();
+
+                /// <summary>
+                ///   This event is triggered in the client when a session started in the server.
                 /// </summary>
                 public readonly UnityEvent onClientSessionStarted = new UnityEvent();
 
                 /// <summary>
-                ///   This event is triggered when a session ended in the client.
+                ///   This event is triggered in the client when a session ended in the server.
+                ///      A disconnection is being issued immediately after.
                 /// </summary>
                 public readonly UnityEvent onClientSessionEnded = new UnityEvent();
+
+                /// <summary>
+                ///   This event is triggered in the client when an unknown session error occurred in the server.
+                ///      A disconnection is being issued immediately after.
+                /// </summary>
+                public readonly UnityEvent onClientSessionUnknownError = new UnityEvent();
+
+                /// <summary>
+                ///   This event is triggered in the client when their current session is ghosted by another login.
+                ///     A disconnection is being issued immediately after.
+                /// </summary>
+                public readonly UnityEvent onClientSessionGhosted = new UnityEvent();
+
+                /// <summary>
+                ///   This event is triggered in the client when their current authentication is rolled back due to
+                ///     a current session being already established for the attempted user.  A disconnection is being
+                ///     issued immediately after.
+                /// </summary>
+                public readonly UnityEvent onClientSessionDupeKicked = new UnityEvent();
+
+                /// <summary>
+                ///   This event is triggered in the client when the server could not find the account data for
+                ///     the current user. A disconnection is being issued immediately after.
+                /// </summary>
+                private readonly UnityEvent onClientSessionMissingAccountData = new UnityEvent();
+
+                /// <summary>
+                ///   This event is triggered in the client when the server releases the current in-use character
+                ///     for the currently logged-in account.
+                /// </summary>
+                private readonly UnityEvent onClientSessionReleasingCharacter = new UnityEvent();
+
+                /// <summary>
+                ///   This event is triggered in the client when the server attempts to select the only character
+                ///     (this message only makes sense for single-character games) but such is not found. It opens
+                ///     the opportunity for the client to issue the creation of a character under game-specific
+                ///     commands & guidelines.
+                /// </summary>
+                private readonly UnityEvent onClientSessionNoCharacterAvailable = new UnityEvent();
+
+                /// <summary>
+                ///   This event is triggered in the client when the server attempts to select the same character
+                ///     that is currently using. This message is an opportunity to tell the client that nothing
+                ///     will actually occur.
+                /// </summary>
+                private readonly UnityEvent onClientSessionAlreadyUsingCharacter = new UnityEvent();
+
+                /// <summary>
+                ///   This event is triggered in the client when the server attempts to release the current
+                ///     character, but the game is single-character per account. This is typically an error
+                ///     in the server implementation rather than a user error (or could be both).
+                /// </summary>
+                private readonly UnityEvent onClientSessionCannotReleaseCharacterInSingleMode = new UnityEvent();
+
+                /// <summary>
+                ///   This event is triggered in the client when the server attempted to release the current
+                ///     character being selected, but no current character is actually selected. This message
+                ///     only makes sense in multi-character games, and is an opportunity to notify the error
+                ///     but the game will not disconnect.
+                /// </summary>
+                private readonly UnityEvent onClientSessionNotUsingCharacter = new UnityEvent();
 
                 protected virtual void Awake()
                 {
@@ -82,25 +153,19 @@ namespace NetRose
                         Destroy(gameObject);
                         throw new Exception("The NetworkManager singleton must be of type NetworkWorldManager");
                     }
-                    manager.onServerStart.AddListener(SetupServerMessageHandlers);
                     manager.onClientStart.AddListener(SetupClientMessageHandlers);
-                    manager.onServerStop.AddListener(TeardownServerMessageHandlers);
                     manager.onClientStop.AddListener(TeardownClientMessageHandlers);
                     manager.onConnected.AddListener(OnConnectionStarted);
                     manager.onDisconnected.AddListener(OnConnectionEnded);
-                    if ((manager.mode & NetworkManagerMode.ServerOnly) == NetworkManagerMode.ServerOnly) SetupServerMessageHandlers();
                     if ((manager.mode & NetworkManagerMode.ClientOnly) == NetworkManagerMode.ClientOnly) SetupClientMessageHandlers();
                 }
 
                 protected virtual void OnDestroy()
                 {
-                    manager.onServerStart.RemoveListener(SetupServerMessageHandlers);
                     manager.onClientStart.RemoveListener(SetupClientMessageHandlers);
-                    manager.onServerStop.RemoveListener(TeardownServerMessageHandlers);
                     manager.onClientStop.RemoveListener(TeardownClientMessageHandlers);
                     manager.onConnected.RemoveListener(OnConnectionStarted);
                     manager.onDisconnected.RemoveListener(OnConnectionEnded);
-                    if ((manager.mode & NetworkManagerMode.ServerOnly) == NetworkManagerMode.ServerOnly) TeardownServerMessageHandlers();
                     if ((manager.mode & NetworkManagerMode.ClientOnly) == NetworkManagerMode.ClientOnly) TeardownClientMessageHandlers();
                 }
 
@@ -132,16 +197,70 @@ namespace NetRose
                     }
                 }
 
-                /// <summary>
-                ///   Sets the handlers for some to-server messages.
-                ///     This method must be overriden to register
-                ///     handlers for the subclasses of the abstract
-                ///     generic messages.
-                /// </summary>
-                protected virtual void SetupServerMessageHandlers()
+                /***************** Event invokers start here ******************/
+
+                private void OnClientAuthMissingAccountID(MissingAccountID message)
                 {
-                    // TODO a base implementation
+                    onClientAuthMissingAccountID.Invoke();
                 }
+
+                private void OnClientSessionStarted(SessionStarted message)
+                {
+                    onClientSessionStarted.Invoke();
+                }
+
+                private void OnClientSessionEnded(SessionEnded message)
+                {
+                    onClientSessionEnded.Invoke();
+                }
+
+                private void OnClientSessionUnknownError(SessionUnknownError message)
+                {
+                    onClientSessionUnknownError.Invoke();
+                }
+
+                private void OnClientSessionGhosted(DupeGhosted message)
+                {
+                    onClientSessionGhosted.Invoke();
+                }
+
+                private void OnClientSessionDupeKicked(DupeKicked message)
+                {
+                    onClientSessionDupeKicked.Invoke();
+                }
+
+                private void OnClientSessionMissingAccountData(MissingAccountData message)
+                {
+                    onClientSessionMissingAccountData.Invoke();
+                }
+
+                private void OnClientSessionReleasingCharacter(ReleasingCharacter message)
+                {
+                    onClientSessionReleasingCharacter.Invoke();
+                }
+
+                private void OnClientSessionNoCharacterAvailable(NoCharacterAvailable message)
+                {
+                    onClientSessionNoCharacterAvailable.Invoke();
+                }
+
+                private void OnClientSessionAlreadyUsingCharacter(AlreadyUsingCharacter message)
+                {
+                    onClientSessionAlreadyUsingCharacter.Invoke();
+                }
+
+                private void OnClientSessionCannotReleaseCharacterInSingleMode(CannotReleaseCharacterInSingleMode message)
+                {
+                    onClientSessionCannotReleaseCharacterInSingleMode.Invoke();
+                }
+
+                private void OnClientSessionNotUsingCharacter(NotUsingCharacter message)
+                {
+                    onClientSessionNotUsingCharacter.Invoke();
+                }
+
+
+                /***************** Event invokers end here ******************/
 
                 /// <summary>
                 ///   Sets the handlers for some to-client messages.
@@ -151,15 +270,18 @@ namespace NetRose
                 /// </summary>
                 protected virtual void SetupClientMessageHandlers()
                 {
-                    // TODO a base implementation
-                }
-
-                /// <summary>
-                ///   Clears the handlers for some to-server messages.
-                /// </summary>
-                protected virtual void TeardownServerMessageHandlers()
-                {
-                    // TODO a base implementation
+                    NetworkClient.RegisterHandler<MissingAccountID>(OnClientAuthMissingAccountID, false);
+                    NetworkClient.RegisterHandler<SessionStarted>(OnClientSessionStarted, false);
+                    NetworkClient.RegisterHandler<SessionEnded>(OnClientSessionEnded, false);
+                    NetworkClient.RegisterHandler<SessionUnknownError>(OnClientSessionUnknownError, false);
+                    NetworkClient.RegisterHandler<DupeGhosted>(OnClientSessionGhosted, false);
+                    NetworkClient.RegisterHandler<DupeKicked>(OnClientSessionDupeKicked, false);
+                    NetworkClient.RegisterHandler<MissingAccountData>(OnClientSessionMissingAccountData, false);
+                    NetworkClient.RegisterHandler<ReleasingCharacter>(OnClientSessionReleasingCharacter, false);
+                    NetworkClient.RegisterHandler<NoCharacterAvailable>(OnClientSessionNoCharacterAvailable, false);
+                    NetworkClient.RegisterHandler<AlreadyUsingCharacter>(OnClientSessionAlreadyUsingCharacter, false);
+                    NetworkClient.RegisterHandler<CannotReleaseCharacterInSingleMode>(OnClientSessionCannotReleaseCharacterInSingleMode, false);
+                    NetworkClient.RegisterHandler<NotUsingCharacter>(OnClientSessionNotUsingCharacter, false);
                 }
 
                 /// <summary>
@@ -167,7 +289,18 @@ namespace NetRose
                 /// </summary>
                 protected virtual void TeardownClientMessageHandlers()
                 {
-                    // TODO a base implementation
+                    NetworkClient.UnregisterHandler<MissingAccountID>();
+                    NetworkClient.UnregisterHandler<SessionStarted>();
+                    NetworkClient.UnregisterHandler<SessionEnded>();
+                    NetworkClient.UnregisterHandler<SessionUnknownError>();
+                    NetworkClient.UnregisterHandler<DupeGhosted>();
+                    NetworkClient.UnregisterHandler<DupeKicked>();
+                    NetworkClient.UnregisterHandler<MissingAccountData>();
+                    NetworkClient.UnregisterHandler<ReleasingCharacter>();
+                    NetworkClient.UnregisterHandler<NoCharacterAvailable>();
+                    NetworkClient.UnregisterHandler<AlreadyUsingCharacter>();
+                    NetworkClient.UnregisterHandler<CannotReleaseCharacterInSingleMode>();
+                    NetworkClient.UnregisterHandler<NotUsingCharacter>();
                 }
 
                 /***********************************************************************************/

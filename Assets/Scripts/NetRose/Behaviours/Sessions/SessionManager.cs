@@ -33,15 +33,23 @@ namespace NetRose
             /// <typeparam name="CharacterID">The type of the id of a character</typeparam>
             /// <typeparam name="CharacterPreviewData">The type of the partial preview data of a character</typeparam>
             /// <typeparam name="CharacterFullData">The type of the full data of a character</typeparam>
-            public abstract class SessionManager<AccountID, AccountData, CharacterID, CharacterPreviewData, CharacterFullData> : MonoBehaviour
+            /// <typeparam name="CCMsg">The desired subtype of <see cref="ChooseCharacter{CharacterID, CharacterPreviewData}"/> to cleanup</typeparam>
+            /// <typeparam name="UCMsg">The desired subtype of <see cref="UsingCharacter{CharacterID, CharacterFullData}"/> to cleanup</typeparam>
+            /// <typeparam name="ICMsg">The desired subtype of <see cref="InvalidCharacterID{CharacterID}"/> to cleanup</typeparam>
+            /// <typeparam name="NCMsg">The desired subtype of <see cref="CharacterDoesNotExist{CharacterID}"/> to cleanup</typeparam>
+            public abstract class SessionManager<AccountID, AccountData, CharacterID, CharacterPreviewData, CharacterFullData, CCMsg, UCMsg, ICMsg, NCMsg> : MonoBehaviour
+                where CCMsg : ChooseCharacter<CharacterID, CharacterPreviewData>, new()
+                where UCMsg : UsingCharacter<CharacterID, CharacterFullData>, new()
+                where ICMsg : InvalidCharacterID<CharacterID>, new()
+                where NCMsg : CharacterDoesNotExist<CharacterID>, new()
             {
-                static readonly ILogger logger = LogFactory.GetLogger(typeof(SessionManager<AccountID, AccountData, CharacterID, CharacterPreviewData, CharacterFullData>));
+                static readonly ILogger logger = LogFactory.GetLogger(typeof(SessionManager<AccountID, AccountData, CharacterID, CharacterPreviewData, CharacterFullData, CCMsg, UCMsg, ICMsg, NCMsg>));
 
                 // The singleton network manager, which must be a world manager.
                 private NetworkWorldManager manager;
 
                 // Keeps and retrieves the sessions given their account id.
-                private Dictionary<AccountID, Session<AccountID, AccountData, CharacterID, CharacterPreviewData, CharacterFullData>> sessions = new Dictionary<AccountID, Session<AccountID, AccountData, CharacterID, CharacterPreviewData, CharacterFullData>>();
+                private Dictionary<AccountID, Session<AccountID, AccountData, CharacterID, CharacterPreviewData, CharacterFullData, CCMsg, UCMsg, ICMsg, NCMsg>> sessions = new Dictionary<AccountID, Session<AccountID, AccountData, CharacterID, CharacterPreviewData, CharacterFullData, CCMsg, UCMsg, ICMsg, NCMsg>>();
 
                 /// <summary>
                 ///   What to do if an account is logging again (i.e. how to handle
@@ -53,7 +61,7 @@ namespace NetRose
                 /// <summary>
                 ///   This event carries information of the current session in the server.
                 /// </summary>
-                public class ServerSessionEvent : UnityEvent<Session<AccountID, AccountData, CharacterID, CharacterPreviewData, CharacterFullData>> {}
+                public class ServerSessionEvent : UnityEvent<Session<AccountID, AccountData, CharacterID, CharacterPreviewData, CharacterFullData, CCMsg, UCMsg, ICMsg, NCMsg>> {}
 
                 /// <summary>
                 ///   This event is triggered when a session started in the server.
@@ -299,65 +307,24 @@ namespace NetRose
                     onClientSessionNotUsingCharacter.Invoke();
                 }
 
-                private void OnClientChooseCharacter<T>(T message) where T : ChooseCharacter<CharacterID, CharacterPreviewData>
+                private void OnClientChooseCharacter(CCMsg message)
                 {
                     onClientChooseCharacter.Invoke(message.Characters);
                 }
 
-                private void OnClientUsingCharacter<T>(T message) where T : UsingCharacter<CharacterID, CharacterFullData>
+                private void OnClientUsingCharacter(UCMsg message)
                 {
                     onClientUsingCharacter.Invoke(message.CurrentCharacterID, message.CurrentCharacterData);
                 }
 
-                private void OnClientInvalidCharacterID<T>(T message) where T : InvalidCharacterID<CharacterID>
+                private void OnClientInvalidCharacterID(ICMsg message)
                 {
                     onClientInvalidCharacterID.Invoke(message.ID);
                 }
 
-                private void OnClientCharacterDoesNotExist<T>(T message) where T : CharacterDoesNotExist<CharacterID>
+                private void OnClientCharacterDoesNotExist(NCMsg message)
                 {
                     onClientCharacterDoesNotExist.Invoke(message.ID);
-                }
-
-                /***************** Generic events [un]registrar goes here ******************/
-
-                /// <summary>
-                ///   This event registers handlers for 4 concrete types of event messages.
-                /// </summary>
-                /// <typeparam name="CC">The desired subtype of <see cref="ChooseCharacter{CharacterID, CharacterPreviewData}"/> to attend</typeparam>
-                /// <typeparam name="UC">The desired subtype of <see cref="UsingCharacter{CharacterID, CharacterFullData}"/> to attend</typeparam>
-                /// <typeparam name="IC">The desired subtype of <see cref="InvalidCharacterID{CharacterID}"/> to attend</typeparam>
-                /// <typeparam name="NC">The desired subtype of <see cref="CharacterDoesNotExist{CharacterID}"/> to attend</typeparam>
-                protected void RegisterCharacterDataEvents<CC, UC, IC, NC>()
-                    where CC : ChooseCharacter<CharacterID, CharacterPreviewData>, new()
-                    where UC : UsingCharacter<CharacterID, CharacterFullData>, new()
-                    where IC : InvalidCharacterID<CharacterID>, new()
-                    where NC : CharacterDoesNotExist<CharacterID>, new()
-                {
-                    NetworkClient.RegisterHandler<CC>(OnClientChooseCharacter, false);
-                    NetworkClient.RegisterHandler<UC>(OnClientUsingCharacter, false);
-                    NetworkClient.RegisterHandler<IC>(OnClientInvalidCharacterID, false);
-                    NetworkClient.RegisterHandler<NC>(OnClientCharacterDoesNotExist, false);
-                }
-
-                /// <summary>
-                ///   This event unregisters the handlers for 4 concrete types of event messages
-                ///     already registered via <see cref="RegisterCharacterDataEvents{CC, UC, IC, NC}"/>.
-                /// </summary>
-                /// <typeparam name="CC">The desired subtype of <see cref="ChooseCharacter{CharacterID, CharacterPreviewData}"/> to cleanup</typeparam>
-                /// <typeparam name="UC">The desired subtype of <see cref="UsingCharacter{CharacterID, CharacterFullData}"/> to cleanup</typeparam>
-                /// <typeparam name="IC">The desired subtype of <see cref="InvalidCharacterID{CharacterID}"/> to cleanup</typeparam>
-                /// <typeparam name="NC">The desired subtype of <see cref="CharacterDoesNotExist{CharacterID}"/> to cleanup</typeparam>
-                protected void UnregisterCharacterDataEvents<CC, UC, IC, NC>()
-                    where CC : ChooseCharacter<CharacterID, CharacterPreviewData>, new()
-                    where UC : UsingCharacter<CharacterID, CharacterFullData>, new()
-                    where IC : InvalidCharacterID<CharacterID>, new()
-                    where NC : CharacterDoesNotExist<CharacterID>, new()
-                {
-                    NetworkClient.UnregisterHandler<CC>();
-                    NetworkClient.UnregisterHandler<UC>();
-                    NetworkClient.UnregisterHandler<IC>();
-                    NetworkClient.UnregisterHandler<NC>();
                 }
 
                 /***************** Event invokers end here ******************/
@@ -382,7 +349,10 @@ namespace NetRose
                     NetworkClient.RegisterHandler<AlreadyUsingCharacter>(OnClientSessionAlreadyUsingCharacter, false);
                     NetworkClient.RegisterHandler<CannotReleaseCharacterInSingleMode>(OnClientSessionCannotReleaseCharacterInSingleMode, false);
                     NetworkClient.RegisterHandler<NotUsingCharacter>(OnClientSessionNotUsingCharacter, false);
-                    RegisterCharacterDataEvents();
+                    NetworkClient.RegisterHandler<CCMsg>(OnClientChooseCharacter, false);
+                    NetworkClient.RegisterHandler<UCMsg>(OnClientUsingCharacter, false);
+                    NetworkClient.RegisterHandler<ICMsg>(OnClientInvalidCharacterID, false);
+                    NetworkClient.RegisterHandler<NCMsg>(OnClientCharacterDoesNotExist, false);
                 }
 
                 /// <summary>
@@ -402,27 +372,16 @@ namespace NetRose
                     NetworkClient.UnregisterHandler<AlreadyUsingCharacter>();
                     NetworkClient.UnregisterHandler<CannotReleaseCharacterInSingleMode>();
                     NetworkClient.UnregisterHandler<NotUsingCharacter>();
-                    UnregisterCharacterDataEvents();
+                    NetworkClient.UnregisterHandler<CCMsg>();
+                    NetworkClient.UnregisterHandler<UCMsg>();
+                    NetworkClient.UnregisterHandler<ICMsg>();
+                    NetworkClient.UnregisterHandler<NCMsg>();
                 }
 
                 /***********************************************************************************/
                 /*********** Methods of account/character(s) data-fetching *************************/
-                /*********** and serialization to the client(s). Also one  *************************/
-                /*********** method to fill with a call to the generic one *************************/
-                /*********** to register and unregister data-aware events. *************************/
+                /*********** and serialization to the client(s).           *************************/
                 /***********************************************************************************/
-
-                /// <summary>
-                ///   This method must be implemented by calling an instance of the generic
-                ///     version of this method: RegisterCharacterDataEvents<CC, UC, IC, NC>();
-                /// </summary>
-                protected abstract void RegisterCharacterDataEvents();
-
-                /// <summary>
-                ///   This method must be implemented by calling an instance of the generic
-                ///     version of this method: UnregisterCharacterDataEvents<CC, UC, IC, NC>();
-                /// </summary>
-                protected abstract void UnregisterCharacterDataEvents();
 
                 /// <summary>
                 ///   An account data fetcher is used to get the account's data by the given
@@ -489,39 +448,6 @@ namespace NetRose
                     return GetAccountCharacterFetcher().AccountsHaveMultipleCharacters();
                 }
 
-                /// <summary>
-                ///   Builds a custom message to send the characters list to the
-                ///     client side.
-                /// </summary>
-                /// <param name="characters">The characters to serialize</param>
-                /// <returns>The message to send</returns>
-                public abstract ChooseCharacter<CharacterID, CharacterPreviewData> MakeChooseCharacterMessage(IReadOnlyList<Tuple<CharacterID, CharacterPreviewData>> characters);
-
-                /// <summary>
-                ///   Builds a custom message to send the currently selected
-                ///     character's full data.
-                /// </summary>
-                /// <param name="characterId">The id to serialize</param>
-                /// <param name="characterFullData">The full data to serialize</param>
-                /// <returns>The message to send</returns>
-                public abstract UsingCharacter<CharacterID, CharacterFullData> MakeCurrentCharacterMessage(CharacterID characterId, CharacterFullData characterFullData);
-
-                /// <summary>
-                ///   Builds a custom message to send that a certain character id
-                ///     is invalid.
-                /// </summary>
-                /// <param name="characterId">The id to serialize</param>
-                /// <returns>The message to send</returns>
-                public abstract InvalidCharacterID<CharacterID> MakeInvalidCharacterMessage(CharacterID characterId);
-
-                /// <summary>
-                ///   Builds a custom message to send that a certain character id
-                ///     does not exist for a given account.
-                /// </summary>
-                /// <param name="characterId">The id to serialize</param>
-                /// <returns>The message to send</returns>
-                public abstract CharacterDoesNotExist<CharacterID> MakeNonExistingCharacterMessage(CharacterID characterId);
-
                 /***********************************************************************************/
                 /***********************************************************************************/
                 /***********************************************************************************/
@@ -532,7 +458,7 @@ namespace NetRose
                     // kick either of the connections. If the new connection is
                     // not kicked (due to ghost mode, or to not having duplicate
                     // logins) then the process must start for the session.
-                    Session<AccountID, AccountData, CharacterID, CharacterPreviewData, CharacterFullData> currentSession;
+                    Session<AccountID, AccountData, CharacterID, CharacterPreviewData, CharacterFullData, CCMsg, UCMsg, ICMsg, NCMsg> currentSession;
                     if (sessions.TryGetValue(accountId, out currentSession))
                     {
                         if (ResolveDuplicates == DuplicateAccountRule.Kick)
@@ -557,7 +483,7 @@ namespace NetRose
                 // Installs and launches the newly-approved session.
                 private async Task InstallAndLaunchSession(NetworkConnection connection, AccountID accountId)
                 {
-                    Session<AccountID, AccountData, CharacterID, CharacterPreviewData, CharacterFullData> session = new Session<AccountID, AccountData, CharacterID, CharacterPreviewData, CharacterFullData>(
+                    Session<AccountID, AccountData, CharacterID, CharacterPreviewData, CharacterFullData, CCMsg, UCMsg, ICMsg, NCMsg> session = new Session<AccountID, AccountData, CharacterID, CharacterPreviewData, CharacterFullData, CCMsg, UCMsg, ICMsg, NCMsg>(
                         this, connection, accountId
                     );
                     sessions.Add(accountId, session);
@@ -568,9 +494,9 @@ namespace NetRose
 
                 // Clearing the session is only needed INSIDE this class.
                 // Returns the cleared session, if any.
-                private Session<AccountID, AccountData, CharacterID, CharacterPreviewData, CharacterFullData> ClearSession(AccountID accountId, bool alreadyDisconnected)
+                private Session<AccountID, AccountData, CharacterID, CharacterPreviewData, CharacterFullData, CCMsg, UCMsg, ICMsg, NCMsg> ClearSession(AccountID accountId, bool alreadyDisconnected)
                 {
-                    Session<AccountID, AccountData, CharacterID, CharacterPreviewData, CharacterFullData> outSession;
+                    Session<AccountID, AccountData, CharacterID, CharacterPreviewData, CharacterFullData, CCMsg, UCMsg, ICMsg, NCMsg> outSession;
                     if (sessions.TryGetValue(accountId, out outSession))
                     {
                         outSession.ClearListeners();
@@ -595,7 +521,7 @@ namespace NetRose
                 /// <returns>Whether a session was found (and kicked)</returns>
                 public bool Kick<T>(AccountID accountId, T message) where T : IMessageBase
                 {
-                    Session<AccountID, AccountData, CharacterID, CharacterPreviewData, CharacterFullData> session = ClearSession(accountId, false);
+                    Session<AccountID, AccountData, CharacterID, CharacterPreviewData, CharacterFullData, CCMsg, UCMsg, ICMsg, NCMsg> session = ClearSession(accountId, false);
                     if (session != null)
                     {
                         session.Connection.Send<T>(message);
@@ -610,9 +536,9 @@ namespace NetRose
                 /// </summary>
                 /// <param name="session">The session to check</param>
                 /// <returns>Whether it is active or not</returns>
-                public bool HasSession(Session<AccountID, AccountData, CharacterID, CharacterPreviewData, CharacterFullData> session)
+                public bool HasSession(Session<AccountID, AccountData, CharacterID, CharacterPreviewData, CharacterFullData, CCMsg, UCMsg, ICMsg, NCMsg> session)
                 {
-                    Session<AccountID, AccountData, CharacterID, CharacterPreviewData, CharacterFullData> outSession;
+                    Session<AccountID, AccountData, CharacterID, CharacterPreviewData, CharacterFullData, CCMsg, UCMsg, ICMsg, NCMsg> outSession;
                     return sessions.TryGetValue(session.AccountID, out outSession) && outSession == session;
                 }
             }

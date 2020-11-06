@@ -20,7 +20,7 @@ namespace NetRose
                     /// <summary>
                     ///   The character list to send to the client.
                     /// </summary>
-                    public IReadOnlyList<Tuple<CharacterID, CharacterPreviewData>> Characters { get; protected set; }
+                    public IReadOnlyList<Tuple<CharacterID, CharacterPreviewData>> Characters { get; set; }
 
                     /// <summary>
                     ///   Reads a character id from the reader.

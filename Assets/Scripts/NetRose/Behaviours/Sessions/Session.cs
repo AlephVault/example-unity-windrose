@@ -13,18 +13,24 @@ namespace NetRose
     {
         namespace Sessions
         {
+            using Messages;
+
             /// <summary>
             ///   This is not just a session structure, but also notifies
             ///     all their changes to the listeners attached to it.
             /// </summary>
-            public class Session<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData>
+            public class Session<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData, CCMsg, UCMsg, ICMsg, NCMsg>
+                where CCMsg : ChooseCharacter<CharacterID, CharacterPreviewData>, new()
+                where UCMsg : UsingCharacter<CharacterID, CharacterFullData>, new()
+                where ICMsg : InvalidCharacterID<CharacterID>, new()
+                where NCMsg : CharacterDoesNotExist<CharacterID>, new()
             {
-                static readonly ILogger logger = LogFactory.GetLogger(typeof(Session<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData>));
+                static readonly ILogger logger = LogFactory.GetLogger(typeof(Session<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData, CCMsg, UCMsg, ICMsg, NCMsg>));
 
                 /// <summary>
                 ///   The manager this session is bound to.
                 /// </summary>
-                public readonly SessionManager<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData> Manager;
+                public readonly SessionManager<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData, CCMsg, UCMsg, ICMsg, NCMsg> Manager;
 
                 /// <summary>
                 ///   The connection this session is related to.
@@ -32,7 +38,7 @@ namespace NetRose
                 public readonly NetworkConnection Connection;
 
                 // Keeps the session listeners.
-                private HashSet<SessionListener<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData>> listeners = new HashSet<SessionListener<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData>>();
+                private HashSet<SessionListener<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData, CCMsg, UCMsg, ICMsg, NCMsg>> listeners = new HashSet<SessionListener<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData, CCMsg, UCMsg, ICMsg, NCMsg>>();
 
                 /// <summary>
                 ///   The id of the account in the current session.
@@ -75,7 +81,7 @@ namespace NetRose
                 /// <param name="accountId">The account id linked to the session</param>
                 /// <param name="accountData">The current data of the account</param>
                 public Session(
-                    SessionManager<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData> manager,
+                    SessionManager<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData, CCMsg, UCMsg, ICMsg, NCMsg> manager,
                     NetworkConnection connection, AID accountId
                 ) {
                     Manager = manager;
@@ -101,7 +107,7 @@ namespace NetRose
                     set
                     {
                         customData[key] = value;
-                        EachListener(delegate (SessionListener<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData> listener) {
+                        EachListener(delegate (SessionListener<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData, CCMsg, UCMsg, ICMsg, NCMsg> listener) {
                             listener.CustomDataSet(key, value);
                         }, "custom-data-set");
                     }
@@ -117,7 +123,7 @@ namespace NetRose
                 {
                     if (customData.Remove(key))
                     {
-                        EachListener(delegate (SessionListener<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData> listener) {
+                        EachListener(delegate (SessionListener<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData, CCMsg, UCMsg, ICMsg, NCMsg> listener) {
                             listener.CustomDataRemoved(key);
                         }, "custom-data-removed");
                         return true;
@@ -135,7 +141,7 @@ namespace NetRose
                 public void Clear()
                 {
                     customData.Clear();
-                    EachListener(delegate (SessionListener<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData> listener) {
+                    EachListener(delegate (SessionListener<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData, CCMsg, UCMsg, ICMsg, NCMsg> listener) {
                         listener.CustomDataCleared();
                     }, "custom-data-cleared");
                 }
@@ -164,7 +170,7 @@ namespace NetRose
                     }
                     else
                     {
-                        EachListener(delegate (SessionListener<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData> listener) {
+                        EachListener(delegate (SessionListener<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData, CCMsg, UCMsg, ICMsg, NCMsg> listener) {
                             listener.AccountData();
                         }, "account-data");
                     }
@@ -181,7 +187,7 @@ namespace NetRose
                         CharacterFullData data = await Manager.GetCharacterData(AccountID, CurrentCharacterID);
                         if (!data.Equals(default(CharacterFullData)))
                         {
-                            EachListener(delegate (SessionListener<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData> listener) {
+                            EachListener(delegate (SessionListener<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData, CCMsg, UCMsg, ICMsg, NCMsg> listener) {
                                 listener.UsingCharacter();
                             }, "using-character");
                         }
@@ -206,13 +212,14 @@ namespace NetRose
                                 CurrentCharacterID = default(CharacterID);
                                 CurrentCharacterData = default(CharacterFullData);
                                 Connection.Send(new Messages.ReleasingCharacter());
-                                EachListener(delegate (SessionListener<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData> listener) {
+                                EachListener(delegate (SessionListener<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData, CCMsg, UCMsg, ICMsg, NCMsg> listener) {
                                     listener.UsingNoCharacter();
                                 }, "using-no-character");
                                 try
                                 {
-                                    List<Tuple<CharacterID, CharacterPreviewData>> characters = await Manager.ListCharacters(AccountID);
-                                    Connection.Send(Manager.MakeChooseCharacterMessage(characters));
+                                    CCMsg msg = new CCMsg();
+                                    msg.Characters = await Manager.ListCharacters(AccountID);
+                                    Connection.Send(msg);
                                 }
                                 catch (Exception e)
                                 {
@@ -221,8 +228,10 @@ namespace NetRose
                             }
                             else
                             {
-                                Connection.Send(Manager.MakeChooseCharacterMessage(await Manager.ListCharacters(AccountID)));
-                                EachListener(delegate (SessionListener<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData> listener) {
+                                CCMsg msg = new CCMsg();
+                                msg.Characters = await Manager.ListCharacters(AccountID);
+                                Connection.Send(msg);
+                                EachListener(delegate (SessionListener<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData, CCMsg, UCMsg, ICMsg, NCMsg> listener) {
                                     listener.UsingNoCharacter();
                                 }, "using-no-character");
                             }
@@ -233,7 +242,7 @@ namespace NetRose
                             if (data.Equals(default(CharacterFullData)))
                             {
                                 Connection.Send(new Messages.NoCharacterAvailable());
-                                EachListener(delegate (SessionListener<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData> listener) {
+                                EachListener(delegate (SessionListener<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData, CCMsg, UCMsg, ICMsg, NCMsg> listener) {
                                     listener.UsingNoCharacter();
                                 }, "using-no-character");
                             }
@@ -241,8 +250,11 @@ namespace NetRose
                             {
                                 CurrentCharacterID = default(CharacterID);
                                 CurrentCharacterData = data;
-                                Connection.Send(Manager.MakeCurrentCharacterMessage(default(CharacterID), CurrentCharacterData));
-                                EachListener(delegate (SessionListener<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData> listener) {
+                                UCMsg msg = new UCMsg();
+                                msg.CurrentCharacterID = default(CharacterID);
+                                msg.CurrentCharacterData = CurrentCharacterData;
+                                Connection.Send(msg);
+                                EachListener(delegate (SessionListener<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData, CCMsg, UCMsg, ICMsg, NCMsg> listener) {
                                     listener.UsingCharacter();
                                 }, "using-character");
                             }
@@ -272,7 +284,9 @@ namespace NetRose
                     {
                         if (CurrentCharacterID.Equals(default(CharacterID)))
                         {
-                            Connection.Send(Manager.MakeInvalidCharacterMessage(characterId));
+                            ICMsg msg = new ICMsg();
+                            msg.ID = characterId;
+                            Connection.Send(msg);
                             Connection.Disconnect();
                             return;
                         }
@@ -281,7 +295,9 @@ namespace NetRose
                     {
                         if (!CurrentCharacterID.Equals(default(CharacterID)))
                         {
-                            Connection.Send(Manager.MakeInvalidCharacterMessage(characterId));
+                            ICMsg msg = new ICMsg();
+                            msg.ID = characterId;
+                            Connection.Send(msg);
                             Connection.Disconnect();
                             return;
                         }
@@ -301,19 +317,24 @@ namespace NetRose
                         {
                             CurrentCharacterID = characterId;
                             CurrentCharacterData = data;
-                            Connection.Send(Manager.MakeCurrentCharacterMessage(characterId, CurrentCharacterData));
-                            EachListener(delegate (SessionListener<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData> listener) {
+                            UCMsg msg = new UCMsg();
+                            msg.CurrentCharacterID = characterId;
+                            msg.CurrentCharacterData = CurrentCharacterData;
+                            Connection.Send(msg);
+                            EachListener(delegate (SessionListener<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData, CCMsg, UCMsg, ICMsg, NCMsg> listener) {
                                 listener.UsingCharacter();
                             }, "using-character");
                         }
                         else if (multiple)
                         {
-                            Connection.Send(Manager.MakeNonExistingCharacterMessage(characterId));
+                            NCMsg msg = new NCMsg();
+                            msg.ID = characterId;
+                            Connection.Send(msg);
                         }
                         else
                         {
                             Connection.Send(new Messages.NoCharacterAvailable());
-                            EachListener(delegate (SessionListener<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData> listener) {
+                            EachListener(delegate (SessionListener<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData, CCMsg, UCMsg, ICMsg, NCMsg> listener) {
                                 listener.UsingNoCharacter();
                             }, "using-no-character");
                         }
@@ -347,13 +368,15 @@ namespace NetRose
                     CurrentCharacterID = default(CharacterID);
                     CurrentCharacterData = default(CharacterFullData);
                     Connection.Send(new Messages.ReleasingCharacter());
-                    EachListener(delegate (SessionListener<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData> listener) {
+                    EachListener(delegate (SessionListener<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData, CCMsg, UCMsg, ICMsg, NCMsg> listener) {
                         listener.UsingNoCharacter();
                     }, "using-no-character");
                     try
                     {
                         List<Tuple<CharacterID, CharacterPreviewData>> characters = await Manager.ListCharacters(AccountID);
-                        Connection.Send(Manager.MakeChooseCharacterMessage(characters));
+                        CCMsg msg = new CCMsg();
+                        msg.Characters = characters;
+                        Connection.Send(msg);
                     }
                     catch (Exception e)
                     {
@@ -378,7 +401,7 @@ namespace NetRose
                 ///   Adds a listener to this session, and notifies.
                 /// </summary>
                 /// <param name="listener">The listener to add</param>
-                public void AddListener(SessionListener<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData> listener)
+                public void AddListener(SessionListener<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData, CCMsg, UCMsg, ICMsg, NCMsg> listener)
                 {
                     if (!listeners.Contains(listener))
                     {
@@ -399,7 +422,7 @@ namespace NetRose
                 ///   Removes a listener from this session, and notifies.
                 /// </summary>
                 /// <param name="listener">The listener to add</param>
-                public void RemoveListener(SessionListener<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData> listener)
+                public void RemoveListener(SessionListener<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData, CCMsg, UCMsg, ICMsg, NCMsg> listener)
                 {
                     if (listeners.Contains(listener))
                     {
@@ -421,7 +444,7 @@ namespace NetRose
                 /// </summary>
                 public void ClearListeners()
                 {
-                    foreach(SessionListener<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData> listener in listeners)
+                    foreach(SessionListener<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData, CCMsg, UCMsg, ICMsg, NCMsg> listener in listeners)
                     {
                         try
                         {
@@ -472,9 +495,9 @@ namespace NetRose
                 }
 
                 // Runs a single event.
-                private void EachListener(Action<SessionListener<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData>> action, string key)
+                private void EachListener(Action<SessionListener<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData, CCMsg, UCMsg, ICMsg, NCMsg>> action, string key)
                 {
-                    foreach (SessionListener<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData> listener in listeners)
+                    foreach (SessionListener<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData, CCMsg, UCMsg, ICMsg, NCMsg> listener in listeners)
                     {
                         try
                         {

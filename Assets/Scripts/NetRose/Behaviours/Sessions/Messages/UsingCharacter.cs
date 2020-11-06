@@ -20,12 +20,12 @@ namespace NetRose
                     /// <summary>
                     ///   The full data of the currently in-use character.
                     /// </summary>
-                    public CharacterFullData CurrentCharacterData { get; protected set; }
+                    public CharacterFullData CurrentCharacterData { get; set; }
 
                     /// <summary>
                     ///   The id of the currently in-use character.
                     /// </summary>
-                    public CharacterID CurrentCharacterID { get; protected set; }
+                    public CharacterID CurrentCharacterID { get; set; }
 
                     /// <summary>
                     ///   Reads a character id from the reader.

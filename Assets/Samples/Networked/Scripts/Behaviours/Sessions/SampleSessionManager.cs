@@ -15,7 +15,7 @@ namespace NetworkedSamples
         namespace Sessions
         {
             [RequireComponent(typeof(SampleDatabase))]
-            public class SampleSessionManager : SessionManager<int, SampleDatabase.Account, int, string, SampleDatabase.Character>
+            public class SampleSessionManager : SessionManager<int, SampleDatabase.Account, int, string, SampleDatabase.Character, SampleChooseCharacter, SampleUsingCharacter, SampleInvalidCharacterID, SampleCharacterDoesNotExist>
             {
                 // Notes: This is a DUMB manager and the full data will be the prefab. Typically, game objects are not passed but,
                 //        instead, arbitrary serializable data structures. In this case, the asset GUID will be passed as string.
@@ -27,27 +27,7 @@ namespace NetworkedSamples
                     base.Awake();
                     database = GetComponent<SampleDatabase>();
                 }
-
-                public override ChooseCharacter<int, string> MakeChooseCharacterMessage(IReadOnlyList<Tuple<int, string>> characters)
-                {
-                    return new SampleChooseCharacter(characters);
-                }
                 
-                public override UsingCharacter<int, SampleDatabase.Character> MakeCurrentCharacterMessage(int characterId, SampleDatabase.Character characterFullData)
-                {
-                    return new SampleUsingCharacter(characterId, characterFullData);
-                }
-
-                public override InvalidCharacterID<int> MakeInvalidCharacterMessage(int characterId)
-                {
-                    return new SampleInvalidCharacterID(characterId);
-                }
-
-                public override CharacterDoesNotExist<int> MakeNonExistingCharacterMessage(int characterId)
-                {
-                    return new SampleCharacterDoesNotExist(characterId);
-                }
-
                 protected override AccountCharacterFetcher<int, int, string, SampleDatabase.Character> GetAccountCharacterFetcher()
                 {
                     return database;
@@ -56,16 +36,6 @@ namespace NetworkedSamples
                 protected override AccountFetcher<int, SampleDatabase.Account> GetAccountFetcher()
                 {
                     return database;
-                }
-
-                protected override void RegisterCharacterDataEvents()
-                {
-                    RegisterCharacterDataEvents<SampleChooseCharacter, SampleUsingCharacter, SampleInvalidCharacterID, SampleCharacterDoesNotExist>();
-                }
-
-                protected override void UnregisterCharacterDataEvents()
-                {
-                    UnregisterCharacterDataEvents<SampleChooseCharacter, SampleUsingCharacter, SampleInvalidCharacterID, SampleCharacterDoesNotExist>();
                 }
             }
         }

@@ -13,16 +13,31 @@ namespace NetRose
     {
         namespace Sessions
         {
+            using Messages;
+
             /// <summary>
             ///   A session listener implements all the events involving data changes
             ///     in the session (regarding account, character, and custom data).
             /// </summary>
-            public interface SessionListener<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData>
+            /// <typeparam name="AID">The type of the id of an account</typeparam>
+            /// <typeparam name="AData">The type of the data of an account</typeparam>
+            /// <typeparam name="CharacterID">The type of the id of a character</typeparam>
+            /// <typeparam name="CharacterPreviewData">The type of the partial preview data of a character</typeparam>
+            /// <typeparam name="CharacterFullData">The type of the full data of a character</typeparam>
+            /// <typeparam name="CCMsg">The desired subtype of <see cref="ChooseCharacter{CharacterID, CharacterPreviewData}"/> the session manager will cleanup</typeparam>
+            /// <typeparam name="UCMsg">The desired subtype of <see cref="UsingCharacter{CharacterID, CharacterFullData}"/> the session manager will cleanup</typeparam>
+            /// <typeparam name="ICMsg">The desired subtype of <see cref="InvalidCharacterID{CharacterID}"/> the session manager will cleanup</typeparam>
+            /// <typeparam name="NCMsg">The desired subtype of <see cref="CharacterDoesNotExist{CharacterID}"/> the session manager will cleanup</typeparam>
+            public interface SessionListener<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData, CCMsg, UCMsg, ICMsg, NCMsg>
+                where CCMsg : ChooseCharacter<CharacterID, CharacterPreviewData>, new()
+                where UCMsg : UsingCharacter<CharacterID, CharacterFullData>, new()
+                where ICMsg : InvalidCharacterID<CharacterID>, new()
+                where NCMsg : CharacterDoesNotExist<CharacterID>, new()
             {
                 /// <summary>
                 ///   Called when this listener is connected to the session.
                 /// </summary>
-                void Started(Session<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData> session);
+                void Started(Session<AID, AData, CharacterID, CharacterPreviewData, CharacterFullData, CCMsg, UCMsg, ICMsg, NCMsg> session);
 
                 /// <summary>
                 ///   Called when a value in the custom data has changed.

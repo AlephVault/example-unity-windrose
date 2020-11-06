@@ -19,7 +19,7 @@ namespace NetRose
                     /// <summary>
                     ///   The character id to send to the client.
                     /// </summary>
-                    public CharacterID ID { get; protected set; }
+                    public CharacterID ID { get; set; }
 
                     /// <summary>
                     ///   Reads a character id from the reader.

@@ -57,6 +57,16 @@ namespace NetworkedSamples
                 {
                     return database;
                 }
+
+                protected override void RegisterCharacterDataEvents()
+                {
+                    RegisterCharacterDataEvents<SampleChooseCharacter, SampleUsingCharacter, SampleInvalidCharacterID, SampleCharacterDoesNotExist>();
+                }
+
+                protected override void UnregisterCharacterDataEvents()
+                {
+                    UnregisterCharacterDataEvents<SampleChooseCharacter, SampleUsingCharacter, SampleInvalidCharacterID, SampleCharacterDoesNotExist>();
+                }
             }
         }
     }

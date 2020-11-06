@@ -37,6 +37,8 @@ namespace NetworkedSamples
                     {
                         Characters = characters;
                     }
+
+                    public SampleChooseCharacter() {}
                 }
             }
         }

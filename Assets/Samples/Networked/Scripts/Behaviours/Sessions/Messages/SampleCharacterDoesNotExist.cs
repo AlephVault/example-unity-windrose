@@ -29,6 +29,8 @@ namespace NetworkedSamples
                     {
                         ID = id;
                     }
+
+                    public SampleCharacterDoesNotExist() {}
                 }
             }
         }

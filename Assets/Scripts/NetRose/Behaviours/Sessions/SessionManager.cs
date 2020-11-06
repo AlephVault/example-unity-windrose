@@ -107,13 +107,13 @@ namespace NetRose
                 ///   This event is triggered in the client when the server could not find the account data for
                 ///     the current user. A disconnection is being issued immediately after.
                 /// </summary>
-                private readonly UnityEvent onClientSessionMissingAccountData = new UnityEvent();
+                public readonly UnityEvent onClientSessionMissingAccountData = new UnityEvent();
 
                 /// <summary>
                 ///   This event is triggered in the client when the server releases the current in-use character
                 ///     for the currently logged-in account.
                 /// </summary>
-                private readonly UnityEvent onClientSessionReleasingCharacter = new UnityEvent();
+                public readonly UnityEvent onClientSessionReleasingCharacter = new UnityEvent();
 
                 /// <summary>
                 ///   This event is triggered in the client when the server attempts to select the only character
@@ -121,21 +121,21 @@ namespace NetRose
                 ///     the opportunity for the client to issue the creation of a character under game-specific
                 ///     commands & guidelines.
                 /// </summary>
-                private readonly UnityEvent onClientSessionNoCharacterAvailable = new UnityEvent();
+                public readonly UnityEvent onClientSessionNoCharacterAvailable = new UnityEvent();
 
                 /// <summary>
                 ///   This event is triggered in the client when the server attempts to select the same character
                 ///     that is currently using. This message is an opportunity to tell the client that nothing
                 ///     will actually occur.
                 /// </summary>
-                private readonly UnityEvent onClientSessionAlreadyUsingCharacter = new UnityEvent();
+                public readonly UnityEvent onClientSessionAlreadyUsingCharacter = new UnityEvent();
 
                 /// <summary>
                 ///   This event is triggered in the client when the server attempts to release the current
                 ///     character, but the game is single-character per account. This is typically an error
                 ///     in the server implementation rather than a user error (or could be both).
                 /// </summary>
-                private readonly UnityEvent onClientSessionCannotReleaseCharacterInSingleMode = new UnityEvent();
+                public readonly UnityEvent onClientSessionCannotReleaseCharacterInSingleMode = new UnityEvent();
 
                 /// <summary>
                 ///   This event is triggered in the client when the server attempted to release the current
@@ -143,7 +143,47 @@ namespace NetRose
                 ///     only makes sense in multi-character games, and is an opportunity to notify the error
                 ///     but the game will not disconnect.
                 /// </summary>
-                private readonly UnityEvent onClientSessionNotUsingCharacter = new UnityEvent();
+                public readonly UnityEvent onClientSessionNotUsingCharacter = new UnityEvent();
+
+                /// <summary>
+                ///   This event carries information of the available characters for the account.
+                /// </summary>
+                public class ChooseCharacterEvent : UnityEvent<IReadOnlyList<Tuple<CharacterID, CharacterPreviewData>>> {}
+                
+                /// <summary>
+                ///   This event is triggered when the client receives a server notification to pick a character.
+                ///     The event includes the list of (id, preview data) of each available character.
+                /// </summary>
+                public readonly ChooseCharacterEvent onClientChooseCharacter = new ChooseCharacterEvent();
+
+                /// <summary>
+                ///   This event carries information of the currently in-use character in the account.
+                /// </summary>
+                public class UsingCharacterEvent : UnityEvent<CharacterID, CharacterFullData> { }
+
+                /// <summary>
+                ///   This event is triggered when the client receives a server notification telling that
+                ///     a character is currently being selected.
+                /// </summary>
+                public readonly UsingCharacterEvent onClientUsingCharacter = new UsingCharacterEvent();
+
+                /// <summary>
+                ///   This event carries information of the character ID that was deemed of invalid format
+                ///     or non-existing per-account value when trying to select a character.
+                /// </summary>
+                public class BadCharacterIDEvent : UnityEvent<CharacterID> { }
+
+                /// <summary>
+                ///   This event is triggered when the client receives a server notification telling that
+                ///     an attempted character id is invalid (in format).
+                /// </summary>
+                public readonly BadCharacterIDEvent onClientInvalidCharacterID = new BadCharacterIDEvent();
+
+                /// <summary>
+                ///   This event is triggered when the client receives a server notification telling that
+                ///     an attempted character id does not exist for the current account.
+                /// </summary>
+                public readonly BadCharacterIDEvent onClientCharacterDoesNotExist = new BadCharacterIDEvent();
 
                 protected virtual void Awake()
                 {
@@ -259,6 +299,66 @@ namespace NetRose
                     onClientSessionNotUsingCharacter.Invoke();
                 }
 
+                private void OnClientChooseCharacter<T>(T message) where T : ChooseCharacter<CharacterID, CharacterPreviewData>
+                {
+                    onClientChooseCharacter.Invoke(message.Characters);
+                }
+
+                private void OnClientUsingCharacter<T>(T message) where T : UsingCharacter<CharacterID, CharacterFullData>
+                {
+                    onClientUsingCharacter.Invoke(message.CurrentCharacterID, message.CurrentCharacterData);
+                }
+
+                private void OnClientInvalidCharacterID<T>(T message) where T : InvalidCharacterID<CharacterID>
+                {
+                    onClientInvalidCharacterID.Invoke(message.ID);
+                }
+
+                private void OnClientCharacterDoesNotExist<T>(T message) where T : CharacterDoesNotExist<CharacterID>
+                {
+                    onClientCharacterDoesNotExist.Invoke(message.ID);
+                }
+
+                /***************** Generic events [un]registrar goes here ******************/
+
+                /// <summary>
+                ///   This event registers handlers for 4 concrete types of event messages.
+                /// </summary>
+                /// <typeparam name="CC">The desired subtype of <see cref="ChooseCharacter{CharacterID, CharacterPreviewData}"/> to attend</typeparam>
+                /// <typeparam name="UC">The desired subtype of <see cref="UsingCharacter{CharacterID, CharacterFullData}"/> to attend</typeparam>
+                /// <typeparam name="IC">The desired subtype of <see cref="InvalidCharacterID{CharacterID}"/> to attend</typeparam>
+                /// <typeparam name="NC">The desired subtype of <see cref="CharacterDoesNotExist{CharacterID}"/> to attend</typeparam>
+                protected void RegisterCharacterDataEvents<CC, UC, IC, NC>()
+                    where CC : ChooseCharacter<CharacterID, CharacterPreviewData>, new()
+                    where UC : UsingCharacter<CharacterID, CharacterFullData>, new()
+                    where IC : InvalidCharacterID<CharacterID>, new()
+                    where NC : CharacterDoesNotExist<CharacterID>, new()
+                {
+                    NetworkClient.RegisterHandler<CC>(OnClientChooseCharacter, false);
+                    NetworkClient.RegisterHandler<UC>(OnClientUsingCharacter, false);
+                    NetworkClient.RegisterHandler<IC>(OnClientInvalidCharacterID, false);
+                    NetworkClient.RegisterHandler<NC>(OnClientCharacterDoesNotExist, false);
+                }
+
+                /// <summary>
+                ///   This event unregisters the handlers for 4 concrete types of event messages
+                ///     already registered via <see cref="RegisterCharacterDataEvents{CC, UC, IC, NC}"/>.
+                /// </summary>
+                /// <typeparam name="CC">The desired subtype of <see cref="ChooseCharacter{CharacterID, CharacterPreviewData}"/> to cleanup</typeparam>
+                /// <typeparam name="UC">The desired subtype of <see cref="UsingCharacter{CharacterID, CharacterFullData}"/> to cleanup</typeparam>
+                /// <typeparam name="IC">The desired subtype of <see cref="InvalidCharacterID{CharacterID}"/> to cleanup</typeparam>
+                /// <typeparam name="NC">The desired subtype of <see cref="CharacterDoesNotExist{CharacterID}"/> to cleanup</typeparam>
+                protected void UnregisterCharacterDataEvents<CC, UC, IC, NC>()
+                    where CC : ChooseCharacter<CharacterID, CharacterPreviewData>, new()
+                    where UC : UsingCharacter<CharacterID, CharacterFullData>, new()
+                    where IC : InvalidCharacterID<CharacterID>, new()
+                    where NC : CharacterDoesNotExist<CharacterID>, new()
+                {
+                    NetworkClient.UnregisterHandler<CC>();
+                    NetworkClient.UnregisterHandler<UC>();
+                    NetworkClient.UnregisterHandler<IC>();
+                    NetworkClient.UnregisterHandler<NC>();
+                }
 
                 /***************** Event invokers end here ******************/
 
@@ -282,6 +382,7 @@ namespace NetRose
                     NetworkClient.RegisterHandler<AlreadyUsingCharacter>(OnClientSessionAlreadyUsingCharacter, false);
                     NetworkClient.RegisterHandler<CannotReleaseCharacterInSingleMode>(OnClientSessionCannotReleaseCharacterInSingleMode, false);
                     NetworkClient.RegisterHandler<NotUsingCharacter>(OnClientSessionNotUsingCharacter, false);
+                    RegisterCharacterDataEvents();
                 }
 
                 /// <summary>
@@ -301,12 +402,27 @@ namespace NetRose
                     NetworkClient.UnregisterHandler<AlreadyUsingCharacter>();
                     NetworkClient.UnregisterHandler<CannotReleaseCharacterInSingleMode>();
                     NetworkClient.UnregisterHandler<NotUsingCharacter>();
+                    UnregisterCharacterDataEvents();
                 }
 
                 /***********************************************************************************/
                 /*********** Methods of account/character(s) data-fetching *************************/
-                /*********** and also serialization to the client(s)       *************************/
+                /*********** and serialization to the client(s). Also one  *************************/
+                /*********** method to fill with a call to the generic one *************************/
+                /*********** to register and unregister data-aware events. *************************/
                 /***********************************************************************************/
+
+                /// <summary>
+                ///   This method must be implemented by calling an instance of the generic
+                ///     version of this method: RegisterCharacterDataEvents<CC, UC, IC, NC>();
+                /// </summary>
+                protected abstract void RegisterCharacterDataEvents();
+
+                /// <summary>
+                ///   This method must be implemented by calling an instance of the generic
+                ///     version of this method: UnregisterCharacterDataEvents<CC, UC, IC, NC>();
+                /// </summary>
+                protected abstract void UnregisterCharacterDataEvents();
 
                 /// <summary>
                 ///   An account data fetcher is used to get the account's data by the given
@@ -379,7 +495,7 @@ namespace NetRose
                 /// </summary>
                 /// <param name="characters">The characters to serialize</param>
                 /// <returns>The message to send</returns>
-                public abstract Messages.ChooseCharacter<CharacterID, CharacterPreviewData> MakeChooseCharacterMessage(IReadOnlyList<Tuple<CharacterID, CharacterPreviewData>> characters);
+                public abstract ChooseCharacter<CharacterID, CharacterPreviewData> MakeChooseCharacterMessage(IReadOnlyList<Tuple<CharacterID, CharacterPreviewData>> characters);
 
                 /// <summary>
                 ///   Builds a custom message to send the currently selected
@@ -388,7 +504,7 @@ namespace NetRose
                 /// <param name="characterId">The id to serialize</param>
                 /// <param name="characterFullData">The full data to serialize</param>
                 /// <returns>The message to send</returns>
-                public abstract Messages.UsingCharacter<CharacterID, CharacterFullData> MakeCurrentCharacterMessage(CharacterID characterId, CharacterFullData characterFullData);
+                public abstract UsingCharacter<CharacterID, CharacterFullData> MakeCurrentCharacterMessage(CharacterID characterId, CharacterFullData characterFullData);
 
                 /// <summary>
                 ///   Builds a custom message to send that a certain character id
@@ -396,7 +512,7 @@ namespace NetRose
                 /// </summary>
                 /// <param name="characterId">The id to serialize</param>
                 /// <returns>The message to send</returns>
-                public abstract Messages.InvalidCharacterID<CharacterID> MakeInvalidCharacterMessage(CharacterID characterId);
+                public abstract InvalidCharacterID<CharacterID> MakeInvalidCharacterMessage(CharacterID characterId);
 
                 /// <summary>
                 ///   Builds a custom message to send that a certain character id
@@ -404,7 +520,7 @@ namespace NetRose
                 /// </summary>
                 /// <param name="characterId">The id to serialize</param>
                 /// <returns>The message to send</returns>
-                public abstract Messages.CharacterDoesNotExist<CharacterID> MakeNonExistingCharacterMessage(CharacterID characterId);
+                public abstract CharacterDoesNotExist<CharacterID> MakeNonExistingCharacterMessage(CharacterID characterId);
 
                 /***********************************************************************************/
                 /***********************************************************************************/

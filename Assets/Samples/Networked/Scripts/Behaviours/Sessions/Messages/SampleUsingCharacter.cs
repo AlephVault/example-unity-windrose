@@ -44,6 +44,8 @@ namespace NetworkedSamples
                         CurrentCharacterID = id;
                         CurrentCharacterData = data;
                     }
+
+                    public SampleUsingCharacter() {}
                 }
             }
         }

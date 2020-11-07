@@ -16,11 +16,10 @@ namespace NetRose
         {
             /// <summary>
             ///   <para>
-            ///     This behaviour is typically a singleton and/or tied
-            ///       a <see cref="NetworkWorldManager"/> (it will need
-            ///       specifically that type of behaviour as network
-            ///       manager) and manages the sessions behind each
-            ///       connection to the client (this behaviour only
+            ///     This behaviour is tied to a <see cref="NetworkWorldManager"/>
+            ///       (it will need specifically that type of behaviour
+            ///       as network manager) and manages the sessions behind
+            ///       each connection to the client (this behaviour only
             ///       makes sense in server side).
             ///   </para>
             ///   <para>
@@ -37,6 +36,7 @@ namespace NetRose
             /// <typeparam name="UCMsg">The desired subtype of <see cref="UsingCharacter{CharacterID, CharacterFullData}"/> to cleanup</typeparam>
             /// <typeparam name="ICMsg">The desired subtype of <see cref="InvalidCharacterID{CharacterID}"/> to cleanup</typeparam>
             /// <typeparam name="NCMsg">The desired subtype of <see cref="CharacterDoesNotExist{CharacterID}"/> to cleanup</typeparam>
+            [RequireComponent(typeof(NetworkWorldManager))]
             public abstract class SessionManager<AccountID, AccountData, CharacterID, CharacterPreviewData, CharacterFullData, CCMsg, UCMsg, ICMsg, NCMsg> : MonoBehaviour
                 where CCMsg : ChooseCharacter<CharacterID, CharacterPreviewData>, new()
                 where UCMsg : UsingCharacter<CharacterID, CharacterFullData>, new()
@@ -162,7 +162,7 @@ namespace NetRose
                 ///   This event is triggered when the client receives a server notification to pick a character.
                 ///     The event includes the list of (id, preview data) of each available character.
                 /// </summary>
-                public readonly ChooseCharacterEvent onClientChooseCharacter = new ChooseCharacterEvent();
+                public readonly ChooseCharacterEvent onClientSessionChooseCharacter = new ChooseCharacterEvent();
 
                 /// <summary>
                 ///   This event carries information of the currently in-use character in the account.
@@ -173,7 +173,7 @@ namespace NetRose
                 ///   This event is triggered when the client receives a server notification telling that
                 ///     a character is currently being selected.
                 /// </summary>
-                public readonly UsingCharacterEvent onClientUsingCharacter = new UsingCharacterEvent();
+                public readonly UsingCharacterEvent onClientSessionUsingCharacter = new UsingCharacterEvent();
 
                 /// <summary>
                 ///   This event carries information of the character ID that was deemed of invalid format
@@ -195,7 +195,7 @@ namespace NetRose
 
                 protected virtual void Awake()
                 {
-                    manager = (NetworkManager.singleton as NetworkWorldManager);
+                    manager = GetComponent<NetworkWorldManager>();
                     if (manager == null)
                     {
                         Destroy(gameObject);
@@ -309,12 +309,12 @@ namespace NetRose
 
                 private void OnClientChooseCharacter(CCMsg message)
                 {
-                    onClientChooseCharacter.Invoke(message.Characters);
+                    onClientSessionChooseCharacter.Invoke(message.Characters);
                 }
 
                 private void OnClientUsingCharacter(UCMsg message)
                 {
-                    onClientUsingCharacter.Invoke(message.CurrentCharacterID, message.CurrentCharacterData);
+                    onClientSessionUsingCharacter.Invoke(message.CurrentCharacterID, message.CurrentCharacterData);
                 }
 
                 private void OnClientInvalidCharacterID(ICMsg message)

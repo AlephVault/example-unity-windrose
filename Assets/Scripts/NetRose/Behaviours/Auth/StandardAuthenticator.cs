@@ -19,6 +19,17 @@ namespace NetRose
             ///     - Authenticating from the received auth message in server.
             ///       The result is a response, and a session object.
             ///   </para>
+            ///   <para>
+            ///     This component does not need to be tied to a
+            ///       <see cref="NetworkWorldManager"/> but can be.
+            ///       Oftentimes both the session manager and the
+            ///       standard authenticator will access the same
+            ///       underlying dataset system, and so it may make
+            ///       sense to put both components in the same object,
+            ///       but this is not enforced / required (in contrast,
+            ///       it is required that session managers be attached
+            ///       to network world manager objects).
+            ///   </para>
             /// </summary>
             /// <typeparam name="AuthMessage">The type of the auth message to send to the server to perform login</typeparam>
             /// <typeparam name="AccountID">The type of the id for the player's account</typeparam>

@@ -10,6 +10,7 @@ namespace NetRose
         {
             using Entities.Objects;
             using UnityEngine.SceneManagement;
+            using Types;
 
             /// <summary>
             ///   <para>
@@ -54,9 +55,17 @@ namespace NetRose
                 // The underlying identity. Used to change scenes.
                 private NetworkIdentity identity;
 
+                private NetworkWorldManager manager;
+
                 private void Awake()
                 {
                     identity = GetComponent<NetworkIdentity>();
+                    manager = GetComponent<NetworkWorldManager>();
+                    if (manager == null)
+                    {
+                        Destroy(gameObject);
+                        throw new Exception("The NetworkManager singleton must be of type NetworkWorldManager");
+                    }
                 }
 
                 /// <summary>
@@ -75,7 +84,12 @@ namespace NetRose
                         // only take it if it belongs to a scene
                         // in the same world.
 
-                        NetworkWorldManager manager = NetworkManager.singleton.GetComponent<NetworkWorldManager>();
+                        if (manager == null)
+                        {
+                            Destroy(gameObject);
+                            throw new Exception("The NetworkManager singleton must be of type NetworkWorldManager");
+                        }
+
                         NetworkedMapObject oldTarget = target ? target.GetComponent<NetworkedMapObject>() : null;
 
                         if (value == null)
@@ -108,7 +122,6 @@ namespace NetRose
                                 //   Release the target, for it went out of the reach
                                 //   (in the next frame, it will move this follower
                                 //    object to the main scene).
-                                NetworkWorldManager manager = NetworkManager.singleton.GetComponent<NetworkWorldManager>();
                                 if (manager.ContainsScene(target.gameObject.scene))
                                 {
                                     manager.MovePlayer(identity, target.gameObject.scene);
@@ -131,7 +144,7 @@ namespace NetRose
                         // If server side, move to the main world/"online" scene.
                         if (isServer)
                         {
-                            NetworkManager.singleton.GetComponent<NetworkWorldManager>().MovePlayer(identity, SceneManager.GetActiveScene());
+                            manager.MovePlayer(identity, SceneManager.GetActiveScene());
                         }
                     }
 

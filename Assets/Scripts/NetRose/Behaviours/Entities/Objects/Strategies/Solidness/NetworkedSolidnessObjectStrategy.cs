@@ -24,7 +24,7 @@ namespace NetRose
                 /// </summary>
                 [RequireComponent(typeof(NetworkedMapObject))]
                 [RequireComponent(typeof(SolidnessObjectStrategy))]
-                public class NetworkedSolidnessObjeceStrategy : BaseBehaviour.RelatedBehaviour
+                public class NetworkedSolidnessObjectStrategy : BaseBehaviour.RelatedBehaviour
                 {
                     private class SimpleCommand : ClientRpcCommand
                     {

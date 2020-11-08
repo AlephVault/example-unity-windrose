@@ -218,11 +218,11 @@ MonoBehaviour:
   startOnHeadless: 1
   showDebugMessages: 0
   serverTickRate: 30
-  offlineScene: 
-  onlineScene: 
+  offlineScene: Assets/Samples/Networked/Scenes/SingleMap/Offline.unity
+  onlineScene: Assets/Samples/Networked/Scenes/SingleMap/Online.unity
   transport: {fileID: 64271611}
   networkAddress: localhost
-  maxConnections: 4
+  maxConnections: 100
   disconnectInactiveConnections: 0
   disconnectInactiveTimeout: 60
   authenticator: {fileID: 64271613}
@@ -231,8 +231,13 @@ MonoBehaviour:
   playerSpawnMethod: 0
   spawnPrefabs: []
   scenes:
-    m_keys: []
-    m_values: []
+    m_keys:
+    - map-1
+    m_values:
+    - sourceScene:
+        _asset: {fileID: 102900000, guid: e8b60a40358aa424aa20d6944c9d9dc0, type: 3}
+        _path: Assets/Samples/Networked/Scenes/SingleMap/Map1.unity
+      loadMode: 0
 --- !u!114 &64271613
 MonoBehaviour:
   m_ObjectHideFlags: 0

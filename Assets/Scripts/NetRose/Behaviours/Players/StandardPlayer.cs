@@ -3,6 +3,7 @@ using Mirror;
 using NetRose.Behaviours.Sessions.Messages;
 using NetRose.Behaviours.UI;
 using NetRose.Behaviours.Entities.Objects;
+using NetworkedSamples.Behaviours;
 
 namespace NetRose
 {
@@ -101,11 +102,40 @@ namespace NetRose
 
                 private InnerListener listener;
                 private NetworkIdentity identity;
-                private NetworkedMapObjectFollower follower;
-                private NetworkedMapObject currentCharacter;
+
+                /// <summary>
+                ///   A reference to the map object follower behaviour
+                ///     to be used in children classes.
+                /// </summary>
+                protected NetworkedMapObjectFollower follower;
+
                 private Session<AccountID, AccountData, CharacterID, CharacterPreviewData, CharacterFullData, CCMsg, UCMsg, ICMsg, NCMsg> session;
 
-                void Awake()
+                /// <summary>
+                ///   A reference to the current character instance,
+                ///     if any character is already loaded, to be used
+                ///     by children player behaviours.
+                /// </summary>
+                protected NetworkedMapObject currentCharacter;
+
+                // Registers a callback for the local player event so these
+                // objects know whether they are the local player or not,
+                // and react accordingly to different settings.
+                static StandardPlayer()
+                {
+                    ClientScene.onLocalPlayerChanged += OnLocalPlayerChanged;
+                }
+
+                // This change handler triggers two callbacks for these objects
+                // being set into (and removed from) being the local player.
+                private static void OnLocalPlayerChanged(NetworkIdentity oldPlayer, NetworkIdentity newPlayer)
+                {
+                    StandardPlayer<AccountID, AccountData, CharacterID, CharacterPreviewData, CharacterFullData, CCMsg, UCMsg, ICMsg, NCMsg> cmp = null;
+                    if (oldPlayer && (cmp = oldPlayer.GetComponent<StandardPlayer<AccountID, AccountData, CharacterID, CharacterPreviewData, CharacterFullData, CCMsg, UCMsg, ICMsg, NCMsg>>())) cmp.OnStoppedBeingLocalPlayer();
+                    if (newPlayer && (cmp = newPlayer.GetComponent<StandardPlayer<AccountID, AccountData, CharacterID, CharacterPreviewData, CharacterFullData, CCMsg, UCMsg, ICMsg, NCMsg>>())) cmp.OnStartedBeingLocalPlayer();
+                }
+
+                protected virtual void Awake()
                 {
                     identity = GetComponent<NetworkIdentity>();
                     listener = new InnerListener(this);
@@ -186,6 +216,30 @@ namespace NetRose
                             session.RemoveListener(listener);
                             break;
                     }
+                }
+
+                /// <summary>
+                ///   Gets a camera to be used by this player's follower.
+                /// </summary>
+                protected virtual Camera GetCamera()
+                {
+                    return Camera.main;
+                }
+
+                /// <summary>
+                ///   Callback for when the object becomes the local player.
+                /// </summary>
+                protected virtual void OnStartedBeingLocalPlayer()
+                {
+                    follower.camera = GetCamera();
+                }
+
+                /// <summary>
+                ///   Callback for when the objects stops being the local player.
+                /// </summary>
+                protected virtual void OnStoppedBeingLocalPlayer()
+                {
+                    follower.camera = null;
                 }
 
                 /// <summary>

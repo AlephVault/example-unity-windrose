@@ -27,6 +27,11 @@ namespace NetworkedSamples
                     transform.position = new Vector3(transform.position.x, transform.position.y, -10);
                     messageHolder = transform.GetChild(0).GetComponent<Image>();
                     text = messageHolder.transform.GetChild(1).GetComponent<TextMeshProUGUI>();
+                }
+
+                private void Start()
+                {
+                    // It is in Start() event when I get the .singleton property to be filled.
                     forwarder = NetworkManager.singleton.GetComponent<SampleMessageForwarder>();
 
                     GetComponentInChildren<Button>().onClick.AddListener(() =>

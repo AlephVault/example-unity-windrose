@@ -524,6 +524,7 @@ namespace NetRose
 
             public override void Awake()
             {
+                base.Awake();
                 isWorldReady = false;
             }
 

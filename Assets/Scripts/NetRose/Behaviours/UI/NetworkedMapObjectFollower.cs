@@ -34,7 +34,7 @@ namespace NetRose
                 /// <summary>
                 ///   The camera being tracked. Such camera will
                 ///     be the one tracking the target object, if
-                ///     any. On client this camera must be explicitly
+                ///     any. On client this field must be explicitly
                 ///     set to a camera.
                 /// </summary>
                 public new Camera camera = null;
@@ -57,10 +57,14 @@ namespace NetRose
 
                 private NetworkWorldManager manager;
 
-                private void Awake()
+                void Awake()
                 {
                     identity = GetComponent<NetworkIdentity>();
-                    manager = GetComponent<NetworkWorldManager>();
+                }
+
+                void Start()
+                {
+                    manager = NetworkManager.singleton.GetComponent<NetworkWorldManager>();
                     if (manager == null)
                     {
                         Destroy(gameObject);

@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 using Mirror;
 using NetRose.Behaviours.Sessions.Messages;
-using UnityEngine.Events;
+using NetRose.Behaviours.UI;
+using NetRose.Behaviours.Entities.Objects;
 
 namespace NetRose
 {
@@ -10,7 +11,7 @@ namespace NetRose
         namespace Sessions
         {
             /// <summary>
-            ///   Session-aware players are behaviours intended to
+            ///   Standard (aware) players are behaviours intended to
             ///     be part of player objects and have behaviours
             ///     and methods to be aware of the current connection's
             ///     session. This logic, however, is only server-side,
@@ -21,7 +22,12 @@ namespace NetRose
             ///     will recognize such condition as well and,
             ///     depending on the networking mode, will execute
             ///     or not its logic: being aware of the session and
-            ///     forwarding their events.
+            ///     appropriately implementing their logic (partially,
+            ///     and mostly abstract). Several methods may be
+            ///     implemented / overriden, but those involving the
+            ///     character inflation and disposal are required to
+            ///     be implemented since they are the core of this
+            ///     behaviour.
             /// </summary>
             /// <typeparam name="AccountID">The type of the id of an account</typeparam>
             /// <typeparam name="AccountData">The type of the data of an account</typeparam>
@@ -32,8 +38,8 @@ namespace NetRose
             /// <typeparam name="UCMsg">The desired subtype of <see cref="UsingCharacter{CharacterID, CharacterFullData}"/> to handle</typeparam>
             /// <typeparam name="ICMsg">The desired subtype of <see cref="InvalidCharacterID{CharacterID}"/> to handle</typeparam>
             /// <typeparam name="NCMsg">The desired subtype of <see cref="CharacterDoesNotExist{CharacterID}"/> to handle</typeparam>
-            [RequireComponent(typeof(NetworkIdentity))]
-            public class SessionAwarePlayer<AccountID, AccountData, CharacterID, CharacterPreviewData, CharacterFullData, CCMsg, UCMsg, ICMsg, NCMsg> : MonoBehaviour
+            [RequireComponent(typeof(NetworkedMapObjectFollower))]
+            public abstract class StandardPlayer<AccountID, AccountData, CharacterID, CharacterPreviewData, CharacterFullData, CCMsg, UCMsg, ICMsg, NCMsg> : MonoBehaviour
                 where CCMsg : ChooseCharacter<CharacterID, CharacterPreviewData>, new()
                 where UCMsg : UsingCharacter<CharacterID, CharacterFullData>, new()
                 where ICMsg : InvalidCharacterID<CharacterID>, new()
@@ -41,83 +47,69 @@ namespace NetRose
             {
                 /// <summary>
                 ///   This inner listener ensures that listened callbacks are appropriately
-                ///     forwarded to the corresponding events.
+                ///     forwarded to the corresponding protected methods in the player class.
                 /// </summary>
                 private class InnerListener : SessionListener<AccountID, AccountData, CharacterID, CharacterPreviewData, CharacterFullData, CCMsg, UCMsg, ICMsg, NCMsg>
                 {
-                    private SessionAwarePlayer<AccountID, AccountData, CharacterID, CharacterPreviewData, CharacterFullData, CCMsg, UCMsg, ICMsg, NCMsg> target;
+                    private StandardPlayer<AccountID, AccountData, CharacterID, CharacterPreviewData, CharacterFullData, CCMsg, UCMsg, ICMsg, NCMsg> target;
 
-                    public InnerListener(SessionAwarePlayer<AccountID, AccountData, CharacterID, CharacterPreviewData, CharacterFullData, CCMsg, UCMsg, ICMsg, NCMsg> player)
+                    public InnerListener(StandardPlayer<AccountID, AccountData, CharacterID, CharacterPreviewData, CharacterFullData, CCMsg, UCMsg, ICMsg, NCMsg> player)
                     {
                         target = player;
                     }
 
                     public void AccountData()
                     {
-                        target.onServerSessionEvent.Invoke("account-data:set", "", null);
+                        target.OnAccountDataSet();
                     }
 
                     public void CustomDataCleared()
                     {
-                        target.onServerSessionEvent.Invoke("custom-data:cleared", "", null);
+                        target.OnCustomDataCleared();
                     }
 
                     public void CustomDataRemoved(string key)
                     {
-                        target.onServerSessionEvent.Invoke("custom-data:removed", key, null);
+                        target.OnCustomDataRemoved(key);
                     }
 
                     public void CustomDataSet(string key, object value)
                     {
-                        target.onServerSessionEvent.Invoke("custom-data:set", key, value);
+                        target.OnCustomDataSet(key, value);
                     }
 
                     public void Started(Session<AccountID, AccountData, CharacterID, CharacterPreviewData, CharacterFullData, CCMsg, UCMsg, ICMsg, NCMsg> session)
                     {
-                        target.onServerSessionEvent.Invoke("started", "", null);
+                        target.OnAttachedToSession();
                     }
 
                     public void Terminated()
                     {
-                        target.onServerSessionEvent.Invoke("terminated", "", null);
+                        target.OnDetachedFromSession();
                     }
 
                     public void UsingCharacter()
                     {
-                        target.onServerSessionEvent.Invoke("character:set", "", null);
+                        target.OnUsingCharacter();
                     }
 
                     public void UsingNoCharacter()
                     {
-                        target.onServerSessionEvent.Invoke("character:cleared", "", null);
+                        target.OnUsingNoCharacter();
                     }
                 }
 
                 private InnerListener listener;
-
-                /// <summary>
-                ///   This event carries information of the concrete change in the session.
-                ///   This involves an event key, and extra fields like custom data key and
-                ///     custom data value for certain events.
-                /// </summary>
-                public class SessionEvent : UnityEvent<string, string, object> {}
-
-                /// <summary>
-                ///   This event is triggered on any session event on this object. While
-                ///     most events involve actual data change in the session, two of them
-                ///     involve adding/removing this object as listener instead: "started"
-                ///     and "terminated". For those, the session will still exist around
-                ///     them.
-                /// </summary>
-                public readonly SessionEvent onServerSessionEvent = new SessionEvent();
-
                 private NetworkIdentity identity;
+                private NetworkedMapObjectFollower follower;
+                private NetworkedMapObject currentCharacter;
                 private Session<AccountID, AccountData, CharacterID, CharacterPreviewData, CharacterFullData, CCMsg, UCMsg, ICMsg, NCMsg> session;
 
                 void Awake()
                 {
                     identity = GetComponent<NetworkIdentity>();
                     listener = new InnerListener(this);
+                    follower = GetComponent<NetworkedMapObjectFollower>();
                 }
 
                 void Start()
@@ -194,6 +186,87 @@ namespace NetRose
                             session.RemoveListener(listener);
                             break;
                     }
+                }
+
+                /// <summary>
+                ///   This method, if overriden, may be used to reflect
+                ///     what happens when this player is just-added to
+                ///     listen the underlying session.
+                /// </summary>
+                protected virtual void OnAttachedToSession() {}
+
+                /// <summary>
+                ///   This method, if overriden, may be used to reflect
+                ///     what happens when this player is just-removed
+                ///     from listening the underlying session.
+                /// </summary>
+                protected virtual void OnDetachedFromSession() {}
+
+                /// <summary>
+                ///   This method, if overriden, may be used to reflect
+                ///     what happens when this player is just-told that
+                ///     the account data was first-obtained or refreshed
+                ///     in the session.
+                /// </summary>
+                protected virtual void OnAccountDataSet() {}
+
+                /// <summary>
+                ///   This method, if overriden, may be used to reflect
+                ///     what happens when this player is just-told that
+                ///     a key in the session custom data was set.
+                /// </summary>
+                /// <param name="key">The key</param>
+                /// <param name="value">Its value</param>
+                protected virtual void OnCustomDataSet(string key, object value) {}
+
+                /// <summary>
+                ///   This method, if overriden, may be used to reflect
+                ///     what happens when this player is just-told that
+                ///     a key in the session custom data was removed.
+                /// </summary>
+                /// <param name="key">The key</param>
+                protected virtual void OnCustomDataRemoved(string key) {}
+
+                /// <summary>
+                ///   This method, if overriden, may be used to reflect
+                ///     what happens when this player is just-told that
+                ///     the session custom data was cleared.
+                /// </summary>
+                /// <param name="key">The key</param>
+                protected virtual void OnCustomDataCleared() {}
+
+                /// <summary>
+                ///   This method must be overriden to instantiate a
+                ///     character object (a networked map object) based
+                ///     on the current character data in the session.
+                /// </summary>
+                /// <returns>A new instance of a networked map object for the current character data</returns>
+                protected abstract NetworkedMapObject InstantiateCharacter();
+
+                /// <summary>
+                ///   This method must be overriden to dispose the current
+                ///     character object. This may include back-refreshing
+                ///     its data to the session or even a persistent storage.
+                /// </summary>
+                protected abstract void DisposeCharacter(NetworkedMapObject character);
+
+                protected void OnUsingCharacter()
+                {
+                    // Instantiates the character and it becomes actively
+                    // tracked by the follower behaviour.
+                    currentCharacter = InstantiateCharacter();
+                    follower.Target = currentCharacter;
+                }
+
+                protected void OnUsingNoCharacter()
+                {
+                    // Disposes the character (this may involve back-saving
+                    // the data to the session and perhaps even persisting
+                    // it to an external storage) and clears it from the
+                    // internal variable and follower target.
+                    DisposeCharacter(currentCharacter);
+                    currentCharacter = null;
+                    follower.Target = null;
                 }
             }
         }

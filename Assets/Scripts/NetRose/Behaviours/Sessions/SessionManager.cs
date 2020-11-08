@@ -32,10 +32,10 @@ namespace NetRose
             /// <typeparam name="CharacterID">The type of the id of a character</typeparam>
             /// <typeparam name="CharacterPreviewData">The type of the partial preview data of a character</typeparam>
             /// <typeparam name="CharacterFullData">The type of the full data of a character</typeparam>
-            /// <typeparam name="CCMsg">The desired subtype of <see cref="ChooseCharacter{CharacterID, CharacterPreviewData}"/> to cleanup</typeparam>
-            /// <typeparam name="UCMsg">The desired subtype of <see cref="UsingCharacter{CharacterID, CharacterFullData}"/> to cleanup</typeparam>
-            /// <typeparam name="ICMsg">The desired subtype of <see cref="InvalidCharacterID{CharacterID}"/> to cleanup</typeparam>
-            /// <typeparam name="NCMsg">The desired subtype of <see cref="CharacterDoesNotExist{CharacterID}"/> to cleanup</typeparam>
+            /// <typeparam name="CCMsg">The desired subtype of <see cref="ChooseCharacter{CharacterID, CharacterPreviewData}"/> to handle</typeparam>
+            /// <typeparam name="UCMsg">The desired subtype of <see cref="UsingCharacter{CharacterID, CharacterFullData}"/> to handle</typeparam>
+            /// <typeparam name="ICMsg">The desired subtype of <see cref="InvalidCharacterID{CharacterID}"/> to handle</typeparam>
+            /// <typeparam name="NCMsg">The desired subtype of <see cref="CharacterDoesNotExist{CharacterID}"/> to handle</typeparam>
             [RequireComponent(typeof(NetworkWorldManager))]
             public abstract class SessionManager<AccountID, AccountData, CharacterID, CharacterPreviewData, CharacterFullData, CCMsg, UCMsg, ICMsg, NCMsg> : MonoBehaviour
                 where CCMsg : ChooseCharacter<CharacterID, CharacterPreviewData>, new()
@@ -540,6 +540,21 @@ namespace NetRose
                 {
                     Session<AccountID, AccountData, CharacterID, CharacterPreviewData, CharacterFullData, CCMsg, UCMsg, ICMsg, NCMsg> outSession;
                     return sessions.TryGetValue(session.AccountID, out outSession) && outSession == session;
+                }
+
+                /// <summary>
+                ///   Gets the session that belongs to a given connection.
+                /// </summary>
+                /// <param name="connection">The connection to get the session for</param>
+                /// <returns>The session, if any, for the connection</returns>
+                public Session<AccountID, AccountData, CharacterID, CharacterPreviewData, CharacterFullData, CCMsg, UCMsg, ICMsg, NCMsg> GetSession(NetworkConnection connection)
+                {
+                    Session<AccountID, AccountData, CharacterID, CharacterPreviewData, CharacterFullData, CCMsg, UCMsg, ICMsg, NCMsg> session = null;
+                    if (connection.authenticationData is AccountID)
+                    {
+                        sessions.TryGetValue((AccountID)connection.authenticationData, out session);
+                    }
+                    return session;
                 }
             }
         }

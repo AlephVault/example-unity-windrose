@@ -4,4 +4,20 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Samples/Networked/Scenes/SingleMap/Init.unity
+    guid: c1ef080b88d3d514893df00a86038342
+  - enabled: 1
+    path: Assets/Samples/Networked/Scenes/SingleMap/Login.unity
+    guid: ea138df830a18904ead0886b3736847f
+  - enabled: 1
+    path: Assets/Samples/Networked/Scenes/SingleMap/Map1.unity
+    guid: e8b60a40358aa424aa20d6944c9d9dc0
+  - enabled: 1
+    path: Assets/Samples/Networked/Scenes/SingleMap/Offline.unity
+    guid: 3249dda647b901b42b498d1ab1fc601e
+  - enabled: 1
+    path: Assets/Samples/Networked/Scenes/SingleMap/Online.unity
+    guid: 4617f20cd8362d3478f56114944db488
+  m_configObjects: {}

@@ -116,7 +116,7 @@ namespace NetRose
                 ///     if any character is already loaded, to be used
                 ///     by children player behaviours.
                 /// </summary>
-                protected NetworkedMapObject currentCharacter;
+                public NetworkedMapObject CurrentCharacter { get; private set; }
 
                 // Registers a callback for the local player event so these
                 // objects know whether they are the local player or not,
@@ -308,8 +308,8 @@ namespace NetRose
                 {
                     // Instantiates the character and it becomes actively
                     // tracked by the follower behaviour.
-                    currentCharacter = InstantiateCharacter();
-                    follower.Target = currentCharacter;
+                    CurrentCharacter = InstantiateCharacter();
+                    follower.Target = CurrentCharacter;
                 }
 
                 protected void OnUsingNoCharacter()
@@ -318,8 +318,8 @@ namespace NetRose
                     // the data to the session and perhaps even persisting
                     // it to an external storage) and clears it from the
                     // internal variable and follower target.
-                    DisposeCharacter(currentCharacter);
-                    currentCharacter = null;
+                    DisposeCharacter(CurrentCharacter);
+                    CurrentCharacter = null;
                     follower.Target = null;
                 }
             }

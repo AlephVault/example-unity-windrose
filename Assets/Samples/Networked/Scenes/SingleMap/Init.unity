@@ -226,7 +226,8 @@ MonoBehaviour:
   disconnectInactiveConnections: 0
   disconnectInactiveTimeout: 60
   authenticator: {fileID: 64271613}
-  playerPrefab: {fileID: 0}
+  playerPrefab: {fileID: 6679056406655017353, guid: 65c2d281688b6ee42b4c19d2b9991415,
+    type: 3}
   autoCreatePlayer: 1
   playerSpawnMethod: 0
   spawnPrefabs: []
@@ -456,6 +457,7 @@ GameObject:
   - component: {fileID: 234873404}
   - component: {fileID: 234873403}
   - component: {fileID: 234873402}
+  - component: {fileID: 234873405}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -527,6 +529,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &234873405
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 234873401}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fcf9bdb5616272e40b39efe3c1513b29, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  delay: 0
 --- !u!1 &349998188
 GameObject:
   m_ObjectHideFlags: 0

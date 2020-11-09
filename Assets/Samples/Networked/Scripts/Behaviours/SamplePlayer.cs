@@ -23,10 +23,10 @@ namespace NetworkedSamples
             private NetworkedStandardInventoryView inventoryView;
 
             // The inventory of the followed object (if any).
-            private StandardInventory inventory;
+            public StandardInventory Inventory { get; private set; }
 
             // The bag of the followed object (if any).
-            private StandardBag bag;
+            public StandardBag Bag { get; private set; }
 
             protected override void Awake()
             {
@@ -37,36 +37,36 @@ namespace NetworkedSamples
                     if (oldObject)
                     {
                         oldObject.MapObject.onMovementStarted.RemoveListener(OnMovementStarted);
-                        inventory = oldObject.GetComponent<StandardInventory>();
-                        if (inventory)
+                        Inventory = oldObject.GetComponent<StandardInventory>();
+                        if (Inventory)
                         {
-                            inventory.RenderingStrategy.Broadcaster.RemoveListener(inventoryView);
+                            Inventory.RenderingStrategy.Broadcaster.RemoveListener(inventoryView);
                         }
                     }
                     if (newObject)
                     {
                         newObject.MapObject.onMovementStarted.AddListener(OnMovementStarted);
-                        inventory = newObject.GetComponent<StandardInventory>();
-                        if (inventory)
+                        Inventory = newObject.GetComponent<StandardInventory>();
+                        if (Inventory)
                         {
-                            inventory.RenderingStrategy.Broadcaster.AddListener(inventoryView);
+                            Inventory.RenderingStrategy.Broadcaster.AddListener(inventoryView);
                         }
                     }
 
-                    if (inventory)
+                    if (Inventory)
                     {
-                        bag = inventory.GetComponent<StandardBag>();
+                        Bag = Inventory.GetComponent<StandardBag>();
                     }
                     else
                     {
-                        bag = null;
+                        Bag = null;
                     }
                 });
             }
 
             private void OnMovementStarted(WindRose.Types.Direction direction)
             {
-                currentCharacter.MapObject.Orientation = direction;
+                CurrentCharacter.MapObject.Orientation = direction;
             }
 
             /// <summary>
@@ -97,54 +97,6 @@ namespace NetworkedSamples
                 {
                     BasicStandardInventoryView basicView = basicViewObj.GetComponent<BasicStandardInventoryView>();
                     if (basicView) inventoryView.Broadcaster.RemoveListener(basicView);
-                }
-            }
-
-            [Command]
-            public void Pick()
-            {
-                if (bag) bag.Pick(out _);
-            }
-
-            [Command]
-            public void Drop(int position)
-            {
-                if (bag) bag.Drop(position);
-            }
-
-            [Command]
-            public void Right()
-            {
-                if (currentCharacter)
-                {
-                    currentCharacter.MapObject.StartMovement(WindRose.Types.Direction.RIGHT);
-                }
-            }
-
-            [Command]
-            public void Up()
-            {
-                if (currentCharacter)
-                {
-                    currentCharacter.MapObject.StartMovement(WindRose.Types.Direction.UP);
-                }
-            }
-
-            [Command]
-            public void Left()
-            {
-                if (currentCharacter)
-                {
-                    currentCharacter.MapObject.StartMovement(WindRose.Types.Direction.LEFT);
-                }
-            }
-
-            [Command]
-            public void Down()
-            {
-                if (currentCharacter)
-                {
-                    currentCharacter.MapObject.StartMovement(WindRose.Types.Direction.DOWN);
                 }
             }
 

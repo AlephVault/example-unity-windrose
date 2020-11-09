@@ -9,64 +9,63 @@ namespace NetworkedSamples
 {
     namespace Behaviours
     {
-        namespace Sessions
+        using Sessions;
+
+        /// <summary>
+        ///   A global canvas to display the messages.
+        /// </summary>
+        [RequireComponent(typeof(Canvas))]
+        public class SessionNotificationRenderer : MonoBehaviour
         {
-            /// <summary>
-            ///   A global canvas to display the messages.
-            /// </summary>
-            [RequireComponent(typeof(Canvas))]
-            public class SessionNotificationRenderer : MonoBehaviour
+            private float remainingTime = 0;
+            private Image messageHolder;
+            private TextMeshProUGUI text;
+            private SampleMessageForwarder forwarder;
+
+            void Awake()
             {
-                private float remainingTime = 0;
-                private Image messageHolder;
-                private TextMeshProUGUI text;
-                private SampleMessageForwarder forwarder;
+                transform.position = new Vector3(transform.position.x, transform.position.y, -10);
+                messageHolder = transform.GetChild(0).GetComponent<Image>();
+                text = messageHolder.transform.GetChild(1).GetComponent<TextMeshProUGUI>();
+            }
 
-                void Awake()
+            private void Start()
+            {
+                // It is in Start() event when I get the .singleton property to be filled.
+                forwarder = NetworkManager.singleton.GetComponent<SampleMessageForwarder>();
+
+                GetComponentInChildren<Button>().onClick.AddListener(() =>
                 {
-                    transform.position = new Vector3(transform.position.x, transform.position.y, -10);
-                    messageHolder = transform.GetChild(0).GetComponent<Image>();
-                    text = messageHolder.transform.GetChild(1).GetComponent<TextMeshProUGUI>();
+                    remainingTime = 0;
+                });
+
+                forwarder.onMessage.AddListener(OnMessage);
+
+                DontDestroyOnLoad(gameObject);
+            }
+
+            void OnDestroy()
+            {
+                forwarder.onMessage.RemoveListener(OnMessage);
+            }
+
+            void OnMessage(string message)
+            {
+                text.text = message;
+                remainingTime = 3.0f;
+            }
+
+            void Update()
+            {
+                if (remainingTime > 0)
+                {
+                    messageHolder.gameObject.SetActive(true);
+                    remainingTime -= Time.deltaTime;
                 }
-
-                private void Start()
+                if (remainingTime <= 0)
                 {
-                    // It is in Start() event when I get the .singleton property to be filled.
-                    forwarder = NetworkManager.singleton.GetComponent<SampleMessageForwarder>();
-
-                    GetComponentInChildren<Button>().onClick.AddListener(() =>
-                    {
-                        remainingTime = 0;
-                    });
-
-                    forwarder.onMessage.AddListener(OnMessage);
-
-                    DontDestroyOnLoad(gameObject);
-                }
-
-                void OnDestroy()
-                {
-                    forwarder.onMessage.RemoveListener(OnMessage);
-                }
-
-                void OnMessage(string message)
-                {
-                    text.text = message;
-                    remainingTime = 3.0f;
-                }
-
-                void Update()
-                {
-                    if (remainingTime > 0)
-                    {
-                        messageHolder.gameObject.SetActive(true);
-                        remainingTime -= Time.deltaTime;
-                    }
-                    if (remainingTime <= 0)
-                    {
-                        remainingTime = 0;
-                        messageHolder.gameObject.SetActive(false);
-                    }
+                    remainingTime = 0;
+                    messageHolder.gameObject.SetActive(false);
                 }
             }
         }

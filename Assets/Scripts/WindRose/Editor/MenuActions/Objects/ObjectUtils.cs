@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+using AlephVault.Unity.Support.Utils;
 
 namespace WindRose
 {
@@ -9,7 +10,7 @@ namespace WindRose
     {
         namespace Maps
         {
-            using GMM.Utils;
+            using AlephVault.Unity.MenuActions.Utils;
 
             /// <summary>
             ///   Menu actions to create an object inside an Objects layer.
@@ -97,36 +98,36 @@ namespace WindRose
                         GameObject gameObject = new GameObject(objectName);
                         gameObject.transform.parent = selectedTransform;
                         gameObject.SetActive(false);
-                        Layout.AddComponent<Behaviours.Entities.Objects.MapObject>(gameObject, new Dictionary<string, object>() {
+                        AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<Behaviours.Entities.Objects.MapObject>(gameObject, new Dictionary<string, object>() {
                             { "width", (uint)objectSize.x },
                             { "height", (uint)objectSize.y }
                         });
                         if (addCommandSender)
                         {
-                            Layout.AddComponent<Behaviours.Entities.Objects.CommandExchange.CloseCommandSender>(gameObject);
+                            AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<Behaviours.Entities.Objects.CommandExchange.CloseCommandSender>(gameObject);
                             if (addTalkSender)
                             {
-                                Layout.AddComponent<Behaviours.Entities.Objects.CommandExchange.Talk.TalkSender>(gameObject);
+                                AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<Behaviours.Entities.Objects.CommandExchange.Talk.TalkSender>(gameObject);
                             }
                         }
                         switch (addTrigger)
                         {
                             case 1:
-                                Layout.AddComponent<BoxCollider>(gameObject);
-                                Layout.AddComponent<Rigidbody>(gameObject);
-                                Layout.AddComponent<Behaviours.Entities.Objects.TriggerLive>(gameObject);
+                                AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<BoxCollider>(gameObject);
+                                AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<Rigidbody>(gameObject);
+                                AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<Behaviours.Entities.Objects.TriggerLive>(gameObject);
                                 if (addCommandReceiver)
                                 {
-                                    Layout.AddComponent<Behaviours.Entities.Objects.CommandExchange.CommandReceiver>(gameObject);
+                                    AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<Behaviours.Entities.Objects.CommandExchange.CommandReceiver>(gameObject);
                                     if (addTalkReceiver)
                                     {
-                                        Layout.AddComponent<Behaviours.Entities.Objects.CommandExchange.Talk.TalkReceiver>(gameObject);
+                                        AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<Behaviours.Entities.Objects.CommandExchange.Talk.TalkReceiver>(gameObject);
                                     }
                                 }
                                 break;
                             case 2:
-                                Layout.AddComponent<BoxCollider>(gameObject);
-                                Layout.AddComponent<Behaviours.Entities.Objects.TriggerPlatform>(gameObject, new Dictionary<string, object>()
+                                AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<BoxCollider>(gameObject);
+                                AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<Behaviours.Entities.Objects.TriggerPlatform>(gameObject, new Dictionary<string, object>()
                                 {
                                     { "innerMarginFactor", 0.25f }
                                 });
@@ -136,18 +137,18 @@ namespace WindRose
                         switch(addStrategy)
                         {
                             case 0:
-                                Layout.AddComponent<Behaviours.Entities.Objects.Strategies.Base.LayoutObjectStrategy>(gameObject);
-                                Layout.AddComponent<Behaviours.Entities.Objects.Strategies.Solidness.SolidnessObjectStrategy>(gameObject);
-                                mainStrategy = Layout.AddComponent<Behaviours.Entities.Objects.Strategies.Simple.SimpleObjectStrategy>(gameObject);
+                                AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<Behaviours.Entities.Objects.Strategies.Base.LayoutObjectStrategy>(gameObject);
+                                AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<Behaviours.Entities.Objects.Strategies.Solidness.SolidnessObjectStrategy>(gameObject);
+                                mainStrategy = AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<Behaviours.Entities.Objects.Strategies.Simple.SimpleObjectStrategy>(gameObject);
                                 break;
                             case 1:
-                                mainStrategy = Layout.AddComponent<Behaviours.Entities.Objects.Strategies.Base.LayoutObjectStrategy>(gameObject);
+                                mainStrategy = AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<Behaviours.Entities.Objects.Strategies.Base.LayoutObjectStrategy>(gameObject);
                                 break;
                             default:
                                 break;
                         }
                         Behaviours.Entities.Objects.ObjectStrategyHolder currentHolder = gameObject.GetComponent<Behaviours.Entities.Objects.ObjectStrategyHolder>();
-                        Layout.SetObjectFieldValues(currentHolder, new Dictionary<string, object>()
+                        AlephVault.Unity.Layout.Utils.Behaviours.SetObjectFieldValues(currentHolder, new Dictionary<string, object>()
                         {
                             { "objectStrategy", mainStrategy }
                         });

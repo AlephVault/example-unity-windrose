@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using UnityEditor;
+using AlephVault.Unity.Support.Utils;
 
 namespace WindRose
 {
@@ -20,8 +21,6 @@ namespace WindRose
                     {
                         namespace Solidness
                         {
-                            using GMM.Utils;
-
                             /// <summary>
                             ///   The drawer for the mask only involves a button invoking a window for mask edition.
                             /// </summary>
@@ -300,7 +299,7 @@ namespace WindRose
                                     xyPos += xySpacing + Height2Vector(position.width);
                                     // Position (x, y) -> (xf, yf)
                                     EditorGUI.LabelField(new Rect(xyPos, new Vector2(position.width, slHeight)), string.Format(
-                                        "Left-Down: ({0}, {1}) - Right-Up: ({2}, {3})", scrollX, scrollY, Values.Min(scrollX + 7, maxX), Values.Min(scrollY + 7, maxY)
+                                        "Left-Down: ({0}, {1}) - Right-Up: ({2}, {3})", scrollX, scrollY, Mathf.Min(scrollX + 7, maxX), Mathf.Min(scrollY + 7, maxY)
                                     ));
                                     xyPos += xySpacing + xySLHeight;
                                     // Buttons

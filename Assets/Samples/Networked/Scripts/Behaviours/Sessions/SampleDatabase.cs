@@ -15,7 +15,7 @@ namespace NetworkedSamples
         {
             public class SampleDatabase : MonoBehaviour, AccountFetcher<int, SampleDatabase.Account>, AccountCharacterFetcher<int, int, string, SampleDatabase.Character>
             {
-                public class DBException : GMM.Types.Exception
+                public class DBException : AlephVault.Unity.Support.Types.Exception
                 {
                     public DBException() { }
                     public DBException(string message) : base(message) { }

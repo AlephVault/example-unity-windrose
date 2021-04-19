@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using GMM.Behaviours;
+using AlephVault.Unity.Support.Authoring.Behaviours;
 using WindRose.Behaviours.UI.Inventory.StandardBag;
 
 [RequireComponent(typeof(Throttler))]

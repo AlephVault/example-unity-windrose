@@ -2,11 +2,10 @@
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using GMM;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
-using GMM.Utils;
+using AlephVault.Unity.Support.Utils;
 
 // Taken from https://gist.github.com/JohannesMP/ec7d3f0bcf167dab3d0d3bb480e0e07b
 

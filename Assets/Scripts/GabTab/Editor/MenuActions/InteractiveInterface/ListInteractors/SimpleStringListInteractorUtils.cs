@@ -5,6 +5,8 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEditor;
+using AlephVault.Unity.Support.Utils;
+using AlephVault.Unity.MenuActions.Utils;
 
 namespace GabTab
 {
@@ -14,7 +16,7 @@ namespace GabTab
         {
             namespace ListInteractors
             {
-                using GMM.Utils;
+                using AlephVault.Unity.Layout.Utils;
                 using Behaviours;
                 using Behaviours.Interactors.DefaultLists;
 
@@ -146,8 +148,8 @@ namespace GabTab
                         {
                             GameObject interactorObject = new GameObject(simpleStringListInteractorName);
                             interactorObject.transform.parent = selectedTransform.transform;
-                            Layout.AddComponent<Hideable>(interactorObject);
-                            Image interactorImage = Layout.AddComponent<Image>(interactorObject);
+                            Behaviours.AddComponent<Hideable>(interactorObject);
+                            Image interactorImage = Behaviours.AddComponent<Image>(interactorObject);
                             int floors = (withCancelButton || withContinueButton) ? 2 : 1;
 
                             if (withBackground)
@@ -162,7 +164,7 @@ namespace GabTab
                             {
                                 interactorImage.enabled = false;
                             }
-                            Hideable hideable = Layout.AddComponent<Hideable>(interactorObject);
+                            Hideable hideable = Behaviours.AddComponent<Hideable>(interactorObject);
                             hideable.Hidden = false;
 
                             RectTransform interactorRectTransformComponent = interactorObject.GetComponent<RectTransform>();
@@ -271,7 +273,7 @@ namespace GabTab
                              * exclusively to the simple-string subclass, can be edited later -as normal- in
                              * the inspector) for the to-create interactor.
                              */
-                            Layout.AddComponent<SimpleStringListInteractor>(listInteractorObject, new Dictionary<string, object>()
+                            Behaviours.AddComponent<SimpleStringListInteractor>(listInteractorObject, new Dictionary<string, object>()
                             {
                                 { "multiSelect", multiSelect },
                                 { "continueButton", continueButton },

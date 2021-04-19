@@ -23,7 +23,7 @@ namespace BackPack
                         /// <summary>
                         ///   Tells when a container ID is invalid for this strategy.
                         /// </summary>
-                        public class InvalidPositionException : GMM.Types.Exception
+                        public class InvalidPositionException : AlephVault.Unity.Support.Types.Exception
                         {
                             public InvalidPositionException(string message) : base(message) {}
                         }

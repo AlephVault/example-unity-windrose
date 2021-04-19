@@ -5,12 +5,13 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEditor;
+using AlephVault.Unity.Support.Utils;
+using AlephVault.Unity.MenuActions.Utils;
 
 namespace GabTab
 {
     namespace MenuActions
     {
-        using GMM.Utils;
         using Behaviours;
             
         /// <summary>
@@ -62,7 +63,7 @@ namespace GabTab
                     GameObject interactiveInterfaceObject = new GameObject(interactiveInterfaceObjectName);
                     interactiveInterfaceObject.SetActive(false);
                     interactiveInterfaceObject.transform.parent = selectedTransform;
-                    Image interactiveInterfaceImageComponent = Layout.AddComponent<Image>(interactiveInterfaceObject);
+                    Image interactiveInterfaceImageComponent = AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<Image>(interactiveInterfaceObject);
                     interactiveInterfaceImageComponent.sprite = background;
                     interactiveInterfaceImageComponent.type = Image.Type.Sliced;
                     interactiveInterfaceImageComponent.color = interfaceTint;
@@ -73,12 +74,12 @@ namespace GabTab
                     interactiveInterfaceRectTransform.pivot = new Vector2(0.5f, 0);
                     interactiveInterfaceRectTransform.sizeDelta = Vector2.zero;
                     interactiveInterfaceRectTransform.localScale = Vector3.one;
-                    Behaviours.InteractiveInterface interactiveInterfaceComponent = Layout.AddComponent<Behaviours.InteractiveInterface>(interactiveInterfaceObject);
+                    Behaviours.InteractiveInterface interactiveInterfaceComponent = AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<Behaviours.InteractiveInterface>(interactiveInterfaceObject);
                         
                     // Create the interactive message
                     GameObject interactiveMessageObject = new GameObject("Message");
                     interactiveMessageObject.transform.parent = interactiveInterfaceObject.transform;
-                    Image interactiveMessageImageComponent = Layout.AddComponent<Image>(interactiveMessageObject);
+                    Image interactiveMessageImageComponent = AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<Image>(interactiveMessageObject);
                     interactiveMessageImageComponent.sprite = background;
                     interactiveMessageImageComponent.type = Image.Type.Sliced;
                     interactiveMessageImageComponent.color = messageTint;
@@ -91,12 +92,12 @@ namespace GabTab
                     interactiveMessageRectTransform.sizeDelta = Vector2.zero;
                     interactiveMessageRectTransform.offsetMax = Vector2.one * -messageOffset;
                     interactiveMessageRectTransform.offsetMin = Vector2.one * messageOffset;
-                    InteractiveMessage interactiveMessageComponent = Layout.AddComponent<InteractiveMessage>(interactiveMessageObject);
+                    InteractiveMessage interactiveMessageComponent = AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<InteractiveMessage>(interactiveMessageObject);
 
                     // Create the interactive message content
                     GameObject interactiveMessageContentObject = new GameObject("Message Content");
                     interactiveMessageContentObject.transform.parent = interactiveMessageObject.transform;
-                    InteractiveMessageContent interactiveMessageContentComponent = Layout.AddComponent<InteractiveMessageContent>(interactiveMessageContentObject);
+                    InteractiveMessageContent interactiveMessageContentComponent = AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<InteractiveMessageContent>(interactiveMessageContentObject);
                     Text interactiveMessageContentTextComponent = interactiveMessageContentObject.GetComponent<Text>();
                     interactiveMessageContentTextComponent.alignment = TextAnchor.UpperLeft;
                     interactiveMessageContentTextComponent.horizontalOverflow = HorizontalWrapMode.Wrap;
@@ -117,13 +118,13 @@ namespace GabTab
                     interactiveMessageContentRectTransform.offsetMin = new Vector2(messageOffset, 0);
 
                     // Set the message content into the message
-                    Layout.SetObjectFieldValues(interactiveMessageComponent, new Dictionary<string, object>()
+                    AlephVault.Unity.Layout.Utils.Behaviours.SetObjectFieldValues(interactiveMessageComponent, new Dictionary<string, object>()
                     {
                         { "messageContent", interactiveMessageContentComponent }
                     });
 
                     // Set the message into the interface
-                    Layout.SetObjectFieldValues(interactiveInterfaceComponent, new Dictionary<string, object>()
+                    AlephVault.Unity.Layout.Utils.Behaviours.SetObjectFieldValues(interactiveInterfaceComponent, new Dictionary<string, object>()
                     {
                         { "interactiveMessage", interactiveMessageComponent }
                     });

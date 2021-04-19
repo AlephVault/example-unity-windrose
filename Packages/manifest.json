@@ -1,5 +1,9 @@
 {
   "dependencies": {
+    "com.alephvault.unity.layout": "file:C:/Users/yucho/Documents/Unity Projects/unity-layout",
+    "com.alephvault.unity.menuactions": "file:C:/Users/yucho/Documents/Unity Projects/unity-menu-actions",
+    "com.alephvault.unity.support": "file:C:/Users/yucho/Documents/Unity Projects/unity-support",
+    "com.alephvault.unity.support.generic": "file:C:/Users/yucho/Documents/Unity Projects/unity-support-generic",
     "com.unity.ads": "2.0.8",
     "com.unity.analytics": "3.2.3",
     "com.unity.collab-proxy": "1.2.15",

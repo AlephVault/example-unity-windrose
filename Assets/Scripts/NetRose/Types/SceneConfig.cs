@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using GMM.Types;
-using GMM.Utils;
+using AlephVault.Unity.Support.Utils;
 
 namespace NetRose
 {

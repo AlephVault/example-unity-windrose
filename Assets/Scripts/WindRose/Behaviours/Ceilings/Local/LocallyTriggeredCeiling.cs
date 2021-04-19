@@ -14,6 +14,7 @@ namespace WindRose
                 using World;
                 using World.Layers.Ceiling;
                 using Entities.Objects;
+                using AlephVault.Unity.Layout.Utils;
 
                 /// <summary>
                 ///   This subtype of ceiling layer is shown when no "allowed
@@ -66,8 +67,8 @@ namespace WindRose
 
                     private void Awake()
                     {
-                        CeilingLayer ceilingLayer = GMM.Utils.Layout.RequireComponentInParent<CeilingLayer>(this);
-                        map = GMM.Utils.Layout.RequireComponentInParent<Map>(ceilingLayer);
+                        CeilingLayer ceilingLayer = Behaviours.RequireComponentInParent<CeilingLayer>(this);
+                        map = Behaviours.RequireComponentInParent<Map>(ceilingLayer);
                         // VISIBLE is not allowed, since there would be no
                         //   change: the ceiling would never take off.
                         if (displayModeWhenTriggering == Ceiling.DisplayMode.VISIBLE)

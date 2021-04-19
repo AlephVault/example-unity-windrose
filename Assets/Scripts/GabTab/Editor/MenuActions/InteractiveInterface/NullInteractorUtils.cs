@@ -7,7 +7,7 @@ namespace GabTab
     {
         namespace InteractiveInterface
         {
-            using GMM.Utils;
+            using AlephVault.Unity.MenuActions.Utils;
             using Behaviours;
             using Behaviours.Interactors;
 
@@ -41,7 +41,7 @@ namespace GabTab
                     {
                         GameObject nullInteractorObject = new GameObject(nullInteractorName);
                         nullInteractorObject.transform.parent = selectedTransform;
-                        Layout.AddComponent<NullInteractor>(nullInteractorObject);
+                        AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<NullInteractor>(nullInteractorObject);
                         Undo.RegisterCreatedObjectUndo(nullInteractorObject, "Create Null Interactor");
                         Close();
                     }

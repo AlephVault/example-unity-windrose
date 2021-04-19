@@ -12,7 +12,7 @@ namespace WindRose
     {
         namespace Tiles
         {
-            using GMM.Utils;
+            using AlephVault.Unity.Layout.Utils;
             using ScriptableObjects.Tiles;
 
             /// <summary>
@@ -41,7 +41,7 @@ namespace WindRose
                         }
                         BundledTile bundledTile = ScriptableObject.CreateInstance<BundledTile>();
                         Undo.RegisterCreatedObjectUndo(bundledTile, "Create Bundled Tile");
-                        Layout.SetObjectFieldValues(bundledTile, new Dictionary<string, object>() {
+                        Behaviours.SetObjectFieldValues(bundledTile, new Dictionary<string, object>() {
                             { "sourceTile", tileBase }
                         });
                         AssetDatabase.CreateAsset(bundledTile, Path.Combine(bundledPath, fileName));

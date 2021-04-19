@@ -4,7 +4,6 @@ using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
-using GMM.Utils;
 
 namespace WindRose
 {
@@ -13,6 +12,7 @@ namespace WindRose
         namespace Animations
         {
             using Types;
+            using AlephVault.Unity.Layout.Utils;
 
             /// <summary>
             ///   An animation rose consist of 4 animations: one for each direction.
@@ -54,19 +54,19 @@ namespace WindRose
                     CreateInstanceWithChildSpecs(delegate (string path, AnimationRose rose, Animation down, Animation left, Animation right, Animation up)
                     {
                         uint fps = 4;
-                        Layout.SetObjectFieldValues(down, new Dictionary<string, object>() {
+                        Behaviours.SetObjectFieldValues(down, new Dictionary<string, object>() {
                             { "fps", fps },
                             { "sprites", new Sprite[4] },
                         });
-                        Layout.SetObjectFieldValues(left, new Dictionary<string, object>() {
+                        Behaviours.SetObjectFieldValues(left, new Dictionary<string, object>() {
                             { "fps", fps },
                             { "sprites", new Sprite[4] },
                         });
-                        Layout.SetObjectFieldValues(right, new Dictionary<string, object>() {
+                        Behaviours.SetObjectFieldValues(right, new Dictionary<string, object>() {
                             { "fps", fps },
                             { "sprites", new Sprite[4] },
                         });
-                        Layout.SetObjectFieldValues(up, new Dictionary<string, object>() {
+                        Behaviours.SetObjectFieldValues(up, new Dictionary<string, object>() {
                             { "fps", fps },
                             { "sprites", new Sprite[4] },
                         });
@@ -129,16 +129,16 @@ namespace WindRose
                                         else
                                         {
                                             // The time of the truth: filling the images
-                                            Layout.SetObjectFieldValues(down, new Dictionary<string, object>() {
+                                            Behaviours.SetObjectFieldValues(down, new Dictionary<string, object>() {
                                                 { "sprites", new Sprite[] { sortedSprites[0], sortedSprites[1], sortedSprites[2], sortedSprites[1] } },
                                             });
-                                            Layout.SetObjectFieldValues(left, new Dictionary<string, object>() {
+                                            Behaviours.SetObjectFieldValues(left, new Dictionary<string, object>() {
                                                 { "sprites", new Sprite[] { sortedSprites[3], sortedSprites[4], sortedSprites[5], sortedSprites[4] } },
                                             });
-                                            Layout.SetObjectFieldValues(right, new Dictionary<string, object>() {
+                                            Behaviours.SetObjectFieldValues(right, new Dictionary<string, object>() {
                                                 { "sprites", new Sprite[] { sortedSprites[6], sortedSprites[7], sortedSprites[8], sortedSprites[7] } },
                                             });
-                                            Layout.SetObjectFieldValues(up, new Dictionary<string, object>() {
+                                            Behaviours.SetObjectFieldValues(up, new Dictionary<string, object>() {
                                                 { "sprites", new Sprite[] { sortedSprites[9], sortedSprites[10], sortedSprites[11], sortedSprites[10] } },
                                             });
                                             break;
@@ -161,19 +161,19 @@ namespace WindRose
                     {
                         uint fps = 1;
                         // The time of the truth: filling the images
-                        Layout.SetObjectFieldValues(down, new Dictionary<string, object>() {
+                        Behaviours.SetObjectFieldValues(down, new Dictionary<string, object>() {
                             { "fps", fps },
                             { "sprites", new Sprite[1] },
                         });
-                        Layout.SetObjectFieldValues(left, new Dictionary<string, object>() {
+                        Behaviours.SetObjectFieldValues(left, new Dictionary<string, object>() {
                             { "fps", fps },
                             { "sprites", new Sprite[1] },
                         });
-                        Layout.SetObjectFieldValues(right, new Dictionary<string, object>() {
+                        Behaviours.SetObjectFieldValues(right, new Dictionary<string, object>() {
                             { "fps", fps },
                             { "sprites", new Sprite[1] },
                         });
-                        Layout.SetObjectFieldValues(up, new Dictionary<string, object>() {
+                        Behaviours.SetObjectFieldValues(up, new Dictionary<string, object>() {
                             { "fps", fps },
                             { "sprites", new Sprite[1] },
                         });
@@ -236,16 +236,16 @@ namespace WindRose
                                         else
                                         {
                                             // The time of the truth: filling the images
-                                            Layout.SetObjectFieldValues(down, new Dictionary<string, object>() {
+                                            Behaviours.SetObjectFieldValues(down, new Dictionary<string, object>() {
                                                 { "sprites", new Sprite[] { sortedSprites[1] } },
                                             });
-                                            Layout.SetObjectFieldValues(left, new Dictionary<string, object>() {
+                                            Behaviours.SetObjectFieldValues(left, new Dictionary<string, object>() {
                                                 { "sprites", new Sprite[] { sortedSprites[4] } },
                                             });
-                                            Layout.SetObjectFieldValues(right, new Dictionary<string, object>() {
+                                            Behaviours.SetObjectFieldValues(right, new Dictionary<string, object>() {
                                                 { "sprites", new Sprite[] { sortedSprites[7] } },
                                             });
-                                            Layout.SetObjectFieldValues(up, new Dictionary<string, object>() {
+                                            Behaviours.SetObjectFieldValues(up, new Dictionary<string, object>() {
                                                 { "sprites", new Sprite[] { sortedSprites[10] } },
                                             });
                                             break;
@@ -276,7 +276,7 @@ namespace WindRose
                     Animation instanceDown = CreateInstance<Animation>();
                     Animation instanceLeft = CreateInstance<Animation>();
                     Animation instanceRight = CreateInstance<Animation>();
-                    Layout.SetObjectFieldValues(instance, new Dictionary<string, object>() {
+                    Behaviours.SetObjectFieldValues(instance, new Dictionary<string, object>() {
                         { "up", instanceUp },
                         { "down", instanceDown },
                         { "left", instanceLeft },

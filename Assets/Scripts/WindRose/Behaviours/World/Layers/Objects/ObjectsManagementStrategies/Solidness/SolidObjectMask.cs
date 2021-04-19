@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using UnityEditor;
+using AlephVault.Unity.Support.Utils;
 
 namespace WindRose
 {
@@ -20,8 +21,6 @@ namespace WindRose
                     {
                         namespace Solidness
                         {
-                            using GMM.Utils;
-
                             /// <summary>
                             ///   SolidObjectMask is an abstraction of an object's solidness mask,
                             ///     which has [Width]x[Height] cells, and each cell may onle be one

@@ -5,7 +5,7 @@
         /// <summary>
         ///   Base class for WindRose exceptions.
         /// </summary>
-        public class Exception : GMM.Types.Exception
+        public class Exception : AlephVault.Unity.Support.Types.Exception
         {
             public Exception() {}
             public Exception(string message) : base(message) {}

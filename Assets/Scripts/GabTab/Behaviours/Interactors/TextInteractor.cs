@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
-using GMM.Utils;
+using AlephVault.Unity.Support.Utils;
 
 namespace GabTab
 {

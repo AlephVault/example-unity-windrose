@@ -1,5 +1,4 @@
-﻿using GMM.Utils;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -15,15 +14,15 @@ namespace BackPack
 			{
 				namespace Basic
 				{
-                    using Behaviours.Inventory.ManagementStrategies.RenderingStrategies;
                     using ScriptableObjects.Inventory.Items;
                     using ScriptableObjects.Inventory.Items.RenderingStrategies;
+					using AlephVault.Unity.Layout.Utils;
 
-                    /// <summary>
-                    ///   A single-simple inventory item that accounts for being selected, as well. Used in conjunction to
-                    ///     <see cref="BasicStandardInventoryView" />.
-                    /// </summary>
-                    [RequireComponent(typeof(Button))]
+					/// <summary>
+					///   A single-simple inventory item that accounts for being selected, as well. Used in conjunction to
+					///     <see cref="BasicStandardInventoryView" />.
+					/// </summary>
+					[RequireComponent(typeof(Button))]
 					public class BasicStandardInventoryViewItem : StandardInventoryView.StandardInventoryViewItem {
 						/**
 					     * This component will have three parts:
@@ -44,7 +43,7 @@ namespace BackPack
 							quantityLabel = GetComponentInChildren<BasicStandardInventoryViewItemQuantityLabel>();
 							iconHolder = GetComponentInChildren<BasicStandardInventoryViewItemIcon>();
 							glow = GetComponentInChildren<BasicStandardInventoryViewItemSelectionGlow>();
-							BasicStandardInventoryView parent = Layout.RequireComponentInParent<BasicStandardInventoryView>(Layout.RequireComponentInParent<GridLayoutGroup>(this).gameObject);
+							BasicStandardInventoryView parent = Behaviours.RequireComponentInParent<BasicStandardInventoryView>(Behaviours.RequireComponentInParent<GridLayoutGroup>(this).gameObject);
 							GetComponent<Button>().onClick.AddListener(delegate ()
 								{
 									if (targetPosition != null)

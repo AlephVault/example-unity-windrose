@@ -4,7 +4,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Threading.Tasks;
-using GMM.Utils;
+using AlephVault.Unity.Support.Utils;
 
 namespace GabTab
 {
@@ -451,10 +451,10 @@ namespace GabTab
                             // 2. You can only move M steps forward, where M is the result of (items.Count - 1 - position) / itemDisplays.Length
                             int min = -(position / itemDisplays.Length);
                             int max = (items.Count - 1 - position) / itemDisplays.Length;
-                            position += GMM.Utils.Values.Clamp<int>(min, numItems, max) * itemDisplays.Length;
+                            position += Values.Clamp<int>(min, numItems, max) * itemDisplays.Length;
                             break;
                         case PagingType.CLAMPED:
-                            position = GMM.Utils.Values.Clamp<int>(0, position + numItems * itemDisplays.Length, items.Count - itemDisplays.Length);
+                            position = Values.Clamp<int>(0, position + numItems * itemDisplays.Length, items.Count - itemDisplays.Length);
                             break;
                         case PagingType.LOOPONG:
                             numItems = (numItems * itemDisplays.Length) % items.Count;

@@ -11,6 +11,8 @@ namespace WindRose
         namespace Ceilings
         {
             using World.Layers.Ceiling;
+            using AlephVault.Unity.Support.Utils;
+            using AlephVault.Unity.Layout.Utils;
 
             /// <summary>
             ///    Ceilings are mini-tilemaps that will be painted with custom
@@ -67,14 +69,14 @@ namespace WindRose
                 public float DisplayModeOpacity
                 {
                     get { return opacityInTranslucentMode; }
-                    set { opacityInTranslucentMode = GMM.Utils.Values.Clamp(0, value, 1); }
+                    set { opacityInTranslucentMode = Values.Clamp(0, value, 1); }
                 }
 
                 private void Awake()
                 {
                     try
                     {
-                        CeilingLayer ceilingLayer = GMM.Utils.Layout.RequireComponentInParent<CeilingLayer>(this);
+                        CeilingLayer ceilingLayer = Behaviours.RequireComponentInParent<CeilingLayer>(this);
                         parentGrid = ceilingLayer.GetComponent<Grid>();
                         Tilemap tilemap = GetComponent<Tilemap>();
                         tilemap.orientation = Tilemap.Orientation.XY;

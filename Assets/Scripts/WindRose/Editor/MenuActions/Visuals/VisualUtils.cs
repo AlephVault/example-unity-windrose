@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Tilemaps;
 using UnityEditor;
+using AlephVault.Unity.Support.Utils;
 
 namespace WindRose
 {
@@ -11,11 +12,11 @@ namespace WindRose
     {
         namespace Visuals
         {
-            using GMM.Utils;
             using ScriptableObjects.Animations;
             using Behaviours.Entities.Visuals;
             using Behaviours.Entities.Visuals.StateBundles.Moving;
             using Behaviours.Entities.Common;
+            using AlephVault.Unity.MenuActions.Utils;
 
             /// <summary>
             ///   Menu actions to create a visual inside an object in the scene.
@@ -84,41 +85,41 @@ namespace WindRose
                         GameObject gameObject = new GameObject(visualObjectName);
                         gameObject.transform.parent = selectedTransform;
                         gameObject.SetActive(false);
-                        Layout.AddComponent<Pausable>(gameObject);
-                        Layout.AddComponent<SpriteRenderer>(gameObject);
-                        Layout.AddComponent<Visual>(gameObject, new Dictionary<string, object>() {
+                        AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<Pausable>(gameObject);
+                        AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<SpriteRenderer>(gameObject);
+                        AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<Visual>(gameObject, new Dictionary<string, object>() {
                             { "level", visualLevel }
                         });
 
                         switch (visualType)
                         {
                             case 1:
-                                Layout.AddComponent<Animated>(gameObject);
+                                AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<Animated>(gameObject);
                                 break;
                             case 2:
-                                Layout.AddComponent<Animated>(gameObject);
-                                Layout.AddComponent<RoseAnimated>(gameObject);
+                                AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<Animated>(gameObject);
+                                AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<RoseAnimated>(gameObject);
                                 break;
                             case 3:
-                                Layout.AddComponent<MultiSprite>(gameObject);
+                                AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<MultiSprite>(gameObject);
                                 if (addMovingBundle)
                                 {
-                                    Layout.AddComponent<MovingSpriteBundle>(gameObject);
+                                    AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<MovingSpriteBundle>(gameObject);
                                 }
                                 break;
                             case 4:
-                                Layout.AddComponent<Animated>(gameObject);
+                                AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<Animated>(gameObject);
                                 if (addMovingBundle)
                                 {
-                                    Layout.AddComponent<MovingAnimationBundle>(gameObject);
+                                    AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<MovingAnimationBundle>(gameObject);
                                 }
                                 break;
                             case 5:
-                                Layout.AddComponent<Animated>(gameObject);
-                                Layout.AddComponent<RoseAnimated>(gameObject);
+                                AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<Animated>(gameObject);
+                                AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<RoseAnimated>(gameObject);
                                 if (addMovingBundle)
                                 {
-                                    Layout.AddComponent<MovingAnimationRoseBundle>(gameObject);
+                                    AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<MovingAnimationRoseBundle>(gameObject);
                                 }
                                 break;
                         }

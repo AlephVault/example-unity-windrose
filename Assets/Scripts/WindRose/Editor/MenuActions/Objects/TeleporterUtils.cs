@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+using AlephVault.Unity.Support.Utils;
+using AlephVault.Unity.MenuActions.Utils;
 
 namespace WindRose
 {
@@ -9,8 +11,6 @@ namespace WindRose
     {
         namespace Objects
         {
-            using GMM.Utils;
-
             /// <summary>
             ///   Menu actions to create a teleporter object inside an Objects layer.
             /// </summary>
@@ -50,14 +50,14 @@ namespace WindRose
                         GameObject gameObject = new GameObject(objectName);
                         gameObject.transform.parent = selectedTransform;
                         gameObject.SetActive(false);
-                        Layout.AddComponent<Behaviours.Entities.Objects.MapObject>(gameObject, new Dictionary<string, object>() {
+                        AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<Behaviours.Entities.Objects.MapObject>(gameObject, new Dictionary<string, object>() {
                             { "width", (uint)objectSize.x },
                             { "height", (uint)objectSize.y }
                         });
-                        Layout.AddComponent<Behaviours.Entities.Objects.Teleport.LocalTeleporter>(gameObject);
+                        AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<Behaviours.Entities.Objects.Teleport.LocalTeleporter>(gameObject);
                         if (addTeleportTargetBehaviour)
                         {
-                            Layout.AddComponent<Behaviours.Entities.Objects.Teleport.TeleportTarget>(gameObject);
+                            AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<Behaviours.Entities.Objects.Teleport.TeleportTarget>(gameObject);
                         }
                         gameObject.SetActive(true);
                         Undo.RegisterCreatedObjectUndo(gameObject, "Create Local Teleporter");

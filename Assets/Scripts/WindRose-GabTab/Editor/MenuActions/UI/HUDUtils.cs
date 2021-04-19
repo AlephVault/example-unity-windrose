@@ -12,7 +12,7 @@ namespace WindRose
         namespace UI
         {
             using Behaviours.UI;
-            using GMM.Utils;
+            using AlephVault.Unity.MenuActions.Utils;
             
             /// <summary>
             ///   Menu actions to create HUD objects (and, perhaps, cameras).
@@ -83,17 +83,17 @@ namespace WindRose
                         if (addANewCamera)
                         {
                             GameObject newCameraObject = new GameObject(newCameraObjectName);
-                            newCameraComponent = Layout.AddComponent<Camera>(newCameraObject);
+                            newCameraComponent = AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<Camera>(newCameraObject);
                             newCameraComponent.orthographic = true;
                             newCameraComponent.orthographicSize = orthographicSize;
                         }
 
-                        Canvas newCanvasComponent = Layout.AddComponent<Canvas>(newCanvasObject);
+                        Canvas newCanvasComponent = AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<Canvas>(newCanvasObject);
                         newCanvasComponent.worldCamera = newCameraComponent;
                         newCanvasComponent.renderMode = RenderMode.ScreenSpaceCamera;
 
                         GameObject newHudObject = useSameObjectForCanvasAndHUD ? newCanvasObject : new GameObject(hudObjectName);
-                        Layout.AddComponent<HUD>(newHudObject, new Dictionary<string, object>()
+                        AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<HUD>(newHudObject, new Dictionary<string, object>()
                         {
                             { "canvas", useSameObjectForCanvasAndHUD ? null : newCanvasComponent }
                         });

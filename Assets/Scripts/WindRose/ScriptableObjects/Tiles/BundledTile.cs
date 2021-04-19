@@ -11,6 +11,8 @@ namespace WindRose
     {
         namespace Tiles
         {
+            using AlephVault.Unity.Layout.Utils;
+
             /// <summary>
             ///   <para>
             ///     This tile is a bundle of strategies that may add functionality to
@@ -44,7 +46,7 @@ namespace WindRose
                 [SerializeField]
                 private Strategies.TileStrategy[] strategies;
 
-                public class TileStrategyDependencyException : GMM.Utils.AssetsLayout.DependencyException
+                public class TileStrategyDependencyException : Assets.DependencyException
                 {
                     public TileStrategyDependencyException(string message) : base(message) {}
                 }
@@ -54,7 +56,7 @@ namespace WindRose
                     try
                     {
                         // Order / Flatten dependencies
-                        strategies = GMM.Utils.AssetsLayout.FlattenDependencies<Strategies.TileStrategy, RequireTileStrategy, TileStrategyDependencyException>(strategies);
+                        strategies = Assets.FlattenDependencies<Strategies.TileStrategy, RequireTileStrategy, TileStrategyDependencyException>(strategies);
                     }
                     catch(Exception)
                     {

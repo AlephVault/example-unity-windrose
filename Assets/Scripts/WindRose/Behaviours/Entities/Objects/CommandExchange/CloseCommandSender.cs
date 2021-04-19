@@ -10,8 +10,6 @@ namespace WindRose
         {
             namespace CommandExchange
             {
-				using GMM.Utils;
-
                 /// <summary>
                 ///   <para>
                 ///     Sends a command to an adjacent object. If the object contains a

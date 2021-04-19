@@ -5,6 +5,8 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEditor;
+using AlephVault.Unity.Support.Utils;
+using AlephVault.Unity.MenuActions.Utils;
 
 namespace GabTab
 {
@@ -12,7 +14,6 @@ namespace GabTab
     {
         namespace InteractiveInterface
         {
-            using GMM.Utils;
             using Behaviours;
 
             /// <summary>
@@ -52,8 +53,8 @@ namespace GabTab
                 {
                     GameObject interactorObject = new GameObject(objectName);
                     interactorObject.transform.parent = parent.transform;
-                    Layout.AddComponent<Hideable>(interactorObject);
-                    Image interactorImage = Layout.AddComponent<Image>(interactorObject);
+                    AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<Hideable>(interactorObject);
+                    Image interactorImage = AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<Image>(interactorObject);
 
                     if (addBackground)
                     {
@@ -77,7 +78,7 @@ namespace GabTab
                     interactorRectTransformComponent.offsetMin = Vector2.one * interactorOffset;
                     interactorRectTransformComponent.offsetMax = new Vector2(-interactorOffset, 0);
 
-                    Hideable hideable = Layout.AddComponent<Hideable>(interactorObject);
+                    Hideable hideable = AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<Hideable>(interactorObject);
                     hideable.Hidden = false;
 
                     return interactorObject;

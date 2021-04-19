@@ -28,7 +28,7 @@ namespace BackPack
                     ///   Tells when trying to add a null <see cref="RenderingListener"/>
                     ///     when calling <see cref="AddListener(RenderingListener)"/>.
                     /// </summary>
-                    public class InvalidListenerException : GMM.Types.Exception
+                    public class InvalidListenerException : AlephVault.Unity.Support.Types.Exception
                     {
                         public InvalidListenerException(string message) : base(message) { }
                     }

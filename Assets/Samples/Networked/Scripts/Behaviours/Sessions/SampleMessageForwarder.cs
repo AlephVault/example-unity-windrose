@@ -3,7 +3,6 @@ using UnityEngine.Events;
 using System.Collections;
 using Mirror;
 using NetRose.Behaviours;
-using Boo.Lang.Runtime;
 using NetRose.Behaviours.Auth.Messages;
 using System.Collections.Generic;
 using System;

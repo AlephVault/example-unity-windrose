@@ -4,7 +4,7 @@ using UnityEngine;
 using GabTab.Behaviours;
 using GabTab.Behaviours.Interactors;
 using WindRose.Behaviours.UI;
-using GMM.Utils;
+using AlephVault.Unity.Support.Utils;
 using System.Threading.Tasks;
 
 [RequireComponent(typeof(HUD))]

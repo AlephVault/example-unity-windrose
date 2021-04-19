@@ -5,6 +5,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEditor;
+using AlephVault.Unity.Support.Utils;
 
 namespace GabTab
 {
@@ -12,7 +13,8 @@ namespace GabTab
     {
         namespace InteractiveInterface
         {
-            using GMM.Utils;
+            using AlephVault.Unity.Layout.Utils;
+            using AlephVault.Unity.MenuActions.Utils;
             using GabTab.Behaviours;
             using GabTab.Behaviours.Interactors;
 
@@ -95,7 +97,7 @@ namespace GabTab
                         Rect interactorRect = interactorObject.GetComponent<RectTransform>().rect;
                         ButtonsInteractor.ButtonKeyDictionary buttons = new ButtonsInteractor.ButtonKeyDictionary();
                         RectTransform interactorRectTransformComponent = interactorObject.GetComponent<RectTransform>();
-                        Layout.AddComponent<ButtonsInteractor>(interactorObject, new Dictionary<string, object>()
+                        Behaviours.AddComponent<ButtonsInteractor>(interactorObject, new Dictionary<string, object>()
                         {
                             { "buttons", buttons }
                         });

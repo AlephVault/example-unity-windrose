@@ -7,6 +7,8 @@ namespace WindRose
     {
         namespace Entities.Objects
         {
+            using AlephVault.Unity.Layout.Utils;
+
             /// <summary>
             ///   Watchers instantiate their own vision range. Their range can be
             ///     referenced, and event handlers can be tied to it.
@@ -47,8 +49,8 @@ namespace WindRose
                 {
                     MapObject mapObject = GetComponent<MapObject>();
                     GameObject aNewGameObject = new GameObject("WatcherVisionRange");
-                    GMM.Utils.Layout.AddComponent<BoxCollider>(aNewGameObject);
-                    relatedVisionRange = GMM.Utils.Layout.AddComponent<TriggerVisionRange>(aNewGameObject, new System.Collections.Generic.Dictionary<string, object>()
+                    Behaviours.AddComponent<BoxCollider>(aNewGameObject);
+                    relatedVisionRange = Behaviours.AddComponent<TriggerVisionRange>(aNewGameObject, new System.Collections.Generic.Dictionary<string, object>()
                     {
                         { "relatedObject", mapObject },
                         { "visionSize", visionSize },

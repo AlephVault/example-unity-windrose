@@ -1,5 +1,7 @@
 ﻿using System;
 using UnityEngine;
+using AlephVault.Unity.Support.Utils;
+using AlephVault.Unity.Layout.Utils;
 
 namespace BackPack
 {
@@ -9,7 +11,6 @@ namespace BackPack
         {
             namespace Standard
             {
-                using GMM.Utils;
                 using ScriptableObjects.Inventory.Items;
                 using System.Collections.Generic;
                 using System.Linq;

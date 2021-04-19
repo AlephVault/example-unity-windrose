@@ -12,7 +12,7 @@ namespace WindRose
     {
         namespace Tiles
         {
-            using GMM.Utils;
+            using AlephVault.Unity.Layout.Utils;
 
             /// <summary>
             ///   Menu actions to create standard tiles from sprites.
@@ -73,7 +73,7 @@ namespace WindRose
                         AssetDatabase.CreateFolder(parentPath, "Tiles");
                     }
                     RandomTile randomTile = ScriptableObject.CreateInstance<RandomTile>();
-                    Layout.SetObjectFieldValues(randomTile, new Dictionary<string, object>() {
+                    Behaviours.SetObjectFieldValues(randomTile, new Dictionary<string, object>() {
                         { "m_Sprites", sprites }
                     });
                     Undo.RegisterCreatedObjectUndo(randomTile, "Create Random Tile");

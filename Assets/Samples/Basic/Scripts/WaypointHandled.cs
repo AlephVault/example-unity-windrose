@@ -5,7 +5,7 @@ using WindRose.Behaviours.World;
 using WindRose.Behaviours.Entities.Objects;
 using WindRose.Types;
 using System.Threading.Tasks;
-using GMM.Utils;
+using AlephVault.Unity.Support.Utils;
 
 [RequireComponent(typeof(MapObject))]
 public class WaypointHandled : MonoBehaviour

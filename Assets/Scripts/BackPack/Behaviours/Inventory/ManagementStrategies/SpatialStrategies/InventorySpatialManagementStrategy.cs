@@ -58,7 +58,7 @@ namespace BackPack
                         ///   Tells when the item strategy counterpart type chosen for the spatial management
                         ///     strategy is not a valid type (descending from <see cref="ItemSpatialStrategy"/>).
                         /// </summary>
-                        public class InvalidItemSpatialStrategyCounterpartType : GMM.Types.Exception
+                        public class InvalidItemSpatialStrategyCounterpartType : AlephVault.Unity.Support.Types.Exception
                         {
                             public InvalidItemSpatialStrategyCounterpartType(string message) : base(message) { }
                         }
@@ -67,7 +67,7 @@ namespace BackPack
                         ///   Tells when the item strategy does not have a spatial strategy component being
                         ///     of the compatible type (counterpart) of this strategy.
                         /// </summary>
-						public class MissingExpectedItemSpatialStrategyCounterpartType : GMM.Types.Exception
+						public class MissingExpectedItemSpatialStrategyCounterpartType : AlephVault.Unity.Support.Types.Exception
                         {
                             public MissingExpectedItemSpatialStrategyCounterpartType(string message) : base(message) { }
                         }
@@ -76,7 +76,7 @@ namespace BackPack
                         ///   Tells whether the specified spatial container ID does not belong to any existing
                         ///     spatial container in this strategy.
                         /// </summary>
-						public class SpatialContainerDoesNotExist : GMM.Types.Exception
+						public class SpatialContainerDoesNotExist : AlephVault.Unity.Support.Types.Exception
                         {
                             public readonly object Position;
 
@@ -99,7 +99,7 @@ namespace BackPack
                             /// <summary>
                             ///   Base class for errors regarding these containers.
                             /// </summary>
-							public class SpatialContainerException : GMM.Types.Exception
+							public class SpatialContainerException : AlephVault.Unity.Support.Types.Exception
                             {
                                 public SpatialContainerException(string message) : base(message) { }
                             }
@@ -567,7 +567,7 @@ namespace BackPack
                         {
                             base.Awake();
                             ItemSpatialStrategyCounterpartType = GetItemSpatialStrategyCounterpartType();
-                            if (!GMM.Utils.Classes.IsSameOrSubclassOf(ItemSpatialStrategyCounterpartType, typeof(ItemSpatialStrategy)))
+                            if (!AlephVault.Unity.Support.Utils.Classes.IsSameOrSubclassOf(ItemSpatialStrategyCounterpartType, typeof(ItemSpatialStrategy)))
                             {
                                 throw new InvalidItemSpatialStrategyCounterpartType(string.Format("The type returned by GetItemSpatialStrategyCounterpartType must be a subclass of {0}", typeof(ItemSpatialStrategy).FullName));
                             }

@@ -5,6 +5,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEditor;
+using AlephVault.Unity.Support.Utils;
 
 namespace BackPack
 {
@@ -12,7 +13,7 @@ namespace BackPack
     {
         namespace Inventory
         {
-            using GMM.Utils;
+            using AlephVault.Unity.MenuActions.Utils;
             using Behaviours.UI.Inventory.Basic;
 
             /// <summary>

@@ -3,9 +3,6 @@ using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using GabTab.Behaviours;
-using GMM.Utils;
 
 namespace WindRose
 {

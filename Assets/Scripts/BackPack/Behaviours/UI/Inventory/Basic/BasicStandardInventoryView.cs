@@ -1,11 +1,9 @@
-﻿using GMM.Utils;
-using GMM.Behaviours;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using BackPack.Behaviours.UI.Inventory;
+
 using BackPack.ScriptableObjects.Inventory.Items;
 using BackPack.ScriptableObjects.Inventory.Items.RenderingStrategies;
 
@@ -19,13 +17,15 @@ namespace BackPack
 			{
 				namespace Basic
 				{
-                    /// <summary>
-                    ///   Adds the notion of an element being selected in the view. The selection
-                    ///     will exist in only one page, only one slot, and will be reflected
-                    ///     appropriately since child elements in the hierarchy now also account
-                    ///     for the chance of being selected, and now also a label will exist
-                    ///     telling the name/caption of the selected item.
-                    /// </summary>
+					using AlephVault.Unity.Layout.Utils;
+
+					/// <summary>
+					///   Adds the notion of an element being selected in the view. The selection
+					///     will exist in only one page, only one slot, and will be reflected
+					///     appropriately since child elements in the hierarchy now also account
+					///     for the chance of being selected, and now also a label will exist
+					///     telling the name/caption of the selected item.
+					/// </summary>
 					[RequireComponent(typeof(Image))]
 					public class BasicStandardInventoryView : StandardInventoryView {
 						/**
@@ -57,10 +57,10 @@ namespace BackPack
 						protected override void Awake()
 						{
 							base.Awake();
-							pageLabel = Layout.RequireComponentInChildren<BasicStandardInventoryViewPageLabel>(this);
-							selectedItemLabel = Layout.RequireComponentInChildren<BasicStandardInventoryViewSelectedItemLabel>(this);
-							Layout.RequireComponentInChildren<BasicStandardInventoryViewNextButton>(this).GetComponent<Button>().onClick.AddListener(delegate() { Next(); });
-							Layout.RequireComponentInChildren<BasicStandardInventoryViewPrevButton>(this).GetComponent<Button>().onClick.AddListener(delegate () { Prev(); });
+							pageLabel = Behaviours.RequireComponentInChildren<BasicStandardInventoryViewPageLabel>(this);
+							selectedItemLabel = Behaviours.RequireComponentInChildren<BasicStandardInventoryViewSelectedItemLabel>(this);
+							Behaviours.RequireComponentInChildren<BasicStandardInventoryViewNextButton>(this).GetComponent<Button>().onClick.AddListener(delegate() { Next(); });
+							Behaviours.RequireComponentInChildren<BasicStandardInventoryViewPrevButton>(this).GetComponent<Button>().onClick.AddListener(delegate () { Prev(); });
 						}
 
                         /// <summary>

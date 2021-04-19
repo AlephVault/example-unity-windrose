@@ -7,6 +7,8 @@ namespace WindRose
     {
         namespace Floors
         {
+            using AlephVault.Unity.Layout.Utils;
+
             /// <summary>
             ///   A floor is a behaviour that normalizes the position of a tilemap inside a map.
             ///   Floors will be identified from object management strategies (and strategy holders)
@@ -17,7 +19,7 @@ namespace WindRose
             /// </summary>
             [RequireComponent(typeof(Tilemap))]
             [RequireComponent(typeof(TilemapRenderer))]
-            [RequireComponent(typeof(GMM.Behaviours.Normalized))]
+            [RequireComponent(typeof(AlephVault.Unity.Support.Authoring.Behaviours.Normalized))]
             public class Floor : MonoBehaviour
             {
                 /// <summary>
@@ -33,7 +35,7 @@ namespace WindRose
                 {
                     try
                     {
-                        GMM.Utils.Layout.RequireComponentInParent<World.Layers.Floor.FloorLayer>(this);
+                        Behaviours.RequireComponentInParent<World.Layers.Floor.FloorLayer>(this);
                         Tilemap tilemap = GetComponent<Tilemap>();
                         tilemap.orientation = Tilemap.Orientation.XY;
                         TilemapRenderer tilemapRenderer = GetComponent<TilemapRenderer>();

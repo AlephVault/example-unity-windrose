@@ -3,7 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-using GMM.Utils;
+using AlephVault.Unity.Support.Utils;
 
 namespace WindRose
 {
@@ -15,6 +15,7 @@ namespace WindRose
             using World;
             using World.Layers.Objects;
             using Entities.Common;
+            using AlephVault.Unity.Layout.Utils;
 
             /// <summary>
             ///   <para>
@@ -171,9 +172,9 @@ namespace WindRose
                             //   we would not necessarily know the appropriate dimensions.
                             if (!parentLayer.Initialized) return;
                             // And we also keep its objects layer
-                            Layout.RequireComponentInParent<ObjectsLayer>(gameObject);
+                            Behaviours.RequireComponentInParent<ObjectsLayer>(gameObject);
                             // Then we calculate the cell position from the grid in the layer.
-                            Grid grid = Layout.RequireComponentInParent<Grid>(gameObject);
+                            Grid grid = Behaviours.RequireComponentInParent<Grid>(gameObject);
                             Vector3Int cellPosition = grid.WorldToCell(transform.position);
                             // Then we initialize, and perhaps it may explode due to exception.
                             Attach(parentLayer.Map, (uint)cellPosition.x, (uint)cellPosition.y);
@@ -182,7 +183,7 @@ namespace WindRose
                         //   by itself or by the parent map invoking the initialization.
                         initialized = true;
                     }
-                    catch (Layout.MissingComponentInParentException)
+                    catch (Behaviours.MissingComponentInParentException)
                     {
                         // nothing - diaper
                     }

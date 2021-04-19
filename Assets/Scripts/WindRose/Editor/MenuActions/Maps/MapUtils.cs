@@ -11,7 +11,8 @@ namespace WindRose
     {
         namespace Maps
         {
-            using GMM.Utils;
+            using AlephVault.Unity.Support.Utils;
+            using AlephVault.Unity.MenuActions.Utils;
 
             /// <summary>
             ///   Menu actions to create a map in the scene.
@@ -114,8 +115,8 @@ namespace WindRose
                         mapObject.transform.parent = selectedTransform;
                         mapObject.SetActive(false);
                         // Creating the map component & sorting group.
-                        Layout.AddComponent<SortingGroup>(mapObject);
-                        Layout.AddComponent<Behaviours.World.Map>(mapObject, new Dictionary<string, object>() {
+                        AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<SortingGroup>(mapObject);
+                        AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<Behaviours.World.Map>(mapObject, new Dictionary<string, object>() {
                             { "width", (uint)mapSize.x },
                             { "height", (uint)mapSize.y },
                             { "cellSize", cellSize},
@@ -124,61 +125,61 @@ namespace WindRose
                         // 1. Floors layer.
                         GameObject floorLayer = new GameObject("FloorLayer");
                         floorLayer.transform.parent = mapObject.transform;
-                        Layout.AddComponent<Grid>(floorLayer).cellSize = cellSize;
-                        Layout.AddComponent<SortingGroup>(floorLayer);
-                        Layout.AddComponent<GMM.Behaviours.Normalized>(floorLayer);
-                        Layout.AddComponent<Behaviours.World.Layers.Floor.FloorLayer>(floorLayer);
+                        AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<Grid>(floorLayer).cellSize = cellSize;
+                        AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<SortingGroup>(floorLayer);
+                        AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<AlephVault.Unity.Support.Authoring.Behaviours.Normalized>(floorLayer);
+                        AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<Behaviours.World.Layers.Floor.FloorLayer>(floorLayer);
                         foreach (string floorName in floors)
                         {
                             GameObject floor = new GameObject(floorName);
                             floor.transform.parent = floorLayer.transform;
-                            Layout.AddComponent<Tilemap>(floor);
-                            Layout.AddComponent<TilemapRenderer>(floor);
-                            Layout.AddComponent<GMM.Behaviours.Normalized>(floor);
-                            Layout.AddComponent<Behaviours.Floors.Floor>(floor);
+                            AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<Tilemap>(floor);
+                            AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<TilemapRenderer>(floor);
+                            AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<AlephVault.Unity.Support.Authoring.Behaviours.Normalized>(floor);
+                            AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<Behaviours.Floors.Floor>(floor);
                         }
                         // 2. Objects layer.
                         GameObject objectsLayer = new GameObject("ObjectsLayer");
                         objectsLayer.transform.parent = mapObject.transform;
-                        Layout.AddComponent<Grid>(objectsLayer).cellSize = cellSize;
-                        Layout.AddComponent<SortingGroup>(objectsLayer);
-                        Layout.AddComponent<GMM.Behaviours.Normalized>(objectsLayer);
-                        Layout.AddComponent<Behaviours.World.Layers.Objects.ObjectsLayer>(objectsLayer);
+                        AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<Grid>(objectsLayer).cellSize = cellSize;
+                        AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<SortingGroup>(objectsLayer);
+                        AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<AlephVault.Unity.Support.Authoring.Behaviours.Normalized>(objectsLayer);
+                        AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<Behaviours.World.Layers.Objects.ObjectsLayer>(objectsLayer);
                         // Creating the strategy holder & strategies.
                         Behaviours.World.Layers.Objects.ObjectsManagementStrategies.ObjectsManagementStrategy mainStrategy = null;
                         switch (strategy)
                         {
                             case 0:
-                                Layout.AddComponent<Behaviours.World.Layers.Objects.ObjectsManagementStrategies.Base.LayoutObjectsManagementStrategy>(objectsLayer);
-                                Layout.AddComponent<Behaviours.World.Layers.Objects.ObjectsManagementStrategies.Solidness.SolidnessObjectsManagementStrategy>(objectsLayer);
-                                mainStrategy = Layout.AddComponent<Behaviours.World.Layers.Objects.ObjectsManagementStrategies.Simple.SimpleObjectsManagementStrategy>(objectsLayer);
+                                AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<Behaviours.World.Layers.Objects.ObjectsManagementStrategies.Base.LayoutObjectsManagementStrategy>(objectsLayer);
+                                AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<Behaviours.World.Layers.Objects.ObjectsManagementStrategies.Solidness.SolidnessObjectsManagementStrategy>(objectsLayer);
+                                mainStrategy = AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<Behaviours.World.Layers.Objects.ObjectsManagementStrategies.Simple.SimpleObjectsManagementStrategy>(objectsLayer);
                                 break;
                             case 1:
-                                mainStrategy = Layout.AddComponent<Behaviours.World.Layers.Objects.ObjectsManagementStrategies.Base.LayoutObjectsManagementStrategy>(objectsLayer);
+                                mainStrategy = AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<Behaviours.World.Layers.Objects.ObjectsManagementStrategies.Base.LayoutObjectsManagementStrategy>(objectsLayer);
                                 break;
                             default:
                                 break;
                         }
                         Behaviours.World.Layers.Objects.ObjectsManagementStrategyHolder currentHolder = objectsLayer.AddComponent<Behaviours.World.Layers.Objects.ObjectsManagementStrategyHolder>();
-                        Layout.SetObjectFieldValues(currentHolder, new Dictionary<string, object>()
+                        AlephVault.Unity.Layout.Utils.Behaviours.SetObjectFieldValues(currentHolder, new Dictionary<string, object>()
                         {
                             { "strategy", mainStrategy }
                         });
                         // 3. Visuals layer.
                         GameObject visualsLayer = new GameObject("VisualsLayer");
                         visualsLayer.transform.parent = mapObject.transform;
-                        Layout.AddComponent<SortingGroup>(visualsLayer);
-                        Layout.AddComponent<GMM.Behaviours.Normalized>(visualsLayer);
-                        Layout.AddComponent<Behaviours.World.Layers.Visuals.VisualsLayer>(visualsLayer);
+                        AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<SortingGroup>(visualsLayer);
+                        AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<AlephVault.Unity.Support.Authoring.Behaviours.Normalized>(visualsLayer);
+                        AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<Behaviours.World.Layers.Visuals.VisualsLayer>(visualsLayer);
                         // 4. Ceilings layer.
                         if (addCeilingsLayer)
                         {
                             GameObject ceilings = new GameObject("CeilingLayer");
                             ceilings.transform.parent = mapObject.transform;
-                            Layout.AddComponent<Grid>(ceilings).cellSize = cellSize;
-                            Layout.AddComponent<SortingGroup>(ceilings);
-                            Layout.AddComponent<GMM.Behaviours.Normalized>(ceilings);
-                            Layout.AddComponent<Behaviours.World.Layers.Ceiling.CeilingLayer>(ceilings);
+                            AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<Grid>(ceilings).cellSize = cellSize;
+                            AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<SortingGroup>(ceilings);
+                            AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<AlephVault.Unity.Support.Authoring.Behaviours.Normalized>(ceilings);
+                            AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<Behaviours.World.Layers.Ceiling.CeilingLayer>(ceilings);
                         }
                         // Ok. Now activate the object.
                         mapObject.SetActive(true);

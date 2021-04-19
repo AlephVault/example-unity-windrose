@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using GMM.Utils;
+using AlephVault.Unity.Support.Utils;
 
 namespace WindRose
 {

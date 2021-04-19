@@ -9,6 +9,8 @@ namespace WindRose
         {
             namespace Layers
             {
+                using AlephVault.Unity.Layout.Utils;
+
                 /// <summary>
                 ///   A map layer sorts itself inside its parent map, in the
                 ///     DEFAULT layer, and in the zero point, identity rotation,
@@ -18,7 +20,7 @@ namespace WindRose
                 ///     more layer types (although this is entirely up to the
                 ///     developer).
                 /// </summary>
-                [RequireComponent(typeof(GMM.Behaviours.Normalized))]
+                [RequireComponent(typeof(AlephVault.Unity.Support.Authoring.Behaviours.Normalized))]
                 [RequireComponent(typeof(SortingGroup))]
                 [ExecuteInEditMode]
                 public abstract class MapLayer : MonoBehaviour
@@ -46,9 +48,9 @@ namespace WindRose
                         sortingGroup = GetComponent<SortingGroup>();
                         try
                         {
-                            Map = GMM.Utils.Layout.RequireComponentInParent<Map>(this);
+                            Map = Behaviours.RequireComponentInParent<Map>(this);
                         }
-                        catch (GMM.Types.Exception)
+                        catch (AlephVault.Unity.Support.Types.Exception)
                         {
                             Destroy(gameObject);
                             throw new ParentMustBeMapException();

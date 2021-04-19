@@ -14,11 +14,11 @@ namespace BackPack
             namespace Items
             {
                 using UnityEngine;
-                using GMM.Utils;
                 using Types.Inventory.Stacks;
                 using Types.Inventory.Stacks.QuantifyingStrategies;
                 using Types.Inventory.Stacks.RenderingStrategies;
                 using Types.Inventory.Stacks.UsageStrategies;
+                using AlephVault.Unity.Layout.Utils;
 
                 /// <summary>
                 ///   <para>
@@ -212,19 +212,19 @@ namespace BackPack
                             }
 
                             // Flatten (and check!) dependencies among all of them
-                            sortedUsageStrategies = AssetsLayout.FlattenDependencies<UsageStrategies.ItemUsageStrategy, RequireUsageStrategy>(usageStrategies, true);
-                            sortedRenderingStrategies = AssetsLayout.FlattenDependencies<RenderingStrategies.ItemRenderingStrategy, RequireRenderingStrategy>(renderingStrategies, true);
+                            sortedUsageStrategies = Assets.FlattenDependencies<UsageStrategies.ItemUsageStrategy, RequireUsageStrategy>(usageStrategies, true);
+                            sortedRenderingStrategies = Assets.FlattenDependencies<RenderingStrategies.ItemRenderingStrategy, RequireRenderingStrategy>(renderingStrategies, true);
                             // Avoid duplicate dependencies and also check interdependencies
-                            renderingStrategiesByType = AssetsLayout.AvoidDuplicateDependencies(sortedRenderingStrategies);
-                            usageStrategiesByType = AssetsLayout.AvoidDuplicateDependencies(usageStrategies);
-                            spatialStrategiesByType = AssetsLayout.AvoidDuplicateDependencies(spatialStrategies);
-                            AssetsLayout.CrossCheckDependencies<UsageStrategies.ItemUsageStrategy, QuantifyingStrategies.ItemQuantifyingStrategy, RequireQuantifyingStrategy>(usageStrategies, quantifyingStrategy);
-                            AssetsLayout.CrossCheckDependencies<RenderingStrategies.ItemRenderingStrategy, QuantifyingStrategies.ItemQuantifyingStrategy, RequireQuantifyingStrategy>(sortedRenderingStrategies, quantifyingStrategy);
-                            AssetsLayout.CrossCheckDependencies<RenderingStrategies.ItemRenderingStrategy, UsageStrategies.ItemUsageStrategy, RequireUsageStrategy>(sortedRenderingStrategies, usageStrategies);
-                            AssetsLayout.CrossCheckDependencies<RenderingStrategies.ItemRenderingStrategy, SpatialStrategies.ItemSpatialStrategy, RequireSpatialStrategy>(sortedRenderingStrategies, spatialStrategies);
+                            renderingStrategiesByType = Assets.AvoidDuplicateDependencies(sortedRenderingStrategies);
+                            usageStrategiesByType = Assets.AvoidDuplicateDependencies(usageStrategies);
+                            spatialStrategiesByType = Assets.AvoidDuplicateDependencies(spatialStrategies);
+                            Assets.CrossCheckDependencies<UsageStrategies.ItemUsageStrategy, QuantifyingStrategies.ItemQuantifyingStrategy, RequireQuantifyingStrategy>(usageStrategies, quantifyingStrategy);
+                            Assets.CrossCheckDependencies<RenderingStrategies.ItemRenderingStrategy, QuantifyingStrategies.ItemQuantifyingStrategy, RequireQuantifyingStrategy>(sortedRenderingStrategies, quantifyingStrategy);
+                            Assets.CrossCheckDependencies<RenderingStrategies.ItemRenderingStrategy, UsageStrategies.ItemUsageStrategy, RequireUsageStrategy>(sortedRenderingStrategies, usageStrategies);
+                            Assets.CrossCheckDependencies<RenderingStrategies.ItemRenderingStrategy, SpatialStrategies.ItemSpatialStrategy, RequireSpatialStrategy>(sortedRenderingStrategies, spatialStrategies);
                             // Check both main strategies
-                            AssetsLayout.CheckMainComponent(usageStrategies, mainUsageStrategy);
-                            AssetsLayout.CheckMainComponent(renderingStrategies, mainRenderingStrategy);
+                            Assets.CheckMainComponent(usageStrategies, mainUsageStrategy);
+                            Assets.CheckMainComponent(renderingStrategies, mainRenderingStrategy);
                         }
                         catch (Exception exc)
                         {

@@ -15,7 +15,7 @@ namespace WindRose
             ///     is both in runtime and as documentation.
             /// </summary>
             [AttributeUsage(AttributeTargets.Class, Inherited = true, AllowMultiple = true)]
-            public class RequireTileStrategy : GMM.Utils.AssetsLayout.Depends
+            public class RequireTileStrategy : AlephVault.Unity.Layout.Utils.Assets.Depends
             {
                 public RequireTileStrategy(Type dependency) : base(dependency) {}
 

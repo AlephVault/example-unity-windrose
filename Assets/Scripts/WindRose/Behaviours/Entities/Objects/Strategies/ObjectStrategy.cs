@@ -67,7 +67,7 @@ namespace WindRose
                     {
                         StrategyHolder = GetComponent<ObjectStrategyHolder>();
                         CounterpartType = GetCounterpartType();
-                        if (CounterpartType == null || !GMM.Utils.Classes.IsSameOrSubclassOf(CounterpartType, baseCounterpartStrategyType))
+                        if (CounterpartType == null || !AlephVault.Unity.Support.Utils.Classes.IsSameOrSubclassOf(CounterpartType, baseCounterpartStrategyType))
                         {
                             Destroy(gameObject);
                             throw new UnsupportedTypeException(string.Format("The type returned by CounterpartType must be a subclass of {0}", baseCounterpartStrategyType.FullName));

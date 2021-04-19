@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using AlephVault.Unity.Support.Utils;
 
 namespace BackPack
 {
@@ -41,7 +42,7 @@ namespace BackPack
 
                         private void Awake()
                         {
-                            max = GMM.Utils.Values.Max(0f, max);
+                            max = Values.Max(0f, max);
                         }
 
                         /// <summary>

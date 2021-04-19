@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using AlephVault.Unity.Support.Utils;
 
 namespace WindRose
 {
@@ -12,8 +13,8 @@ namespace WindRose
             {
                 namespace Drop
                 {
-                    using GMM.Utils;
                     using BackPack.Behaviours.Inventory.ManagementStrategies.PositioningStrategies;
+                    using AlephVault.Unity.Layout.Utils;
 
                     /// <summary>
                     ///   This class validates and iterates position based on the map's dimensions.
@@ -28,7 +29,7 @@ namespace WindRose
                         protected override void Awake()
                         {
                             base.Awake();
-                            Map map = Layout.RequireComponentInParent<Map>(this);
+                            Map map = Behaviours.RequireComponentInParent<Map>(this);
                             width = map.Width;
                             height = map.Height;
                         }

@@ -45,7 +45,7 @@ namespace BackPack
                     ///   Tells when this UI object cannot find, among its descendants,
                     ///     any behaviour being subclass of <see cref="SingleInventoryViewItem"/>.
                     /// </summary>
-                    public class NoSingleInventoryViewItemException : GMM.Types.Exception
+                    public class NoSingleInventoryViewItemException : AlephVault.Unity.Support.Types.Exception
                     {
                         public NoSingleInventoryViewItemException(string message) : base(message) {}
                     }

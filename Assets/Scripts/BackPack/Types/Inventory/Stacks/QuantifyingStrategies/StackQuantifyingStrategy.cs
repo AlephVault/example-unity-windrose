@@ -53,7 +53,7 @@ namespace BackPack
                         /// <exception cref="InvalidQuantityType">This happens when the quantity is not allowed</exception>
                         protected virtual void CheckQuantityType(object quantity)
                         {
-                            if (!GMM.Utils.Classes.IsSameOrSubclassOf(quantity.GetType(), AllowedQuantityType))
+                            if (!AlephVault.Unity.Support.Utils.Classes.IsSameOrSubclassOf(quantity.GetType(), AllowedQuantityType))
                             {
                                 throw new InvalidQuantityType(string.Format("Given quantity's type for stack quantifying strategy must be an instance of {0}", AllowedQuantityType.FullName));
                             }

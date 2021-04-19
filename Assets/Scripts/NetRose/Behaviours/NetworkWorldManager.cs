@@ -5,7 +5,7 @@ using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using Mirror;
 using NetRose.Types;
-using GMM.Utils;
+using AlephVault.Unity.Support.Utils;
 
 namespace NetRose
 {

@@ -5,6 +5,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEditor;
+using AlephVault.Unity.Support.Utils;
 
 namespace GabTab
 {
@@ -12,9 +13,10 @@ namespace GabTab
     {
         namespace InteractiveInterface
         {
-            using GMM.Utils;
             using GabTab.Behaviours;
             using GabTab.Behaviours.Interactors;
+            using AlephVault.Unity.Layout.Utils;
+            using AlephVault.Unity.MenuActions.Utils;
 
             /// <summary>
             ///   Menu actions to create a text interactor
@@ -89,13 +91,13 @@ namespace GabTab
 
                     private Text AddRectTransformAndTextComponents(GameObject newObject, float buttonsOffset)
                     {
-                        RectTransform childTextRectTransformComponent = Layout.AddComponent<RectTransform>(newObject);
+                        RectTransform childTextRectTransformComponent = Behaviours.AddComponent<RectTransform>(newObject);
                         childTextRectTransformComponent.pivot = Vector2.one * 0.5f;
                         childTextRectTransformComponent.anchorMin = Vector2.zero;
                         childTextRectTransformComponent.anchorMax = Vector2.one;
                         childTextRectTransformComponent.offsetMin = new Vector2(buttonsOffset * 1.5f, buttonsOffset * 0.75f);
                         childTextRectTransformComponent.offsetMax = new Vector2(buttonsOffset * -1.5f, -buttonsOffset);
-                        Text childTextComponent = Layout.AddComponent<Text>(newObject);
+                        Text childTextComponent = Behaviours.AddComponent<Text>(newObject);
                         childTextComponent.alignment = TextAnchor.UpperLeft;
                         childTextComponent.horizontalOverflow = HorizontalWrapMode.Overflow;
                         childTextComponent.verticalOverflow = VerticalWrapMode.Truncate;
@@ -107,7 +109,7 @@ namespace GabTab
                     {
                         GameObject textInputObject = new GameObject("Content");
                         textInputObject.transform.parent = parent;
-                        RectTransform textInputRectTransformComponent = Layout.AddComponent<RectTransform>(textInputObject);
+                        RectTransform textInputRectTransformComponent = Behaviours.AddComponent<RectTransform>(textInputObject);
                         float buttonWidth = (interactorRect.width - 5 * buttonsOffset) / 4;
                         float buttonHeight = (interactorRect.height - 2 * buttonsOffset);
                         textInputRectTransformComponent.pivot = Vector2.zero;
@@ -116,7 +118,7 @@ namespace GabTab
                         textInputRectTransformComponent.offsetMin = new Vector2(buttonsOffset, buttonsOffset);
                         textInputRectTransformComponent.offsetMax = textInputRectTransformComponent.offsetMin;
                         textInputRectTransformComponent.sizeDelta = new Vector2(buttonWidth * size + buttonsOffset * (size - 1), buttonHeight);
-                        Image textImageComponent = Layout.AddComponent<Image>(textInputObject);
+                        Image textImageComponent = Behaviours.AddComponent<Image>(textInputObject);
                         textImageComponent.sprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd");
                         textImageComponent.type = Image.Type.Sliced;
                         textImageComponent.fillCenter = true;
@@ -130,7 +132,7 @@ namespace GabTab
                         childPlaceholderTextComponent.color = inputPlaceholderColor;
                         childPlaceholderTextComponent.text = "Enter text...";
                         childPlaceholderTextComponent.fontStyle = FontStyle.BoldAndItalic;
-                        InputField inputFieldComponent = Layout.AddComponent<InputField>(textInputObject);
+                        InputField inputFieldComponent = Behaviours.AddComponent<InputField>(textInputObject);
                         inputFieldComponent.placeholder = childPlaceholderTextComponent;
                         inputFieldComponent.textComponent = childTextComponent;
                         inputFieldComponent.transition = Selectable.Transition.ColorTint;
@@ -153,7 +155,7 @@ namespace GabTab
                             cancelButtonComponent = AddButton(3, interactorRectTransformComponent, cancelButton, buttonsOffset, interactorRect);
                         }
                         InputField textInput = AddInputField(interactorRectTransformComponent, cancelButton, buttonsOffset, interactorRect, withCancelButton ? 2 : 3);
-                        Layout.AddComponent<TextInteractor>(interactorObject, new Dictionary<string, object>()
+                        Behaviours.AddComponent<TextInteractor>(interactorObject, new Dictionary<string, object>()
                         {
                             { "continueButton", continueButtonComponent },
                             { "cancelButton", cancelButtonComponent },

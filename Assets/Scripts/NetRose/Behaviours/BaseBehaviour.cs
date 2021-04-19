@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
-using GMM.Utils;
+using AlephVault.Unity.Support.Utils;
 
 namespace NetRose
 {

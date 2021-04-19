@@ -5,6 +5,8 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Tilemaps;
 using UnityEditor;
+using AlephVault.Unity.Support.Utils;
+using AlephVault.Unity.MenuActions.Utils;
 
 namespace WindRose
 {
@@ -12,7 +14,6 @@ namespace WindRose
     {
         namespace Inventory
         {
-            using GMM.Utils;
             using Behaviours.Drops;
             using BackPack.Behaviours.Inventory.ManagementStrategies.UsageStrategies;
 			using BackPack.Behaviours.Inventory.ManagementStrategies.SpatialStrategies;
@@ -130,7 +131,7 @@ namespace WindRose
                     {
                         GameObject gameObject = selectedTransform.gameObject;
                         Undo.RegisterCompleteObjectUndo(gameObject, "Add Bag");
-                        Layout.EnsureInactive(gameObject, delegate () {
+                        AlephVault.Unity.Layout.Utils.Behaviours.EnsureInactive(gameObject, delegate () {
                             InventoryNullUsageManagementStrategy usageStrategy = MenuActionUtils.AddUndoableComponent<InventoryNullUsageManagementStrategy>(gameObject);
                             InventoryManagementStrategyHolder holder = MenuActionUtils.AddUndoableComponent<InventoryManagementStrategyHolder>(gameObject, new Dictionary<string, object>() {
                                 { "mainUsageStrategy", usageStrategy }
@@ -200,16 +201,16 @@ namespace WindRose
                         GameObject dropLayer = new GameObject("DropLayer");
                         dropLayer.transform.parent = selectedTransform;
                         dropLayer.SetActive(false);
-                        Layout.AddComponent<SortingGroup>(dropLayer);
-                        Layout.AddComponent<GMM.Behaviours.Normalized>(dropLayer);
-                        Layout.AddComponent<InventoryInfinite1DIndexedSpatialManagementStrategy>(dropLayer);
-                        Layout.AddComponent<InventoryMapSizedPositioningManagementStrategy>(dropLayer);
-                        InventoryNullUsageManagementStrategy usageStrategy = Layout.AddComponent<InventoryNullUsageManagementStrategy>(dropLayer);
-                        Layout.AddComponent<InventoryDropLayerRenderingManagementStrategy>(dropLayer);
-                        Layout.AddComponent<InventoryManagementStrategyHolder>(dropLayer, new Dictionary<string, object>() {
+                        AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<SortingGroup>(dropLayer);
+                        AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<AlephVault.Unity.Support.Authoring.Behaviours.Normalized>(dropLayer);
+                        AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<InventoryInfinite1DIndexedSpatialManagementStrategy>(dropLayer);
+                        AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<InventoryMapSizedPositioningManagementStrategy>(dropLayer);
+                        InventoryNullUsageManagementStrategy usageStrategy = AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<InventoryNullUsageManagementStrategy>(dropLayer);
+                        AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<InventoryDropLayerRenderingManagementStrategy>(dropLayer);
+                        AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<InventoryManagementStrategyHolder>(dropLayer, new Dictionary<string, object>() {
                             { "mainUsageStrategy", usageStrategy }
                         });
-                        Layout.AddComponent<DropLayer>(dropLayer);
+                        AlephVault.Unity.Layout.Utils.Behaviours.AddComponent<DropLayer>(dropLayer);
                         dropLayer.SetActive(true);
                         Undo.RegisterCreatedObjectUndo(dropLayer, "Add Drop Layer");
                         Close();

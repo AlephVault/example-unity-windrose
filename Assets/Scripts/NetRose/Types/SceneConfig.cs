@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using GMM.Types;
+using AlephVault.Unity.Scenes.Authoring.Types;
 using AlephVault.Unity.Support.Utils;
 
 namespace NetRose

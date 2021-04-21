@@ -14,7 +14,6 @@ namespace BackPack
 				using ManagementStrategies.SpatialStrategies;
                 using System;
                 using System.Linq;
-                using GMM.Types;
 
                 // using World.Layers.Drop;
 

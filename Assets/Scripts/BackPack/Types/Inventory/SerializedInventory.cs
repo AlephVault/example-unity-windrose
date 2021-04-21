@@ -7,8 +7,6 @@ namespace BackPack
     {
         namespace Inventory
         {
-            using GMM.Types;
-
             /// <summary>
             ///   A serialized stack in terms of (item registrar key, item key, quantity, serialized data for use strategies).
             ///   It only makes sense for items with registrars.

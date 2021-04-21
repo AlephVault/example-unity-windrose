@@ -17,7 +17,6 @@ namespace WindRose
                 {
                     using BackPack.Types.Inventory.Stacks;
                     using BackPack.Behaviours.Inventory;
-                    using GMM.Types;
                     using System.Linq;
                     using WindRose.Behaviours.World.Layers.Drop;
 

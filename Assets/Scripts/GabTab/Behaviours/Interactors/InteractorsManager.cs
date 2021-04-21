@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
+using AlephVault.Unity.Support.Generic.Authoring.Types;
 using UnityEngine;
-using GMM.Types;
 
 namespace GabTab
 {
@@ -22,7 +21,7 @@ namespace GabTab
                 ///   A dictionary of keys and interactor instances. 
                 /// </summary>
                 [Serializable]
-                public class InteractorsDictionary : SerializableDictionary<string, Interactor> {}
+                public class InteractorsDictionary : Dictionary<string, Interactor> {}
 
                 /// <summary>
                 ///   Registered interactors.

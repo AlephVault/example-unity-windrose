@@ -1,5 +1,4 @@
-﻿using GMM.Types;
-using System;
+﻿using System;
 using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
@@ -13,6 +12,8 @@ namespace NetworkedSamples
     {
         namespace Sessions
         {
+            using ATypes = AlephVault.Unity.Support.Generic.Authoring.Types;
+
             public class SampleDatabase : MonoBehaviour, AccountFetcher<int, SampleDatabase.Account>, AccountCharacterFetcher<int, int, string, SampleDatabase.Character>
             {
                 public class DBException : AlephVault.Unity.Support.Types.Exception
@@ -52,10 +53,10 @@ namespace NetworkedSamples
                 }
 
                 [Serializable]
-                public class Characters : SerializableDictionary<int, Character> { }
+                public class Characters : ATypes.Dictionary<int, Character> { }
 
                 [Serializable]
-                public class Accounts : SerializableDictionary<int, Account> { }
+                public class Accounts : ATypes.Dictionary<int, Account> { }
 
                 [SerializeField]
                 private Accounts AccountsTable;

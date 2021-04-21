@@ -1,11 +1,11 @@
-﻿using GMM.Types;
-using UnityEditor;
+﻿using UnityEditor;
+using AlephVault.Unity.Support.Generic.Authoring.Types;
 
 namespace NetRose
 {
     namespace Types
     {
         [CustomPropertyDrawer(typeof(SceneConfigDictionary))]
-        public class SceneConfigDictionaryPropertyDrawer : SerializableDictionaryPropertyDrawer { }
+        public class SceneConfigDictionaryPropertyDrawer : DictionaryPropertyDrawer { }
     }
 }

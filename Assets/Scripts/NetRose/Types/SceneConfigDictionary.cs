@@ -1,10 +1,10 @@
-﻿using GMM.Types;
-
-namespace NetRose
+﻿namespace NetRose
 {
     namespace Types
     {
+        using AlephVault.Unity.Support.Generic.Authoring.Types;
+
         [System.Serializable]
-        public class SceneConfigDictionary : SerializableDictionary<string, SceneConfig> { }
+        public class SceneConfigDictionary : Dictionary<string, SceneConfig> { }
     }
 }

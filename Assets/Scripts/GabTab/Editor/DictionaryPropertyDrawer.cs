@@ -1,5 +1,5 @@
 ﻿using UnityEditor;
-using GMM.Types;
+using ATypes = AlephVault.Unity.Support.Generic.Authoring.Types;
 
 namespace GabTab
 {
@@ -7,6 +7,6 @@ namespace GabTab
     {
         [CustomPropertyDrawer(typeof(Interactors.InteractorsManager.InteractorsDictionary))]
         [CustomPropertyDrawer(typeof(Interactors.ButtonsInteractor.ButtonKeyDictionary))]
-        public class DictionaryPropertyDrawer : SerializableDictionaryPropertyDrawer {}
+        public class DictionaryPropertyDrawer : ATypes.DictionaryPropertyDrawer { }
     }
 }

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Linq;
-using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Threading.Tasks;
 using AlephVault.Unity.Support.Utils;
+using AlephVault.Unity.Support.Generic.Authoring.Types;
 
 namespace GabTab
 {
@@ -309,7 +309,7 @@ namespace GabTab
                  * The currently selected item(s). The last selected item will be considered by us as the "active" item.
                  * However, it will be up to users to actually take care of such quality.
                  */
-                private GMM.Types.OrderedSet<ListItem> selectedItems = new GMM.Types.OrderedSet<ListItem>();
+                private OrderedSet<ListItem> selectedItems = new OrderedSet<ListItem>();
 
                 /// <summary>
                 ///   Gets/sets the items being selected. When you set this property, the last element in

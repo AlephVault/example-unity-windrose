@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
-using GMM.Types;
 using AlephVault.Unity.Support.Utils;
 using System.Threading.Tasks;
 
@@ -12,6 +10,8 @@ namespace GabTab
     {
         namespace Interactors
         {
+            using ATypes = AlephVault.Unity.Support.Generic.Authoring.Types;
+
             /// <summary>
             ///   This interactor registers a list of buttons, each under a key, that
             ///     will be available to be run. This UI element will wait until one
@@ -24,7 +24,7 @@ namespace GabTab
                 ///   A dictionary of keys and buttons.
                 /// </summary>
                 [Serializable]
-                public class ButtonKeyDictionary : SerializableDictionary<Button, string> { }
+                public class ButtonKeyDictionary : ATypes.Dictionary<Button, string> { }
                 /// <summary>
                 ///   Registered buttons.
                 /// </summary>

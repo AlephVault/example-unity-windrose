@@ -40,9 +40,6 @@ namespace WindRose
             [RequireComponent(typeof(ObjectStrategyHolder))]
             public class MapObject : MonoBehaviour, Common.Pausable.IPausable
             {
-                [SerializeField]
-                private bool debug = false;
-
                 #region Lifecycle
                 private bool initialized = false;
 
@@ -65,7 +62,7 @@ namespace WindRose
                          */
                         parentMap = newParentMap;
                         ObjectsLayer ObjectsLayer = parentMap.GetComponentInChildren<ObjectsLayer>();
-                        transform.parent = newParentMap.ObjectsLayer.transform;
+                        transform.SetParent(newParentMap.ObjectsLayer.transform);
                         transform.localPosition = new Vector3(
                             X * ObjectsLayer.GetCellWidth(),
                             Y * ObjectsLayer.GetCellHeight(),

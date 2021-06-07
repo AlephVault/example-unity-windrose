@@ -182,7 +182,6 @@ namespace WindRose
                      *   will be changed to <see cref="FocusStatus.Focusing"/>.
                      */
                     Camera camera = canvas.worldCamera;
-                    Debug.LogFormat("Target is: {0} and camera is: {1}", target, camera);
                     if (target && camera)
                     {
                         Vector3 targetPosition = new Vector3(target.transform.position.x, target.transform.position.y, camera.transform.position.z);

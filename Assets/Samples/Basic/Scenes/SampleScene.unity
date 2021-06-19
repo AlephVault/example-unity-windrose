@@ -1850,8 +1850,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   delay: 1
   targets:
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 821338909}
+  - {fileID: 857442514}
   - {fileID: 1732828872}
 --- !u!1 &339712806
 GameObject:
@@ -2526,7 +2526,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2406264d72ffe6845b29e405874554ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  debug: 0
   width: 2
   height: 2
   speed: 2
@@ -3137,7 +3136,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2406264d72ffe6845b29e405874554ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  debug: 0
   width: 16
   height: 12
   speed: 2
@@ -6469,7 +6467,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2406264d72ffe6845b29e405874554ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  debug: 1
   width: 1
   height: 1
   speed: 4
@@ -8857,7 +8854,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2406264d72ffe6845b29e405874554ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  debug: 0
   width: 1
   height: 1
   speed: 2
@@ -9071,7 +9067,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2406264d72ffe6845b29e405874554ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  debug: 0
   width: 1
   height: 1
   speed: 4
@@ -9631,7 +9626,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2406264d72ffe6845b29e405874554ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  debug: 0
   width: 1
   height: 1
   speed: 2
@@ -12927,7 +12921,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2406264d72ffe6845b29e405874554ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  debug: 0
   width: 1
   height: 1
   speed: 2
@@ -14350,7 +14343,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   triggeringObjects:
-  - {fileID: 0}
+  - {fileID: 821338897}
   displayModeWhenTriggering: 1
   width: 4
   height: 4
@@ -16184,7 +16177,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2406264d72ffe6845b29e405874554ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  debug: 0
   width: 1
   height: 1
   speed: 2
@@ -17184,7 +17176,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2406264d72ffe6845b29e405874554ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  debug: 0
   width: 2
   height: 2
   speed: 2
@@ -17820,7 +17811,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2406264d72ffe6845b29e405874554ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  debug: 0
   width: 1
   height: 1
   speed: 2
@@ -19840,7 +19830,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2406264d72ffe6845b29e405874554ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  debug: 0
   width: 1
   height: 1
   speed: 2
@@ -22855,7 +22844,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2406264d72ffe6845b29e405874554ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  debug: 0
   width: 1
   height: 1
   speed: 2
@@ -23131,7 +23119,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2406264d72ffe6845b29e405874554ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  debug: 0
   width: 1
   height: 1
   speed: 2

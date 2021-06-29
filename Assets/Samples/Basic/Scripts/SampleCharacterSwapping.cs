@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
-using CamJam.Behaviours;
+using AlephVault.Unity.CamJam.Authoring.Behaviours;
 
 [RequireComponent(typeof(WindRose.Behaviours.UI.HUD))]
 public class SampleCharacterSwapping : MonoBehaviour

@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.alephvault.unity.camjam": "file:C:/Users/luism/Projects/unity-camjam",
     "com.alephvault.unity.layout": "file:C:/Users/luism/Projects/unity-layout",
     "com.alephvault.unity.menuactions": "file:C:/Users/luism/Projects/unity-menu-actions",
     "com.alephvault.unity.scenes": "file:C:/Users/luism/Projects/unity-scenes",

@@ -1,9 +1,8 @@
 ﻿using UnityEngine;
 using WindRose.Behaviours.Entities.Objects;
 using WindRose.Behaviours.UI;
-using GabTab.Behaviours;
-using GabTab.Behaviours.Interactors;
-using System.Collections;
+using GameMeanMachine.Unity.GabTab.Authoring.Behaviours;
+using GameMeanMachine.Unity.GabTab.Authoring.Behaviours.Interactors;
 using System.Threading.Tasks;
 
 [RequireComponent(typeof(HUDLinker))]

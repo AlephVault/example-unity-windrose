@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using GabTab.Behaviours;
+using GameMeanMachine.Unity.GabTab.Authoring.Behaviours;
 
 public class ElementListInteractor : TextOptionListInteractor
 {

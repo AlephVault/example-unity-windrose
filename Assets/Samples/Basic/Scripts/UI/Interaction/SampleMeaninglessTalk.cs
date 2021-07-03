@@ -1,8 +1,6 @@
-﻿using System.Collections;
-using UnityEngine;
-using GabTab.Behaviours;
-using GabTab.Behaviours.Interactors;
-using WindRose.Behaviours.Entities.Objects;
+﻿using UnityEngine;
+using GameMeanMachine.Unity.GabTab.Authoring.Behaviours;
+using GameMeanMachine.Unity.GabTab.Authoring.Behaviours.Interactors;
 using WindRose.Behaviours.Entities.Objects.CommandExchange.Talk;
 using WindRose.Behaviours.UI;
 using System.Threading.Tasks;

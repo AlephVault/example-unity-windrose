@@ -1,7 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using GabTab.Behaviours;
+﻿using UnityEngine;
+using GameMeanMachine.Unity.GabTab.Authoring.Behaviours;
 
 [RequireComponent(typeof(InteractiveInterface))]
 public class SpacebarAccelerator : MonoBehaviour {

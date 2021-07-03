@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Linq;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using GabTab.Behaviours;
+using GameMeanMachine.Unity.GabTab.Authoring.Behaviours;
+using GameMeanMachine.Unity.GabTab.Authoring.Behaviours.Interactors;
 using AlephVault.Unity.Support.Utils;
 
 namespace WindRose
@@ -15,7 +14,6 @@ namespace WindRose
         {
             using World;
             using Entities.Objects;
-            using GabTab.Behaviours.Interactors;
             using System.Threading.Tasks;
 
             /// <summary>

@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace WindRose
@@ -10,8 +8,8 @@ namespace WindRose
     {
         namespace UI
         {
-            using GabTab.Behaviours;
-            using GabTab.Behaviours.Interactors;
+            using GameMeanMachine.Unity.GabTab.Authoring.Behaviours;
+            using GameMeanMachine.Unity.GabTab.Authoring.Behaviours.Interactors;
             using System.Threading.Tasks;
             using Types;
             using UnityEngine.SceneManagement;

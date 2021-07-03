@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using GabTab.Behaviours;
-using GabTab.Behaviours.Interactors;
+using GameMeanMachine.Unity.GabTab.Authoring.Behaviours;
+using GameMeanMachine.Unity.GabTab.Authoring.Behaviours.Interactors;
 using UnityEngine;
 using UnityEngine.UI;
 

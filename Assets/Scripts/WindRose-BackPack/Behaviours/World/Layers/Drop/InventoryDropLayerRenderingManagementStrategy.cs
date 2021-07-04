@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
@@ -12,11 +10,11 @@ namespace WindRose
     namespace Behaviours
     {
 		using Drops;
-		using BackPack.Behaviours.Inventory;
-        using BackPack.ScriptableObjects.Inventory.Items;
-        using BackPack.ScriptableObjects.Inventory.Items.RenderingStrategies;
-        using BackPack.Behaviours.Inventory.ManagementStrategies.SpatialStrategies;
-        using BackPack.Behaviours.Inventory.ManagementStrategies.RenderingStrategies;
+		using GameMeanMachine.Unity.BackPack.Authoring.Behaviours.Inventory;
+        using GameMeanMachine.Unity.BackPack.Authoring.ScriptableObjects.Inventory.Items;
+        using GameMeanMachine.Unity.BackPack.Authoring.ScriptableObjects.Inventory.Items.RenderingStrategies;
+        using GameMeanMachine.Unity.BackPack.Authoring.Behaviours.Inventory.ManagementStrategies.SpatialStrategies;
+        using GameMeanMachine.Unity.BackPack.Authoring.Behaviours.Inventory.ManagementStrategies.RenderingStrategies;
 
         namespace World
         {

@@ -10,7 +10,7 @@ namespace NetRose
         {
             namespace Items
             {
-                using BackPack.ScriptableObjects.Inventory.Items;
+                using GameMeanMachine.Unity.BackPack.Authoring.ScriptableObjects.Inventory.Items;
 
                 public static class ItemExtensions
                 {

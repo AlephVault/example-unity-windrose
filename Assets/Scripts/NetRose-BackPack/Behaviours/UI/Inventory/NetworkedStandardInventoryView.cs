@@ -1,10 +1,5 @@
-﻿using BackPack.Behaviours.Inventory.Standard;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
 using Mirror;
 
 namespace NetRose
@@ -16,10 +11,9 @@ namespace NetRose
             namespace Inventory
             {
                 using Types.Inventory;
-                using BackPack.ScriptableObjects.Inventory.Items;
-                using BackPack.Behaviours.UI.Inventory;
-                using ScriptableObjects.Inventory.Items;
-                using BackPack.Types.Inventory.Standard;
+                using GameMeanMachine.Unity.BackPack.Authoring.ScriptableObjects.Inventory.Items;
+                using GameMeanMachine.Unity.BackPack.Authoring.Behaviours.UI.Inventory;
+                using GameMeanMachine.Unity.BackPack.Types.Inventory.Standard;
 
                 /// <summary>
                 ///   <para>

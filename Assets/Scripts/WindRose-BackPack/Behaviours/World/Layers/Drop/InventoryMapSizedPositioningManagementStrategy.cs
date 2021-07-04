@@ -13,7 +13,7 @@ namespace WindRose
             {
                 namespace Drop
                 {
-                    using BackPack.Behaviours.Inventory.ManagementStrategies.PositioningStrategies;
+                    using GameMeanMachine.Unity.BackPack.Authoring.Behaviours.Inventory.ManagementStrategies.PositioningStrategies;
                     using AlephVault.Unity.Layout.Utils;
 
                     /// <summary>

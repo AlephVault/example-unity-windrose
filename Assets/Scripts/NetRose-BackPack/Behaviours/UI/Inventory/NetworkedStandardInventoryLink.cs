@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using BackPack.Behaviours.Inventory.Standard;
+using GameMeanMachine.Unity.BackPack.Authoring.Behaviours.Inventory.Standard;
 
 namespace NetRose
 {

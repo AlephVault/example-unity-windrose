@@ -14,9 +14,9 @@ namespace WindRose
 			{
 				namespace StandardBag
 				{
-					using BackPack.Behaviours.UI.Inventory.Basic;
-                    using BackPack.Behaviours.Inventory.Standard;
-                    using BackPack.Types.Inventory.Stacks;
+					using GameMeanMachine.Unity.BackPack.Authoring.Behaviours.UI.Inventory.Basic;
+                    using GameMeanMachine.Unity.BackPack.Authoring.Behaviours.Inventory.Standard;
+                    using GameMeanMachine.Unity.BackPack.Types.Inventory.Stacks;
                     using Entities.Objects.Bags;
 
                     /// <summary>

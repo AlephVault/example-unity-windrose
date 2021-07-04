@@ -13,8 +13,8 @@ namespace WindRose
 				namespace Bags
 				{
 					using World.Layers.Drop;
-					using BackPack.Types.Inventory.Stacks;
-					using BackPack.Behaviours.Inventory.Standard;
+					using GameMeanMachine.Unity.BackPack.Types.Inventory.Stacks;
+					using GameMeanMachine.Unity.BackPack.Authoring.Behaviours.Inventory.Standard;
 
 					/// <summary>
 					///   Bags are single inventories that belong to a map object.

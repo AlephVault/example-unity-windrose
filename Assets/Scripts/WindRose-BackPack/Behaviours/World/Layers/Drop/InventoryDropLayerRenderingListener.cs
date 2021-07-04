@@ -6,8 +6,8 @@ namespace WindRose
     namespace Behaviours
     {
         using Drops;
-        using BackPack.ScriptableObjects.Inventory.Items;
-        using BackPack.ScriptableObjects.Inventory.Items.RenderingStrategies;
+        using GameMeanMachine.Unity.BackPack.Authoring.ScriptableObjects.Inventory.Items;
+        using GameMeanMachine.Unity.BackPack.Authoring.ScriptableObjects.Inventory.Items.RenderingStrategies;
 
         namespace World
         {

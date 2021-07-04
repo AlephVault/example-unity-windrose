@@ -15,9 +15,9 @@ namespace WindRose
         namespace Inventory
         {
             using Behaviours.Drops;
-            using BackPack.Behaviours.Inventory.ManagementStrategies.UsageStrategies;
-			using BackPack.Behaviours.Inventory.ManagementStrategies.SpatialStrategies;
-			using BackPack.Behaviours.Inventory;
+            using GameMeanMachine.Unity.BackPack.Authoring.Behaviours.Inventory.ManagementStrategies.UsageStrategies;
+			using GameMeanMachine.Unity.BackPack.Authoring.Behaviours.Inventory.ManagementStrategies.SpatialStrategies;
+			using GameMeanMachine.Unity.BackPack.Authoring.Behaviours.Inventory;
 			using Behaviours.World.Layers.Drop;
 
             /// <summary>

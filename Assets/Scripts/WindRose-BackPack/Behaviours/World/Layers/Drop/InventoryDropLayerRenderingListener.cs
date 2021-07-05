@@ -1,137 +1,140 @@
 ﻿using System;
 using UnityEngine;
 
-namespace WindRose
+namespace GameMeanMachine.Unity.WindRose
 {
-    namespace Behaviours
+    namespace Authoring
     {
-        using Drops;
-        using GameMeanMachine.Unity.BackPack.Authoring.ScriptableObjects.Inventory.Items;
-        using GameMeanMachine.Unity.BackPack.Authoring.ScriptableObjects.Inventory.Items.RenderingStrategies;
-
-        namespace World
+        namespace Behaviours
         {
-            namespace Layers
+            using Drops;
+            using GameMeanMachine.Unity.BackPack.Authoring.ScriptableObjects.Inventory.Items;
+            using GameMeanMachine.Unity.BackPack.Authoring.ScriptableObjects.Inventory.Items.RenderingStrategies;
+
+            namespace World
             {
-                namespace Drop
+                namespace Layers
                 {
-                    /// <summary>
-                    ///   This listener renders a matrix of M x N containers, since it will be related to a map's
-                    ///     <see cref="DropLayer"/>. It will do this by creating/refreshing/destroying a lot of
-                    ///     <see cref="SimpleDropContainerRenderer"/> instances (one on each map's position).
-                    /// </summary>
-                    [RequireComponent(typeof(InventoryMapSizedPositioningManagementStrategy))]
-                    public class InventoryDropLayerRenderingListener : MonoBehaviour, InventoryDropLayerRenderingManagementStrategy.RenderingListener
+                    namespace Drop
                     {
-                        private SimpleDropContainerRenderer[,] dropContainers;
-                        // We are completely sure we have a PositioningStrategy in the underlying object
-                        private InventoryMapSizedPositioningManagementStrategy positioningStrategy;
-
                         /// <summary>
-                        ///   A prefab that MUST be set. It will be used to spawn the renderers for the
-                        ///     drop containers.
+                        ///   This listener renders a matrix of M x N containers, since it will be related to a map's
+                        ///     <see cref="DropLayer"/>. It will do this by creating/refreshing/destroying a lot of
+                        ///     <see cref="SimpleDropContainerRenderer"/> instances (one on each map's position).
                         /// </summary>
-                        [SerializeField]
-                        private SimpleDropContainerRenderer containerPrefab;
-
-                        protected void Awake()
+                        [RequireComponent(typeof(InventoryMapSizedPositioningManagementStrategy))]
+                        public class InventoryDropLayerRenderingListener : MonoBehaviour, InventoryDropLayerRenderingManagementStrategy.RenderingListener
                         {
-                            positioningStrategy = GetComponent<InventoryMapSizedPositioningManagementStrategy>();
-                            try
-                            {
-                                Map map = GetComponent<DropLayer>().Map;
-                                dropContainers = new SimpleDropContainerRenderer[map.Width, map.Height];
-                            }
-                            catch (NullReferenceException)
-                            {
-                                Debug.LogError("This rendering listener must be bound to an object being also a DropLayer");
-                                Destroy(gameObject);
-                            }
-                        }
+                            private SimpleDropContainerRenderer[,] dropContainers;
+                            // We are completely sure we have a PositioningStrategy in the underlying object
+                            private InventoryMapSizedPositioningManagementStrategy positioningStrategy;
 
-                        private SimpleDropContainerRenderer getContainerFor(Vector2Int position, bool createIfMissing = true)
-                        {
-                            // Retrieves, or clones (if createIsMissing), a container for a specific (x, y) position
-                            SimpleDropContainerRenderer container = dropContainers[position.x, position.y];
-                            if (container == null && createIfMissing)
-                            {
-                                container = Instantiate(containerPrefab.gameObject, transform).GetComponent<SimpleDropContainerRenderer>();
-                                dropContainers[position.x, position.y] = container;
-                                container.transform.localPosition = new Vector3(position.x, position.y);
-                            }
-                            return container;
-                        }
+                            /// <summary>
+                            ///   A prefab that MUST be set. It will be used to spawn the renderers for the
+                            ///     drop containers.
+                            /// </summary>
+                            [SerializeField]
+                            private SimpleDropContainerRenderer containerPrefab;
 
-                        private void destroyContainerFor(Vector2Int position)
-                        {
-                            // Destroys a container, if existing, at an (x, y) position
-                            SimpleDropContainerRenderer container = dropContainers[position.x, position.y];
-                            if (container != null)
+                            protected void Awake()
                             {
-                                Destroy(container);
-                                dropContainers[position.x, position.y] = null;
-                            }
-                        }
-
-                        /// <summary>
-                        ///   <para>
-                        ///     Refreshing the stack involves maybe-instantiating a container renderer, and then
-                        ///       refresh-putting an item there.
-                        ///   </para>
-                        ///   <para>
-                        ///     See <see cref="InventoryRenderingManagementStrategy.StackWasUpdated(object, object, Types.Inventory.Stacks.Stack)"/>
-                        ///       for more information on the method's signature.
-                        ///   </para>
-                        /// </summary>
-                        /// <param name="containerPosition">The (x, y) in-map position</param>
-                        /// <param name="stackPosition">The in-place index</param>
-                        /// <param name="item">The item to render</param>
-                        /// <param name="quantity">The quantity to render</param>
-                        public void UpdateStack(Vector2Int containerPosition, int stackPosition, Item item, object quantity)
-                        {
-                            // Adds a stack to a container (creates the container if absent).
-                            SimpleDropContainerRenderer container = getContainerFor(containerPosition, true);
-                            ItemIconTextRenderingStrategy strategy = item.GetRenderingStrategy<ItemIconTextRenderingStrategy>();
-                            container.RefreshWithPutting(stackPosition, strategy.Icon, strategy.Caption, quantity);
-                        }
-
-                        /// <summary>
-                        ///   <para>
-                        ///     Removing a stack involves removing the item from the container, and then maybe-destroying
-                        ///       the container if empty.
-                        ///   </para>
-                        ///   <para>
-                        ///     See <see cref="InventoryRenderingManagementStrategy.StackWasRemoved(object, object)"/>
-                        ///       for more information on the method's signature.
-                        ///   </para>
-                        /// </summary>
-                        /// <param name="containerPosition">The (x, y) in-map position</param>
-                        /// <param name="stackPosition">The in-place index</param>
-                        public void RemoveStack(Vector2Int containerPosition, int stackPosition)
-                        {
-                            // Removes a stack from a container (if the container exists).
-                            // Removes the container if empty.
-                            SimpleDropContainerRenderer container = getContainerFor(containerPosition, false);
-                            if (container != null)
-                            {
-                                container.RefreshWithRemoving(stackPosition);
-                                if (container.Empty())
+                                positioningStrategy = GetComponent<InventoryMapSizedPositioningManagementStrategy>();
+                                try
                                 {
-                                    Destroy(container);
-                                    dropContainers[containerPosition.x, containerPosition.y] = null;
+                                    Map map = GetComponent<DropLayer>().Map;
+                                    dropContainers = new SimpleDropContainerRenderer[map.Width, map.Height];
+                                }
+                                catch (NullReferenceException)
+                                {
+                                    Debug.LogError("This rendering listener must be bound to an object being also a DropLayer");
+                                    Destroy(gameObject);
                                 }
                             }
-                        }
 
-                        /// <summary>
-                        ///   Clearing all the containers involves destroying the renderer objects.
-                        /// </summary>
-                        public void Clear()
-                        {
-                            // Destroys all the containers.
-                            foreach (object position in positioningStrategy.Positions())
+                            private SimpleDropContainerRenderer getContainerFor(Vector2Int position, bool createIfMissing = true)
                             {
-                                destroyContainerFor((Vector2Int)position);
+                                // Retrieves, or clones (if createIsMissing), a container for a specific (x, y) position
+                                SimpleDropContainerRenderer container = dropContainers[position.x, position.y];
+                                if (container == null && createIfMissing)
+                                {
+                                    container = Instantiate(containerPrefab.gameObject, transform).GetComponent<SimpleDropContainerRenderer>();
+                                    dropContainers[position.x, position.y] = container;
+                                    container.transform.localPosition = new Vector3(position.x, position.y);
+                                }
+                                return container;
+                            }
+
+                            private void destroyContainerFor(Vector2Int position)
+                            {
+                                // Destroys a container, if existing, at an (x, y) position
+                                SimpleDropContainerRenderer container = dropContainers[position.x, position.y];
+                                if (container != null)
+                                {
+                                    Destroy(container);
+                                    dropContainers[position.x, position.y] = null;
+                                }
+                            }
+
+                            /// <summary>
+                            ///   <para>
+                            ///     Refreshing the stack involves maybe-instantiating a container renderer, and then
+                            ///       refresh-putting an item there.
+                            ///   </para>
+                            ///   <para>
+                            ///     See <see cref="InventoryRenderingManagementStrategy.StackWasUpdated(object, object, Types.Inventory.Stacks.Stack)"/>
+                            ///       for more information on the method's signature.
+                            ///   </para>
+                            /// </summary>
+                            /// <param name="containerPosition">The (x, y) in-map position</param>
+                            /// <param name="stackPosition">The in-place index</param>
+                            /// <param name="item">The item to render</param>
+                            /// <param name="quantity">The quantity to render</param>
+                            public void UpdateStack(Vector2Int containerPosition, int stackPosition, Item item, object quantity)
+                            {
+                                // Adds a stack to a container (creates the container if absent).
+                                SimpleDropContainerRenderer container = getContainerFor(containerPosition, true);
+                                ItemIconTextRenderingStrategy strategy = item.GetRenderingStrategy<ItemIconTextRenderingStrategy>();
+                                container.RefreshWithPutting(stackPosition, strategy.Icon, strategy.Caption, quantity);
+                            }
+
+                            /// <summary>
+                            ///   <para>
+                            ///     Removing a stack involves removing the item from the container, and then maybe-destroying
+                            ///       the container if empty.
+                            ///   </para>
+                            ///   <para>
+                            ///     See <see cref="InventoryRenderingManagementStrategy.StackWasRemoved(object, object)"/>
+                            ///       for more information on the method's signature.
+                            ///   </para>
+                            /// </summary>
+                            /// <param name="containerPosition">The (x, y) in-map position</param>
+                            /// <param name="stackPosition">The in-place index</param>
+                            public void RemoveStack(Vector2Int containerPosition, int stackPosition)
+                            {
+                                // Removes a stack from a container (if the container exists).
+                                // Removes the container if empty.
+                                SimpleDropContainerRenderer container = getContainerFor(containerPosition, false);
+                                if (container != null)
+                                {
+                                    container.RefreshWithRemoving(stackPosition);
+                                    if (container.Empty())
+                                    {
+                                        Destroy(container);
+                                        dropContainers[containerPosition.x, containerPosition.y] = null;
+                                    }
+                                }
+                            }
+
+                            /// <summary>
+                            ///   Clearing all the containers involves destroying the renderer objects.
+                            /// </summary>
+                            public void Clear()
+                            {
+                                // Destroys all the containers.
+                                foreach (object position in positioningStrategy.Positions())
+                                {
+                                    destroyContainerFor((Vector2Int)position);
+                                }
                             }
                         }
                     }

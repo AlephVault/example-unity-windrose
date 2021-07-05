@@ -1,7 +1,7 @@
 ﻿using AlephVault.Unity.Support.Authoring.Behaviours;
 using System.Collections.Generic;
 using UnityEngine;
-using WindRose.Behaviours.World.Layers.Drop;
+using GameMeanMachine.Unity.WindRose.Authoring.Behaviours.World.Layers.Drop;
 using GameMeanMachine.Unity.BackPack.Authoring.ScriptableObjects.Inventory.Items;
 using GameMeanMachine.Unity.BackPack.Authoring.ScriptableObjects.Inventory.Items.QuantifyingStrategies;
 

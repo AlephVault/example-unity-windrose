@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-using WindRose.Behaviours.World.Layers.Objects.ObjectsManagementStrategies.Solidness;
-using WindRose.Behaviours.Entities.Objects;
-using WindRose.Behaviours.Entities.Objects.Strategies.Simple;
-using WindRose.Behaviours.Entities.Objects.Strategies.Solidness;
+using GameMeanMachine.Unity.WindRose.Authoring.Behaviours.World.Layers.Objects.ObjectsManagementStrategies.Solidness;
+using GameMeanMachine.Unity.WindRose.Authoring.Behaviours.Entities.Objects;
+using GameMeanMachine.Unity.WindRose.Authoring.Behaviours.Entities.Objects.Strategies.Simple;
+using GameMeanMachine.Unity.WindRose.Authoring.Behaviours.Entities.Objects.Strategies.Solidness;
 
 [RequireComponent(typeof(MapObject))]
 [RequireComponent(typeof(ObjectStrategyHolder))]

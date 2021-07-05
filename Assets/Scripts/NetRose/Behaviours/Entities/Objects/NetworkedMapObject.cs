@@ -13,9 +13,9 @@ namespace NetRose
         {
             namespace Objects
             {
-                using WindRose.Types;
-                using WindRose.Behaviours.World;
-                using WindRose.Behaviours.Entities.Objects;
+                using GameMeanMachine.Unity.WindRose.Types;
+                using GameMeanMachine.Unity.WindRose.Authoring.Behaviours.World;
+                using GameMeanMachine.Unity.WindRose.Authoring.Behaviours.Entities.Objects;
                 using UnityEngine.Events;
 
                 /// <summary>

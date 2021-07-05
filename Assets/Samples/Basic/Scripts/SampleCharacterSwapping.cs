@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using UnityEngine;
-using AlephVault.Unity.CamJam.Authoring.Behaviours;
+﻿using UnityEngine;
 
-[RequireComponent(typeof(WindRose.Behaviours.UI.HUD))]
+[RequireComponent(typeof(GameMeanMachine.Unity.WindRose.Authoring.Behaviours.UI.HUD))]
 public class SampleCharacterSwapping : MonoBehaviour
 {
     /**
@@ -18,15 +13,15 @@ public class SampleCharacterSwapping : MonoBehaviour
      * Index of objects to rotate among.
      */
     [SerializeField]
-    private WindRose.Behaviours.Entities.Objects.MapObject[] targets;
+    private GameMeanMachine.Unity.WindRose.Authoring.Behaviours.Entities.Objects.MapObject[] targets;
 
-    private WindRose.Behaviours.UI.HUD hud;
+    private GameMeanMachine.Unity.WindRose.Authoring.Behaviours.UI.HUD hud;
 
     private int currentTarget = 0;
 
     private void Start()
     {
-        hud = GetComponent<WindRose.Behaviours.UI.HUD>();
+        hud = GetComponent<GameMeanMachine.Unity.WindRose.Authoring.Behaviours.UI.HUD>();
         TrackTarget();
     }
 

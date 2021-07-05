@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
-using WindRose.Behaviours.Entities.Objects;
-using WindRose.Behaviours.Entities.Objects.CommandExchange.Talk;
-using WindRose.Types;
+using GameMeanMachine.Unity.WindRose.Authoring.Behaviours.Entities.Objects;
+using GameMeanMachine.Unity.WindRose.Authoring.Behaviours.Entities.Objects.CommandExchange.Talk;
+using GameMeanMachine.Unity.WindRose.Types;
 
 [RequireComponent(typeof(TalkSender))]
 public class KeyboardHandled : MonoBehaviour {

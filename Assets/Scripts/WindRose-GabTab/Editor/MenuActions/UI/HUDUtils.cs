@@ -5,13 +5,13 @@ using System.Text;
 using UnityEngine;
 using UnityEditor;
 
-namespace WindRose
+namespace GameMeanMachine.Unity.WindRose
 {
     namespace MenuActions
     {
         namespace UI
         {
-            using Behaviours.UI;
+            using Authoring.Behaviours.UI;
             using AlephVault.Unity.MenuActions.Utils;
             
             /// <summary>

@@ -2,63 +2,66 @@
 using System.Linq;
 using UnityEngine;
 
-namespace WindRose
+namespace GameMeanMachine.Unity.WindRose
 {
-    namespace Behaviours
+    namespace Authoring
     {
-        namespace UI
+        namespace Behaviours
         {
-            using GameMeanMachine.Unity.GabTab.Authoring.Behaviours;
-            using GameMeanMachine.Unity.GabTab.Authoring.Behaviours.Interactors;
-            using System.Threading.Tasks;
-            using Types;
-            using UnityEngine.SceneManagement;
-            using Entities.Objects;
-
-            /// <summary>
-            ///   A HUDLinker allows a <see cref="MapObject"/> to execute
-            ///     interactions on the given HUD or the main-and-only
-            ///     HUD in the active scene.
-            /// </summary>
-            [RequireComponent(typeof(MapObject))]
-            class HUDLinker : MonoBehaviour
+            namespace UI
             {
-                /// <summary>
-                ///   The <see cref="HUD"/> this object is attached to.
-                /// </summary>
-                public HUD HUD;
+                using GameMeanMachine.Unity.GabTab.Authoring.Behaviours;
+                using GameMeanMachine.Unity.GabTab.Authoring.Behaviours.Interactors;
+                using System.Threading.Tasks;
+                using Types;
+                using UnityEngine.SceneManagement;
+                using Entities.Objects;
 
-                private HUD GetTheOnlyHUDInScene()
+                /// <summary>
+                ///   A HUDLinker allows a <see cref="MapObject"/> to execute
+                ///     interactions on the given HUD or the main-and-only
+                ///     HUD in the active scene.
+                /// </summary>
+                [RequireComponent(typeof(MapObject))]
+                class HUDLinker : MonoBehaviour
                 {
-                    HUD foundHud = null;
-                    foreach (HUD hud in (from obj in SceneManager.GetActiveScene().GetRootGameObjects() select obj.GetComponent<HUD>()))
+                    /// <summary>
+                    ///   The <see cref="HUD"/> this object is attached to.
+                    /// </summary>
+                    public HUD HUD;
+
+                    private HUD GetTheOnlyHUDInScene()
                     {
-                        if (hud)
+                        HUD foundHud = null;
+                        foreach (HUD hud in (from obj in SceneManager.GetActiveScene().GetRootGameObjects() select obj.GetComponent<HUD>()))
                         {
-                            if (foundHud)
+                            if (hud)
                             {
-                                throw new Exception("A HUD was not specified to this object, and there are two/+ top-level HUDs in the scene");
-                            }
-                            else
-                            {
-                                foundHud = hud;
+                                if (foundHud)
+                                {
+                                    throw new Exception("A HUD was not specified to this object, and there are two/+ top-level HUDs in the scene");
+                                }
+                                else
+                                {
+                                    foundHud = hud;
+                                }
                             }
                         }
+                        if (!foundHud) throw new Exception("A HUD was not specified to this object, and there is no top-level HUD in the scene");
+                        return foundHud;
                     }
-                    if (!foundHud) throw new Exception("A HUD was not specified to this object, and there is no top-level HUD in the scene");
-                    return foundHud;
-                }
 
-                /// <summary>
-                ///   Executes an interaction, as described in <see cref="UI.HUD.RunInteraction(Func{InteractorsManager, InteractiveMessage, Task})"/>.
-                ///   The HUD to consider is one being specifically added to the scene (the only one) or, even better, the one assigned to this object
-                ///     under the <see cref="UI.HUD"/> property.
-                /// </summary>
-                /// <param name="interaction">The interaction to run</param>
-                public void RunInteraction(Func<InteractorsManager, InteractiveMessage, Task> interaction)
-                {
-                    HUD hud = HUD ? HUD : GetTheOnlyHUDInScene();
-                    hud.RunInteraction(interaction);
+                    /// <summary>
+                    ///   Executes an interaction, as described in <see cref="UI.HUD.RunInteraction(Func{InteractorsManager, InteractiveMessage, Task})"/>.
+                    ///   The HUD to consider is one being specifically added to the scene (the only one) or, even better, the one assigned to this object
+                    ///     under the <see cref="UI.HUD"/> property.
+                    /// </summary>
+                    /// <param name="interaction">The interaction to run</param>
+                    public void RunInteraction(Func<InteractorsManager, InteractiveMessage, Task> interaction)
+                    {
+                        HUD hud = HUD ? HUD : GetTheOnlyHUDInScene();
+                        hud.RunInteraction(interaction);
+                    }
                 }
             }
         }

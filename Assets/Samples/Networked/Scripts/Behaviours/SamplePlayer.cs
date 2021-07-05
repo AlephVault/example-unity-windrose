@@ -4,7 +4,7 @@ using NetRose.Behaviours.Entities.Objects;
 using NetRose.Behaviours.UI.Inventory;
 using GameMeanMachine.Unity.BackPack.Authoring.Behaviours.Inventory.Standard;
 using GameMeanMachine.Unity.BackPack.Authoring.Behaviours.UI.Inventory.Basic;
-using WindRose.Behaviours.Entities.Objects.Bags;
+using GameMeanMachine.Unity.WindRose.Authoring.Behaviours.Entities.Objects.Bags;
 using NetRose.Behaviours.UI;
 using NetRose.Behaviours.Sessions;
 
@@ -64,7 +64,7 @@ namespace NetworkedSamples
                 });
             }
 
-            private void OnMovementStarted(WindRose.Types.Direction direction)
+            private void OnMovementStarted(GameMeanMachine.Unity.WindRose.Types.Direction direction)
             {
                 CurrentCharacter.MapObject.Orientation = direction;
             }

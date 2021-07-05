@@ -8,17 +8,17 @@ using UnityEditor;
 using AlephVault.Unity.Support.Utils;
 using AlephVault.Unity.MenuActions.Utils;
 
-namespace WindRose
+namespace GameMeanMachine.Unity.WindRose
 {
     namespace MenuActions
     {
         namespace Inventory
         {
-            using Behaviours.Drops;
+            using Authoring.Behaviours.Drops;
             using GameMeanMachine.Unity.BackPack.Authoring.Behaviours.Inventory.ManagementStrategies.UsageStrategies;
 			using GameMeanMachine.Unity.BackPack.Authoring.Behaviours.Inventory.ManagementStrategies.SpatialStrategies;
 			using GameMeanMachine.Unity.BackPack.Authoring.Behaviours.Inventory;
-			using Behaviours.World.Layers.Drop;
+			using Authoring.Behaviours.World.Layers.Drop;
 
             /// <summary>
             ///   Menu actions to create drop/bag-related assets / add drop/bag-related components.
@@ -146,7 +146,7 @@ namespace WindRose
                             {
                                 MenuActionUtils.AddUndoableComponent<InventoryInfinite1DIndexedSpatialManagementStrategy>(gameObject);
                             }
-                            MenuActionUtils.AddUndoableComponent<Behaviours.Entities.Objects.Bags.StandardBag>(gameObject);
+                            MenuActionUtils.AddUndoableComponent<Authoring.Behaviours.Entities.Objects.Bags.StandardBag>(gameObject);
                             return holder;
                         });
                         Close();
@@ -168,7 +168,7 @@ namespace WindRose
                 [MenuItem("GameObject/Back Pack/Inventory/Add Bag", true)]
                 public static bool CanAddBag()
                 {
-                    return Selection.activeTransform && Selection.activeTransform.GetComponent<WindRose.Behaviours.Entities.Objects.MapObject>();
+                    return Selection.activeTransform && Selection.activeTransform.GetComponent<Authoring.Behaviours.Entities.Objects.MapObject>();
                 }
 
                 private class AddDropLayerWindow : EditorWindow
@@ -232,7 +232,7 @@ namespace WindRose
                 [MenuItem("GameObject/Back Pack/Inventory/Add Drop Layer", true)]
                 public static bool CanAddDropLayer()
                 {
-                    return Selection.activeTransform && Selection.activeTransform.GetComponent<WindRose.Behaviours.World.Map>();
+                    return Selection.activeTransform && Selection.activeTransform.GetComponent<Authoring.Behaviours.World.Map>();
                 }
             }
         }

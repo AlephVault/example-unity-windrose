@@ -13,10 +13,10 @@ namespace NetRose
                 using System;
                 using System.Threading.Tasks;
                 using Mirror;
-                using WindRose.Behaviours.Entities.Objects;
-                using WindRose.Behaviours.Entities.Objects.Strategies;
-                using WindRose.Behaviours.Entities.Objects.Strategies.Solidness;
-                using WindRose.Behaviours.World.Layers.Objects.ObjectsManagementStrategies.Solidness;
+                using GameMeanMachine.Unity.WindRose.Authoring.Behaviours.Entities.Objects;
+                using GameMeanMachine.Unity.WindRose.Authoring.Behaviours.Entities.Objects.Strategies;
+                using GameMeanMachine.Unity.WindRose.Authoring.Behaviours.Entities.Objects.Strategies.Solidness;
+                using GameMeanMachine.Unity.WindRose.Authoring.Behaviours.World.Layers.Objects.ObjectsManagementStrategies.Solidness;
 
                 /// <summary>
                 ///   This class synchronizes, via events, the contents

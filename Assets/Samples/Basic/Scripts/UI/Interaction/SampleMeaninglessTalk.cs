@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 using GameMeanMachine.Unity.GabTab.Authoring.Behaviours;
 using GameMeanMachine.Unity.GabTab.Authoring.Behaviours.Interactors;
-using WindRose.Behaviours.Entities.Objects.CommandExchange.Talk;
-using WindRose.Behaviours.UI;
+using GameMeanMachine.Unity.WindRose.Authoring.Behaviours.Entities.Objects.CommandExchange.Talk;
+using GameMeanMachine.Unity.WindRose.Authoring.Behaviours.UI;
 using System.Threading.Tasks;
 
 [RequireComponent(typeof(TalkReceiver))]

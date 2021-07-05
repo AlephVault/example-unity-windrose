@@ -7,8 +7,8 @@ namespace NetRose
     {
         namespace World
         {
-            using WindRose.Behaviours.World;
-            using WindRose.Behaviours.World.Layers.Objects;
+            using GameMeanMachine.Unity.WindRose.Authoring.Behaviours.World;
+            using GameMeanMachine.Unity.WindRose.Authoring.Behaviours.World.Layers.Objects;
 
             /// <summary>
             ///   Networked maps will force maps' <see cref="ObjectsManagementStrategyHolder"/>

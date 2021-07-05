@@ -2,59 +2,62 @@
 using GameMeanMachine.Unity.BackPack.Authoring.Behaviours.UI.Inventory.Basic;
 using GameMeanMachine.Unity.BackPack.Authoring.Behaviours.Inventory.Standard;
 
-namespace WindRose
+namespace GameMeanMachine.Unity.WindRose
 {
-    namespace Behaviours
+    namespace Authoring
     {
-        namespace UI
+        namespace Behaviours
         {
-            namespace Inventory
+            namespace UI
             {
-                /// <summary>
-                ///   Links an inventory and its related view through an
-                ///     exposed property to select the inventory. Once
-                ///     selected, the view will also be linked to it.
-                ///     Also, on component startup, if an inventory is
-                ///     selected, it will also link the view to it.
-                /// </summary>
-                [RequireComponent(typeof(BasicStandardInventoryView))]
-                public class BasicStandardInventoryLink : MonoBehaviour
+                namespace Inventory
                 {
-                    // The view component to perform the link.
-                    private BasicStandardInventoryView inventoryView;
-
                     /// <summary>
-                    ///   The inventory this control will be bound to on start.
+                    ///   Links an inventory and its related view through an
+                    ///     exposed property to select the inventory. Once
+                    ///     selected, the view will also be linked to it.
+                    ///     Also, on component startup, if an inventory is
+                    ///     selected, it will also link the view to it.
                     /// </summary>
-                    [SerializeField]
-                    private StandardInventory inventory;
-
-                    private void Awake()
+                    [RequireComponent(typeof(BasicStandardInventoryView))]
+                    public class BasicStandardInventoryLink : MonoBehaviour
                     {
-                        inventoryView = GetComponent<BasicStandardInventoryView>();
-                    }
+                        // The view component to perform the link.
+                        private BasicStandardInventoryView inventoryView;
 
-                    private void Start()
-                    {
-                        if (inventory) inventory.RenderingStrategy.Broadcaster.AddListener(inventoryView);
-                    }
+                        /// <summary>
+                        ///   The inventory this control will be bound to on start.
+                        /// </summary>
+                        [SerializeField]
+                        private StandardInventory inventory;
 
-                    /// <summary>
-                    ///   Sets or gets the current inventory this link is bound to. On change,
-                    ///     the former inventory will not be watched anymore by this link, and
-                    ///     the new one will start to be watched by this link.
-                    /// </summary>
-                    public StandardInventory Inventory
-                    {
-                        get
+                        private void Awake()
                         {
-                            return inventory;
+                            inventoryView = GetComponent<BasicStandardInventoryView>();
                         }
-                        set
+
+                        private void Start()
                         {
-                            if (inventory) inventory.RenderingStrategy.Broadcaster.RemoveListener(inventoryView);
-                            inventory = value;
                             if (inventory) inventory.RenderingStrategy.Broadcaster.AddListener(inventoryView);
+                        }
+
+                        /// <summary>
+                        ///   Sets or gets the current inventory this link is bound to. On change,
+                        ///     the former inventory will not be watched anymore by this link, and
+                        ///     the new one will start to be watched by this link.
+                        /// </summary>
+                        public StandardInventory Inventory
+                        {
+                            get
+                            {
+                                return inventory;
+                            }
+                            set
+                            {
+                                if (inventory) inventory.RenderingStrategy.Broadcaster.RemoveListener(inventoryView);
+                                inventory = value;
+                                if (inventory) inventory.RenderingStrategy.Broadcaster.AddListener(inventoryView);
+                            }
                         }
                     }
                 }

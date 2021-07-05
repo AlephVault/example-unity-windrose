@@ -6,6 +6,8 @@ namespace NetworkedSamples
 {
     namespace Behaviours
     {
+        using GameMeanMachine.Unity.WindRose.Types;
+
         [RequireComponent(typeof(SamplePlayer))]
         public class SamplePlayerControl : NetworkBehaviour
         {
@@ -33,7 +35,7 @@ namespace NetworkedSamples
             {
                 if (samplePlayer.CurrentCharacter)
                 {
-                    samplePlayer.CurrentCharacter.MapObject.StartMovement(WindRose.Types.Direction.RIGHT);
+                    samplePlayer.CurrentCharacter.MapObject.StartMovement(Direction.RIGHT);
                 }
             }
 
@@ -42,7 +44,7 @@ namespace NetworkedSamples
             {
                 if (samplePlayer.CurrentCharacter)
                 {
-                    samplePlayer.CurrentCharacter.MapObject.StartMovement(WindRose.Types.Direction.UP);
+                    samplePlayer.CurrentCharacter.MapObject.StartMovement(Direction.UP);
                 }
             }
 
@@ -51,7 +53,7 @@ namespace NetworkedSamples
             {
                 if (samplePlayer.CurrentCharacter)
                 {
-                    samplePlayer.CurrentCharacter.MapObject.StartMovement(WindRose.Types.Direction.LEFT);
+                    samplePlayer.CurrentCharacter.MapObject.StartMovement(Direction.LEFT);
                 }
             }
 
@@ -60,7 +62,7 @@ namespace NetworkedSamples
             {
                 if (samplePlayer.CurrentCharacter)
                 {
-                    samplePlayer.CurrentCharacter.MapObject.StartMovement(WindRose.Types.Direction.DOWN);
+                    samplePlayer.CurrentCharacter.MapObject.StartMovement(Direction.DOWN);
                 }
             }
         }

@@ -9,7 +9,7 @@ namespace NetRose
         {
             namespace Objects
             {
-                using WindRose.Behaviours.Entities.Objects;
+                using GameMeanMachine.Unity.WindRose.Authoring.Behaviours.Entities.Objects;
 
                 /// <summary>
                 ///   Networked trigger holders disable all the colliders of a behaviour,

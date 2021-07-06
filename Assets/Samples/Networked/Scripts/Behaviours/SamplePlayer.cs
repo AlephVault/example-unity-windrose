@@ -4,7 +4,7 @@ using NetRose.Behaviours.Entities.Objects;
 using NetRose.Behaviours.UI.Inventory;
 using GameMeanMachine.Unity.BackPack.Authoring.Behaviours.Inventory.Standard;
 using GameMeanMachine.Unity.BackPack.Authoring.Behaviours.UI.Inventory.Basic;
-using GameMeanMachine.Unity.WindRose.Authoring.Behaviours.Entities.Objects.Bags;
+using GameMeanMachine.Unity.WindRose.BackPack.Authoring.Behaviours.Entities.Objects.Bags;
 using NetRose.Behaviours.UI;
 using NetRose.Behaviours.Sessions;
 

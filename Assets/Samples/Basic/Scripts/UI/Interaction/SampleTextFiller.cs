@@ -2,7 +2,7 @@
 using UnityEngine;
 using GameMeanMachine.Unity.GabTab.Authoring.Behaviours;
 using GameMeanMachine.Unity.GabTab.Authoring.Behaviours.Interactors;
-using GameMeanMachine.Unity.WindRose.Authoring.Behaviours.UI;
+using GameMeanMachine.Unity.WindRose.GabTab.Authoring.Behaviours.UI;
 using AlephVault.Unity.Support.Utils;
 using System.Threading.Tasks;
 

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using GameMeanMachine.Unity.WindRose.Authoring.Behaviours.Entities.Objects;
-using GameMeanMachine.Unity.WindRose.Authoring.Behaviours.UI;
+using GameMeanMachine.Unity.WindRose.GabTab.Authoring.Behaviours.UI;
 using GameMeanMachine.Unity.GabTab.Authoring.Behaviours;
 using GameMeanMachine.Unity.GabTab.Authoring.Behaviours.Interactors;
 using System.Threading.Tasks;

@@ -2,7 +2,7 @@
 using GameMeanMachine.Unity.GabTab.Authoring.Behaviours;
 using GameMeanMachine.Unity.GabTab.Authoring.Behaviours.Interactors;
 using GameMeanMachine.Unity.WindRose.Authoring.Behaviours.Entities.Objects.CommandExchange.Talk;
-using GameMeanMachine.Unity.WindRose.Authoring.Behaviours.UI;
+using GameMeanMachine.Unity.WindRose.GabTab.Authoring.Behaviours.UI;
 using System.Threading.Tasks;
 
 [RequireComponent(typeof(TalkReceiver))]

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using AlephVault.Unity.Support.Authoring.Behaviours;
-using GameMeanMachine.Unity.WindRose.Authoring.Behaviours.UI.Inventory.StandardBag;
+using GameMeanMachine.Unity.WindRose.BackPack.Authoring.Behaviours.UI.Inventory.StandardBag;
 
 [RequireComponent(typeof(Throttler))]
 [RequireComponent(typeof(BasicStandardBagControl))]

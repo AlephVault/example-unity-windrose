@@ -7,7 +7,7 @@ namespace NetRose
     namespace Behaviours
     {
         using GameMeanMachine.Unity.WindRose.Authoring.Behaviours.World;
-        using GameMeanMachine.Unity.WindRose.Authoring.Behaviours.World.Layers.Drop;
+        using GameMeanMachine.Unity.WindRose.BackPack.Authoring.Behaviours.World.Layers.Drop;
         using GameMeanMachine.Unity.BackPack.Authoring.ScriptableObjects.Inventory.Items;
         using Types.Inventory;
 

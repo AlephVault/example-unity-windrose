@@ -23,7 +23,6 @@ public class WaypointHandled : MonoBehaviour
     [SerializeField]
     private WayStep[] waySteps;
     private bool isDead = false;
-    private Coroutine currentCoroutine = null;
     private int currentStepIndex = 0;
 
     // Use this for initialization

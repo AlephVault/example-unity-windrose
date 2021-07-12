@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 using Mirror;
 using NetRose.Types;
 using AlephVault.Unity.Support.Utils;
+using AlephVault.Unity.Scenes.Authoring.Types;
 
 namespace NetRose
 {

@@ -64,6 +64,7 @@ namespace AlephVault.Unity.MMO
 
                 private void OnPongArrived(ulong clientId, Stream stream)
                 {
+                    Debug.Log("PONG arrived");
                     if (manager.IsServer && clientId != manager.LocalClientId)
                     {
                         connectedClientsPendingPings[clientId] = 0;
@@ -76,6 +77,7 @@ namespace AlephVault.Unity.MMO
                     {
                         using (NetworkBuffer buffer = PooledNetworkBuffer.Get())
                         {
+                            Debug.Log("PONG sending");
                             CustomMessagingManager.SendNamedMessage(Pong, manager.ServerClientId, buffer);
                         }
                         currentClientLostTime = 0;
@@ -86,6 +88,7 @@ namespace AlephVault.Unity.MMO
                 {
                     if (manager.IsServer)
                     {
+                        Debug.LogFormat("Client {0} connected", clientId);
                         // We initialize a new entry in server mode
                         // for the newly connected client to handle
                         // its timeout.
@@ -93,6 +96,7 @@ namespace AlephVault.Unity.MMO
                     }
                     else if (manager.IsClient)
                     {
+                        Debug.Log("Connected from server");
                         // We always need to reset to 0 the client
                         // counter in this case, so it starts the
                         // update (in client mode) appropriately.
@@ -106,11 +110,13 @@ namespace AlephVault.Unity.MMO
                     {
                         // Since the client was removed, we must remove
                         // the client entry from the server.
+                        Debug.LogFormat("Client {0} disconnected", clientId);
                         connectedClientsPendingPings.Remove(clientId);
                     }
                     else if (manager.IsClient)
                     {
                         // We, again, set our lost timeouts to 0.
+                        Debug.Log("Disconnected from server");
                         currentClientLostTime = 0;
                     }
                 }
@@ -127,12 +133,14 @@ namespace AlephVault.Unity.MMO
                             {
                                 if (pair.Key != manager.LocalClientId)
                                 {
+                                    Debug.LogFormat("Ping test for client id: {0}", pair.Key);
                                     // In server mode, if there were {t} elapsed timeouts
                                     // without receiving a pong message, then we close the
                                     // client connection.
                                     if (!connectedClientsPendingPings.ContainsKey(pair.Key)) connectedClientsPendingPings[pair.Key] = 0;
                                     if (connectedClientsPendingPings[pair.Key] >= tolerance)
                                     {
+                                        Debug.LogFormat("Disconnecting client {0}", pair.Key);
                                         manager.DisconnectClient(pair.Key);
                                         connectedClientsPendingPings[pair.Key] = 0;
                                     }
@@ -141,6 +149,7 @@ namespace AlephVault.Unity.MMO
                                         connectedClientsPendingPings[pair.Key] += 1;
                                         using (NetworkBuffer buffer = PooledNetworkBuffer.Get())
                                         {
+                                            Debug.Log("PING sending");
                                             CustomMessagingManager.SendNamedMessage(Ping, pair.Key, buffer);
                                         }
                                     }
@@ -156,6 +165,7 @@ namespace AlephVault.Unity.MMO
                         currentClientLostTime += Time.unscaledDeltaTime;
                         if (currentClientLostTime >= clientTolerance)
                         {
+                            Debug.Log("Disconnecting from server");
                             manager.StopClient();
                         }
                     }

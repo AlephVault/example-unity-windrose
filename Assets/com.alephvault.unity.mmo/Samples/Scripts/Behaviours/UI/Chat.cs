@@ -94,11 +94,6 @@ namespace AlephVault.Unity.MMO.Samples
                     if (sendMessage) sendMessage.onClick.AddListener(SendMessage_Click);
                 }
 
-                private void Singleton_OnClientConnectedCallback(ulong obj)
-                {
-                    throw new System.NotImplementedException();
-                }
-
                 // Update is called once per frame
                 void Update()
                 {
@@ -109,7 +104,7 @@ namespace AlephVault.Unity.MMO.Samples
                     Channel currentChannel = Channel.Find(currentChannelName);
                     if (currentChannel)
                     {
-                        messages.text = string.Join("\n", (from message in currentChannel.Messages() select string.Format("{0}: {1}", message.Item1, message.Item2)).AsEnumerable().ToArray());
+                        messages.text = string.Join("\n", (from message in currentChannel.Messages() select message).AsEnumerable().ToArray());
                         users.text = string.Join("\n", currentChannel.UserNames());
                     }
                     else

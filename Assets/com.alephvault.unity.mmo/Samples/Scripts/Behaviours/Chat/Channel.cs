@@ -29,7 +29,7 @@ namespace AlephVault.Unity.MMO.Samples
                 });
 
                 // A list of all the messages that have been said.
-                private NetworkList<Tuple<string, string>> messages = new NetworkList<Tuple<string, string>>(new NetworkVariableSettings()
+                private NetworkList<string> messages = new NetworkList<string>(new NetworkVariableSettings()
                 {
                     WritePermission = NetworkVariablePermission.ServerOnly,
                     ReadPermission = NetworkVariablePermission.Everyone
@@ -55,11 +55,13 @@ namespace AlephVault.Unity.MMO.Samples
 
                 private void UserNames_OnListChanged(NetworkListEvent<string> changeEvent)
                 {
+                    if (IsClient) Debug.Log("User names changed");
                     // TODO refreshi ui.
                 }
 
-                private void Messages_OnListChanged(NetworkListEvent<Tuple<string, string>> changeEvent)
+                private void Messages_OnListChanged(NetworkListEvent<string> changeEvent)
                 {
+                    if (IsClient) Debug.Log("Messages changed");
                     // TODO refresh ui.
                 }
 
@@ -91,7 +93,7 @@ namespace AlephVault.Unity.MMO.Samples
                 /// <param name="message">What to say</param>
                 public void SayOnBehalf(string username, string message)
                 {
-                    messages.Add(new Tuple<string, string>(username, message));
+                    messages.Add(string.Format("{0}: {1}", username, message));
                 }
 
                 /// <summary>
@@ -143,7 +145,7 @@ namespace AlephVault.Unity.MMO.Samples
                 ///   Returns all the messages.
                 /// </summary>
                 /// <returns>The messages</returns>
-                public List<Tuple<string, string>> Messages()
+                public List<string> Messages()
                 {
                     return messages.ToList();
                 }

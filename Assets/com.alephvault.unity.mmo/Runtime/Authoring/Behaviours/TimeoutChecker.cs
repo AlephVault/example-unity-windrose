@@ -14,17 +14,38 @@ namespace AlephVault.Unity.MMO
     {
         namespace Behaviours
         {
+            /// <summary>
+            ///   A timeout checker works on both sides of the
+            ///   connection: both in server/host and in client.
+            ///   In both sides, checks at a specific given time
+            ///   interval will be done, and a ping/pong handshake
+            ///   will be attempted. If the server or the client
+            ///   fail to complete a certain number of handshakes,
+            ///   the connection will be terminated on either side.
+            /// </summary>
             [RequireComponent(typeof(NetworkManager))]
             public partial class TimeoutChecker : MonoBehaviour
             {
-                private const string Ping = "PING";
-                private const string Pong = "PONG";
+                private const string Ping = "__AV:MMO__:PING";
+                private const string Pong = "__AV:MMO__:PONG";
 
                 private NetworkManager manager;
 
+                /// <summary>
+                ///   The interval, in seconds, between each
+                ///   ping/pong handshake.
+                /// </summary>
                 [SerializeField]
                 private float pingPongInterval = 15.0f;
 
+                /// <summary>
+                ///   The tolerance of "lost" pings it tolerates
+                ///   in a per-client basis. For clients, it is
+                ///   multiplied by the time interval to get the
+                ///   total time the client will resist without
+                ///   receiving any "ping" handshake from the
+                ///   server before disconnection.
+                /// </summary>
                 [SerializeField]
                 private uint tolerance = 2;
 

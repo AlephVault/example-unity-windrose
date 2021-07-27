@@ -285,6 +285,7 @@ GameObject:
   - component: {fileID: 1626265592}
   - component: {fileID: 1626265591}
   - component: {fileID: 1626265595}
+  - component: {fileID: 1626265596}
   m_Layer: 0
   m_Name: ManagerWithLogin
   m_TagString: Untagged
@@ -423,6 +424,19 @@ MonoBehaviour:
   pingPongInterval: 15
   pingTolerance: 2
   clientConnectionTolerance: 5
+--- !u!114 &1626265596
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1626265590}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35762beb06e203f4a812621bf4843a0b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  defaultDisconnectionDelay: 0.1
 --- !u!1 &1960350213
 GameObject:
   m_ObjectHideFlags: 0

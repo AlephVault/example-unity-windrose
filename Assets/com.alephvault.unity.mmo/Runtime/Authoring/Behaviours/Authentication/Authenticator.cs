@@ -21,7 +21,16 @@ namespace AlephVault.Unity.MMO
                 using System.Threading;
                 using Types;
 
-                [RequireComponent(typeof(NetworkManager))]
+                /// <summary>
+                ///   Authenticators provide a way to register custom
+                ///   login lifecycles (and only login - not signup),
+                ///   considering the handling of login responses and
+                ///   eventual timeouts during the login handshake
+                ///   process. Both client-side and server-side
+                ///   callbacks are provided for both success and
+                ///   failure during that handshake.
+                /// </summary>
+                [RequireComponent(typeof(DelayedRemoteClientTerminator))]
                 public abstract class Authenticator : MonoBehaviour
                 {
                     private const string LoginMessagePrefix = "__AV:MMO__:LOGIN:DO";
@@ -34,6 +43,7 @@ namespace AlephVault.Unity.MMO
                     private const string UnknownForcedRealm = "FORCE-LOGIN:UNKNOWN-REALM";
                     private const string UnknownForcedAccountId = "FORCE-LOGIN:UNKNOWN-ID";
 
+                    private DelayedRemoteClientTerminator delayedTerminator;
                     private NetworkManager manager;
 
                     /// <summary>
@@ -60,6 +70,7 @@ namespace AlephVault.Unity.MMO
                     private void Awake()
                     {
                         manager = GetComponent<NetworkManager>();
+                        delayedTerminator = GetComponent<DelayedRemoteClientTerminator>();
                         pendingLoginTimeout = Values.Max(1u, pendingLoginTimeout);
                     }
 
@@ -74,7 +85,6 @@ namespace AlephVault.Unity.MMO
                         manager.OnClientDisconnectCallback += OnClientDisconnectCallback;
                         CustomMessagingManager.RegisterNamedMessageHandler(AlreadyLoggedIn, (senderId, stream) =>
                         {
-                            Debug.Log("Received message: AlreadyLoggedIn");
                             if (manager.IsClient)
                             {
                                 OnAuthenticationAlreadyDone();
@@ -82,7 +92,6 @@ namespace AlephVault.Unity.MMO
                         });
                         CustomMessagingManager.RegisterNamedMessageHandler(LoginTimeout, (senderId, stream) =>
                         {
-                            Debug.Log("Received message: LoginTimeout");
                             if (manager.IsClient)
                             {
                                 OnAuthenticationTimeout();
@@ -90,7 +99,6 @@ namespace AlephVault.Unity.MMO
                         });
                         CustomMessagingManager.RegisterNamedMessageHandler(LoginOK, (senderId, stream) =>
                         {
-                            Debug.Log("Received message: LoginOK");
                             if (manager.IsClient)
                             {
                                 using (var reader = PooledNetworkReader.Get(stream))
@@ -103,7 +111,6 @@ namespace AlephVault.Unity.MMO
                         });
                         CustomMessagingManager.RegisterNamedMessageHandler(LoginFailed, (senderId, stream) =>
                         {
-                            Debug.Log("Received message: LoginFailed");
                             if (manager.IsClient)
                             {
                                 using (var reader = PooledNetworkReader.Get(stream))
@@ -232,7 +239,6 @@ namespace AlephVault.Unity.MMO
                                     task.GetAwaiter().OnCompleted(() =>
                                     {
                                         Tuple<Response, object, string> result = task.Result;
-                                        Debug.LogFormat("Result of login attempt: {0}", result.Item1);
                                         if (result.Item1.Success)
                                         {
                                             pendingLoginClients.Remove(senderId);
@@ -255,12 +261,10 @@ namespace AlephVault.Unity.MMO
                                                 response.NetworkSerialize(writer.Serializer);
                                                 CustomMessagingManager.SendNamedMessage(LoginFailed, senderId, buffer, NetworkChannel.Internal);
                                             }
-                                            // For remote clients, disconnect them instantly.
-                                            // TODO: Not that instantly! Instead, wait a while.
-                                            // TODO: Bug source (still on 0.1.1): https://github.com/Unity-Technologies/com.unity.multiplayer.mlapi/issues/796
+                                            // For remote clients, disconnect them after a little while.
                                             if (!manager.IsClient || senderId != manager.LocalClientId)
                                             {
-                                                manager.DisconnectClient(senderId);
+                                                delayedTerminator.DelayedDisconnectClient(senderId);
                                             }
                                         }
                                     });

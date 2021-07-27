@@ -91,6 +91,11 @@ namespace AlephVault.Unity.MMO
                     writer.WriteInt32(0);
                 }
             }
+
+            public override string ToString()
+            {
+                return string.Format("Result(Success={0}, Code={1})", Success, Code);
+            }
         }
     }
 }

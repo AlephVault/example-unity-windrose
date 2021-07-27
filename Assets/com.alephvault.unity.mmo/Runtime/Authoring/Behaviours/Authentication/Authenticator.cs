@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -17,6 +18,7 @@ namespace AlephVault.Unity.MMO
             namespace Authentication
             {
                 using Support.Utils;
+                using System.Threading;
                 using Types;
 
                 [RequireComponent(typeof(NetworkManager))]
@@ -52,6 +54,9 @@ namespace AlephVault.Unity.MMO
                     // The remote clients that did not yet perform a login attempt.
                     private Dictionary<ulong, uint> pendingLoginClients = new Dictionary<ulong, uint>();
 
+                    // A mutex to interact with the pendingLoginClients list.
+                    private Mutex mutex = new Mutex();
+
                     private void Awake()
                     {
                         manager = GetComponent<NetworkManager>();
@@ -69,6 +74,7 @@ namespace AlephVault.Unity.MMO
                         manager.OnClientDisconnectCallback += OnClientDisconnectCallback;
                         CustomMessagingManager.RegisterNamedMessageHandler(AlreadyLoggedIn, (senderId, stream) =>
                         {
+                            Debug.Log("Received message: AlreadyLoggedIn");
                             if (manager.IsClient)
                             {
                                 OnAuthenticationAlreadyDone();
@@ -76,6 +82,7 @@ namespace AlephVault.Unity.MMO
                         });
                         CustomMessagingManager.RegisterNamedMessageHandler(LoginTimeout, (senderId, stream) =>
                         {
+                            Debug.Log("Received message: LoginTimeout");
                             if (manager.IsClient)
                             {
                                 OnAuthenticationTimeout();
@@ -83,10 +90,10 @@ namespace AlephVault.Unity.MMO
                         });
                         CustomMessagingManager.RegisterNamedMessageHandler(LoginOK, (senderId, stream) =>
                         {
+                            Debug.Log("Received message: LoginOK");
                             if (manager.IsClient)
                             {
-                                using (var buffer = PooledNetworkBuffer.Get())
-                                using (var reader = PooledNetworkReader.Get(buffer))
+                                using (var reader = PooledNetworkReader.Get(stream))
                                 {
                                     Response response = new Response();
                                     response.NetworkSerialize(reader.Serializer);
@@ -96,10 +103,10 @@ namespace AlephVault.Unity.MMO
                         });
                         CustomMessagingManager.RegisterNamedMessageHandler(LoginFailed, (senderId, stream) =>
                         {
+                            Debug.Log("Received message: LoginFailed");
                             if (manager.IsClient)
                             {
-                                using (var buffer = PooledNetworkBuffer.Get())
-                                using (var reader = PooledNetworkReader.Get(buffer))
+                                using (var reader = PooledNetworkReader.Get(stream))
                                 {
                                     Response response = new Response();
                                     response.NetworkSerialize(reader.Serializer);
@@ -121,39 +128,47 @@ namespace AlephVault.Unity.MMO
                             if (currentSecondFraction >= 1)
                             {
                                 currentSecondFraction -= 1;
-                                foreach (var pair in pendingLoginClients)
+                                List<ulong> keysToIncrement = new List<ulong>();
+                                foreach (ulong key in pendingLoginClients.Keys)
                                 {
-                                    if (pair.Value >= pendingLoginTimeout)
+                                    if (pendingLoginClients[key] >= pendingLoginTimeout)
                                     {
                                         using (var buffer = PooledNetworkBuffer.Get())
                                         {
-                                            CustomMessagingManager.SendNamedMessage(LoginTimeout, pair.Key, buffer, NetworkChannel.Internal);
-                                            manager.DisconnectClient(pair.Key);
+                                            Debug.LogFormat("Disconnecting client {0} due to login timeout", key);
+                                            CustomMessagingManager.SendNamedMessage(LoginTimeout, key, buffer, NetworkChannel.Internal);
+                                            manager.DisconnectClient(key);
                                         }
                                     }
                                     else
                                     {
-                                        pendingLoginClients[pair.Key] += 1;
+                                        keysToIncrement.Add(key);
                                     }
+                                }
+                                foreach (ulong key in keysToIncrement)
+                                {
+                                    pendingLoginClients[key] += 1;
                                 }
                             }
                         }
                     }
 
                     // Adds the remote client to the login-pending list.
-                    private void OnClientDisconnectCallback(ulong remoteClientId)
-                    {
-                        if (manager.IsServer)
-                        {
-                            pendingLoginClients.Add(remoteClientId, 0);
-                        }
-                    }
-
-                    // Removes the remote client from the login-pending list.
                     private void OnClientConnectedCallback(ulong remoteClientId)
                     {
                         if (manager.IsServer)
                         {
+                            pendingLoginClients.Add(remoteClientId, 0);
+                            ClientSetup(remoteClientId);
+                        }
+                    }
+
+                    // Removes the remote client from the login-pending list.
+                    private void OnClientDisconnectCallback(ulong remoteClientId)
+                    {
+                        if (manager.IsServer)
+                        {
+                            ClientTeardown(remoteClientId);
                             pendingLoginClients.Remove(remoteClientId);
                         }
                     }
@@ -217,6 +232,7 @@ namespace AlephVault.Unity.MMO
                                     task.GetAwaiter().OnCompleted(() =>
                                     {
                                         Tuple<Response, object, string> result = task.Result;
+                                        Debug.LogFormat("Result of login attempt: {0}", result.Item1);
                                         if (result.Item1.Success)
                                         {
                                             pendingLoginClients.Remove(senderId);
@@ -240,6 +256,8 @@ namespace AlephVault.Unity.MMO
                                                 CustomMessagingManager.SendNamedMessage(LoginFailed, senderId, buffer, NetworkChannel.Internal);
                                             }
                                             // For remote clients, disconnect them instantly.
+                                            // TODO: Not that instantly! Instead, wait a while.
+                                            // TODO: Bug source (still on 0.1.1): https://github.com/Unity-Technologies/com.unity.multiplayer.mlapi/issues/796
                                             if (!manager.IsClient || senderId != manager.LocalClientId)
                                             {
                                                 manager.DisconnectClient(senderId);

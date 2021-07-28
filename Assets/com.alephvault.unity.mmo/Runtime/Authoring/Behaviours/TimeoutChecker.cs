@@ -198,7 +198,7 @@ namespace AlephVault.Unity.MMO
                         Debug.LogFormat("Client {0} disconnected", clientId);
                         connectedClientsPendingPings.Remove(clientId);
                     }
-                    else if (manager.IsClient)
+                    else
                     {
                         // We, again, set our lost timeouts to 0.
                         Debug.Log("Disconnected from server");
@@ -253,7 +253,7 @@ namespace AlephVault.Unity.MMO
                             currentClientPingLostTime += Time.unscaledDeltaTime;
                             if (currentClientPingLostTime >= finalClientPingTolerance)
                             {
-                                Debug.Log("Disconnecting from server");
+                                Debug.LogFormat("Client tolerance exhausted: {0} >= {1}. Disconnecting from server", currentClientPingLostTime, finalClientPingTolerance);
                                 OnConnectedClientTimeout?.Invoke();
                                 manager.StopClient();
                             }

@@ -31,17 +31,61 @@ namespace AlephVault.Unity.MMO
                 ///   failure during that handshake.
                 /// </summary>
                 [RequireComponent(typeof(DelayedRemoteClientTerminator))]
-                public abstract class Authenticator : MonoBehaviour
+                public class Authenticator : MonoBehaviour
                 {
+                    /// <summary>
+                    ///   An account ID has both the ID to use, and the
+                    ///   realm the ID belongs to.
+                    /// </summary>
+                    public class AccountId : Tuple<object, string>
+                    {
+                        /// <summary>
+                        ///   Initializes the account id with the required arguments.
+                        /// </summary>
+                        /// <param name="item1">The ID of the account</param>
+                        /// <param name="item2">The realm of the account</param>
+                        public AccountId(object item1, string item2) : base(item1, item2) {}
+                    }
+
+                    // The session data is just a mapping of keys and values.
+                    // An additional feature of this class is that it allows
+                    // clearing everything but the keys starting with __AV:MMO__.
+                    private class SessionData : Dictionary<string, object> {
+                        /// <summary>
+                        ///   Clears the user-defined keys.
+                        /// </summary>
+                        public void ClearUserEntries()
+                        {
+                            List<string> keys = (from key in Keys where !key.StartsWith("__AV:MMO__") select key).ToList();
+                            foreach(string key in keys)
+                            {
+                                Remove(key);
+                            }
+                        }
+                    }
+
+                    // A session holds session data, a connection id, and an
+                    // account id. The data will only be accessible here -in
+                    // the authenticator- but also indirectly (via wrapper
+                    // methods) to the outside world.
+                    private class Session : Tuple<ulong, AccountId, SessionData> {
+                        /// <summary>
+                        ///   Instantiates the tuple with a default value: an empty,
+                        ///   yet not null, session data dictionary.
+                        /// </summary>
+                        /// <param name="connectionId">The ID of the connection</param>
+                        /// <param name="accountId">The full ID/Realm of the account</param>
+                        public Session(ulong connectionId, AccountId accountId) : base(connectionId, accountId, new SessionData()) {}
+                    }
+
+                    // A session mapped by its connection id.
+                    private class SessionByConnectionId : Dictionary<ulong, Session> {}
+
                     private const string LoginMessagePrefix = "__AV:MMO__:LOGIN:DO";
                     private const string LoginOK = "__AV:MMO__:LOGIN:OK";
                     private const string LoginFailed = "__AV:MMO__:LOGIN:FAILED";
                     private const string AlreadyLoggedIn = "__AV:MMO__:LOGIN:ALREADY";
                     private const string LoginTimeout = "__AV:MMO__:LOGIN:TIMEOUT";
-                    // Constants for forced login in particular.
-                    private const string Forced = "FORCE-LOGIN:OK";
-                    private const string UnknownForcedRealm = "FORCE-LOGIN:UNKNOWN-REALM";
-                    private const string UnknownForcedAccountId = "FORCE-LOGIN:UNKNOWN-ID";
 
                     private DelayedRemoteClientTerminator delayedTerminator;
                     private NetworkManager manager;
@@ -64,8 +108,25 @@ namespace AlephVault.Unity.MMO
                     // The remote clients that did not yet perform a login attempt.
                     private Dictionary<ulong, uint> pendingLoginClients = new Dictionary<ulong, uint>();
 
-                    // A mutex to interact with the pendingLoginClients list.
+                    // A mutex to interact with the sessions.
                     private Mutex mutex = new Mutex();
+
+                    // Sessions will be tracked by the connection they belong to.
+                    private SessionByConnectionId sessionByConnectionId = new SessionByConnectionId();
+
+                    // Creates a new session (and adds it to the internal dictionary).
+                    private Session AddSession(ulong clientId, AccountId accountId)
+                    {
+                        Session session = new Session(clientId, accountId);
+                        sessionByConnectionId.Add(clientId, session);
+                        return session;
+                    }
+
+                    // Removes a session by its connection id.
+                    private bool RemoveSession(ulong clientId)
+                    {
+                        return sessionByConnectionId.Remove(clientId);
+                    }
 
                     private void Awake()
                     {
@@ -87,14 +148,14 @@ namespace AlephVault.Unity.MMO
                         {
                             if (manager.IsClient)
                             {
-                                OnAuthenticationAlreadyDone();
+                                OnAuthenticationAlreadyDone?.Invoke();
                             }
                         });
                         CustomMessagingManager.RegisterNamedMessageHandler(LoginTimeout, (senderId, stream) =>
                         {
                             if (manager.IsClient)
                             {
-                                OnAuthenticationTimeout();
+                                OnAuthenticationTimeout?.Invoke();
                             }
                         });
                         CustomMessagingManager.RegisterNamedMessageHandler(LoginOK, (senderId, stream) =>
@@ -105,7 +166,7 @@ namespace AlephVault.Unity.MMO
                                 {
                                     Response response = new Response();
                                     response.NetworkSerialize(reader.Serializer);
-                                    OnAuthenticationOK(response);
+                                    OnAuthenticationOK?.Invoke(response);
                                 }
                             }
                         });
@@ -117,11 +178,10 @@ namespace AlephVault.Unity.MMO
                                 {
                                     Response response = new Response();
                                     response.NetworkSerialize(reader.Serializer);
-                                    OnAuthenticationFailure(response);
+                                    OnAuthenticationFailed?.Invoke(response);
                                 }
                             }
                         });
-                        RegisterLoginMethods();
                     }
 
                     // On update, it runs the interval and checks the
@@ -166,7 +226,6 @@ namespace AlephVault.Unity.MMO
                         if (manager.IsServer)
                         {
                             pendingLoginClients.Add(remoteClientId, 0);
-                            ClientSetup(remoteClientId);
                         }
                     }
 
@@ -175,26 +234,10 @@ namespace AlephVault.Unity.MMO
                     {
                         if (manager.IsServer)
                         {
-                            ClientTeardown(remoteClientId);
+                            RemoveSession(remoteClientId);
                             pendingLoginClients.Remove(remoteClientId);
                         }
                     }
-
-                    /// <summary>
-                    ///   This callback sets the given client up after it has
-                    ///   just connected (at this point, it is not logged in).
-                    /// </summary>
-                    /// <param name="clientId">The id of the client connection to setup</param>
-                    protected abstract void ClientSetup(ulong clientId);
-
-                    /// <summary>
-                    ///   This callback tears the given client down after it
-                    ///   has just connected (at this point, it may be logged
-                    ///   in, but alternatively not logged in if this disconnection
-                    ///   occurs because of timeout or too early).
-                    /// </summary>
-                    /// <param name="clientId">The id of the client connection to tear down</param>
-                    protected abstract void ClientTeardown(ulong clientId);
 
                     /// <summary>
                     ///   <para>
@@ -215,7 +258,7 @@ namespace AlephVault.Unity.MMO
                     /// </summary>
                     /// <param name="messageName">The name of the message to register</param>
                     /// <param name="authenticationMethod">The method or callback to use as authenticator</param>
-                    protected void RegisterLoginMethod(string messageName, Func<NetworkReader, Task<Tuple<Response, object, string>>> authenticationMethod)
+                    public void RegisterLoginMethod(string messageName, Func<NetworkReader, Task<Tuple<Response, AccountId>>> authenticationMethod)
                     {
                         CustomMessagingManager.RegisterNamedMessageHandler(string.Format("{0}:{1}", LoginMessagePrefix, messageName), (senderId, stream) =>
                         {
@@ -230,7 +273,7 @@ namespace AlephVault.Unity.MMO
                                 }
                                 else
                                 {
-                                    Task<Tuple<Response, object, string>> task = null;
+                                    Task<Tuple<Response, AccountId>> task = null;
                                     using (var reader = PooledNetworkReader.Get(stream))
                                     {
                                         task = authenticationMethod(reader);
@@ -238,22 +281,22 @@ namespace AlephVault.Unity.MMO
 
                                     task.GetAwaiter().OnCompleted(() =>
                                     {
-                                        Tuple<Response, object, string> result = task.Result;
+                                        Tuple<Response, AccountId> result = task.Result;
                                         if (result.Item1.Success)
                                         {
                                             pendingLoginClients.Remove(senderId);
-                                            OnAccountLoginOK(senderId, result.Item1, result.Item2, result.Item3, null, "");
                                             using (var buffer = PooledNetworkBuffer.Get())
                                             using (var writer = PooledNetworkWriter.Get(buffer))
                                             {
                                                 Response response = result.Item1;
                                                 response.NetworkSerialize(writer.Serializer);
+                                                AddSession(senderId, result.Item2);
                                                 CustomMessagingManager.SendNamedMessage(LoginOK, senderId, buffer, NetworkChannel.Internal);
                                             }
+                                            OnAccountLoginOK?.Invoke(senderId, result.Item1, result.Item2);
                                         }
                                         else
                                         {
-                                            OnAccountLoginFailed(senderId, result.Item1, result.Item2, result.Item3);
                                             using (var buffer = PooledNetworkBuffer.Get())
                                             using (var writer = PooledNetworkWriter.Get(buffer))
                                             {
@@ -261,6 +304,7 @@ namespace AlephVault.Unity.MMO
                                                 response.NetworkSerialize(writer.Serializer);
                                                 CustomMessagingManager.SendNamedMessage(LoginFailed, senderId, buffer, NetworkChannel.Internal);
                                             }
+                                            OnAccountLoginFailed?.Invoke(senderId, result.Item1, result.Item2);
                                             // For remote clients, disconnect them after a little while.
                                             if (!manager.IsClient || senderId != manager.LocalClientId)
                                             {
@@ -274,69 +318,6 @@ namespace AlephVault.Unity.MMO
                     }
 
                     /// <summary>
-                    ///   Registers a new forced login callback for a specific
-                    ///   realm. Forcing a login involves using a valid account
-                    ///   id and treating it as successfully logging in (so,
-                    ///   any side-effect relevant to this forced login must be
-                    ///   made to the account, if relevant). The callback takes
-                    ///   an object with the account id and returns a boolean
-                    ///   value which will be false only if the account does
-                    ///   not exist for that id.
-                    /// </summary>
-                    /// <param name="realm">The name of the real for this forced login</param>
-                    /// <param name="callback">The callback with the implementation of the forced login</param>
-                    protected void RegisterForcedLoginMethod(string realm, Func<object, bool> callback)
-                    {
-                        forceLoginCallbacks[realm] = callback ?? throw new ArgumentException("The forced login callback must not be null");
-                    }
-
-                    /// <summary>
-                    ///   This callback method is meant to invoke <see cref="RegisterLoginMethod" />
-                    ///   as many times as needed (at least one time will be needed to call).
-                    /// </summary>
-                    protected abstract void RegisterLoginMethods();
-
-                    /// <summary>
-                    ///   Forces a login to a particular account/realm on behalf
-                    ///   of another account/realm, typically an administrator
-                    ///   one (to debug, or even research a misconduct). This
-                    ///   can only be done on server.
-                    /// </summary>
-                    /// <param name="clientId">The id of the connection that forces the login</param>
-                    /// <param name="accountId">The id of the account to force login</param>
-                    /// <param name="realm">The realm name of the account to force login</param>
-                    /// <param name="forcerAccountId">The id of the account that forces the login</param>
-                    /// <param name="forcerRealm">The realm of the account that forces the login</param>
-                    /// <returns>A login response</returns>
-                    protected Response ForceLogin(ulong clientId, object accountId, string realm, object forcerAccountId, string forcerRealm)
-                    {
-                        if (!manager.IsServer)
-                        {
-                            throw new Exception("Forcing a login can only be done in server");
-                        }
-
-                        try
-                        {
-                            Func<object, bool> callback = forceLoginCallbacks[realm];
-                            bool accountFound = callback(accountId);
-                            if (accountFound)
-                            {
-                                Response result = new Response() { Success = true, Code = Forced };
-                                OnAccountLoginOK(clientId, result, accountId, realm, forcerAccountId, forcerRealm);
-                                return result;
-                            }
-                            else
-                            {
-                                return new Response() { Success = false, Code = UnknownForcedAccountId };
-                            }
-                        }
-                        catch(KeyNotFoundException)
-                        {
-                            return new Response() { Success = false, Code = UnknownForcedRealm };
-                        }
-                    }
-
-                    /// <summary>
                     ///   Attempts an authentication, using a registered
                     ///   message. This can only be done on client. The
                     ///   result is not received in this method, but in
@@ -346,7 +327,7 @@ namespace AlephVault.Unity.MMO
                     /// </summary>
                     /// <param name="message">The name of the registered authentication message</param>
                     /// <param name="fillRequest">A callback used to populate a network writer with data</param>
-                    protected void Authenticate(string message, Action<NetworkWriter> fillRequest)
+                    public void Authenticate(string message, Action<NetworkWriter> fillRequest)
                     {
                         if (!manager.IsClient)
                         {
@@ -369,51 +350,49 @@ namespace AlephVault.Unity.MMO
                     /// </summary>
                     /// <param name="clientId">The id of the connection that performed the login</param>
                     /// <param name="response">The login response</param>
-                    /// <param name="accountId">The id of the account that successfully logged in</param>
-                    /// <param name="realm">The realm name of the account that successfully logged in</param>
-                    /// <param name="forcerAccountId">The id of the account that forced the login, if this login is forced; null otherwise</param>
-                    /// <param name="forcerRealm">The realm name of the account that forced the login, if this login is forced; null otherwise</param>
-                    protected abstract void OnAccountLoginOK(ulong clientId, Response response, object accountId, string realm, object forcerAccountId, string forcerRealm);
+                    /// <param name="accountId">The ID/Realm of the account that successfully logged in</param>
+                    public event Action<ulong, Response, AccountId> OnAccountLoginOK = null;
 
                     /// <summary>
                     ///   This method is executed when a login was attempted and failed, in server side.
                     /// </summary>
                     /// <param name="clientId">The id of the connection that attempted the login</param>
                     /// <param name="response">The login response</param>
-                    /// <param name="accountId">The id of the account whose login was attempted; null if no account was found</param>
-                    /// <param name="realm">The realm name of the account whose login was attempted; empty if no account was found</param>
-                    protected abstract void OnAccountLoginFailed(ulong clientId, Response response, object accountId, object realm);
+                    /// <param name="accountId">The ID/Realm of the account that attempted a login</param>
+                    public event Action<ulong, Response, AccountId> OnAccountLoginFailed = null;
 
                     /// <summary>
-                    ///   This method is executed when a successfully login is performed, in client side.
+                    ///   This event is executed when a successfully login is performed, in client side.
                     /// </summary>
                     /// <param name="response">The received response from server side</param>
-                    protected abstract void OnAuthenticationOK(Response response);
+                    public event Action<Response> OnAuthenticationOK = null;
 
                     /// <summary>
-                    ///   This method is executed when a login was attempted and failed, in client side.
+                    ///   This event is executed when a login was attempted and failed, in client side.
                     /// </summary>
                     /// <param name="response">The received response from server side</param>
-                    protected abstract void OnAuthenticationFailure(Response response);
+                    public event Action<Response> OnAuthenticationFailed = null;
 
                     /// <summary>
-                    ///   This method is executed when a login was not attempted (timeout), in client side.
+                    ///   This event is executed when a login was not attempted (timeout), in client side.
                     /// </summary>
-                    /// <param name="response">The received response from server side</param>
-                    protected abstract void OnAuthenticationTimeout();
+                    public event Action OnAuthenticationTimeout = null;
 
                     /// <summary>
                     ///   This method is executed when a login was attempted but the client is already logged in, in client side.
                     /// </summary>
-                    /// <param name="response">The received response from server side</param>
-                    protected abstract void OnAuthenticationAlreadyDone();
+                    public event Action OnAuthenticationAlreadyDone = null;
 
                     /// <summary>
                     ///   Tells whether the given connection is already logged in, or not.
+                    ///   This checks whether a session exists.
                     /// </summary>
                     /// <param name="clientId">The id of the connection</param>
                     /// <returns>Whether it is already logged in, or not</returns>
-                    public abstract bool IsLoggedIn(ulong clientId);
+                    public bool IsLoggedIn(ulong clientId)
+                    {
+                        return sessionByConnectionId.ContainsKey(clientId);
+                    }
                 }
             }
         }

@@ -20,7 +20,8 @@ namespace AlephVault.Unity.MMO.Samples
             ///   a single authentication (a single realm, and a
             ///   single authentication method).
             /// </summary>
-            public class DummyAuthenticator : Authenticator
+            [RequireComponent(typeof(Authenticator))]
+            public class DummyAuthenticator : MonoBehaviour
             {
                 private const string DummyLogin = "DummyLogin";
 
@@ -43,50 +44,67 @@ namespace AlephVault.Unity.MMO.Samples
                 [SerializeField]
                 private UserPasswordDictionary authDB = new UserPasswordDictionary();
 
-                // List of the active sessions.
-                private Dictionary<ulong, string> usersLoggedIn = new Dictionary<ulong, string>();
+                private Authenticator authenticator;
 
-                // Checks whether a session is active for a connection.
-                public override bool IsLoggedIn(ulong clientId)
+                private void Awake()
                 {
-                    return usersLoggedIn.ContainsKey(clientId);
+                    authenticator = GetComponent<Authenticator>();
                 }
 
-                protected override void OnAccountLoginFailed(ulong clientId, Response response, object accountId, object realm)
+                private void Start()
                 {
-                    Debug.LogFormat("Server side: Login failed for account id {0} in realm {1}", accountId, realm);
+                    authenticator.OnAccountLoginOK += Authenticator_OnAccountLoginOK;
+                    authenticator.OnAccountLoginFailed += Authenticator_OnAccountLoginFailed;
+                    authenticator.OnAuthenticationAlreadyDone += Authenticator_OnAuthenticationAlreadyDone;
+                    authenticator.OnAuthenticationOK += Authenticator_OnAuthenticationOK;
+                    authenticator.OnAuthenticationFailed += Authenticator_OnAuthenticationFailed;
+                    authenticator.OnAuthenticationTimeout += Authenticator_OnAuthenticationTimeout;
+                    RegisterLoginMethod();
                 }
 
-                protected override void OnAccountLoginOK(ulong clientId, Response response, object accountId, string realm, object forcerAccountId, string forcerRealm)
+                private void Authenticator_OnAccountLoginOK(ulong connectionId, Response response, Authenticator.AccountId accountId)
                 {
-                    // Only one realm will exist, and that realm uses a string account id.
-                    usersLoggedIn.Add(clientId, accountId as string);
-                    Debug.LogFormat("Server side: Login success for account id {0} in realm {1}", accountId, realm);
+                    Debug.LogFormat("Server side: Login success for account id {0} in realm {1}", accountId);
                 }
 
-                protected override void OnAuthenticationAlreadyDone()
+                private void Authenticator_OnAccountLoginFailed(ulong connectionId, Response response, Authenticator.AccountId accountId)
+                {
+                    Debug.LogFormat("Server side: Login failed for account id {0} in realm {1}", accountId.Item1, accountId.Item2);
+                }
+
+                private void Authenticator_OnAuthenticationAlreadyDone()
                 {
                     Debug.LogFormat("Client side: Already authenticated");
                 }
 
-                protected override void OnAuthenticationFailure(Response response)
-                {
-                    Debug.LogFormat("Client side: Authentication failed");
-                }
-
-                protected override void OnAuthenticationOK(Response response)
+                private void Authenticator_OnAuthenticationOK(Response obj)
                 {
                     Debug.LogFormat("Client side: Authentication success");
                 }
 
-                protected override void OnAuthenticationTimeout()
+                private void Authenticator_OnAuthenticationFailed(Response obj)
+                {
+                    Debug.LogFormat("Client side: Authentication failed");
+                }
+
+                private void Authenticator_OnAuthenticationTimeout()
                 {
                     Debug.LogFormat("Client side: Authentication timeout");
                 }
 
-                protected override void RegisterLoginMethods()
+                private void OnDestroy()
                 {
-                    RegisterLoginMethod(DummyLogin, async (reader) =>
+                    authenticator.OnAccountLoginOK -= Authenticator_OnAccountLoginOK;
+                    authenticator.OnAccountLoginFailed -= Authenticator_OnAccountLoginFailed;
+                    authenticator.OnAuthenticationAlreadyDone -= Authenticator_OnAuthenticationAlreadyDone;
+                    authenticator.OnAuthenticationOK -= Authenticator_OnAuthenticationOK;
+                    authenticator.OnAuthenticationFailed -= Authenticator_OnAuthenticationFailed;
+                    authenticator.OnAuthenticationTimeout -= Authenticator_OnAuthenticationTimeout;
+                }
+
+                private void RegisterLoginMethod()
+                {
+                    authenticator.RegisterLoginMethod(DummyLogin, async (reader) =>
                     {
                         string username = reader.ReadString().ToString();
                         string password = reader.ReadString().ToString();
@@ -95,38 +113,27 @@ namespace AlephVault.Unity.MMO.Samples
                             string expectedPassword = authDB[username];
                             if (expectedPassword == password)
                             {
-                                return new Tuple<Response, object, string>(new Response() { Success = true, Code = "OK" }, username, "dummy");
+                                return new Tuple<Response, Authenticator.AccountId>(new Response() { Success = true, Code = "OK" }, new Authenticator.AccountId(username, "dummy"));
                             }
                             else
                             {
-                                return new Tuple<Response, object, string>(new Response() { Success = false, Code = "Mismatch" }, username, "dummy");
+                                return new Tuple<Response, Authenticator.AccountId>(new Response() { Success = false, Code = "Mismatch" }, new Authenticator.AccountId(username, "dummy"));
                             }
                         }
                         catch(KeyNotFoundException)
                         {
-                            return new Tuple<Response, object, string>(new Response() { Success = false, Code = "Unknown" }, null, "dummy");
+                            return new Tuple<Response, Authenticator.AccountId>(new Response() { Success = false, Code = "Unknown" }, new Authenticator.AccountId(username, "dummy"));
                         }
                     });
                 }
 
                 public void DumbAuthenticate(string username, string password)
                 {
-                    Authenticate(DummyLogin, (writer) =>
+                    authenticator.Authenticate(DummyLogin, (writer) =>
                     {
                         writer.WriteString(username);
                         writer.WriteString(password);
                     });
-                }
-
-                protected override void ClientSetup(ulong clientId)
-                {
-                    Debug.LogFormat("Setting client {0} up", clientId);
-                }
-
-                protected override void ClientTeardown(ulong clientId)
-                {
-                    Debug.LogFormat("Tearing client {0} down", clientId);
-                    usersLoggedIn.Remove(clientId);
                 }
             }
         }

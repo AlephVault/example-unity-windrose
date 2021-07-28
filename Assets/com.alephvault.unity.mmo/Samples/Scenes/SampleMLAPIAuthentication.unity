@@ -286,6 +286,7 @@ GameObject:
   - component: {fileID: 1626265591}
   - component: {fileID: 1626265595}
   - component: {fileID: 1626265596}
+  - component: {fileID: 1626265597}
   m_Layer: 0
   m_Name: ManagerWithLogin
   m_TagString: Untagged
@@ -305,7 +306,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 43626c318b04db348ac44b3699a2507c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pendingLoginTimeout: 5
   authDB:
     m_keys:
     - luis
@@ -437,6 +437,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   defaultDisconnectionDelay: 0.1
+--- !u!114 &1626265597
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1626265590}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d02071df5ed26e4585ceb2da5619bcf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pendingLoginTimeout: 5
 --- !u!1 &1960350213
 GameObject:
   m_ObjectHideFlags: 0

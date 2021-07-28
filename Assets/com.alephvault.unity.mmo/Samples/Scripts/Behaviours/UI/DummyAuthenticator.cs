@@ -1,6 +1,6 @@
 using System;
+using System.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.UI;
 using AlephVault.Unity.MMO.Authoring.Behaviours.Authentication;
 using AlephVault.Unity.MMO.Types;
 using System.Collections.Generic;
@@ -59,15 +59,16 @@ namespace AlephVault.Unity.MMO.Samples
                     authenticator.OnAuthenticationOK += Authenticator_OnAuthenticationOK;
                     authenticator.OnAuthenticationFailed += Authenticator_OnAuthenticationFailed;
                     authenticator.OnAuthenticationTimeout += Authenticator_OnAuthenticationTimeout;
+                    authenticator.OnAuthenticationEnded += Authenticator_OnAuthenticationEnded;
                     RegisterLoginMethod();
                 }
 
-                private void Authenticator_OnAccountLoginOK(ulong connectionId, Response response, Authenticator.AccountId accountId)
+                private async Task Authenticator_OnAccountLoginOK(ulong connectionId, Response response, Authenticator.AccountId accountId)
                 {
-                    Debug.LogFormat("Server side: Login success for account id {0} in realm {1}", accountId);
+                    Debug.LogFormat("Server side: Login success for account id {0} in realm {1}", accountId.Item1, accountId.Item2);
                 }
 
-                private void Authenticator_OnAccountLoginFailed(ulong connectionId, Response response, Authenticator.AccountId accountId)
+                private async Task Authenticator_OnAccountLoginFailed(ulong connectionId, Response response, Authenticator.AccountId accountId)
                 {
                     Debug.LogFormat("Server side: Login failed for account id {0} in realm {1}", accountId.Item1, accountId.Item2);
                 }
@@ -92,6 +93,11 @@ namespace AlephVault.Unity.MMO.Samples
                     Debug.LogFormat("Client side: Authentication timeout");
                 }
 
+                private void Authenticator_OnAuthenticationEnded(Reason obj)
+                {
+                    Debug.LogFormat("Client side: Authentication ended");
+                }
+
                 private void OnDestroy()
                 {
                     authenticator.OnAccountLoginOK -= Authenticator_OnAccountLoginOK;
@@ -100,6 +106,7 @@ namespace AlephVault.Unity.MMO.Samples
                     authenticator.OnAuthenticationOK -= Authenticator_OnAuthenticationOK;
                     authenticator.OnAuthenticationFailed -= Authenticator_OnAuthenticationFailed;
                     authenticator.OnAuthenticationTimeout -= Authenticator_OnAuthenticationTimeout;
+                    authenticator.OnAuthenticationEnded -= Authenticator_OnAuthenticationEnded;
                 }
 
                 private void RegisterLoginMethod()

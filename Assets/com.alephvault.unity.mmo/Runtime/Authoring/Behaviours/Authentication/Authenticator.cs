@@ -33,6 +33,17 @@ namespace AlephVault.Unity.MMO
                 public class Authenticator : MonoBehaviour
                 {
                     /// <summary>
+                    ///   The current login status of the connection.
+                    /// </summary>
+                    public enum Status
+                    {
+                        Unlogged,
+                        Logging,
+                        Logged,
+                        Unlogging
+                    }
+
+                    /// <summary>
                     ///   An account ID has both the ID to use, and the
                     ///   realm the ID belongs to.
                     /// </summary>
@@ -105,14 +116,20 @@ namespace AlephVault.Unity.MMO
                     // These callbacks are used when forced login is invoked.
                     private Dictionary<string, Func<object, bool>> forceLoginCallbacks = new Dictionary<string, Func<object, bool>>();
 
-                    // The remote clients that did not yet perform a login attempt.
-                    private Dictionary<ulong, uint> pendingLoginClients = new Dictionary<ulong, uint>();
-
-                    // The clients, remote or local, that are undergoing a login or logout process.
-                    private HashSet<ulong> authBusyClients = new HashSet<ulong>();
-
                     // Sessions will be tracked by the connection they belong to.
                     private SessionByConnectionId sessionByConnectionId = new SessionByConnectionId();
+
+                    // There will be one bag per status, to keep all the connections.
+                    // That bag will also be a dictionary, keeping one timer for
+                    // each connection in that status (the timer is only actually
+                    // used in the Unlogged status for non-host clients so far).
+                    private Dictionary<Status, Dictionary<ulong, uint>> connectionsInStatus = new Dictionary<Status, Dictionary<ulong, uint>>()
+                    {
+                        { Status.Unlogged, new Dictionary<ulong, uint>() },
+                        { Status.Logging, new Dictionary<ulong, uint>() },
+                        { Status.Logged, new Dictionary<ulong, uint>() },
+                        { Status.Unlogging, new Dictionary<ulong, uint>() },
+                    };
 
                     // Creates a new session (and adds it to the internal dictionary).
                     private Session AddSession(ulong clientId, AccountId accountId)
@@ -128,16 +145,19 @@ namespace AlephVault.Unity.MMO
                         return sessionByConnectionId.Remove(clientId);
                     }
 
-                    private void AddAuthBusy(ulong clientId)
+                    private void ClearStatus(ulong connectionId)
                     {
-                        Debug.LogFormat("Tagging {0} as auth-busy", clientId);
-                        authBusyClients.Add(clientId);
+                        foreach (Dictionary<ulong, uint> connections in connectionsInStatus.Values)
+                        {
+                            connections.Remove(connectionId);
+                        }
                     }
 
-                    private void RemoveAuthBusy(ulong clientId)
+                    private void SetStatus(ulong connectionId, Status status)
                     {
-                        Debug.LogFormat("Untagging {0} as auth-busy", clientId);
-                        authBusyClients.Remove(clientId);
+                        ClearStatus(connectionId);
+                        Debug.LogFormat("Setting status for connection {0} to {1}", connectionId, status);
+                        connectionsInStatus[status].Add(connectionId, 0);
                     }
 
                     private void Awake()
@@ -220,9 +240,10 @@ namespace AlephVault.Unity.MMO
                             {
                                 currentSecondFraction -= 1;
                                 List<ulong> keysToIncrement = new List<ulong>();
-                                foreach (ulong key in pendingLoginClients.Keys)
+                                foreach(ulong key in connectionsInStatus[Status.Unlogged].Keys)
                                 {
-                                    if (pendingLoginClients[key] >= pendingLoginTimeout)
+                                    Debug.LogFormat("Key in pending bag: {0}", key);
+                                    if (connectionsInStatus[Status.Unlogged][key] >= pendingLoginTimeout)
                                     {
                                         using (var buffer = PooledNetworkBuffer.Get())
                                         {
@@ -238,7 +259,7 @@ namespace AlephVault.Unity.MMO
                                 }
                                 foreach (ulong key in keysToIncrement)
                                 {
-                                    pendingLoginClients[key] += 1;
+                                    connectionsInStatus[Status.Unlogged][key] += 1;
                                 }
                             }
                         }
@@ -249,7 +270,7 @@ namespace AlephVault.Unity.MMO
                     {
                         if (manager.IsServer)
                         {
-                            pendingLoginClients.Add(remoteClientId, 0);
+                            SetStatus(remoteClientId, Status.Unlogged);
                         }
                     }
 
@@ -259,15 +280,14 @@ namespace AlephVault.Unity.MMO
                     {
                         if (manager.IsServer)
                         {
-                            AddAuthBusy(remoteClientId);
+                            SetStatus(remoteClientId, Status.Unlogging);
                             if (sessionByConnectionId.TryGetValue(remoteClientId, out var session))
                             {
                                 DoEmergencyLogout(remoteClientId, session);
                             }
                             else
                             {
-                                pendingLoginClients.Remove(remoteClientId);
-                                RemoveAuthBusy(remoteClientId);
+                                ClearStatus(remoteClientId);
                             }
                         }
                     }
@@ -276,8 +296,7 @@ namespace AlephVault.Unity.MMO
                     {
                         await TriggerOnAccountLoggedOut(remoteClientId, Reason.LoggedOut, session.Item2);
                         RemoveSession(remoteClientId);
-                        pendingLoginClients.Remove(remoteClientId);
-                        RemoveAuthBusy(remoteClientId);
+                        ClearStatus(remoteClientId);
                     }
 
                     /// <summary>
@@ -305,7 +324,7 @@ namespace AlephVault.Unity.MMO
                         {
                             if (manager.IsServer)
                             {
-                                if (IsLoggedInOrAuthBusy(senderId))
+                                if (!connectionsInStatus[Status.Unlogged].ContainsKey(senderId))
                                 {
                                     using (var buffer = PooledNetworkBuffer.Get())
                                     {
@@ -314,8 +333,7 @@ namespace AlephVault.Unity.MMO
                                 }
                                 else
                                 {
-                                    pendingLoginClients.Remove(senderId);
-                                    AddAuthBusy(senderId);
+                                    SetStatus(senderId, Status.Logging);
                                     DoAuthenticate(senderId, stream, authenticationMethod);
                                 }
                             }
@@ -340,7 +358,7 @@ namespace AlephVault.Unity.MMO
                                 CustomMessagingManager.SendNamedMessage(LoginOK, senderId, buffer, NetworkChannel.Internal);
                             }
                             await TriggerOnAccountLoginOK(senderId, result.Item1, result.Item2);
-                            RemoveAuthBusy(senderId);
+                            SetStatus(senderId, Status.Logged);
                         }
                         else
                         {
@@ -352,7 +370,7 @@ namespace AlephVault.Unity.MMO
                                 CustomMessagingManager.SendNamedMessage(LoginFailed, senderId, buffer, NetworkChannel.Internal);
                             }
                             await TriggerOnAccountLoginFailed(senderId, result.Item1, result.Item2);
-                            RemoveAuthBusy(senderId);
+                            SetStatus(senderId, Status.Unlogged);
                             // For remote clients, disconnect them after a little while.
                             if (!manager.IsClient || senderId != manager.LocalClientId)
                             {
@@ -421,14 +439,14 @@ namespace AlephVault.Unity.MMO
 
                     private async void DoKick(ulong clientId, Reason reason, Session session)
                     {
-                        AddAuthBusy(clientId);
+                        SetStatus(clientId, Status.Unlogging);
                         await TriggerOnAccountLoggedOut(clientId, reason, session.Item2);
                         RemoveSession(clientId);
+                        SetStatus(clientId, Status.Unlogged);
                         if (!manager.IsClient || manager.LocalClientId != clientId)
                         {
                             delayedTerminator.DelayedDisconnectClient(clientId);
                         }
-                        RemoveAuthBusy(clientId);
                     }
 
                     /// <summary>
@@ -553,19 +571,6 @@ namespace AlephVault.Unity.MMO
                         return sessionByConnectionId.ContainsKey(clientId);
                     }
 
-                    // Tells whether a given connection is traversing part of the login/logout process.
-                    private bool IsAuthBusy(ulong clientId)
-                    {
-                        return authBusyClients.Contains(clientId);
-                    }
-
-                    // Tells whether a given connection is already logged in or at least traversing
-                    // part of the login/logout process.
-                    private bool IsLoggedInOrAuthBusy(ulong clientId)
-                    {
-                        return sessionByConnectionId.ContainsKey(clientId) || IsAuthBusy(clientId);
-                    }
-
                     /// <summary>
                     ///   Tells whether the given connection is already logged in, and
                     ///   not busy in neither login/logout. This one, in combination
@@ -576,7 +581,7 @@ namespace AlephVault.Unity.MMO
                     /// <returns>Whether it is already logged in, or not</returns>
                     public bool IsActive(ulong clientId)
                     {
-                        return IsLoggedIn(clientId) && !IsAuthBusy(clientId);
+                        return connectionsInStatus[Status.Logged].ContainsKey(clientId);
                     }
                 }
             }

@@ -18,7 +18,6 @@ namespace AlephVault.Unity.MMO
             namespace Authentication
             {
                 using Support.Utils;
-                using System.Threading;
                 using Types;
 
                 /// <summary>
@@ -85,6 +84,7 @@ namespace AlephVault.Unity.MMO
                     private const string LoginOK = "__AV:MMO__:LOGIN:OK";
                     private const string LoginFailed = "__AV:MMO__:LOGIN:FAILED";
                     private const string AlreadyLoggedIn = "__AV:MMO__:LOGIN:ALREADY";
+                    private const string LoggedOut = "__AV:MMO__:LOGGED-OUT";
                     private const string LoginTimeout = "__AV:MMO__:LOGIN:TIMEOUT";
 
                     private DelayedRemoteClientTerminator delayedTerminator;
@@ -108,8 +108,8 @@ namespace AlephVault.Unity.MMO
                     // The remote clients that did not yet perform a login attempt.
                     private Dictionary<ulong, uint> pendingLoginClients = new Dictionary<ulong, uint>();
 
-                    // A mutex to interact with the sessions.
-                    private Mutex mutex = new Mutex();
+                    // The clients, remote or local, that are undergoing a login or logout process.
+                    private HashSet<ulong> authBusyClients = new HashSet<ulong>();
 
                     // Sessions will be tracked by the connection they belong to.
                     private SessionByConnectionId sessionByConnectionId = new SessionByConnectionId();
@@ -126,6 +126,18 @@ namespace AlephVault.Unity.MMO
                     private bool RemoveSession(ulong clientId)
                     {
                         return sessionByConnectionId.Remove(clientId);
+                    }
+
+                    private void AddAuthBusy(ulong clientId)
+                    {
+                        Debug.LogFormat("Tagging {0} as auth-busy", clientId);
+                        authBusyClients.Add(clientId);
+                    }
+
+                    private void RemoveAuthBusy(ulong clientId)
+                    {
+                        Debug.LogFormat("Untagging {0} as auth-busy", clientId);
+                        authBusyClients.Remove(clientId);
                     }
 
                     private void Awake()
@@ -182,6 +194,18 @@ namespace AlephVault.Unity.MMO
                                 }
                             }
                         });
+                        CustomMessagingManager.RegisterNamedMessageHandler(LoggedOut, (senderId, stream) =>
+                        {
+                            if (manager.IsClient)
+                            {
+                                using (var reader = PooledNetworkReader.Get(stream))
+                                {
+                                    Reason reason = new Reason();
+                                    reason.NetworkSerialize(reader.Serializer);
+                                    OnAuthenticationEnded?.Invoke(reason);
+                                }
+                            }
+                        });
                     }
 
                     // On update, it runs the interval and checks the
@@ -202,7 +226,7 @@ namespace AlephVault.Unity.MMO
                                     {
                                         using (var buffer = PooledNetworkBuffer.Get())
                                         {
-                                            Debug.LogFormat("Disconnecting client {0} due to login timeout", key);
+                                            // Debug.LogFormat("Disconnecting client {0} due to login timeout", key);
                                             CustomMessagingManager.SendNamedMessage(LoginTimeout, key, buffer, NetworkChannel.Internal);
                                             manager.DisconnectClient(key);
                                         }
@@ -230,13 +254,30 @@ namespace AlephVault.Unity.MMO
                     }
 
                     // Removes the remote client from the login-pending list.
+                    // If a session exists, it prunes it asynchronously.
                     private void OnClientDisconnectCallback(ulong remoteClientId)
                     {
                         if (manager.IsServer)
                         {
-                            RemoveSession(remoteClientId);
-                            pendingLoginClients.Remove(remoteClientId);
+                            AddAuthBusy(remoteClientId);
+                            if (sessionByConnectionId.TryGetValue(remoteClientId, out var session))
+                            {
+                                DoEmergencyLogout(remoteClientId, session);
+                            }
+                            else
+                            {
+                                pendingLoginClients.Remove(remoteClientId);
+                                RemoveAuthBusy(remoteClientId);
+                            }
                         }
+                    }
+
+                    private async void DoEmergencyLogout(ulong remoteClientId, Session session)
+                    {
+                        await TriggerOnAccountLoggedOut(remoteClientId, Reason.LoggedOut, session.Item2);
+                        RemoveSession(remoteClientId);
+                        pendingLoginClients.Remove(remoteClientId);
+                        RemoveAuthBusy(remoteClientId);
                     }
 
                     /// <summary>
@@ -264,7 +305,7 @@ namespace AlephVault.Unity.MMO
                         {
                             if (manager.IsServer)
                             {
-                                if (IsLoggedIn(senderId))
+                                if (IsLoggedInOrAuthBusy(senderId))
                                 {
                                     using (var buffer = PooledNetworkBuffer.Get())
                                     {
@@ -273,48 +314,51 @@ namespace AlephVault.Unity.MMO
                                 }
                                 else
                                 {
-                                    Task<Tuple<Response, AccountId>> task = null;
-                                    using (var reader = PooledNetworkReader.Get(stream))
-                                    {
-                                        task = authenticationMethod(reader);
-                                    }
-
-                                    task.GetAwaiter().OnCompleted(() =>
-                                    {
-                                        Tuple<Response, AccountId> result = task.Result;
-                                        if (result.Item1.Success)
-                                        {
-                                            pendingLoginClients.Remove(senderId);
-                                            using (var buffer = PooledNetworkBuffer.Get())
-                                            using (var writer = PooledNetworkWriter.Get(buffer))
-                                            {
-                                                Response response = result.Item1;
-                                                response.NetworkSerialize(writer.Serializer);
-                                                AddSession(senderId, result.Item2);
-                                                CustomMessagingManager.SendNamedMessage(LoginOK, senderId, buffer, NetworkChannel.Internal);
-                                            }
-                                            OnAccountLoginOK?.Invoke(senderId, result.Item1, result.Item2);
-                                        }
-                                        else
-                                        {
-                                            using (var buffer = PooledNetworkBuffer.Get())
-                                            using (var writer = PooledNetworkWriter.Get(buffer))
-                                            {
-                                                Response response = result.Item1;
-                                                response.NetworkSerialize(writer.Serializer);
-                                                CustomMessagingManager.SendNamedMessage(LoginFailed, senderId, buffer, NetworkChannel.Internal);
-                                            }
-                                            OnAccountLoginFailed?.Invoke(senderId, result.Item1, result.Item2);
-                                            // For remote clients, disconnect them after a little while.
-                                            if (!manager.IsClient || senderId != manager.LocalClientId)
-                                            {
-                                                delayedTerminator.DelayedDisconnectClient(senderId);
-                                            }
-                                        }
-                                    });
+                                    pendingLoginClients.Remove(senderId);
+                                    AddAuthBusy(senderId);
+                                    DoAuthenticate(senderId, stream, authenticationMethod);
                                 }
                             }
                         });
+                    }
+
+                    private async void DoAuthenticate(ulong senderId, System.IO.Stream stream, Func<NetworkReader, Task<Tuple<Response, AccountId>>> authenticationMethod)
+                    {
+                        Tuple<Response, AccountId> result;
+                        using (var reader = PooledNetworkReader.Get(stream))
+                        {
+                            result = await authenticationMethod(reader);
+                        }
+                        if (result.Item1.Success)
+                        {
+                            using (var buffer = PooledNetworkBuffer.Get())
+                            using (var writer = PooledNetworkWriter.Get(buffer))
+                            {
+                                Response response = result.Item1;
+                                response.NetworkSerialize(writer.Serializer);
+                                AddSession(senderId, result.Item2);
+                                CustomMessagingManager.SendNamedMessage(LoginOK, senderId, buffer, NetworkChannel.Internal);
+                            }
+                            await TriggerOnAccountLoginOK(senderId, result.Item1, result.Item2);
+                            RemoveAuthBusy(senderId);
+                        }
+                        else
+                        {
+                            using (var buffer = PooledNetworkBuffer.Get())
+                            using (var writer = PooledNetworkWriter.Get(buffer))
+                            {
+                                Response response = result.Item1;
+                                response.NetworkSerialize(writer.Serializer);
+                                CustomMessagingManager.SendNamedMessage(LoginFailed, senderId, buffer, NetworkChannel.Internal);
+                            }
+                            await TriggerOnAccountLoginFailed(senderId, result.Item1, result.Item2);
+                            RemoveAuthBusy(senderId);
+                            // For remote clients, disconnect them after a little while.
+                            if (!manager.IsClient || senderId != manager.LocalClientId)
+                            {
+                                delayedTerminator.DelayedDisconnectClient(senderId);
+                            }
+                        }
                     }
 
                     /// <summary>
@@ -346,32 +390,152 @@ namespace AlephVault.Unity.MMO
                     }
 
                     /// <summary>
-                    ///   This method is executed when a successful login is performed, in server side.
+                    ///   Kicks a currently logged account by stating
+                    ///   a particular reason. This is only done in
+                    ///   server side and, 
                     /// </summary>
-                    /// <param name="clientId">The id of the connection that performed the login</param>
-                    /// <param name="response">The login response</param>
-                    /// <param name="accountId">The ID/Realm of the account that successfully logged in</param>
-                    public event Action<ulong, Response, AccountId> OnAccountLoginOK = null;
+                    /// <param name="reason"></param>
+                    public void Kick(ulong clientId, Reason reason)
+                    {
+                        if (!manager.IsServer)
+                        {
+                            throw new Exception("Attempting a kick can only be done in server");
+                        }
+
+                        if (!IsActive(clientId))
+                        {
+                            throw new Exception("Attempting a kick can only be done on connections that are logged in");
+                        }
+
+                        if (manager.ConnectedClients.ContainsKey(clientId) && sessionByConnectionId.TryGetValue(clientId, out var session))
+                        {
+                            using (var buffer = PooledNetworkBuffer.Get())
+                            using (var writer = PooledNetworkWriter.Get(buffer))
+                            {
+                                reason.NetworkSerialize(writer.Serializer);
+                                CustomMessagingManager.SendNamedMessage(LoggedOut, clientId, buffer, NetworkChannel.Internal);
+                            }
+                            DoKick(clientId, reason, session);
+                        }
+                    }
+
+                    private async void DoKick(ulong clientId, Reason reason, Session session)
+                    {
+                        AddAuthBusy(clientId);
+                        await TriggerOnAccountLoggedOut(clientId, reason, session.Item2);
+                        RemoveSession(clientId);
+                        if (!manager.IsClient || manager.LocalClientId != clientId)
+                        {
+                            delayedTerminator.DelayedDisconnectClient(clientId);
+                        }
+                        RemoveAuthBusy(clientId);
+                    }
 
                     /// <summary>
-                    ///   This method is executed when a login was attempted and failed, in server side.
+                    ///   Issues a graceful logout (i.e. a kick issued
+                    ///   by the same user). This method is not meant
+                    ///   to be invoked directly by a client without
+                    ///   a server-side logic meddling on it. Typically,
+                    ///   a server might want a previous cleanup or other
+                    ///   steps to be run before invoking tc
                     /// </summary>
-                    /// <param name="clientId">The id of the connection that attempted the login</param>
-                    /// <param name="response">The login response</param>
-                    /// <param name="accountId">The ID/Realm of the account that attempted a login</param>
-                    public event Action<ulong, Response, AccountId> OnAccountLoginFailed = null;
+                    /// <param name="clientId">The client id asking to logout</param>
+                    public void GracefulLogout(ulong clientId)
+                    {
+                        Kick(clientId, Reason.LoggedOut);
+                    }
+
+                    // Triggers, one by one, each async callback in OnAccountLoginOK delegate.
+                    private async Task TriggerOnAccountLoginOK(ulong clientId, Response response, AccountId accountId)
+                    {
+                        if (OnAccountLoginOK != null)
+                        {
+                            foreach(var callback in OnAccountLoginOK.GetInvocationList())
+                            {
+                                try
+                                {
+                                    await ((Func<ulong, Response, AccountId, Task>)callback)(clientId, response, accountId);
+                                }
+                                catch (Exception e)
+                                {
+                                    // TODO what to do here?
+                                }
+                            }
+                        }
+                    }
+
+                    /// <summary>
+                    ///   This event is executed when a successful login is performed, in server side.
+                    ///   It accepts asynchronous callbacks.
+                    /// </summary>
+                    public event Func<ulong, Response, AccountId, Task> OnAccountLoginOK = null;
+
+                    // Triggers, one by one, each async callback in OnAccountLoginFailed delegate.
+                    private async Task TriggerOnAccountLoginFailed(ulong clientId, Response response, AccountId accountId)
+                    {
+                        if (OnAccountLoginFailed != null)
+                        {
+                            foreach (var callback in OnAccountLoginFailed.GetInvocationList())
+                            {
+                                try
+                                {
+                                    await ((Func<ulong, Response, AccountId, Task>)callback)(clientId, response, accountId);
+                                }
+                                catch (Exception e)
+                                {
+                                    // TODO what to do here??
+                                }
+                            }
+                        }
+                    }
+
+                    /// <summary>
+                    ///   This event is executed when a login was attempted and failed, in server side.
+                    ///   It accepts asynchronous callbacks.
+                    /// </summary>
+                    public event Func<ulong, Response, AccountId, Task> OnAccountLoginFailed = null;
+
+                    // Triggers, one by one, each async callback in OnAccountLoggedOut delegate.
+                    private async Task TriggerOnAccountLoggedOut(ulong clientId, Reason reason, AccountId accountId)
+                    {
+                        if (OnAccountLoggedOut != null)
+                        {
+                            foreach (var callback in OnAccountLoggedOut.GetInvocationList())
+                            {
+                                try
+                                {
+                                    await ((Func<ulong, Reason, AccountId, Task>)callback)(clientId, reason, accountId);
+                                }
+                                catch(Exception e)
+                                {
+                                    // TODO what to do here??
+                                }
+                            }
+                        }
+                    }
+
+                    /// <summary>
+                    ///   This event is executed when a logout/kick was done in a logged connection, in server side.
+                    ///   Game-logic cleanup will occur on this callback. The session will be alive in the meantime.
+                    ///   Game-logic implementations will cleanup everything, and then the connection will be able
+                    ///   to be disposed as well. It accepts asynchronous callbacks.
+                    /// </summary>
+                    public event Func<ulong, Reason, AccountId, Task> OnAccountLoggedOut = null;
 
                     /// <summary>
                     ///   This event is executed when a successfully login is performed, in client side.
                     /// </summary>
-                    /// <param name="response">The received response from server side</param>
                     public event Action<Response> OnAuthenticationOK = null;
 
                     /// <summary>
                     ///   This event is executed when a login was attempted and failed, in client side.
                     /// </summary>
-                    /// <param name="response">The received response from server side</param>
                     public event Action<Response> OnAuthenticationFailed = null;
+
+                    /// <summary>
+                    ///   This event is executed when a logout/kick was done in the logged connection, in client side.
+                    /// </summary>
+                    public event Action<Reason> OnAuthenticationEnded = null;
 
                     /// <summary>
                     ///   This event is executed when a login was not attempted (timeout), in client side.
@@ -383,15 +547,36 @@ namespace AlephVault.Unity.MMO
                     /// </summary>
                     public event Action OnAuthenticationAlreadyDone = null;
 
+                    // Tells whether a given connection is logged in.
+                    private bool IsLoggedIn(ulong clientId)
+                    {
+                        return sessionByConnectionId.ContainsKey(clientId);
+                    }
+
+                    // Tells whether a given connection is traversing part of the login/logout process.
+                    private bool IsAuthBusy(ulong clientId)
+                    {
+                        return authBusyClients.Contains(clientId);
+                    }
+
+                    // Tells whether a given connection is already logged in or at least traversing
+                    // part of the login/logout process.
+                    private bool IsLoggedInOrAuthBusy(ulong clientId)
+                    {
+                        return sessionByConnectionId.ContainsKey(clientId) || IsAuthBusy(clientId);
+                    }
+
                     /// <summary>
-                    ///   Tells whether the given connection is already logged in, or not.
-                    ///   This checks whether a session exists.
+                    ///   Tells whether the given connection is already logged in, and
+                    ///   not busy in neither login/logout. This one, in combination
+                    ///   with checking for pending removal, is useful to restrict
+                    ///   remote actions from a client.
                     /// </summary>
                     /// <param name="clientId">The id of the connection</param>
                     /// <returns>Whether it is already logged in, or not</returns>
-                    public bool IsLoggedIn(ulong clientId)
+                    public bool IsActive(ulong clientId)
                     {
-                        return sessionByConnectionId.ContainsKey(clientId);
+                        return IsLoggedIn(clientId) && !IsAuthBusy(clientId);
                     }
                 }
             }

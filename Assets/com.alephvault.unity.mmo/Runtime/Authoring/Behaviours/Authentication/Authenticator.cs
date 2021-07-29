@@ -17,6 +17,7 @@ namespace AlephVault.Unity.MMO
         {
             namespace Authentication
             {
+                using AlephVault.Unity.MMO.Types.Authentication;
                 using Support.Utils;
                 using Types;
 
@@ -97,6 +98,7 @@ namespace AlephVault.Unity.MMO
                     private const string AlreadyLoggedIn = "__AV:MMO__:LOGIN:ALREADY";
                     private const string LoggedOut = "__AV:MMO__:LOGGED-OUT";
                     private const string LoginTimeout = "__AV:MMO__:LOGIN:TIMEOUT";
+                    private const string UnexpectedError = "__AV:MMO__:ERROR:UNEXPECTED";
 
                     private DelayedRemoteClientTerminator delayedTerminator;
                     private NetworkManager manager;
@@ -357,8 +359,25 @@ namespace AlephVault.Unity.MMO
                                 AddSession(senderId, result.Item2);
                                 CustomMessagingManager.SendNamedMessage(LoginOK, senderId, buffer, NetworkChannel.Internal);
                             }
-                            await TriggerOnAccountLoginOK(senderId, result.Item1, result.Item2);
-                            SetStatus(senderId, Status.Logged);
+                            try
+                            {
+                                await TriggerOnAccountLoginOK(senderId, result.Item1, result.Item2);
+                                SetStatus(senderId, Status.Logged);
+                            }
+                            catch (LoginAborted e)
+                            {
+                                // This status will last what a fart in a basket.
+                                SetStatus(senderId, Status.Logged);
+                                // TODO log the error `e`.
+                                Kick(senderId, new Reason() { Graceful = false, Code = e.Code, Text = e.Message });
+                            }
+                            catch (Exception e)
+                            {
+                                // This status will last what a fart in a basket.
+                                SetStatus(senderId, Status.Logged);
+                                // TODO log the error `e`.
+                                Kick(senderId, new Reason() { Graceful = false, Code = UnexpectedError, Text = "Unexpected error on login" });
+                            }
                         }
                         else
                         {
@@ -470,14 +489,7 @@ namespace AlephVault.Unity.MMO
                         {
                             foreach(var callback in OnAccountLoginOK.GetInvocationList())
                             {
-                                try
-                                {
-                                    await ((Func<ulong, Response, AccountId, Task>)callback)(clientId, response, accountId);
-                                }
-                                catch (Exception e)
-                                {
-                                    // TODO what to do here?
-                                }
+                                await ((Func<ulong, Response, AccountId, Task>)callback)(clientId, response, accountId);
                             }
                         }
                     }
@@ -501,7 +513,7 @@ namespace AlephVault.Unity.MMO
                                 }
                                 catch (Exception e)
                                 {
-                                    // TODO what to do here??
+                                    // TODO what to do here?? Perhaps logging the exception.
                                 }
                             }
                         }
@@ -526,7 +538,7 @@ namespace AlephVault.Unity.MMO
                                 }
                                 catch(Exception e)
                                 {
-                                    // TODO what to do here??
+                                    // TODO what to do here?? Perhaps logging the exception.
                                 }
                             }
                         }

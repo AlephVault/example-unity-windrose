@@ -4,13 +4,14 @@ using UnityEngine;
 using AlephVault.Unity.MMO.Types;
 using MLAPI.Serialization;
 
+
 namespace AlephVault.Unity.MMO
 {
     namespace Authoring
     {
         namespace Behaviours
         {
-            namespace Authentication
+            namespace Realms
             {
                 /// <summary>
                 ///   A realm is, basically, an account system.

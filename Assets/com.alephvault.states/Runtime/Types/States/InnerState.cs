@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+
 
 namespace AlephVault.States
 {
@@ -15,8 +17,8 @@ namespace AlephVault.States
         public class InnerState : State, IArrival, IDeparture, IManual
         {
             private HashSet<string> m_options;
-            private Action<StateMachine> m_onArrival;
-            private Action<StateMachine> m_onDeparture;
+            private Func<StateMachine, Task> m_onArrival;
+            private Func<StateMachine, Task> m_onDeparture;
 
             /// <summary>
             ///   Initializes this state with its key and
@@ -28,8 +30,8 @@ namespace AlephVault.States
             /// <param name="onArrival">The onArrival callback</param>
             /// <param name="onDeparture">The onDeparture callback</param>
             public InnerState(
-                string key, HashSet<string> options, Action<StateMachine> onArrival = null,
-                Action<StateMachine> onDeparture = null
+                string key, HashSet<string> options, Func<StateMachine, Task> onArrival = null,
+                Func<StateMachine, Task> onDeparture = null
             ) : base(key)
             {
                 m_options = options;
@@ -37,14 +39,14 @@ namespace AlephVault.States
                 m_onDeparture = onDeparture;
             }
 
-            public virtual void OnArrival(StateMachine machine)
+            public async Task OnArrival(StateMachine machine)
             {
-                m_onArrival?.Invoke(machine);
+                await (m_onArrival?.Invoke(machine) ?? Task.CompletedTask);
             }
 
-            public virtual void OnDeparture(StateMachine machine)
+            public async Task OnDeparture(StateMachine machine)
             {
-                m_onDeparture?.Invoke(machine);
+                await (m_onDeparture?.Invoke(machine) ?? Task.CompletedTask);
             }
 
             /// <summary>

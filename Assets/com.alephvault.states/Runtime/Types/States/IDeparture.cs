@@ -1,4 +1,7 @@
-﻿namespace AlephVault.States
+﻿using System.Threading.Tasks;
+
+
+namespace AlephVault.States
 {
     namespace Types.States
     {
@@ -14,7 +17,7 @@
             ///   the given state machine.
             /// </summary>
             /// <param name="machine">The state machine leaving this state</param>
-            void OnDeparture(StateMachine machine);
+            Task OnDeparture(StateMachine machine);
         }
     }
 }

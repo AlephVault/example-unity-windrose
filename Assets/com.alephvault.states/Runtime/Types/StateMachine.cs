@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using System.Collections.Generic;
 
 
@@ -21,6 +22,10 @@ namespace AlephVault.States
 
             // All the allowed states as next steps.
             private HashSet<string> nextAvailableStates;
+
+            // Tells whether Start or Go are being run.
+            // This avoids re-entrant code.
+            private bool busy = false;
 
             /// <summary>
             ///   The current state key of this machine. This
@@ -53,20 +58,29 @@ namespace AlephVault.States
             ///   the allowed starting states.
             /// </summary>
             /// <param name="initialStateKey"></param>
-            public void Start(string initialStateKey)
+            public async Task Start(string initialStateKey)
             {
                 if (Status != StateMachineStatus.New)
                 {
                     throw new Exception("Cannot start a state machine that is not in a new status");
                 }
 
+                if (busy)
+                {
+                    throw new Exception("This state machine is already invoking Start() or Go() - cannot run re-entrant code");
+                }
+
+                // Lock the execution.
+                busy = true;
                 State initialState = GetState(initialStateKey);
                 // On Start.
                 if (!(initialState is States.IStarting)) throw new Exception(string.Format("State is not initial (IStarting): {0}", initialStateKey));
-                ((States.IStarting)initialState).OnStart(this);
+                await ((States.IStarting)initialState).OnStart(this);
                 Status = StateMachineStatus.Running;
                 // Arrive to state.
-                ArriveToState(initialState);
+                await ArriveToState(initialState);
+                // Release the execution.
+                busy = false;
             }
 
             // Gets a state by its key or returns an informative error.
@@ -83,10 +97,10 @@ namespace AlephVault.States
             }
 
             // Arrives to a new state among the expected ones.
-            private void ArriveToState(State state)
+            private async Task ArriveToState(State state)
             {
                 State = state.Key;
-                (state as States.IArrival)?.OnArrival(this);
+                await ((state as States.IArrival)?.OnArrival(this) ?? Task.CompletedTask);
                 nextAvailableStates = null;
 
                 if (state is States.IAutomatic)
@@ -105,10 +119,10 @@ namespace AlephVault.States
                     }
                     if (nextStateKey == null) nextStateKey = conditions.Item1;
                     // Leaving the current state.
-                    (state as States.IDeparture)?.OnDeparture(this);
+                    await ((state as States.IDeparture)?.OnDeparture(this) ?? Task.CompletedTask);
                     State = null;
                     // Arriving to a new state.
-                    ArriveToState(GetState(nextStateKey));
+                    await ArriveToState(GetState(nextStateKey));
                 }
                 else if (state is States.IManual)
                 {
@@ -119,7 +133,7 @@ namespace AlephVault.States
                 else if (state is States.IEnding)
                 {
                     // Finishing the workflow.
-                    ((States.IEnding)state).OnEnd(this);
+                    await ((States.IEnding)state).OnEnd(this);
                     Status = StateMachineStatus.Finished;
                 }
                 else
@@ -133,11 +147,16 @@ namespace AlephVault.States
             ///   (as given by the current state).
             /// </summary>
             /// <param name="nextStateKey">The next state to go to</param>
-            public void Go(string nextStateKey)
+            public async Task Go(string nextStateKey)
             {
                 if (Status != StateMachineStatus.Running)
                 {
                     throw new Exception("Cannot manually transition any state on a state machine that is not running");
+                }
+
+                if (busy)
+                {
+                    throw new Exception("This state machine is already invoking Start() or Go() - cannot run re-entrant code");
                 }
 
                 if (!nextAvailableStates.Contains(nextStateKey))
@@ -145,13 +164,17 @@ namespace AlephVault.States
                     throw new Exception(string.Format("Invalid next state to move to: {0}", nextStateKey));
                 }
 
+                // Lock the execution.
+                busy = true;
                 State state = GetState(State);
                 State nextState = GetState(nextStateKey);
                 // Leaving the current state.
-                (state as States.IDeparture)?.OnDeparture(this);
+                await ((state as States.IDeparture)?.OnDeparture(this) ?? Task.CompletedTask);
                 State = null;
                 // Arriving to a new state.
-                ArriveToState(GetState(nextStateKey));
+                await ArriveToState(GetState(nextStateKey));
+                // Release the execution.
+                busy = false;
             }
         }
     }

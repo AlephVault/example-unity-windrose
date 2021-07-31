@@ -1,5 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Threading.Tasks;
+
 
 namespace AlephVault.States
 {
@@ -13,8 +14,8 @@ namespace AlephVault.States
         /// </summary>
         public class EndingState : State, IArrival, IEnding
         {
-            private Action<StateMachine> m_onArrival;
-            private Action<StateMachine> m_onEnd;
+            private Func<StateMachine, Task> m_onArrival;
+            private Func<StateMachine, Task> m_onEnd;
 
             /// <summary>
             ///   Initializes this state with its key. Also,
@@ -25,22 +26,22 @@ namespace AlephVault.States
             /// <param name="onEnd">The onEnd callback</param>
             public EndingState(
                 string key,
-                Action<StateMachine> onArrival = null,
-                Action<StateMachine> onEnd = null
+                Func<StateMachine, Task> onArrival = null,
+                Func<StateMachine, Task> onEnd = null
             ) : base(key)
             {
                 m_onArrival = onArrival;
                 m_onEnd = onEnd;
             }
 
-            public virtual void OnArrival(StateMachine machine)
+            public async Task OnArrival(StateMachine machine)
             {
-                m_onArrival?.Invoke(machine);
+                await (m_onArrival?.Invoke(machine) ?? Task.CompletedTask);
             }
 
-            public void OnEnd(StateMachine machine)
+            public async Task OnEnd(StateMachine machine)
             {
-                m_onEnd?.Invoke(machine);
+                await (m_onEnd?.Invoke(machine) ?? Task.CompletedTask);
             }
         }
     }

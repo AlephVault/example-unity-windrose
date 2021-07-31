@@ -1,5 +1,4 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Threading.Tasks;
 
 
 namespace AlephVault.States
@@ -18,7 +17,7 @@ namespace AlephVault.States
             ///   state machine.
             /// </summary>
             /// <param name="machine">The state machine starting in this state</param>
-            void OnStart(StateMachine machine);
+            Task OnStart(StateMachine machine);
         }
     }
 }

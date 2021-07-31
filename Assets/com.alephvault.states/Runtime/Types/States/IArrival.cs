@@ -1,5 +1,4 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Threading.Tasks;
 
 
 namespace AlephVault.States
@@ -18,7 +17,7 @@ namespace AlephVault.States
             ///   the given state machine.
             /// </summary>
             /// <param name="machine">The state machine arriving to this state</param>
-            void OnArrival(StateMachine machine);
+            Task OnArrival(StateMachine machine);
         }
     }
 }

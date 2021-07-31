@@ -1,3 +1,5 @@
+using MLAPI.Serialization;
+
 namespace AlephVault.Unity.MMO
 {
     namespace Types
@@ -11,8 +13,11 @@ namespace AlephVault.Unity.MMO
             ///   some sort of preview/display data.
             /// </summary>
             /// <typeparam name="ProfileIDType">The type of the profile ID (e.g. int)</typeparam>
-            public interface IProfilePreview<ProfileIDType>
+            public interface IProfilePreview<ProfileIDType> : INetworkSerializable
             {
+                /// <summary>
+                ///   Returns the ID of this profile.
+                /// </summary>
                 ProfileIDType GetID();
             }
         }

@@ -1,3 +1,5 @@
+using MLAPI.Serialization;
+
 namespace AlephVault.Unity.MMO
 {
     namespace Types
@@ -11,8 +13,11 @@ namespace AlephVault.Unity.MMO
             ///   some sort of preview/display data.
             /// </summary>
             /// <typeparam name="AccountIDType">The type of the account ID (e.g. int)</typeparam>
-            public interface IAccountPreview<AccountIDType>
+            public interface IAccountPreview<AccountIDType> : INetworkSerializable
             {
+                /// <summary>
+                ///   Returns the ID of this account.
+                /// </summary>
                 AccountIDType GetID();
             }
         }

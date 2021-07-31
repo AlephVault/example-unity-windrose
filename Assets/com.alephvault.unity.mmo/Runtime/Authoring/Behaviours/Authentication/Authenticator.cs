@@ -147,6 +147,156 @@ namespace AlephVault.Unity.MMO
                         return sessionByConnectionId.Remove(clientId);
                     }
 
+                    /// <summary>
+                    ///   Tells whether a session exists for a given connection.
+                    /// </summary>
+                    /// <param name="clientId">The connection whose session is told to exist or not</param>
+                    /// <returns>Whether the session exists or not</returns>
+                    public bool SessionExists(ulong clientId)
+                    {
+                        return sessionByConnectionId.ContainsKey(clientId);
+                    }
+
+                    /// <summary>
+                    ///   Sets a given data value in the session for a given connection.
+                    /// </summary>
+                    /// <param name="clientId">The connection whose session is to be affected</param>
+                    /// <param name="key">The in-session key</param>
+                    /// <param name="value">The new value</param>
+                    public void SetSessionData(ulong clientId, string key, object value)
+                    {
+                        Session session;
+
+                        try
+                        {
+                            session = sessionByConnectionId[clientId];
+                        }
+                        catch(KeyNotFoundException)
+                        {
+                            throw new Exception("Trying to access a missing session");
+                        }
+
+                        session.Item3[key] = value;
+                    }
+
+                    /// <summary>
+                    ///   Gets a given data value in the session from a given connection.
+                    /// </summary>
+                    /// <param name="clientId">The connection whose session is to be queried</param>
+                    /// <param name="key">The in-session key</param>
+                    /// <returns>The session value</returns>
+                    /// <remarks>Throws a KeyNotFound error for a missing session key</remarks>
+                    public object GetSessionData(ulong clientId, string key)
+                    {
+                        Session session;
+
+                        try
+                        {
+                            session = sessionByConnectionId[clientId];
+                        }
+                        catch (KeyNotFoundException)
+                        {
+                            throw new Exception("Trying to access a missing session");
+                        }
+
+                        return session.Item3[key];
+                    }
+
+                    /// <summary>
+                    ///   Tries to get a given data value in the session for a given connection.
+                    /// </summary>
+                    /// <param name="clientId">The connection whose session is to be queried</param>
+                    /// <param name="key">The in-session key</param>
+                    /// <param name="data">The data to be retrieved</param>
+                    /// <returns>Whether the key existed and data was retrieved</returns>
+                    public bool TryGetSessionData(ulong clientId, string key, out object data)
+                    {
+                        Session session;
+
+                        try
+                        {
+                            session = sessionByConnectionId[clientId];
+                        }
+                        catch (KeyNotFoundException)
+                        {
+                            throw new Exception("Trying to access a missing session");
+                        }
+
+                        return session.Item3.TryGetValue(key, out data);
+                    }
+
+                    /// <summary>
+                    ///   Removes a given data value in the session for a given connection.
+                    /// </summary>
+                    /// <param name="clientId">The connection whose session is to be affected</param>
+                    /// <param name="key">The in-session key to be removed</param>
+                    /// <returns>Whether that key was removed or not</returns>
+                    public bool RemoveSessionData(ulong clientId, string key)
+                    {
+                        Session session;
+
+                        try
+                        {
+                            session = sessionByConnectionId[clientId];
+                        }
+                        catch (KeyNotFoundException)
+                        {
+                            throw new Exception("Trying to access a missing session");
+                        }
+
+                        return session.Item3.Remove(key);
+                    }
+
+                    /// <summary>
+                    ///   Clears all the session entries in its data.
+                    /// </summary>
+                    /// <param name="clientId">The connection whose session is to be affected</param>
+                    /// <param name="userDataOnly">Whether to remove only the user-defined entries, or the whole session data</param>
+                    public void ClearSessionUserData(ulong clientId, bool userDataOnly = true)
+                    {
+                        Session session;
+
+                        try
+                        {
+                            session = sessionByConnectionId[clientId];
+                        }
+                        catch (KeyNotFoundException)
+                        {
+                            throw new Exception("Trying to access a missing session");
+                        }
+
+                        if (userDataOnly)
+                        {
+                            session.Item3.ClearUserEntries();
+                        }
+                        else
+                        {
+                            session.Item3.Clear();
+                        }
+                    }
+
+                    /// <summary>
+                    ///   Tells whether the session data contains a particular key.
+                    /// </summary>
+                    /// <param name="clientId">The connection whose session is to be queried</param>
+                    /// <param name="key">The in-session key</param>
+                    /// <returns></returns>
+                    public bool SessionContainsKey(ulong clientId, string key)
+                    {
+                        Session session;
+
+                        try
+                        {
+                            session = sessionByConnectionId[clientId];
+                        }
+                        catch (KeyNotFoundException)
+                        {
+                            throw new Exception("Trying to access a missing session");
+                        }
+
+                        return session.Item3.ContainsKey(key);
+                    }
+
                     private void ClearStatus(ulong connectionId)
                     {
                         foreach (Dictionary<ulong, uint> connections in connectionsInStatus.Values)

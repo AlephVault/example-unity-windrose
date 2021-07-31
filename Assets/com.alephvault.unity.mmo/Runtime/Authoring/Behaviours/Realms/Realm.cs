@@ -13,6 +13,8 @@ namespace AlephVault.Unity.MMO
         {
             namespace Realms
             {
+                using Authentication;
+
                 /// <summary>
                 ///   A realm is, basically, an account system.
                 ///   It is a bit more, however: It may determine

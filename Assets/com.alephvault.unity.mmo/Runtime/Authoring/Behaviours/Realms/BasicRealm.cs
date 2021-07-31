@@ -1,6 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
+using AlephVault.Unity.MMO.Types.Realms;
 
 
 namespace AlephVault.Unity.MMO
@@ -18,9 +18,12 @@ namespace AlephVault.Unity.MMO
                 ///   account involves loading the profile,
                 ///   and any missing data is game-specific).
                 /// </summary>
-                /// <typeparam name="AccountIDType"></typeparam>
-                /// <typeparam name="AccountType"></typeparam>
-                public abstract class SingleProfileRealm<AccountIDType, AccountType> : Realm
+                /// <typeparam name="AccountIDType">The type of the account id (e.g. int)</typeparam>
+                /// <typeparam name="AccountType">The type of the account preview data</typeparam>
+                /// <typeparam name="AccountPreviewType">The type of the account data</typeparam>
+                public abstract class BasicRealm<AccountIDType, AccountPreviewType, AccountType> : Realm
+                    where AccountPreviewType : IAccountPreview<AccountIDType>
+                    where AccountType : IAccount<AccountIDType, AccountPreviewType>
                 {
                 }
             }

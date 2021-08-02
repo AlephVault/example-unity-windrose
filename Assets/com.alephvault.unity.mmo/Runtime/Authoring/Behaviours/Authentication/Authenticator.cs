@@ -518,7 +518,6 @@ namespace AlephVault.Unity.MMO
                             {
                                 // This status will last what a fart in a basket.
                                 SetStatus(senderId, Status.Logged);
-                                // TODO log the error `e`.
                                 Kick(senderId, new Reason() { Graceful = false, Code = e.Code, Text = e.Message });
                             }
                             catch (Exception e)

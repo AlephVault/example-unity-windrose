@@ -87,7 +87,11 @@ namespace AlephVault.Unity.MMO
                         // This whole logic only applies to this realm.
                         if (accountId.Item2 == Name())
                         {
-                            await ClearAccount(clientId, (AccountType)Authenticator.GetSessionData(clientId, AccountDataSessionKey));
+                            // There is a reason: While logging out, perhaps account data is NOT set in the session.
+                            if (Authenticator.TryGetSessionData(clientId, AccountDataSessionKey, out object data))
+                            {
+                                await ClearAccount(clientId, (AccountType)data);
+                            }
                             Authenticator.RemoveSessionData(clientId, AccountDataSessionKey);
                         }
                     }
@@ -109,7 +113,7 @@ namespace AlephVault.Unity.MMO
                             if (accountId.Item1 is AccountIDType)
                             {
                                 AccountType account = await LoadAccount((AccountIDType)accountId.Item1);
-                                if (account.Equals(default(AccountIDType)))
+                                if (!account.Equals(default(AccountIDType)))
                                 {
                                     SetCurrentAccount(clientId, account);
                                     // If the following line throws any exception, it will kick

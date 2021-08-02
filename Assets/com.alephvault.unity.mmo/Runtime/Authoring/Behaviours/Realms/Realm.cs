@@ -28,13 +28,14 @@ namespace AlephVault.Unity.MMO
                     /// </summary>
                     public Authenticator Authenticator { get; private set; }
 
-                    private void Awake()
+                    protected void Awake()
                     {
                         Authenticator = GetComponent<Authenticator>();
                     }
 
-                    private void Start()
+                    protected void Start()
                     {
+                        Debug.LogFormat("Authenticator is: {0}", Authenticator);
                         foreach(var entry in LoginMethods())
                         {
                             var callback = entry.Item2;

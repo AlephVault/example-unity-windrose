@@ -9,6 +9,7 @@ using MLAPI.Serialization;
 using MLAPI.Serialization.Pooled;
 using MLAPI.Transports;
 
+
 namespace AlephVault.Unity.MMO
 {
     namespace Authoring
@@ -326,8 +327,8 @@ namespace AlephVault.Unity.MMO
                     // to track clients that are login-pending.
                     private void Start()
                     {
-                        manager.OnClientConnectedCallback += OnClientConnectedCallback;
-                        manager.OnClientDisconnectCallback += OnClientDisconnectCallback;
+                        manager.OnClientConnectedCallback += OnClientConnected;
+                        manager.OnClientDisconnectCallback += OnClientDisconnect;
                         CustomMessagingManager.RegisterNamedMessageHandler(AlreadyLoggedIn, (senderId, stream) =>
                         {
                             if (manager.IsClient)
@@ -418,7 +419,7 @@ namespace AlephVault.Unity.MMO
                     }
 
                     // Adds the remote client to the login-pending list.
-                    private void OnClientConnectedCallback(ulong remoteClientId)
+                    private void OnClientConnected(ulong remoteClientId)
                     {
                         if (manager.IsServer)
                         {
@@ -428,7 +429,7 @@ namespace AlephVault.Unity.MMO
 
                     // Removes the remote client from the login-pending list.
                     // If a session exists, it prunes it asynchronously.
-                    private void OnClientDisconnectCallback(ulong remoteClientId)
+                    private void OnClientDisconnect(ulong remoteClientId)
                     {
                         if (manager.IsServer)
                         {

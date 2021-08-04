@@ -85,7 +85,7 @@ namespace AlephVault.Unity.MMO.Samples
                             usernameField = transform.Find("Username").GetComponent<InputField>();
                             passwordField = transform.Find("Password").GetComponent<InputField>();
                         }
-                        NetworkManager.Singleton.OnClientConnectedCallback += Singleton_OnClientConnectedCallback;
+                        NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
                         NetworkManager.Singleton.GetComponent<Authenticator>().OnAuthenticationOK += ManagerWithRealm_OnAuthenticationOK;
                         NetworkManager.Singleton.GetComponent<Authenticator>().OnAuthenticationFailed += ManagerWithRealm_OnAuthenticationFailed;
                         NetworkManager.Singleton.GetComponent<Authenticator>().OnAuthenticationEnded += ManagerWithRealm_OnAuthenticationEnded;
@@ -127,7 +127,7 @@ namespace AlephVault.Unity.MMO.Samples
                         Debug.Log(">>> Authentication client: Success");
                     }
 
-                    private void Singleton_OnClientConnectedCallback(ulong obj)
+                    private void OnClientConnected(ulong obj)
                     {
                         if (NetworkManager.Singleton.IsClient)
                         {

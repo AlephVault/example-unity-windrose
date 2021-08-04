@@ -42,8 +42,22 @@ namespace AlephVault.Unity.MMO
                         clientsInScopes[this] = new HashSet<ulong>();
                     }
 
+                    // This pattern relies on NetworkManager.Singleton
+                    // existing.
+                    private void Start()
+                    {
+                        NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnectedCallback;
+                    }
+
                     private void OnDestroy()
                     {
+                        // This pattern relies on NetworkManager.Singleton
+                        // existing.
+                        if (NetworkManager.Singleton != null)
+                        {
+                            NetworkManager.Singleton.OnClientConnectedCallback -= OnClientConnectedCallback;
+                        }
+
                         // Get the current set of observers, and pop it.
                         HashSet<ulong> clientIds = clientsInScopes[this];
                         clientsInScopes.Remove(this);
@@ -63,6 +77,16 @@ namespace AlephVault.Unity.MMO
                                 obj.NetworkHide(clientId);
                             }
                         }
+                    }
+
+                    // Removes the client from visibility records. Although
+                    // this may sound redundant, it is meant to remove them
+                    // from the collections, rather than calling the methods
+                    // that actually update observers.
+                    private void OnClientConnectedCallback(ulong clientId)
+                    {
+                        clientsInScopes[this].Remove(clientId);
+                        scopeByClient.Remove(clientId);
                     }
 
                     /// <summary>

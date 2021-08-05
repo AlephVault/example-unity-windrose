@@ -100,26 +100,34 @@ namespace AlephVault.Unity.MMO
                     /// <returns>Whether the client was added to this scope, or it was already added</returns>
                     public bool AddClient(ulong clientId)
                     {
-                        if (scopeByClient.ContainsKey(clientId))
+                        if (scopeByClient.TryGetValue(clientId, out NetworkScope scope))
                         {
-                            return false;
-                        }
-                        else
-                        {
-                            // Add the client to the direct map.
-                            clientsInScopes[this].Add(clientId);
-
-                            // Add the client to the reverse map.
-                            scopeByClient[clientId] = this;
-
-                            // Notify all the children objects.
-                            foreach (NetworkObject obj in GetComponentsInChildren<NetworkObject>())
+                            if (scope == this)
                             {
-                                obj.NetworkShow(clientId);
+                                // The clientId is already added here.
+                                return false;
                             }
-
-                            return true;
+                            else
+                            {
+                                // The clientId is added to another scope.
+                                // We then remove the id from that scope.
+                                RemoveClient(clientId);
+                            }
                         }
+
+                        // Add the client to the direct map.
+                        clientsInScopes[this].Add(clientId);
+
+                        // Add the client to the reverse map.
+                        scopeByClient[clientId] = this;
+
+                        // Notify all the children objects.
+                        foreach (NetworkObject obj in GetComponentsInChildren<NetworkObject>())
+                        {
+                            obj.NetworkShow(clientId);
+                        }
+
+                        return true;
                     }
 
                     /// <summary>
@@ -163,6 +171,7 @@ namespace AlephVault.Unity.MMO
                     ///   enabled as watchers of the newly added
                     ///   network object.
                     /// </summary>
+                    /// <param name="obj">The involved network object</param>
                     internal void OnChildAdded(NetworkObject obj)
                     {
                         foreach(ulong clientId in clientsInScopes[this])
@@ -180,7 +189,7 @@ namespace AlephVault.Unity.MMO
                     ///   disabled as watchers of the just removed
                     ///   network object.
                     /// </summary>
-                    /// <param name="obj"></param>
+                    /// <param name="obj">The involved network object</param>
                     internal void OnChildRemoved(NetworkObject obj)
                     {
                         foreach(ulong clientId in clientsInScopes[this])

@@ -425,7 +425,7 @@ namespace AlephVault.Unity.Networking
             }
 
             /// <summary>
-            /// Copies urnead bytes from the source stream
+            /// Copies unread bytes from the source stream
             /// </summary>
             /// <param name="s">The source stream to copy from</param>
             /// <param name="count">The max amount of bytes to copy</param>

@@ -16,6 +16,14 @@ namespace AlephVault.Unity.Meetgard
 
         public class NetworkClient : MonoBehaviour
         {
+            // This exception class has internal purposes
+            // only and will never be exported. It is meant
+            // to notify a graceful client shutdown.
+            private class GracefulShutdown : Exception
+            {
+                public GracefulShutdown() : base() {}
+            }
+
             /// <summary>
             ///   The time to sleep, on each iteration, when no data to
             ///   read or write is present in the socket on a given
@@ -30,6 +38,14 @@ namespace AlephVault.Unity.Meetgard
             [SerializeField]
             private ushort maxMessageSize = 1024;
 
+            /// <summary>
+            ///   The time this client waits for more data after some
+            ///   message data was sent to the internal outgoing messages
+            ///   buffer.
+            /// </summary>
+            [SerializeField]
+            private float trainBoardingTime = 0.75f;
+
             // The size of the train buffer size. This is the maximum
             // size of the whole buffer to send, as well. The effective
             // size to send will be lower, most of the times. This
@@ -41,6 +57,16 @@ namespace AlephVault.Unity.Meetgard
             // or equal to this value, the buffer will be immediately
             // sent. This value will be 4 * maxMessageSize.
             private ushort trainBufferThresholdSize = 4096;
+
+            // Tells whether the socket was connected in the last frame
+            // or instead was disconnected. Useful to trigger the
+            // OnConnected event accordingly.
+            private bool wasConnected = false;
+
+            // The current boarding time this client has been waiting
+            // for additional data after some data was sent to the internal
+            // outgoing messages buffer.
+            private float currentBoardingTime = 0;
 
             // The train buffer.
             private Buffer trainBuffer;
@@ -90,24 +116,36 @@ namespace AlephVault.Unity.Meetgard
             private Reader incomingMessageReader = null;
 
             /// <summary>
-            ///   This event is triggered when an exception occurs inside a lifecycle thread.
-            /// </summary>
-            public event Action<Exception> OnSocketException = null;
-
-            /// <summary>
             ///   This event is triggered when a new message arrives.
             ///   PLEASE NOTE: ONLY ONE HANDLER SHOULD HANDLE THE INCOMING MESSAGE, AND IT
             ///   SHOULD EXHAUST THE BUFFER COMPLETELY. Ideally, an `async void` function
             ///   should be accepted, which parses the incoming message protocol-wise.
             /// </summary>
-            /// TODO: Review this later, after implementing the protocol implementation
-            /// TODO: and the protocols set an initial marshaling as well.
             public event Action<ushort, ushort, Reader> OnMessage = null;
 
             /// <summary>
-            ///   Tells whether the socket is connected or not.
+            ///   This event is triggered on successful connection.
             /// </summary>
-            public bool Connected { get { return lifeCycle != null && lifeCycle.IsAlive; } }
+            public event Action OnConnected = null;
+
+            /// <summary>
+            ///   This event is triggered on disconnection. An Exception argument tells
+            ///   whether the disconnection was graceful or not: by having a null
+            ///   value, it was a graceful termination.
+            /// </summary>
+            public event Action<Exception> OnDisconnected = null;
+
+            /// <summary>
+            ///   Tells whether the life-cycle is active or not. While Active, another
+            ///   life-cycle (e.g. a call to <see cref="Connect(IPAddress, int)"/> or
+            ///   <see cref="Connect(string, int)"/>) cannot be done.
+            /// </summary>
+            public bool Active { get { return lifeCycle != null && lifeCycle.IsAlive; } }
+
+            /// <summary>
+            ///   Tells whether the underlying socket is instantiated and connected.
+            /// </summary>
+            public bool Connected { get { return clientSocket != null && clientSocket.Connected; } }
             
             private void Awake()
             {
@@ -118,12 +156,23 @@ namespace AlephVault.Unity.Meetgard
 
             private void Update()
             {
-                // Process any incoming message
+                // Process the successful connection event.
+                if (!wasConnected && Connected)
+                {
+                    OnConnected?.Invoke();
+                }
+
+                // Process any incoming message.
                 if (isIncomingMessagePresent)
                 {
                     try
                     {
                         OnMessage?.Invoke(incomingMessageProtocolID, incomingMessageTag, incomingMessageReader);
+                        if (incomingMessageBuffer.Length > 0)
+                        {
+                            Debug.LogWarning($"After processing a NetworkClient incoming message, {incomingMessageBuffer.Length} remained, and were discarded - unexhausted incoming buffers might be a sign of user implementation issues");
+                            new Writer(Stream.Null).ReadAndWrite(incomingMessageReader, incomingMessageBuffer.Length);
+                        }
                     }
                     finally
                     {
@@ -135,18 +184,39 @@ namespace AlephVault.Unity.Meetgard
                     }
                 }
 
-                // Trigger and event with any exception triggered inside the life-cycle thread.
+                // Process any outgoing message. This only marks, in case of
+                // having available data for a considerable time, the need
+                // of sending the pending data.
+                if (trainBuffer != null && trainBuffer.Length > 0)
+                {
+                    currentBoardingTime += Time.unscaledTime;
+                    if (currentBoardingTime >= trainBoardingTime)
+                    {
+                        trainSending = true;
+                    }
+                }
+
+                // Trigger this event with any exception thrown inside the life-cycle thread.
+                // Exceptions in the life-cycle tell the connection to terminate. One of those
+                // exception is GracefulShutdown, which is not an exception in the "error"
+                // sense but just a notification that the connection was gracefully stopped
+                // by either side. A graceful exception is wiped out and becomes null regarding
+                // the OnDisconnected event.
                 if (lifecycleException != null)
                 {
                     Exception inner = lifecycleException;
                     lifecycleException = null;
-                    OnSocketException?.Invoke(inner);
+                    if (inner is GracefulShutdown) inner = null;
+                    OnDisconnected?.Invoke(inner);
                 }
+
+                // Update the status of wasConnected.
+                wasConnected = Connected;
             }
 
             private void OnDestroy()
             {
-                if (Connected)
+                if (clientSocket != null && clientSocket.Connected)
                 {
                     Close();
                 }
@@ -214,7 +284,7 @@ namespace AlephVault.Unity.Meetgard
             /// <param name="port">Any port nuber (in the TCP range)</param>
             public void Connect(string address, int port)
             {
-                if (Connected)
+                if (Active)
                 {
                     throw new InvalidOperationException("The socket is already connected - It cannot be connected again");
                 }
@@ -290,6 +360,9 @@ namespace AlephVault.Unity.Meetgard
                                 {
                                     new Writer(stream).ReadAndWrite(new Reader(trainBuffer), trainBuffer.Length);
                                     trainSending = false;
+                                    // We must also FORCE the current boarding time to 0 after sucking all of the
+                                    // train buffer and set trainSennding to false.
+                                    currentBoardingTime = 0;
                                     inactive = false;
                                 }
                                 if (inactive)
@@ -305,7 +378,7 @@ namespace AlephVault.Unity.Meetgard
                             // Simply return, for the socket is closed.
                             // This happened, probably, gracefully. The
                             // `finally` block will still do the cleanup.
-                            return;
+                            throw new GracefulShutdown();
                         }
                     }
                 }

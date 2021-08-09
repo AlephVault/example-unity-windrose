@@ -13,26 +13,52 @@ namespace AlephVault.Unity.Meetgard
         using System.Net.Sockets;
         using System.Threading.Tasks;
 
+        /// <summary>
+        ///   <para>
+        ///     Network clients are behaviours that spawn an additional
+        ///     thread to interact with a server. They can be connected
+        ///     to only one server at once, but many clients can be
+        ///     instantiated in the same scene.
+        ///   </para>
+        /// </summary>
         public class NetworkClient : MonoBehaviour
         {
             /// <summary>
-            ///   The time to sleep, on each iteration, when no data to
-            ///   read or write is present in the socket on a given
-            ///   iteration.
+            ///   <para>
+            ///     The time to sleep, on each iteration, when no data to
+            ///     read or write is present in the socket on a given
+            ///     iteration.
+            ///   </para>
+            ///   <para>
+            ///     This setting should match whatever is set in the server
+            ///     and supported by the protocols to use.
+            ///   </para>
             /// </summary>
             [SerializeField]
             private float idleSleepTime = 0.01f;
 
             /// <summary>
-            ///   The maximum size of each individual message to be sent.
+            ///   <para>
+            ///     The maximum size of each individual message to be sent.
+            ///   </para>
+            ///   <para>
+            ///     This setting should match whatever is set in the server
+            ///     and supported by the protocols to use.
+            ///   </para>
             /// </summary>
             [SerializeField]
             private ushort maxMessageSize = 1024;
 
             /// <summary>
-            ///   The time this client waits for more data after some
-            ///   message data was sent to the internal outgoing messages
-            ///   buffer.
+            ///   <para>
+            ///     The time this client waits for more data after some
+            ///     message data was sent to the internal outgoing messages
+            ///     buffer.
+            ///   </para>
+            ///   <para>
+            ///     This setting should match whatever is set in the server
+            ///     and supported by the protocols to use.
+            ///   </para>
             /// </summary>
             [SerializeField]
             private float trainBoardingTime = 0.75f;
@@ -90,6 +116,8 @@ namespace AlephVault.Unity.Meetgard
             private void Awake()
             {
                 maxMessageSize = Values.Clamp(512, maxMessageSize, 6144);
+                trainBoardingTime = Values.Clamp(0.5f, trainBoardingTime, 1f);
+                idleSleepTime = Values.Clamp(0.005f, idleSleepTime, 0.5f);
             }
 
             private void OnDestroy()

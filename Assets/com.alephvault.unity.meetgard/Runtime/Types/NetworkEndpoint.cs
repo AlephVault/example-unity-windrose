@@ -177,12 +177,12 @@ namespace AlephVault.Unity.Meetgard
             ///   life-cycle (e.g. a call to <see cref="Connect(IPAddress, int)"/> or
             ///   <see cref="Connect(string, int)"/>) cannot be done.
             /// </summary>
-            public bool Active { get { return lifeCycle != null && lifeCycle.IsAlive; } }
+            public bool Active { get { return lifeCycle.IsAlive; } }
 
             /// <summary>
             ///   Tells whether the underlying socket is instantiated and connected.
             /// </summary>
-            public bool Connected { get { return remoteSocket != null && remoteSocket.Connected; } }
+            public bool Connected { get { return remoteSocket.Connected; } }
 
             /// <summary>
             ///   Closes the active connection, if any. This, actually,
@@ -414,7 +414,6 @@ namespace AlephVault.Unity.Meetgard
                     {
                         if (remoteSocket.Connected) remoteSocket.Close();
                         remoteSocket.Dispose();
-                        remoteSocket = null;
                     }
                     // Also, clear the thread reference.
                     lifeCycle = null;

@@ -159,7 +159,7 @@ namespace AlephVault.Unity.Meetgard
                 // Process the successful connection event.
                 if (!wasConnected && Connected)
                 {
-                    OnConnected?.Invoke();
+                    TriggerOnConnected();
                 }
 
                 // Process any incoming message.
@@ -167,6 +167,9 @@ namespace AlephVault.Unity.Meetgard
                 {
                     try
                     {
+                        // This event cannot be processed asynchronously. This is due to the fact that the
+                        // buffer will be released after the event triggering. If the triggering was instead
+                        // of an asynchronous nature, the buffer would be empty wuen trying to process it.
                         OnMessage?.Invoke(incomingMessageProtocolID, incomingMessageTag, incomingMessageReader);
                         if (incomingMessageBuffer.Length > 0)
                         {
@@ -207,11 +210,23 @@ namespace AlephVault.Unity.Meetgard
                     Exception inner = lifecycleException;
                     lifecycleException = null;
                     if (inner is GracefulShutdown) inner = null;
-                    OnDisconnected?.Invoke(inner);
+                    TriggerOnDisconnected(inner);
                 }
 
                 // Update the status of wasConnected.
                 wasConnected = Connected;
+            }
+
+            // Triggers the OnConnected event, asynchronously.
+            private async void TriggerOnConnected()
+            {
+                OnConnected?.Invoke();
+            }
+
+            // Triggers the OnDisconnected event, asynchronously.
+            private async void TriggerOnDisconnected(Exception exception)
+            {
+                OnDisconnected?.Invoke(exception);
             }
 
             private void OnDestroy()

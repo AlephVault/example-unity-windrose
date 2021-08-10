@@ -16,9 +16,16 @@ namespace AlephVault.Unity.Meetgard
         ///     at once, but many different servers can be instantiated
         ///     in the same scene.
         ///   </para>
+        ///   <para>
+        ///     Additionally, a local connection ("host") is allowed in
+        ///     a per-server basis.
+        ///   </para>
         /// </summary>
         public class NetworkServer : MonoBehaviour
         {
+            // The endpoint id for the host.
+            public const ulong HostEndpointId = 0;
+
             /// <summary>
             ///   <para>
             ///     The time to sleep, on each iteration, when no data to
@@ -67,10 +74,10 @@ namespace AlephVault.Unity.Meetgard
 
             // A mapping of the connections currently established. Each
             // connection is mapped against a generated id for them.
-            private Dictionary<NetworkRemoteEndpoint, ulong> endpointIds = new Dictionary<NetworkRemoteEndpoint, ulong>();
+            private Dictionary<NetworkEndpoint, ulong> endpointIds = new Dictionary<NetworkEndpoint, ulong>();
 
             // A mapping of the connections by their ids.
-            private SortedDictionary<ulong, NetworkRemoteEndpoint> endpointById = new SortedDictionary<ulong, NetworkRemoteEndpoint>();
+            private SortedDictionary<ulong, NetworkEndpoint> endpointById = new SortedDictionary<ulong, NetworkEndpoint>();
 
             // Gets the next id to use. If the next endpoint id is the
             // maximum value, it tries searching a free id among the
@@ -113,6 +120,25 @@ namespace AlephVault.Unity.Meetgard
                 if (endpointIds.TryGetValue(endpoint, out ulong id))
                 {
                     endpointById.Remove(id);
+                    endpointIds.Remove(endpoint);
+                }
+            }
+
+            // Adds a host endpoint (which is newly instantiated).
+            // TODO: replace NetworkEndpoint with NetworkLocalEndpoint.
+            private void AddHostEndpoint(NetworkEndpoint endpoint)
+            {
+                endpointById.Add(HostEndpointId, endpoint);
+                endpointIds.Add(endpoint, HostEndpointId);
+            }
+
+            // Removes the host endpoint. It will emulate disconnection
+            // events as if it were a remote endpoint.
+            private void RemoveHostEndpoint()
+            {
+                if (endpointById.TryGetValue(HostEndpointId, out NetworkEndpoint endpoint))
+                {
+                    endpointById.Remove(HostEndpointId);
                     endpointIds.Remove(endpoint);
                 }
             }

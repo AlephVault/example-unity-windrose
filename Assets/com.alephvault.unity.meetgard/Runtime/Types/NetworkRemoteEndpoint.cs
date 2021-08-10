@@ -91,11 +91,6 @@ namespace AlephVault.Unity.Meetgard
             /// </summary>
             public readonly ushort TrainBufferThresholdSize;
 
-            // The current boarding time this client has been waiting
-            // for additional data after some data was sent to the internal
-            // outgoing messages buffer.
-            private float currentBoardingTime = 0;
-
             // The train buffer.
             private Buffer trainBuffer;
 
@@ -130,11 +125,11 @@ namespace AlephVault.Unity.Meetgard
             // When a connection is terminated, this callback is processed.
             // If the termination was not graceful, the exception that caused
             // the termination will be given. Otherwise, it will be null.
-            private Action<Exception> onConnectionEnd = null;
+            private Action<System.Exception> onConnectionEnd = null;
 
             public NetworkRemoteEndpoint(
                 TcpClient endpointSocket,
-                Action onConnected, Action<ushort, ushort, Reader> onArrival, Action<Exception> onDisconnected,
+                Action onConnected, Action<ushort, ushort, Reader> onArrival, Action<System.Exception> onDisconnected,
                 ushort maxMessageSize = 1024, float trainBoardingTime = 0.75f, float idleSleepTime = 0.01f
             ) {
                 if (endpointSocket == null || !endpointSocket.Connected || endpointSocketsInUse.Contains(endpointSocket))
@@ -278,14 +273,14 @@ namespace AlephVault.Unity.Meetgard
 
             // Invokes the method DoTriggerOnConnectionEnd, which is asynchronous
             // in nature.
-            private void TriggerOnConnectionEnd(Exception exception)
+            private void TriggerOnConnectionEnd(System.Exception exception)
             {
                 DoTriggerOnConnectionEnd(exception);
             }
 
             // Triggers the onConnectionEnd event into the main Unity thread.
             // This operation is done asynchronously, however.
-            private async void DoTriggerOnConnectionEnd(Exception exception)
+            private async void DoTriggerOnConnectionEnd(System.Exception exception)
             {
                 onConnectionEnd?.Invoke(exception);
             }
@@ -328,7 +323,7 @@ namespace AlephVault.Unity.Meetgard
             // The full socket lifecycle goes here.
             private void LifeCycle()
             {
-                Exception lifecycleException = null;
+                System.Exception lifecycleException = null;
                 Buffer incomingMessageBuffer = null;
                 Writer incomingMessageWriter;
                 Reader incomingMessageReader;
@@ -399,7 +394,7 @@ namespace AlephVault.Unity.Meetgard
                         }
                     }
                 }
-                catch (Exception e)
+                catch (System.Exception e)
                 {
                     // Keep the exception, and return from the
                     // whole thread execution.

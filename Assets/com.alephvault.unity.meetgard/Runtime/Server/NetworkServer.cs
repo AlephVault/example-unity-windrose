@@ -1,4 +1,6 @@
+using AlephVault.Unity.Binary;
 using AlephVault.Unity.Meetgard.Types;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -96,7 +98,7 @@ namespace AlephVault.Unity.Meetgard
                     {
                         if (testId == ulong.MaxValue)
                         {
-                            throw new Exception("Connections exhausted! The server is insanely and improbably full");
+                            throw new Types.Exception("Connections exhausted! The server is insanely and improbably full");
                         }
                         if (!endpointById.ContainsKey(testId)) return testId;
                         testId++;
@@ -142,6 +144,85 @@ namespace AlephVault.Unity.Meetgard
                     endpointIds.Remove(endpoint);
                 }
             }
+
+            /// <summary>
+            ///   <para>
+            ///     This event is triggered after a server successfully
+            ///     started (right after successfully start listening
+            ///     and accepting incoming connections).
+            ///   </para>
+            ///   <para>
+            ///     This event is triggered in an asynchronous context.
+            ///     Any game load should be done before starting it so
+            ///     race conditions between new connections and game
+            ///     load state do not occur. However, if there are
+            ///     no issues regarding that, the game load could
+            ///     occur also here.
+            ///   </para>
+            /// </summary>
+            public event Action OnServerStarted = null;
+
+            /// <summary>
+            ///   <para>
+            ///     This event is triggered after an incoming connection
+            ///     was accepted, and registered (and an ID was given).
+            ///     This detects both remote and local (host) connections
+            ///     (in such cases, it will pass <see cref="HostEndpointId"/>
+            ///     as argument).
+            ///   </para>
+            ///   <para>
+            ///     This event is triggered in an asynchronous context.
+            ///   </para>
+            /// </summary>
+            public event Action<ulong> OnClientConnected = null;
+
+            /// <summary>
+            ///   <para>
+            ///     This event is triggered after a client message arrives.
+            ///     The arguments for this message are: client id, protocol id,
+            ///     message tag, and a buffer reader with the contents.
+            ///   </para>
+            ///   <para>
+            ///     PLEASE NOTE: ONLY ONE HANDLER SHOULD HANDLE THE INCOMING MESSAGE, AND IT
+            ///     SHOULD EXHAUST THE BUFFER COMPLETELY.
+            ///   </para>
+            ///   <para>
+            ///     This event is triggered in an asynchronous context.
+            ///   </para>
+            /// </summary>
+            public event Action<ulong, ushort, ushort, Reader> OnMessage = null;
+
+            /// <summary>
+            ///   <para>
+            ///     This event is triggered after a client is disconnected.
+            ///     Such client can be a remote endpoint or the local (host)
+            ///     endpoint (in such cases, it will pass <see cref="HostEndpointId"/>
+            ///     as argument).
+            ///   </para>
+            ///   <para>
+            ///     This event is triggered in an asynchronous context.
+            ///   </para>
+            /// </summary>
+            public event Action<ulong> OnClientDisconnected = null;
+
+            /// <summary>
+            ///   <para>
+            ///     This event is triggered when a server was told to stop.
+            ///     This typically occurs as an error while accepting new
+            ///     connections (other errors are in a per-connection basis)
+            ///     or when the server Was told to close (in this case, the
+            ///     exception will be null). All of the existing endpoints
+            ///     were told to close (this does not mean that the respective
+            ///     disconnection events were processed for them) before
+            ///     this event is triggered. There is nothing to veto here,
+            ///     specially in per-connection basis, but just doing a
+            ///     global cleanup of the whole server.
+            ///   </para>
+            ///   <para>
+            ///     This event is triggered in an asynchronous context.
+            ///   </para>
+            /// </summary>
+            public event Action<System.Exception> OnServerStopping = null;
         }
     }
 }

@@ -72,7 +72,7 @@ namespace AlephVault.Unity.Meetgard
             ///     This event is triggered on successful connection.
             ///   </para>
             ///   <para>
-            ///     This event is triggered is triggered in an asynchronous context.
+            ///     This event is triggered in an asynchronous context.
             ///   </para>
             /// </summary>
             public event Action OnConnected = null;
@@ -84,7 +84,7 @@ namespace AlephVault.Unity.Meetgard
             ///     SHOULD EXHAUST THE BUFFER COMPLETELY.
             ///   </para>
             ///   <para>
-            ///     This event is triggered is triggered in an asynchronous context.
+            ///     This event is triggered in an asynchronous context.
             ///   </para>
             /// </summary>
             public event Action<ushort, ushort, Reader> OnMessage = null;
@@ -96,10 +96,10 @@ namespace AlephVault.Unity.Meetgard
             ///     value, it was a graceful termination.
             ///   </para>
             ///   <para>
-            ///     This event is triggered is triggered in an asynchronous context.
+            ///     This event is triggered in an asynchronous context.
             ///   </para>
             /// </summary>
-            public event Action<Exception> OnDisconnected = null;
+            public event Action<System.Exception> OnDisconnected = null;
 
             /// <summary>
             ///   Tells whether the endpoint is active or not. While Active, another
@@ -173,7 +173,7 @@ namespace AlephVault.Unity.Meetgard
             // Triggers the OnDisconnected event. This occurs inside an asynchronous
             // context, already. Before triggering, it releases the current value in
             // the endpoint variable.
-            private void TriggerOnDisconnected(Exception e)
+            private void TriggerOnDisconnected(System.Exception e)
             {
                 endpoint = null;
                 OnDisconnected?.Invoke(e);

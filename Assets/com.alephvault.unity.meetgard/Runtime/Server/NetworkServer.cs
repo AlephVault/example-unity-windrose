@@ -196,6 +196,10 @@ namespace AlephVault.Unity.Meetgard
             ///     as argument).
             ///   </para>
             ///   <para>
+            ///     Please note: for id <see cref="HostEndpointId"/>, the
+            ///     involved client is the local / host one.
+            ///   </para>
+            ///   <para>
             ///     This event is triggered in an asynchronous context.
             ///   </para>
             /// </summary>
@@ -212,6 +216,10 @@ namespace AlephVault.Unity.Meetgard
             ///     SHOULD EXHAUST THE BUFFER COMPLETELY.
             ///   </para>
             ///   <para>
+            ///     Please note: for id <see cref="HostEndpointId"/>, the
+            ///     involved client is the local / host one.
+            ///   </para>
+            ///   <para>
             ///     This event is triggered in an asynchronous context.
             ///   </para>
             /// </summary>
@@ -226,6 +234,10 @@ namespace AlephVault.Unity.Meetgard
             ///     was not graceful, but due to an internal error in the
             ///     endpoint connection lifecycle (only meaningful for
             ///     remote endpoints, not the local/host one).
+            ///   </para>
+            ///   <para>
+            ///     Please note: for id <see cref="HostEndpointId"/>, the
+            ///     involved client is the local / host one.
             ///   </para>
             ///   <para>
             ///     This event is triggered in an asynchronous context.

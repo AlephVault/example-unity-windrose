@@ -53,7 +53,7 @@ namespace AlephVault.Unity.Meetgard
             /// <param name="protocolID">The id of protocol for this message</param>
             /// <param name="messageTag">The tag of the message being sent</param>
             /// <param name="input">The input stream</param>
-            protected abstract Task DoSend(ushort protocolId, ushort messageTag, Stream input);
+            public abstract Task Send(ushort protocolId, ushort messageTag, Stream input);
         }
     }
 }

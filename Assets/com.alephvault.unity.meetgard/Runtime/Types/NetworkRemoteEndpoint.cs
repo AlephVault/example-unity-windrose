@@ -16,9 +16,8 @@ namespace AlephVault.Unity.Meetgard
 
         /// <summary>
         ///   <para>
-        ///     A network endpoint serves both for (true, non-host)
-        ///     clients and per-{[true, non-host] connection} server
-        ///     handlers.
+        ///     A network endpoint serves for remote, non-host,
+        ///     connections.
         ///   </para>
         ///   <para>
         ///     Endpoints can be told to be closed, and manage the
@@ -37,14 +36,6 @@ namespace AlephVault.Unity.Meetgard
             // preventing the same socket to be used in a different
             // king of architecture.
             private static HashSet<TcpClient> endpointSocketsInUse = new HashSet<TcpClient>();
-
-            // This exception class has internal purposes
-            // only and will never be exported. It is meant
-            // to notify a graceful client shutdown.
-            private class GracefulShutdown : Exception
-            {
-                public GracefulShutdown() : base() { }
-            }
 
             /// <summary>
             ///   The time to sleep, on each iteration, when no data to
@@ -200,7 +191,7 @@ namespace AlephVault.Unity.Meetgard
             /// <param name="protocolId">The id of protocol for this message</param>
             /// <param name="messageTag">The tag of the message being sent</param>
             /// <param name="input">The input stream</param>
-            public Task Send(ushort protocolId, ushort messageTag, Stream input)
+            public override async Task Send(ushort protocolId, ushort messageTag, Stream input)
             {
                 if (!IsConnected)
                 {
@@ -212,10 +203,10 @@ namespace AlephVault.Unity.Meetgard
                     throw new ArgumentException($"The size of the stream ({input.Length}) is greater than the allowed message size ({MaxMessageSize})");
                 }
 
-                return DoSend(protocolId, messageTag, input);
+                await DoSend(protocolId, messageTag, input);
             }
 
-            protected override async Task DoSend(ushort protocolId, ushort messageTag, Stream input)
+            protected async Task DoSend(ushort protocolId, ushort messageTag, Stream input)
             {
                 if (input == null)
                 {
@@ -287,7 +278,7 @@ namespace AlephVault.Unity.Meetgard
 
             // Invokes the method DoTriggerOnMessageEvent, which is asynchronous
             // in nature, but after resetting the toll.
-            private async void TriggerOnMessageEvent(Func<Tuple<ushort, ushort, Reader, Buffer>> fillIncomingMessageBuffer)
+            private void TriggerOnMessageEvent(Func<Tuple<ushort, ushort, Reader, Buffer>> fillIncomingMessageBuffer)
             {
                 incomingDataToll.Reset();
                 DoTriggerOnMessageEvent(fillIncomingMessageBuffer);
@@ -297,22 +288,20 @@ namespace AlephVault.Unity.Meetgard
             // This operation is done asynchronously, however.
             private async void DoTriggerOnMessageEvent(Func<Tuple<ushort, ushort, Reader, Buffer>> fillIncomingMessageBuffer)
             {
+                // Filling the messageContentUnderlyingBuffer from the network input data.
+                Tuple<ushort, ushort, Reader, Buffer> result = fillIncomingMessageBuffer();
                 try
                 {
-                    // Filling the messageContentUnderlyingBuffer from the network input data.
-                    Tuple<ushort, ushort, Reader, Buffer> result = fillIncomingMessageBuffer();
-                    // This event cannot be processed asynchronously. This is due to the fact that the
-                    // buffer will be released after the event triggering. If the triggering was instead
-                    // of an asynchronous nature, the buffer would be empty wuen trying to process it.
                     onMessage?.Invoke(result.Item1, result.Item2, result.Item3);
+                }
+                finally
+                {
+                    // Releasing the buffer, if any. But also giving a warning.
                     if (result.Item4.Length > 0)
                     {
                         Debug.LogWarning($"After processing a NetworkEndpoint incoming message, {result.Item4.Length} remained, and were discarded - unexhausted incoming buffers might be a sign of user implementation issues");
                         new Writer(Stream.Null).ReadAndWrite(result.Item3, result.Item4.Length);
                     }
-                }
-                finally
-                {
                     // We remove the mark of incoming data and also we
                     // set the event so the lifecycle can read anything
                     // as normal.
@@ -323,7 +312,7 @@ namespace AlephVault.Unity.Meetgard
             // The full socket lifecycle goes here.
             private void LifeCycle()
             {
-                System.Exception lifecycleException = null;
+                System.Exception lifeCycleException = null;
                 Buffer incomingMessageBuffer = null;
                 Writer incomingMessageWriter;
                 Reader incomingMessageReader;
@@ -331,7 +320,7 @@ namespace AlephVault.Unity.Meetgard
                 {
                     trainBuffer = new Buffer(TrainBufferSize);
                     trainWriter = new Writer(trainBuffer);
-                    lifecycleException = null;
+                    lifeCycleException = null;
                     incomingMessageBuffer = new Buffer(MaxMessageSize);
                     incomingMessageWriter = new Writer(incomingMessageBuffer);
                     incomingMessageReader = new Reader(incomingMessageBuffer);
@@ -398,7 +387,7 @@ namespace AlephVault.Unity.Meetgard
                 {
                     // Keep the exception, and return from the
                     // whole thread execution.
-                    lifecycleException = e;
+                    lifeCycleException = e;
                 }
                 finally
                 {
@@ -423,7 +412,7 @@ namespace AlephVault.Unity.Meetgard
                     // as well (with all the related variables).
                     incomingMessageBuffer?.Dispose();
                     // Finally, trigger the disconnected event.
-                    TriggerOnConnectionEnd(lifecycleException);
+                    TriggerOnConnectionEnd(lifeCycleException);
                 }
             }
         }

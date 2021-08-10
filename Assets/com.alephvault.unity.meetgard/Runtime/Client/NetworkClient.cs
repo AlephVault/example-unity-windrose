@@ -106,7 +106,7 @@ namespace AlephVault.Unity.Meetgard
             ///   life-cycle (e.g. a call to <see cref="Connect(IPAddress, int)"/> or
             ///   <see cref="Connect(string, int)"/>) cannot be done.
             /// </summary>
-            public bool IsActive { get { return endpoint != null && endpoint.IsActive; } }
+            public bool IsRunning { get { return endpoint != null && endpoint.IsActive; } }
 
             /// <summary>
             ///   Tells whether the underlying socket is instantiated and connected.
@@ -142,7 +142,7 @@ namespace AlephVault.Unity.Meetgard
             /// <param name="port">Any port nuber (in the TCP range)</param>
             public void Connect(string address, int port)
             {
-                if (IsActive)
+                if (IsRunning)
                 {
                     throw new InvalidOperationException("The socket is already connected - It cannot be connected again");
                 }
@@ -188,7 +188,7 @@ namespace AlephVault.Unity.Meetgard
             /// <param name="input">The input stream</param>
             public Task Send(ushort protocolId, ushort messageTag, Stream input)
             {
-                if (!IsActive)
+                if (!IsRunning)
                 {
                     throw new InvalidOperationException("The endpoint is not running - No data can be sent");
                 }
@@ -202,7 +202,7 @@ namespace AlephVault.Unity.Meetgard
             /// </summary>
             public void Close()
             {
-                if (!IsActive)
+                if (!IsRunning)
                 {
                     throw new InvalidOperationException("The socket is not connected - It cannot be closed");
                 }

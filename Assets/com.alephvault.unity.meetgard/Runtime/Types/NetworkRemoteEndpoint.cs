@@ -37,6 +37,17 @@ namespace AlephVault.Unity.Meetgard
             // king of architecture.
             private static HashSet<TcpClient> endpointSocketsInUse = new HashSet<TcpClient>();
 
+            // The id of the next buffer filling request (inside a
+            // call to Send()) that will be processed.
+            private ulong nextFillBufferRequestToQueue = 1;
+
+            // Queue of currently waiting buffer filling requests (
+            // inside Send() calls).
+            private List<ulong> fillBufferRequestsQueue = new List<ulong>();
+
+            // A mutex to increment the nextFillBufferRequestToQueue and also queuing it.
+            private SemaphoreSlim fillBufferRequestsMutex = new SemaphoreSlim(1, 1);
+
             /// <summary>
             ///   The time to sleep, on each iteration, when no data to
             ///   read or write is present in the socket on a given
@@ -87,12 +98,6 @@ namespace AlephVault.Unity.Meetgard
 
             // A writer for the train buffer.
             private Writer trainWriter;
-
-            // Tells whether the train buffer is being sent right now
-            // or not (if not, it means that new messages can be buffered
-            // right now; otherwise, it means that new messages must wait
-            // to be sent).
-            private bool trainSending = false;
 
             // A life-cycle thread for our socket.
             private Thread lifeCycle = null;
@@ -213,7 +218,23 @@ namespace AlephVault.Unity.Meetgard
                     throw new ArgumentNullException("stream");
                 }
 
-                while (trainSending) await Tasks.Blink();
+                // Atomically getting the next id to use for send, and queuing it.
+                // Notice how we intentionally avoid using sendId == 0.
+                await fillBufferRequestsMutex.WaitAsync();
+                ulong sendId = nextFillBufferRequestToQueue;
+                if (nextFillBufferRequestToQueue == ulong.MaxValue)
+                {
+                    nextFillBufferRequestToQueue = 1;
+                }
+                else
+                {
+                    nextFillBufferRequestToQueue += 1;
+                }
+                fillBufferRequestsQueue.Add(sendId);
+                fillBufferRequestsMutex.Release();
+
+                // Then, waiting until we find our id as the head of the queue.
+                while (fillBufferRequestsQueue[0] != sendId) await Tasks.Blink();
                 // The buffer is ready to be written, so the message is now
                 // being written and, then, it will be determined whether
                 // it must send or not the whole buffer.
@@ -223,13 +244,18 @@ namespace AlephVault.Unity.Meetgard
                 trainWriter.ReadAndWrite(new Reader(input), input.Length);
                 if (trainBuffer.Length >= TrainBufferThresholdSize)
                 {
-                    // The buffer is now marked to be uploaded.
-                    // The life-cycle thread will handle this.
-                    trainSending = true;
+                    // Here, we do nothing. The server will understand that
+                    // there is a value on fillBufferRequestsQueue and will
+                    // send the buffer. After that, the server will release
+                    // by calling fillBufferRequestsQueue.RemoveAt(0);
                 }
                 else
                 {
-                    // We delay the launch of trainSending.
+                    // So far, we can remove our buffer interaction
+                    // id, since we're done with this request.
+                    fillBufferRequestsQueue.Remove(sendId);
+                    // However, we tell that the buffer will be used
+                    // and sent... later.
                     DelayTrainSend();                    
                 }
             }
@@ -245,7 +271,13 @@ namespace AlephVault.Unity.Meetgard
                     await Tasks.Blink();
                     time += Time.unscaledDeltaTime;
                 }
-                trainSending = true;
+
+                // Atomically adding the send request 0, which is a magical
+                // token telling the server to automatically send any
+                // pending buffer.
+                await fillBufferRequestsMutex.WaitAsync();
+                fillBufferRequestsQueue.Add(0);
+                fillBufferRequestsMutex.Release();
             }
 
             // Invokes the method DoTriggerOnConnectionStart, which is
@@ -360,11 +392,23 @@ namespace AlephVault.Unity.Meetgard
                                     });
                                     inactive = false;
                                 }
-                                if (stream.CanWrite && trainSending)
+                                if (stream.CanWrite)
                                 {
-                                    if (trainBuffer.Length > 0) new Writer(stream).ReadAndWrite(new Reader(trainBuffer), trainBuffer.Length);
-                                    trainSending = false;
-                                    inactive = false;
+                                    fillBufferRequestsMutex.Wait();
+                                    bool hasWaiting = fillBufferRequestsQueue.Count > 0;
+                                    try
+                                    {
+                                        if (hasWaiting)
+                                        {
+                                            if (trainBuffer.Length > 0) new Writer(stream).ReadAndWrite(new Reader(trainBuffer), trainBuffer.Length);
+                                        }
+                                        inactive = false;
+                                    }
+                                    finally
+                                    {
+                                        fillBufferRequestsQueue.RemoveAt(0);
+                                        fillBufferRequestsMutex.Release();
+                                    }
                                 }
                                 if (inactive)
                                 {

@@ -65,7 +65,7 @@ namespace AlephVault.Unity.Meetgard
 
             // The underlying network endpoint, or null if the connection
             // is not established.
-            private NetworkEndpoint endpoint = null;
+            private NetworkRemoteEndpoint endpoint = null;
 
             /// <summary>
             ///   <para>
@@ -106,12 +106,12 @@ namespace AlephVault.Unity.Meetgard
             ///   life-cycle (e.g. a call to <see cref="Connect(IPAddress, int)"/> or
             ///   <see cref="Connect(string, int)"/>) cannot be done.
             /// </summary>
-            public bool Active { get { return endpoint != null && endpoint.Active; } }
+            public bool IsActive { get { return endpoint != null && endpoint.IsActive; } }
 
             /// <summary>
             ///   Tells whether the underlying socket is instantiated and connected.
             /// </summary>
-            public bool Connected { get { return endpoint != null && endpoint.Connected; } }
+            public bool IsConnected { get { return endpoint != null && endpoint.IsConnected; } }
             
             private void Awake()
             {
@@ -122,7 +122,7 @@ namespace AlephVault.Unity.Meetgard
 
             private void OnDestroy()
             {
-                if (Connected) Close();
+                if (IsConnected) Close();
             }
 
             /// <summary>
@@ -142,7 +142,7 @@ namespace AlephVault.Unity.Meetgard
             /// <param name="port">Any port nuber (in the TCP range)</param>
             public void Connect(string address, int port)
             {
-                if (Active)
+                if (IsActive)
                 {
                     throw new InvalidOperationException("The socket is already connected - It cannot be connected again");
                 }
@@ -150,7 +150,7 @@ namespace AlephVault.Unity.Meetgard
                 // Connects to a given address. Throws any exception
                 // that socket connection throws.
                 TcpClient client = new TcpClient(address, port);
-                endpoint = new NetworkEndpoint(
+                endpoint = new NetworkRemoteEndpoint(
                     client, TriggerOnConnected, TriggerOnMessage, TriggerOnDisconnected,
                     maxMessageSize, trainBoardingTime, idleSleepTime
                 );
@@ -188,7 +188,7 @@ namespace AlephVault.Unity.Meetgard
             /// <param name="input">The input stream</param>
             public Task Send(ushort protocolId, ushort messageTag, Stream input)
             {
-                if (!Active)
+                if (!IsActive)
                 {
                     throw new InvalidOperationException("The endpoint is not running - No data can be sent");
                 }
@@ -202,7 +202,7 @@ namespace AlephVault.Unity.Meetgard
             /// </summary>
             public void Close()
             {
-                if (!Active)
+                if (!IsActive)
                 {
                     throw new InvalidOperationException("The socket is not connected - It cannot be closed");
                 }

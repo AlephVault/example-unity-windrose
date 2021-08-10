@@ -60,14 +60,17 @@ namespace AlephVault.Unity.Meetgard
             private float trainBoardingTime = 0.75f;
 
             // The next id to use, when a new connection is spawned.
+            // Please note: id=0 is reserved for a single network
+            // endpoint of type NetworkHostEndpoint (i.e. the host
+            // connection for non-dedicated games).
             private ulong nextEndpointId = 1;
 
             // A mapping of the connections currently established. Each
             // connection is mapped against a generated id for them.
-            private Dictionary<NetworkEndpoint, ulong> endpointIds = new Dictionary<NetworkEndpoint, ulong>();
+            private Dictionary<NetworkRemoteEndpoint, ulong> endpointIds = new Dictionary<NetworkRemoteEndpoint, ulong>();
 
             // A mapping of the connections by their ids.
-            private SortedDictionary<ulong, NetworkEndpoint> endpointById = new SortedDictionary<ulong, NetworkEndpoint>();
+            private SortedDictionary<ulong, NetworkRemoteEndpoint> endpointById = new SortedDictionary<ulong, NetworkRemoteEndpoint>();
 
             // Gets the next id to use. If the next endpoint id is the
             // maximum value, it tries searching a free id among the
@@ -96,7 +99,7 @@ namespace AlephVault.Unity.Meetgard
 
             // Adds an endpoint (which is newly instantiated/connected)
             // to the list of endpoints connected to this server.
-            private void AddClientEndpoint(NetworkEndpoint endpoint)
+            private void AddClientEndpoint(NetworkRemoteEndpoint endpoint)
             {
                 ulong nextId = GetNextEndpointId();
                 endpointById.Add(nextId, endpoint);
@@ -105,7 +108,7 @@ namespace AlephVault.Unity.Meetgard
 
             // Removes an endpoint (which is just disconnected) from
             // the list of endpoints connected to this server.
-            private void RemoveClientEndpoint(NetworkEndpoint endpoint)
+            private void RemoveClientEndpoint(NetworkRemoteEndpoint endpoint)
             {
                 if (endpointIds.TryGetValue(endpoint, out ulong id))
                 {

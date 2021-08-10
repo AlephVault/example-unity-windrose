@@ -387,6 +387,80 @@ namespace AlephVault.Unity.Meetgard
             }
 
             /// <summary>
+            ///   <para>
+            ///     Sends a message to many registered endpoints by their ids.
+            ///     All the endpoints that are not found, or throw an exception
+            ///     on send, are ignored and kept in an output bag of failed
+            ///     endpoints.
+            ///   </para>
+            ///   <para>
+            ///     Notes: use <code>null</code> as the first argument to notify
+            ///     to all the available registered endpoints.
+            ///   </para>
+            /// </summary>
+            /// <param name="clientIds">The ids to send the same message - use null to specify ALL the available ids</param>
+            /// <param name="protocolId">The id of protocol for this message</param>
+            /// <param name="messageTag">The tag of the message being sent</param>
+            /// <param name="input">The input stream</param>
+            /// <param name="failedEndpoints">The output list of the endpoints that are not found or raised an error on send</param>
+            public async Task TryBroadcast(ulong[] clientIds, ushort protocolId, ushort messageTag, Stream input, HashSet<ulong> failedEndpoints)
+            {
+                if (!IsRunning)
+                {
+                    throw new InvalidOperationException("The server is not running - cannot send any message");
+                }
+
+                Binary.Buffer buffer;
+                if (input is Binary.Buffer buffer2)
+                {
+                    buffer = buffer2;
+                }
+                else
+                {
+                    // The buffer is meant to be copied.
+                    buffer = new Binary.Buffer(new Reader(input).ReadByteArray(new byte[input.Length]));
+                }
+
+                if (clientIds == null)
+                {
+                    foreach (ulong clientId in clientIds)
+                    {
+                        if (endpointById.TryGetValue(clientId, out NetworkEndpoint endpoint))
+                        {
+                            try
+                            {
+                                await endpoint.Send(protocolId, messageTag, buffer);
+                            }
+                            catch
+                            {
+                                failedEndpoints.Add(clientId);
+                            }
+                            buffer.Seek(0, SeekOrigin.Begin);
+                        }
+                        else
+                        {
+                            failedEndpoints.Add(clientId);
+                        }
+                    }
+                }
+                else
+                {
+                    foreach(KeyValuePair<ulong, NetworkEndpoint> pair in endpointById.ToArray())
+                    {
+                        try
+                        {
+                            await pair.Value.Send(protocolId, messageTag, buffer);
+                        }
+                        catch
+                        {
+                            failedEndpoints.Add(pair.Key);
+                        }
+                        buffer.Seek(0, SeekOrigin.Begin);
+                    }
+                }
+            }
+
+            /// <summary>
             ///   Closes a registered endpoint by its id.
             /// </summary>
             /// <param name="clientId">The id of the client</param>

@@ -98,6 +98,10 @@ namespace AlephVault.Unity.Meetgard
 
             // A writer for the train buffer.
             private Writer trainWriter;
+            
+            // Tells whether a call to DelayedTrainSend is in progress.
+            // This, to avoid delaying twice.
+            private bool delayedTrainSendRunning = false;
 
             // A life-cycle thread for our socket.
             private Thread lifeCycle = null;
@@ -265,19 +269,28 @@ namespace AlephVault.Unity.Meetgard
             // the data is sent, the thread will clear that flag.
             private async void DelayTrainSend()
             {
-                float time = 0;
-                while(time < TrainBoardingTime)
+                if (delayedTrainSendRunning) return;
+                try
                 {
-                    await Tasks.Blink();
-                    time += Time.unscaledDeltaTime;
-                }
+                    delayedTrainSendRunning = true;
+                    float time = 0;
+                    while(time < TrainBoardingTime)
+                    {
+                        await Tasks.Blink();
+                        time += Time.unscaledDeltaTime;
+                    }
 
-                // Atomically adding the send request 0, which is a magical
-                // token telling the server to automatically send any
-                // pending buffer.
-                await fillBufferRequestsMutex.WaitAsync();
-                fillBufferRequestsQueue.Add(0);
-                fillBufferRequestsMutex.Release();
+                    // Atomically adding the send request 0, which is a magical
+                    // token telling the server to automatically send any
+                    // pending buffer.
+                    await fillBufferRequestsMutex.WaitAsync();
+                    fillBufferRequestsQueue.Add(0);
+                    fillBufferRequestsMutex.Release();
+                    }
+                finally
+                {
+                    delayedTrainSendRunning = false;
+                }
             }
 
             // Invokes the method DoTriggerOnConnectionStart, which is
@@ -394,10 +407,10 @@ namespace AlephVault.Unity.Meetgard
                                 }
                                 if (stream.CanWrite)
                                 {
-                                    fillBufferRequestsMutex.Wait();
-                                    bool hasWaiting = fillBufferRequestsQueue.Count > 0;
                                     try
                                     {
+                                        fillBufferRequestsMutex.Wait();
+                                        bool hasWaiting = fillBufferRequestsQueue.Count > 0;
                                         if (hasWaiting)
                                         {
                                             if (trainBuffer.Length > 0) new Writer(stream).ReadAndWrite(new Reader(trainBuffer), trainBuffer.Length);
@@ -448,7 +461,6 @@ namespace AlephVault.Unity.Meetgard
                     // Also, if by chance there is a buffer to
                     // send that was not by any reason, then
                     // it must be cleared (and any pending).
-                    trainSending = false;
                     trainBuffer.Dispose();
                     trainBuffer = null;
                     trainWriter = null;

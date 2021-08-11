@@ -325,35 +325,31 @@ namespace AlephVault.Unity.Meetgard
 
             // Invokes the method DoTriggerOnMessageEvent, which is asynchronous
             // in nature, but after resetting the toll.
-            private void TriggerOnMessageEvent(Func<Tuple<ushort, ushort, Reader, Buffer>> fillIncomingMessageBuffer)
+            private void TriggerOnMessageEvent(ushort protocolId, ushort messageTag, Reader messageReader, Buffer messageContent)
             {
-                incomingDataToll.Reset();
-                DoTriggerOnMessageEvent(fillIncomingMessageBuffer);
+                DoTriggerOnMessageEvent(protocolId, messageTag, messageReader, messageContent);
             }
 
             // Triggers the onMessage event into the main Unity thread.
             // This operation is done asynchronously, however.
-            private async void DoTriggerOnMessageEvent(Func<Tuple<ushort, ushort, Reader, Buffer>> fillIncomingMessageBuffer)
+            private async void DoTriggerOnMessageEvent(ushort protocolId, ushort messageTag, Reader messageReader, Buffer messageContent)
             {
-                Tuple<ushort, ushort, Reader, Buffer> result = null;
                 try
                 {
                     // Filling the messageContentUnderlyingBuffer from the network input data.
                     // An exception will be thrown here if fetching the result involves an
                     // attack on message size.
-                    Debug.Log("Fetching incoming message");
-                    result = fillIncomingMessageBuffer();
-                    Debug.Log($"Processing an incoming message ({result.Item1}.{result.Item2})");
+                    Debug.Log($"Processing an incoming message ({protocolId}.{messageTag})");
                     // Now, the message is to be processed.
-                    onMessage?.Invoke(result.Item1, result.Item2, result.Item3);
+                    onMessage?.Invoke(protocolId, messageTag, messageReader);
                 }
                 finally
                 {
                     // Releasing the buffer, if any. But also giving a warning.
-                    if (result != null && result.Item4.Length > 0)
+                    if (messageContent != null && messageContent.Length > 0)
                     {
-                        Debug.LogWarning($"After processing a NetworkEndpoint incoming message, {result.Item4.Length} remained, and were discarded - unexhausted incoming buffers might be a sign of user implementation issues");
-                        new Writer(Stream.Null).ReadAndWrite(result.Item3, result.Item4.Length);
+                        Debug.LogWarning($"After processing a NetworkEndpoint incoming message, {messageContent.Length} remained, and were discarded - unexhausted incoming buffers might be a sign of user implementation issues");
+                        new Writer(Stream.Null).ReadAndWrite(messageReader, messageContent.Length);
                     }
                     // We remove the mark of incoming data and also we
                     // set the event so the lifecycle can read anything
@@ -382,7 +378,7 @@ namespace AlephVault.Unity.Meetgard
                     trainBuffer = new Buffer(TrainBufferSize);
                     trainWriter = new Writer(trainBuffer);
                     lifeCycleException = null;
-                    incomingMessageBuffer = new Buffer(MaxMessageSize + 6);
+                    incomingMessageBuffer = new Buffer(MaxMessageSize);
                     incomingMessageWriter = new Writer(incomingMessageBuffer);
                     incomingMessageReader = new Reader(incomingMessageBuffer);
                     // So far, remoteSocket WILL be connected.
@@ -397,41 +393,38 @@ namespace AlephVault.Unity.Meetgard
                             {
                                 // Before reading anything, we must ensure we're allowed
                                 // to read or we must wait since another read is in progress
-                                // for this thread.
+                                // for this thread. We then lock the allowance.
                                 incomingDataToll.WaitOne();
-                                // Now we mark, again, as the buffer not being allowed to be used.
-                                // Also, we mark incoming data as present, so the behaviour side can process it.
-                                TriggerOnMessageEvent(() =>
+                                incomingDataToll.Reset();
+                                // First, we read the message header: rewinding, reading 6, rewinding.
+                                incomingMessageBuffer.Seek(0, SeekOrigin.Begin);
+                                ReadUntil(stream, incomingMessageBuffer, 6);
+                                incomingMessageBuffer.Seek(0, SeekOrigin.Begin);
+                                // Then we read the message header from the buffer and check for
+                                // a valid, allowed, size.
+                                Debug.Log("Fill Incoming Message Buffer :: Create reader");
+                                Debug.Log("Fill Incoming Message Buffer :: Read Protocol ID");
+                                ushort protocolId = incomingMessageReader.ReadUInt16();
+                                Debug.Log($"Protocol ID is: {protocolId}");
+                                Debug.Log("Fill Incoming Message Buffer :: Read Message Tag");
+                                ushort messageTag = incomingMessageReader.ReadUInt16();
+                                Debug.Log($"Message Tag is: {messageTag}");
+                                Debug.Log("Fill Incoming Message Buffer :: Read Message Size");
+                                ushort messageSize = incomingMessageReader.ReadUInt16();
+                                Debug.Log($"Message Size is: {messageSize}");
+                                Debug.Log("Fill Incoming Message Buffer :: Check Message Size");
+                                if (messageSize >= MaxMessageSize)
                                 {
-                                    ReadUntil(stream, incomingMessageBuffer, 6);
-
-
-                                    // This is the callback function to read the buffers.
-                                    // The first thing to do is read the header.
-                                    Debug.Log("Fill Incoming Message Buffer :: Create reader");
-                                    Reader reader = new Reader(stream);
-                                    Debug.Log("Fill Incoming Message Buffer :: Read Protocol ID");
-                                    ushort protocolId = reader.ReadUInt16();
-                                    Debug.Log($"Protocol ID is: {protocolId}");
-                                    Debug.Log("Fill Incoming Message Buffer :: Read Message Tag");
-                                    ushort messageTag = reader.ReadUInt16();
-                                    Debug.Log($"Message Tag is: {messageTag}");
-                                    Debug.Log("Fill Incoming Message Buffer :: Read Message Size");
-                                    ushort messageSize = reader.ReadUInt16();
-                                    Debug.Log($"Message Size is: {messageSize}");
-                                    Debug.Log("Fill Incoming Message Buffer :: Check Message Size");
-                                    if (messageSize >= MaxMessageSize)
-                                    {
-                                        Debug.Log($"Bad size! {messageSize} >= {MaxMessageSize}");
-                                        throw new MessageOverflowException($"A message was received telling it had {messageSize} bytes, which is more than the {MaxMessageSize} bytes allowed per message");
-                                    }
-                                    Debug.Log("Fill Incoming Message Buffer :: Write into incoming data");
-                                    // Read the whole buffer (i.e. wait for messageSize bytes, and read into a new buffer).
-                                    // Also set the incoming metadata variables accordingly.
-                                    incomingMessageWriter.ReadAndWrite(reader, messageSize);
-                                    Debug.Log("Fill Incoming Message Buffer :: Return (id, tag, reader, buffer)");
-                                    return new Tuple<ushort, ushort, Reader, Buffer>(protocolId, messageTag, incomingMessageReader, incomingMessageBuffer);
-                                });
+                                    Debug.Log($"Bad size! {messageSize} >= {MaxMessageSize}");
+                                    throw new MessageOverflowException($"A message was received telling it had {messageSize} bytes, which is more than the {MaxMessageSize} bytes allowed per message");
+                                }
+                                // Then we read the message content. Right now the buffer will
+                                // be at position=6, so we rewind and we will read on it, instead.
+                                Debug.Log("Fill Incoming Message Buffer :: Write into incoming data");
+                                incomingMessageBuffer.Seek(0, SeekOrigin.Begin);
+                                ReadUntil(stream, incomingMessageBuffer, messageSize);
+                                // Triggering the event, asynchronously.
+                                TriggerOnMessageEvent(protocolId, messageTag, incomingMessageReader, incomingMessageBuffer);
                                 inactive = false;
                             }
                             if (stream.CanWrite)

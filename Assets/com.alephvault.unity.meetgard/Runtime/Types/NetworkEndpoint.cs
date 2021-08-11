@@ -27,7 +27,7 @@ namespace AlephVault.Unity.Meetgard
         ///     connected, disconnected, and message arrival.
         ///   </para>
         /// </summary>
-        public abstract class NetworkEndpoint : MonoBehaviour
+        public abstract class NetworkEndpoint
         {
             /// <summary>
             ///   Tells whether the endpoint is active (i.e.

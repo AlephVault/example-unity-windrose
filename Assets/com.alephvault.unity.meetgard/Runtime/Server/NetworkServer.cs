@@ -299,6 +299,7 @@ namespace AlephVault.Unity.Meetgard
                 }
 
                 listener = new TcpListener(address, port);
+                listener.Start();
                 lifeCycle = new Thread(new ThreadStart(LifeCycle));
                 lifeCycle.IsBackground = true;
                 lifeCycle.Start();
@@ -421,6 +422,8 @@ namespace AlephVault.Unity.Meetgard
                     buffer = new Binary.Buffer(new Reader(input).ReadByteArray(new byte[input.Length]));
                 }
 
+                if (failedEndpoints != null) failedEndpoints.Clear();
+
                 if (clientIds == null)
                 {
                     foreach (ulong clientId in clientIds)
@@ -433,13 +436,13 @@ namespace AlephVault.Unity.Meetgard
                             }
                             catch
                             {
-                                failedEndpoints.Add(clientId);
+                                if (failedEndpoints != null) failedEndpoints.Add(clientId);
                             }
                             buffer.Seek(0, SeekOrigin.Begin);
                         }
                         else
                         {
-                            failedEndpoints.Add(clientId);
+                            if (failedEndpoints != null) failedEndpoints.Add(clientId);
                         }
                     }
                 }
@@ -453,7 +456,7 @@ namespace AlephVault.Unity.Meetgard
                         }
                         catch
                         {
-                            failedEndpoints.Add(pair.Key);
+                            if (failedEndpoints != null) failedEndpoints.Add(pair.Key);
                         }
                         buffer.Seek(0, SeekOrigin.Begin);
                     }
@@ -552,9 +555,11 @@ namespace AlephVault.Unity.Meetgard
                     // Accepts all of the incoming connections, ad eternum.
                     while(true) AddNetworkClientEndpoint(listener.AcceptTcpClient());
                 }
-                catch(InvalidOperationException)
+                catch(SocketException e)
                 {
-                    // This close reason is graceful in this context.
+                    // If the error code is SocketError.Interrupted, this close reason is
+                    // graceful in this context. Otherwise, it is abnormal.
+                    if (e.SocketErrorCode != SocketError.Interrupted) lifeCycleException = e;
                 }
                 catch(System.Exception e)
                 {

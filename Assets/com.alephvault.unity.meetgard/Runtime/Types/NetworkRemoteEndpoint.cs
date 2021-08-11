@@ -161,6 +161,8 @@ namespace AlephVault.Unity.Meetgard
                 TrainBufferThresholdSize = (ushort)(4 * MaxMessageSize);
                 remoteSocket = endpointSocket;
                 endpointSocketsInUse.Add(endpointSocket);
+                // Set the buffer event, so reads are allowed.
+                incomingDataToll.Set();
                 // Run a life-cycle thread.
                 lifeCycle = new Thread(new ThreadStart(LifeCycle));
                 lifeCycle.IsBackground = true;
@@ -286,7 +288,7 @@ namespace AlephVault.Unity.Meetgard
                     await fillBufferRequestsMutex.WaitAsync();
                     fillBufferRequestsQueue.Add(0);
                     fillBufferRequestsMutex.Release();
-                    }
+                }
                 finally
                 {
                     delayedTrainSendRunning = false;
@@ -333,16 +335,22 @@ namespace AlephVault.Unity.Meetgard
             // This operation is done asynchronously, however.
             private async void DoTriggerOnMessageEvent(Func<Tuple<ushort, ushort, Reader, Buffer>> fillIncomingMessageBuffer)
             {
-                // Filling the messageContentUnderlyingBuffer from the network input data.
-                Tuple<ushort, ushort, Reader, Buffer> result = fillIncomingMessageBuffer();
+                Tuple<ushort, ushort, Reader, Buffer> result = null;
                 try
                 {
+                    // Filling the messageContentUnderlyingBuffer from the network input data.
+                    // An exception will be thrown here if fetching the result involves an
+                    // attack on message size.
+                    Debug.Log("Fetching incoming message");
+                    result = fillIncomingMessageBuffer();
+                    Debug.Log($"Processing an incoming message ({result.Item1}.{result.Item2})");
+                    // Now, the message is to be processed.
                     onMessage?.Invoke(result.Item1, result.Item2, result.Item3);
                 }
                 finally
                 {
                     // Releasing the buffer, if any. But also giving a warning.
-                    if (result.Item4.Length > 0)
+                    if (result != null && result.Item4.Length > 0)
                     {
                         Debug.LogWarning($"After processing a NetworkEndpoint incoming message, {result.Item4.Length} remained, and were discarded - unexhausted incoming buffers might be a sign of user implementation issues");
                         new Writer(Stream.Null).ReadAndWrite(result.Item3, result.Item4.Length);
@@ -352,6 +360,14 @@ namespace AlephVault.Unity.Meetgard
                     // as normal.
                     incomingDataToll.Set();
                 }
+            }
+
+            // Forces the reading of a buffer, to always expect at least N bytes
+            private void ReadUntil(Stream sourceBuffer, Stream targetBuffer, int howMuch)
+            {
+                // TODO We need to download all of the incoming buffer into an
+                // TODO intermediary buffer (of size: MaxMessageSize + 6) and
+                // TODO then we move forward.
             }
 
             // The full socket lifecycle goes here.
@@ -366,7 +382,7 @@ namespace AlephVault.Unity.Meetgard
                     trainBuffer = new Buffer(TrainBufferSize);
                     trainWriter = new Writer(trainBuffer);
                     lifeCycleException = null;
-                    incomingMessageBuffer = new Buffer(MaxMessageSize);
+                    incomingMessageBuffer = new Buffer(MaxMessageSize + 6);
                     incomingMessageWriter = new Writer(incomingMessageBuffer);
                     incomingMessageReader = new Reader(incomingMessageBuffer);
                     // So far, remoteSocket WILL be connected.
@@ -375,60 +391,82 @@ namespace AlephVault.Unity.Meetgard
                     {
                         try
                         {
-                            using (NetworkStream stream = remoteSocket.GetStream())
+                            NetworkStream stream = remoteSocket.GetStream();
+                            bool inactive = true;
+                            if (stream.CanRead && stream.DataAvailable)
                             {
-                                bool inactive = true;
-                                if (stream.CanRead && stream.DataAvailable)
+                                // Before reading anything, we must ensure we're allowed
+                                // to read or we must wait since another read is in progress
+                                // for this thread.
+                                incomingDataToll.WaitOne();
+                                // Now we mark, again, as the buffer not being allowed to be used.
+                                // Also, we mark incoming data as present, so the behaviour side can process it.
+                                TriggerOnMessageEvent(() =>
                                 {
-                                    // Before reading anything, we must ensure we're allowed
-                                    // to read or we must wait since another read is in progress
-                                    // for this thread.
-                                    incomingDataToll.WaitOne();
-                                    // Now we mark, again, as the buffer not being allowed to be used.
-                                    // Also, we mark incoming data as present, so the behaviour side can process it.
-                                    TriggerOnMessageEvent(() =>
+                                    ReadUntil(stream, incomingMessageBuffer, 6);
+
+
+                                    // This is the callback function to read the buffers.
+                                    // The first thing to do is read the header.
+                                    Debug.Log("Fill Incoming Message Buffer :: Create reader");
+                                    Reader reader = new Reader(stream);
+                                    Debug.Log("Fill Incoming Message Buffer :: Read Protocol ID");
+                                    ushort protocolId = reader.ReadUInt16();
+                                    Debug.Log($"Protocol ID is: {protocolId}");
+                                    Debug.Log("Fill Incoming Message Buffer :: Read Message Tag");
+                                    ushort messageTag = reader.ReadUInt16();
+                                    Debug.Log($"Message Tag is: {messageTag}");
+                                    Debug.Log("Fill Incoming Message Buffer :: Read Message Size");
+                                    ushort messageSize = reader.ReadUInt16();
+                                    Debug.Log($"Message Size is: {messageSize}");
+                                    Debug.Log("Fill Incoming Message Buffer :: Check Message Size");
+                                    if (messageSize >= MaxMessageSize)
                                     {
-                                        // This is the callback function to read the buffers.
-                                        // The first thing to do is read the header.
-                                        Reader reader = new Reader(stream);
-                                        ushort protocolId = reader.ReadUInt16();
-                                        ushort messageTag = reader.ReadUInt16();
-                                        ushort messageSize = reader.ReadUInt16();
-                                        if (messageSize >= MaxMessageSize)
-                                        {
-                                            throw new MessageOverflowException($"A message was received telling it had {messageSize} bytes, which is more than the {MaxMessageSize} bytes allowed per message");
-                                        }
-                                        // Read the whole buffer (i.e. wait for messageSize bytes, and read into a new buffer).
-                                        // Also set the incoming metadata variables accordingly.
-                                        incomingMessageWriter.ReadAndWrite(reader, messageSize);
-                                        return new Tuple<ushort, ushort, Reader, Buffer>(protocolId, messageTag, incomingMessageReader, incomingMessageBuffer);
-                                    });
-                                    inactive = false;
-                                }
-                                if (stream.CanWrite)
+                                        Debug.Log($"Bad size! {messageSize} >= {MaxMessageSize}");
+                                        throw new MessageOverflowException($"A message was received telling it had {messageSize} bytes, which is more than the {MaxMessageSize} bytes allowed per message");
+                                    }
+                                    Debug.Log("Fill Incoming Message Buffer :: Write into incoming data");
+                                    // Read the whole buffer (i.e. wait for messageSize bytes, and read into a new buffer).
+                                    // Also set the incoming metadata variables accordingly.
+                                    incomingMessageWriter.ReadAndWrite(reader, messageSize);
+                                    Debug.Log("Fill Incoming Message Buffer :: Return (id, tag, reader, buffer)");
+                                    return new Tuple<ushort, ushort, Reader, Buffer>(protocolId, messageTag, incomingMessageReader, incomingMessageBuffer);
+                                });
+                                inactive = false;
+                            }
+                            if (stream.CanWrite)
+                            {
+                                try
                                 {
-                                    try
+                                    fillBufferRequestsMutex.Wait();
+                                    bool hasWaiting = fillBufferRequestsQueue.Count > 0;
+                                    if (hasWaiting)
                                     {
-                                        fillBufferRequestsMutex.Wait();
-                                        bool hasWaiting = fillBufferRequestsQueue.Count > 0;
-                                        if (hasWaiting)
+                                        try
                                         {
+                                            Debug.Log($"Sending data ({trainBuffer.Length} bytes)...");
                                             if (trainBuffer.Length > 0) new Writer(stream).ReadAndWrite(new Reader(trainBuffer), trainBuffer.Length);
+                                            // Clearing the train buffer after sending is needed!
+                                            trainBuffer.Seek(0, SeekOrigin.Begin);
+                                            Debug.Log("Data sent.");
                                         }
-                                        inactive = false;
-                                    }
-                                    finally
-                                    {
-                                        fillBufferRequestsQueue.RemoveAt(0);
-                                        fillBufferRequestsMutex.Release();
+                                        finally
+                                        {
+                                            fillBufferRequestsQueue.RemoveAt(0);
+                                            inactive = false;
+                                        }
                                     }
                                 }
-                                if (inactive)
+                                finally
                                 {
-                                    // On inactivity we sleep a while, to not hog
-                                    // the processor.
-                                    Thread.Sleep((int)(IdleSleepTime * 1000));
+                                    fillBufferRequestsMutex.Release();
                                 }
+                            }
+                            if (inactive)
+                            {
+                                // On inactivity we sleep a while, to not hog
+                                // the processor.
+                                Thread.Sleep((int)(IdleSleepTime * 1000));
                             }
                         }
                         catch (InvalidOperationException)

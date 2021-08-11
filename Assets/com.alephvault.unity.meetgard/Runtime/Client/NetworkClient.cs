@@ -149,7 +149,8 @@ namespace AlephVault.Unity.Meetgard
 
                 // Connects to a given address. Throws any exception
                 // that socket connection throws.
-                TcpClient client = new TcpClient(address, port);
+                TcpClient client = new TcpClient();
+                client.Connect(address, port);
                 endpoint = new NetworkRemoteEndpoint(
                     client, TriggerOnConnected, TriggerOnMessage, TriggerOnDisconnected,
                     maxMessageSize, trainBoardingTime, idleSleepTime

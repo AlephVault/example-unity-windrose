@@ -16,6 +16,5 @@ namespace AlephVault.Unity.Meetgard
                 serializer.Serialize(ref Content);
             }
         }
-
     }
 }

@@ -359,35 +359,45 @@ namespace AlephVault.Unity.Meetgard
             }
 
             // Forces the reading of a buffer, to always expect at least N bytes
-            private void ReadUntil(Stream sourceBuffer, Stream targetBuffer, int howMuch)
+            private void ReadUntil(Stream sourceBuffer, byte[] target, int howMuch)
             {
-                // TODO We need to download all of the incoming buffer into an
-                // TODO intermediary buffer (of size: MaxMessageSize + 6) and
-                // TODO then we move forward.
+                int offset = 0;
+                int read;
+                while(howMuch > 0)
+                {
+                    read = sourceBuffer.Read(target, offset, howMuch);
+                    offset += read;
+                    howMuch -= read;
+                }
             }
 
             // The full socket lifecycle goes here.
             private void LifeCycle()
             {
                 System.Exception lifeCycleException = null;
+                byte[] incomingMessageArray;
                 Buffer incomingMessageBuffer = null;
                 Writer incomingMessageWriter;
                 Reader incomingMessageReader;
+                byte[] trainArray;
                 try
                 {
-                    trainBuffer = new Buffer(TrainBufferSize);
+                    trainArray = new byte[TrainBufferSize];
+                    trainBuffer = new Buffer(trainArray);
                     trainWriter = new Writer(trainBuffer);
                     lifeCycleException = null;
-                    incomingMessageBuffer = new Buffer(MaxMessageSize);
+                    incomingMessageArray = new byte[MaxMessageSize];
+                    incomingMessageBuffer = new Buffer(incomingMessageArray);
                     incomingMessageWriter = new Writer(incomingMessageBuffer);
                     incomingMessageReader = new Reader(incomingMessageBuffer);
                     // So far, remoteSocket WILL be connected.
                     TriggerOnConnectionStart();
+                    // We get the stream once.
+                    NetworkStream stream = remoteSocket.GetStream();
                     while (true)
                     {
                         try
                         {
-                            NetworkStream stream = remoteSocket.GetStream();
                             bool inactive = true;
                             if (stream.CanRead && stream.DataAvailable)
                             {
@@ -396,9 +406,8 @@ namespace AlephVault.Unity.Meetgard
                                 // for this thread. We then lock the allowance.
                                 incomingDataToll.WaitOne();
                                 incomingDataToll.Reset();
-                                // First, we read the message header: rewinding, reading 6, rewinding.
-                                incomingMessageBuffer.Seek(0, SeekOrigin.Begin);
-                                ReadUntil(stream, incomingMessageBuffer, 6);
+                                // First, we read the message header: 6 bytes, and rewinding.
+                                ReadUntil(stream, incomingMessageArray, 6);
                                 incomingMessageBuffer.Seek(0, SeekOrigin.Begin);
                                 // Then we read the message header from the buffer and check for
                                 // a valid, allowed, size.
@@ -421,8 +430,8 @@ namespace AlephVault.Unity.Meetgard
                                 // Then we read the message content. Right now the buffer will
                                 // be at position=6, so we rewind and we will read on it, instead.
                                 Debug.Log("Fill Incoming Message Buffer :: Write into incoming data");
+                                ReadUntil(stream, incomingMessageArray, messageSize);
                                 incomingMessageBuffer.Seek(0, SeekOrigin.Begin);
-                                ReadUntil(stream, incomingMessageBuffer, messageSize);
                                 // Triggering the event, asynchronously.
                                 TriggerOnMessageEvent(protocolId, messageTag, incomingMessageReader, incomingMessageBuffer);
                                 inactive = false;
@@ -437,9 +446,12 @@ namespace AlephVault.Unity.Meetgard
                                     {
                                         try
                                         {
-                                            Debug.Log($"Sending data ({trainBuffer.Length} bytes)...");
-                                            if (trainBuffer.Length > 0) new Writer(stream).ReadAndWrite(new Reader(trainBuffer), trainBuffer.Length);
-                                            // Clearing the train buffer after sending is needed!
+                                            Debug.Log($"Sending data ({trainBuffer.Position} bytes)...");
+                                            long size = trainBuffer.Position;
+                                            // Rewinding the buffer before reading is needed!
+                                            trainBuffer.Seek(0, SeekOrigin.Begin);
+                                            if (trainBuffer.Length > 0) new Writer(stream).ReadAndWrite(new Reader(trainBuffer), size);
+                                            // Rewinding the train buffer after reading is needed as well!
                                             trainBuffer.Seek(0, SeekOrigin.Begin);
                                             Debug.Log("Data sent.");
                                         }

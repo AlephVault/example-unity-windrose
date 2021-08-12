@@ -49,6 +49,7 @@ namespace AlephVault.Unity.Meetgard
                 if (Input.GetKeyDown(connectKey) && !client.IsConnected) client.Connect("localhost", 6666);
                 if (Input.GetKeyDown(helloKey) && client.IsConnected)
                 {
+                    Debug.Log($"Client({name}) :: Sending message");
                     Message message = new Message();
                     message.Content = $"Hello, I'm {name}";
                     buffer.Seek(0, System.IO.SeekOrigin.Begin);
@@ -65,6 +66,7 @@ namespace AlephVault.Unity.Meetgard
 
             private void Client_OnMessage(ushort arg1, ushort arg2, Reader arg3)
             {
+                Debug.Log($"Client({name}) :: Data arrival {arg1}.{arg2}");
                 if (arg2 == 0)
                 {
                     // A message.

@@ -76,6 +76,7 @@ namespace AlephVault.Unity.Meetgard
 
             private void Server_OnMessage(ulong arg1, ushort arg2, ushort arg3, Reader arg4)
             {
+                Debug.Log($"Server :: Data arrival from {arg1} is {arg2}.{arg3}");
                 if (arg3 == 0)
                 {
                     // A message.

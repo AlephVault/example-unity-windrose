@@ -81,7 +81,7 @@ namespace AlephVault.Unity.Binary
         /// <param name="obj">The object to hidrate</param>
         /// <param name="source">The source array to de-serialize the object from</param>
         /// <returns>The count of read bytes</returns>
-        public static long Load<T>(T obj, byte[] source) where T : ISerializable
+        public static long Load(ISerializable obj, byte[] source)
         {
             var bufferAndReader = ReaderFor(source);
             obj.Serialize(new Serializer(bufferAndReader.Item2));

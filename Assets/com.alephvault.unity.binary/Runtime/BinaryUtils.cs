@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 
@@ -32,6 +33,32 @@ namespace AlephVault.Unity.Binary
             var buffer = new Buffer(target);
             var writer = new Writer(buffer);
             return new System.Tuple<Buffer, Writer>(buffer, writer);
+        }
+
+        /// <summary>
+        ///   Iteratively reads from a source buffer into an array.
+        ///   Some streams are delayed in nature, so attempting to
+        ///   read while there is data may imply that an amount of
+        ///   data lower than the expected will be read. However,
+        ///   when no data is available, these streams tend to
+        ///   block until data is available. This utility iterates,
+        ///   even waiting for blocking calls, until all the data
+        ///   is read as required from the input stream, into a
+        ///   target array, starting from a desired position.
+        /// </summary>
+        /// <param name="input">The input stream to read from</param>
+        /// <param name="target">The target to write the data into</param>
+        /// <param name="offset">The start position to write the data</param>
+        /// <param name="howMuch">How many bytes to read</param>
+        public static void ReadUntil(Stream input, byte[] target, int offset, int howMuch)
+        {
+            int read;
+            while (howMuch > 0)
+            {
+                read = input.Read(target, offset, howMuch);
+                offset += read;
+                howMuch -= read;
+            }
         }
 
         /// <summary>

@@ -201,27 +201,33 @@ namespace AlephVault.Unity.Meetgard
             /// </summary>
             /// <param name="protocolId">The id of protocol for this message</param>
             /// <param name="messageTag">The tag of the message being sent</param>
-            /// <param name="input">The input stream</param>
-            public override async Task Send(ushort protocolId, ushort messageTag, Stream input)
+            /// <param name="content">The input array, typically with a non-zero capacity</param>
+            /// <param name="length">The actual length of the content in the array</param>
+            public override async Task Send(ushort protocolId, ushort messageTag, byte[] content, int length)
             {
                 if (!IsConnected)
                 {
                     throw new InvalidOperationException("The socket is not connected - No data can be sent");
                 }
 
-                if (input.Length > MaxMessageSize)
+                if (length > MaxMessageSize)
                 {
-                    throw new ArgumentException($"The size of the stream ({input.Length}) is greater than the allowed message size ({MaxMessageSize})");
+                    throw new ArgumentException($"The size of the stream ({length}) cannot be greater than the allowed message size ({MaxMessageSize})");
                 }
 
-                await DoSend(protocolId, messageTag, input);
+                if (length > content.Length)
+                {
+                    throw new ArgumentException($"The actual length of the content ({length}) cannot be greater than the content capacity");
+                }
+
+                await DoSend(protocolId, messageTag, content, length);
             }
 
-            protected async Task DoSend(ushort protocolId, ushort messageTag, Stream input)
+            protected async Task DoSend(ushort protocolId, ushort messageTag, byte[] content, int length)
             {
-                if (input == null)
+                if (content == null)
                 {
-                    throw new ArgumentNullException("stream");
+                    throw new ArgumentNullException("content");
                 }
 
                 // Atomically getting the next id to use for send, and queuing it.
@@ -246,8 +252,8 @@ namespace AlephVault.Unity.Meetgard
                 // it must send or not the whole buffer.
                 trainWriter.WriteUInt16(protocolId);
                 trainWriter.WriteUInt16(messageTag);
-                trainWriter.WriteUInt16((ushort)input.Length);
-                trainWriter.ReadAndWrite(new Reader(input), input.Length);
+                trainWriter.WriteUInt16((ushort)length);
+                trainWriter.ReadAndWrite(BinaryUtils.ReaderFor(content).Item2, length);
                 if (trainBuffer.Length >= TrainBufferThresholdSize)
                 {
                     // Here, we do nothing. The server will understand that
@@ -325,15 +331,16 @@ namespace AlephVault.Unity.Meetgard
 
             // Invokes the method DoTriggerOnMessageEvent, which is asynchronous
             // in nature, but after resetting the toll.
-            private void TriggerOnMessageEvent(ushort protocolId, ushort messageTag, Reader messageReader, Buffer messageContent)
+            private void TriggerOnMessageEvent(ushort protocolId, ushort messageTag, byte[] content, int length)
             {
-                DoTriggerOnMessageEvent(protocolId, messageTag, messageReader, messageContent);
+                DoTriggerOnMessageEvent(protocolId, messageTag, content, length);
             }
 
             // Triggers the onMessage event into the main Unity thread.
             // This operation is done asynchronously, however.
-            private async void DoTriggerOnMessageEvent(ushort protocolId, ushort messageTag, Reader messageReader, Buffer messageContent)
+            private async void DoTriggerOnMessageEvent(ushort protocolId, ushort messageTag, byte[] content, int length)
             {
+                var bufferAndReader = BinaryUtils.ReaderFor(content);
                 try
                 {
                     // Filling the messageContentUnderlyingBuffer from the network input data.
@@ -341,15 +348,15 @@ namespace AlephVault.Unity.Meetgard
                     // attack on message size.
                     Debug.Log($"Processing an incoming message ({protocolId}.{messageTag})");
                     // Now, the message is to be processed.
-                    onMessage?.Invoke(protocolId, messageTag, messageReader);
+                    onMessage?.Invoke(protocolId, messageTag, bufferAndReader.Item2);
                 }
                 finally
                 {
                     // Releasing the buffer, if any. But also giving a warning.
-                    if (messageContent != null && messageContent.Length > 0)
+                    if (content != null && length > 0)
                     {
-                        Debug.LogWarning($"After processing a NetworkEndpoint incoming message, {messageContent.Length} remained, and were discarded - unexhausted incoming buffers might be a sign of user implementation issues");
-                        new Writer(Stream.Null).ReadAndWrite(messageReader, messageContent.Length);
+                        Debug.LogWarning($"After processing a NetworkEndpoint incoming message, {length - bufferAndReader.Item1.Position} remained, and were discarded - unexhausted incoming buffers might be a sign of user implementation issues");
+                        new Writer(Stream.Null).ReadAndWrite(bufferAndReader.Item2, length - bufferAndReader.Item1.Position);
                     }
                     // We remove the mark of incoming data and also we
                     // set the event so the lifecycle can read anything
@@ -358,27 +365,11 @@ namespace AlephVault.Unity.Meetgard
                 }
             }
 
-            // Forces the reading of a buffer, to always expect at least N bytes
-            private void ReadUntil(Stream sourceBuffer, byte[] target, int howMuch)
-            {
-                int offset = 0;
-                int read;
-                while(howMuch > 0)
-                {
-                    read = sourceBuffer.Read(target, offset, howMuch);
-                    offset += read;
-                    howMuch -= read;
-                }
-            }
-
             // The full socket lifecycle goes here.
             private void LifeCycle()
             {
                 System.Exception lifeCycleException = null;
                 byte[] incomingMessageArray;
-                Buffer incomingMessageBuffer = null;
-                Writer incomingMessageWriter;
-                Reader incomingMessageReader;
                 byte[] trainArray;
                 try
                 {
@@ -386,10 +377,7 @@ namespace AlephVault.Unity.Meetgard
                     trainBuffer = new Buffer(trainArray);
                     trainWriter = new Writer(trainBuffer);
                     lifeCycleException = null;
-                    incomingMessageArray = new byte[MaxMessageSize];
-                    incomingMessageBuffer = new Buffer(incomingMessageArray);
-                    incomingMessageWriter = new Writer(incomingMessageBuffer);
-                    incomingMessageReader = new Reader(incomingMessageBuffer);
+                    incomingMessageArray = new byte[6 + MaxMessageSize];
                     // So far, remoteSocket WILL be connected.
                     TriggerOnConnectionStart();
                     // We get the stream once.
@@ -407,33 +395,27 @@ namespace AlephVault.Unity.Meetgard
                                 incomingDataToll.WaitOne();
                                 incomingDataToll.Reset();
                                 // First, we read the message header: 6 bytes, and rewinding.
-                                ReadUntil(stream, incomingMessageArray, 6);
-                                incomingMessageBuffer.Seek(0, SeekOrigin.Begin);
+                                BinaryUtils.ReadUntil(stream, incomingMessageArray, 0, 6);
                                 // Then we read the message header from the buffer and check for
                                 // a valid, allowed, size.
-                                Debug.Log("Fill Incoming Message Buffer :: Create reader");
-                                Debug.Log("Fill Incoming Message Buffer :: Read Protocol ID");
-                                ushort protocolId = incomingMessageReader.ReadUInt16();
-                                Debug.Log($"Protocol ID is: {protocolId}");
-                                Debug.Log("Fill Incoming Message Buffer :: Read Message Tag");
-                                ushort messageTag = incomingMessageReader.ReadUInt16();
-                                Debug.Log($"Message Tag is: {messageTag}");
-                                Debug.Log("Fill Incoming Message Buffer :: Read Message Size");
-                                ushort messageSize = incomingMessageReader.ReadUInt16();
-                                Debug.Log($"Message Size is: {messageSize}");
-                                Debug.Log("Fill Incoming Message Buffer :: Check Message Size");
+                                Tuple<Buffer, Reader> bufferAndReader = BinaryUtils.ReaderFor(incomingMessageArray);
+                                Debug.Log("Incoming message :: fetching header");
+                                ushort protocolId = bufferAndReader.Item2.ReadUInt16();
+                                ushort messageTag = bufferAndReader.Item2.ReadUInt16();
+                                ushort messageSize = bufferAndReader.Item2.ReadUInt16();
+                                Debug.Log($"Incoming message :: header is ({protocolId}, {messageTag}, {messageSize})");
+                                Debug.Log("Incoming message :: checking size");
                                 if (messageSize >= MaxMessageSize)
                                 {
-                                    Debug.Log($"Bad size! {messageSize} >= {MaxMessageSize}");
+                                    Debug.Log($"Incoming message :: bad size! {messageSize} >= {MaxMessageSize}");
                                     throw new MessageOverflowException($"A message was received telling it had {messageSize} bytes, which is more than the {MaxMessageSize} bytes allowed per message");
                                 }
                                 // Then we read the message content. Right now the buffer will
                                 // be at position=6, so we rewind and we will read on it, instead.
-                                Debug.Log("Fill Incoming Message Buffer :: Write into incoming data");
-                                ReadUntil(stream, incomingMessageArray, messageSize);
-                                incomingMessageBuffer.Seek(0, SeekOrigin.Begin);
+                                Debug.Log("Incoming message :: fetching content");
+                                BinaryUtils.ReadUntil(stream, incomingMessageArray, 6, messageSize);
                                 // Triggering the event, asynchronously.
-                                TriggerOnMessageEvent(protocolId, messageTag, incomingMessageReader, incomingMessageBuffer);
+                                TriggerOnMessageEvent(protocolId, messageTag, incomingMessageArray, messageSize);
                                 inactive = false;
                             }
                             if (stream.CanWrite)
@@ -507,9 +489,6 @@ namespace AlephVault.Unity.Meetgard
                     trainBuffer.Dispose();
                     trainBuffer = null;
                     trainWriter = null;
-                    // We also dispose the incoming message buffer
-                    // as well (with all the related variables).
-                    incomingMessageBuffer?.Dispose();
                     // Finally, trigger the disconnected event.
                     TriggerOnConnectionEnd(lifeCycleException);
                 }

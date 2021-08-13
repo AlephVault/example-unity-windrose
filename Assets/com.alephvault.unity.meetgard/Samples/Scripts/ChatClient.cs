@@ -18,7 +18,6 @@ namespace AlephVault.Unity.Meetgard
         public class ChatClient : MonoBehaviour
         {
             private NetworkClient client;
-            private Buffer buffer = new Buffer(1024);
 
             [SerializeField]
             private string name;
@@ -31,6 +30,8 @@ namespace AlephVault.Unity.Meetgard
 
             [SerializeField]
             private KeyCode helloKey;
+
+            private byte[] buffer = new byte[1024];
 
             private void Awake()
             {
@@ -52,9 +53,9 @@ namespace AlephVault.Unity.Meetgard
                     Debug.Log($"Client({name}) :: Sending message");
                     Message message = new Message();
                     message.Content = $"Hello, I'm {name}";
-                    buffer.Seek(0, System.IO.SeekOrigin.Begin);
-                    message.Serialize(new Serializer(new Writer(buffer)));
-                    client.Send(0, 0, buffer);
+                    var bufferAndWriter = BinaryUtils.WriterFor(buffer);
+                    message.Serialize(new Serializer(bufferAndWriter.Item2));
+                    client.Send(0, 0, buffer, (int)bufferAndWriter.Item1.Position);
                 }
                 if (Input.GetKeyDown(disconnectKey) && client.IsConnected) client.Close();
             }
@@ -81,9 +82,8 @@ namespace AlephVault.Unity.Meetgard
                     echo.Serialize(new Serializer(arg3));
                     Debug.Log($"Client({name}) :: Received pong: " + echo.Content);
                     echo.Content = $"PONG {name}";
-                    buffer.Seek(0, System.IO.SeekOrigin.Begin);
-                    echo.Serialize(new Serializer(new Writer(buffer)));
-                    client.Send(0, 1, buffer);
+                    long size = BinaryUtils.Dump(echo, buffer);
+                    client.Send(0, 1, buffer, (short)size);
                 }
             }
 

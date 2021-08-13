@@ -1,3 +1,4 @@
+using AlephVault.Unity.Binary;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -52,8 +53,9 @@ namespace AlephVault.Unity.Meetgard
             /// </summary>
             /// <param name="protocolID">The id of protocol for this message</param>
             /// <param name="messageTag">The tag of the message being sent</param>
-            /// <param name="input">The input stream</param>
-            public abstract Task Send(ushort protocolId, ushort messageTag, Stream input);
+            /// <param name="content">The input array, typically with a non-zero capacity</param>
+            /// <param name="length">The actual length of the content in the array</param>
+            public abstract Task Send(ushort protocolId, ushort messageTag, byte[] content, int length);
         }
     }
 }

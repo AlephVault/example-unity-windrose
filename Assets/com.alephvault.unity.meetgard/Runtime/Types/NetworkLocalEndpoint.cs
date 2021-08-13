@@ -48,26 +48,32 @@ namespace AlephVault.Unity.Meetgard
                 TriggerOnConnectionEnd();
             }
 
-            public override async Task Send(ushort protocolId, ushort messageTag, Stream input)
+            /// <summary>
+            ///   Sends a stream locally (not by network). This function is asynchronous
+            ///   and will wait until no other messages are pending to be sent.
+            /// </summary>
+            /// <param name="protocolId">The id of protocol for this message</param>
+            /// <param name="messageTag">The tag of the message being sent</param>
+            /// <param name="content">The input array, typically with a non-zero capacity</param>
+            /// <param name="length">The actual length of the content in the array</param>
+            public override async Task Send(ushort protocolId, ushort messageTag, byte[] content, int length)
             {
                 if (!IsConnected)
                 {
                     throw new InvalidOperationException("The endpoint is disposed - No data can be sent");
                 }
 
+                if (length > content.Length)
+                {
+                    throw new ArgumentException($"The actual length of the content ({length}) cannot be greater than the content capacity");
+                }
+
+
                 while (messageSending) await Tasks.Blink();
                 messageSending = true;
                 Binary.Buffer buffer;
-                if (input is Binary.Buffer buffer2)
-                {
-                    buffer = buffer2;
-                }
-                else
-                {
-                    // The buffer is meant to be copied.
-                    buffer = new Binary.Buffer(new Reader(input).ReadByteArray(new byte[input.Length]));
-                }
-                TriggerOnMessageEvent(protocolId, messageTag, new Reader(input), buffer);
+
+                TriggerOnMessageEvent(protocolId, messageTag, content, length);
             }
 
             public NetworkLocalEndpoint(Action onConnected, Action<ushort, ushort, Reader> onArrival, Action onDisconnected)
@@ -104,19 +110,26 @@ namespace AlephVault.Unity.Meetgard
 
             // Asynchronously invokes the method DoTriggerOnMessageEvent,
             // and then it clears the message buffer.
-            private async void TriggerOnMessageEvent(ushort protocolId, ushort messageTag, Reader messageContent, Binary.Buffer buffer)
+            private async void TriggerOnMessageEvent(ushort protocolId, ushort messageTag, byte[] content, int length)
             {
+                var bufferAndReader = BinaryUtils.ReaderFor(content);
                 try
                 {
-                    onMessage?.Invoke(protocolId, messageTag, messageContent);
+                    // Filling the messageContentUnderlyingBuffer from the network input data.
+                    // An exception will be thrown here if fetching the result involves an
+                    // attack on message size.
+                    Debug.Log($"Processing an incoming message ({protocolId}.{messageTag})");
+                    // Now, the message is to be processed.
+                    onMessage?.Invoke(protocolId, messageTag, bufferAndReader.Item2);
                 }
                 finally
                 {
-                    messageSending = false;
-                    if (buffer.Length > 0)
+                    messageSending = true;
+                    // Releasing the buffer, if any. But also giving a warning.
+                    if (content != null && length > 0)
                     {
-                        Debug.LogWarning($"After processing a NetworkEndpoint incoming message, {buffer.Length} remained, and were discarded - unexhausted incoming buffers might be a sign of user implementation issues");
-                        new Writer(Stream.Null).ReadAndWrite(messageContent, buffer.Length);
+                        Debug.LogWarning($"After processing a NetworkEndpoint incoming message, {length - bufferAndReader.Item1.Position} remained, and were discarded - unexhausted incoming buffers might be a sign of user implementation issues");
+                        new Writer(Stream.Null).ReadAndWrite(bufferAndReader.Item2, length - bufferAndReader.Item1.Position);
                     }
                 }
             }

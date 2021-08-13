@@ -21,7 +21,7 @@ namespace AlephVault.Unity.Meetgard
         public class ChatServer : MonoBehaviour
         {
             private NetworkServer server;
-            private Buffer buffer = new Buffer(1024);
+            private byte[] buffer = new byte[1024];
             private HashSet<ulong> failedEndpoints = new HashSet<ulong>();
             private Coroutine pingPong;
 
@@ -64,8 +64,8 @@ namespace AlephVault.Unity.Meetgard
                     yield return new WaitForSeconds(1f);
                     Echo echo = new Echo();
                     echo.Content = "PING";
-                    echo.Serialize(new Serializer(new Writer(buffer)));
-                    server.TryBroadcast(null, 0, 1, buffer, failedEndpoints);
+                    long length = BinaryUtils.Dump(echo, buffer);
+                    server.TryBroadcast(null, 0, 1, buffer, (ushort)length, failedEndpoints);
                 }
             }
 
@@ -79,20 +79,28 @@ namespace AlephVault.Unity.Meetgard
                 Debug.Log($"Server :: Data arrival from {arg1} is {arg2}.{arg3}");
                 if (arg3 == 0)
                 {
+                    Debug.Log("Server :: Received message");
                     // A message.
                     Message message = new Message();
-                    message.Serialize(new Serializer(arg4));
-                    Debug.Log("Server :: Received message: " + message.Content);
-                    buffer.Seek(0, System.IO.SeekOrigin.Begin);
-                    message.Serialize(new Serializer(new Writer(buffer)));
-                    server.TryBroadcast(null, 0, 0, buffer, failedEndpoints);
+                    try
+                    {
+                        message.Serialize(new Serializer(arg4));
+                    }
+                    catch (System.Exception e)
+                    {
+                        Debug.LogError(e);
+                    }
+                    Debug.Log("Server :: Message content is: " + message.Content);
+                    long length = BinaryUtils.Dump(message, buffer);
+                    server.TryBroadcast(null, 0, 0, buffer, (ushort)length, failedEndpoints);
                 }
                 else if (arg3 == 1)
                 {
+                    Debug.Log("Server :: Received pong");
                     // A pong.
                     Echo echo = new Echo();
                     echo.Serialize(new Serializer(arg4));
-                    Debug.Log("Server :: Received pong: " + echo.Content);
+                    Debug.Log("Server :: Pong is: " + echo.Content);
                 }
             }
 

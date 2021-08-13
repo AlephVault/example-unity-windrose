@@ -186,15 +186,16 @@ namespace AlephVault.Unity.Meetgard
             /// </summary>
             /// <param name="protocolId">The id of protocol for this message</param>
             /// <param name="messageTag">The tag of the message being sent</param>
-            /// <param name="input">The input stream</param>
-            public Task Send(ushort protocolId, ushort messageTag, Stream input)
+            /// <param name="content">The input array, typically with a non-zero capacity</param>
+            /// <param name="length">The actual length of the content in the array</param>
+            public Task Send(ushort protocolId, ushort messageTag, byte[] content, int length)
             {
                 if (!IsRunning)
                 {
                     throw new InvalidOperationException("The endpoint is not running - No data can be sent");
                 }
 
-                return endpoint.Send(protocolId, messageTag, input);
+                return endpoint.Send(protocolId, messageTag, content, length);
             }
 
             /// <summary>

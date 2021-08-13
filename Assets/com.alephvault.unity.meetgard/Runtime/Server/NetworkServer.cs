@@ -350,14 +350,14 @@ namespace AlephVault.Unity.Meetgard
             /// <param name="protocolId">The id of protocol for this message</param>
             /// <param name="messageTag">The tag of the message being sent</param>
             /// <param name="input">The input stream</param>
-            public async Task Send(ulong clientId, ushort protocolId, ushort messageTag, Stream input)
+            public async Task Send(ulong clientId, ushort protocolId, ushort messageTag, byte[] content, int length)
             {
                 if (!IsRunning)
                 {
                     throw new InvalidOperationException("The server is not running - cannot send any message");
                 }
 
-                await endpointById[clientId].Send(protocolId, messageTag, input);
+                await endpointById[clientId].Send(protocolId, messageTag, content, length);
             }
 
             /// <summary>
@@ -368,8 +368,9 @@ namespace AlephVault.Unity.Meetgard
             /// <param name="clientId">The id of the client</param>
             /// <param name="protocolId">The id of protocol for this message</param>
             /// <param name="messageTag">The tag of the message being sent</param>
-            /// <param name="input">The input stream</param>
-            public async Task<bool> TrySend(ulong clientId, ushort protocolId, ushort messageTag, Stream input)
+            /// <param name="content">The input array, typically with a non-zero capacity</param>
+            /// <param name="length">The actual length of the content in the array</param>
+            public async Task<bool> TrySend(ulong clientId, ushort protocolId, ushort messageTag, byte[] content, int length)
             {
                 if (!IsRunning)
                 {
@@ -378,7 +379,7 @@ namespace AlephVault.Unity.Meetgard
 
                 if (endpointById.TryGetValue(clientId, out NetworkEndpoint value))
                 {
-                    await value.Send(protocolId, messageTag, input);
+                    await value.Send(protocolId, messageTag, content, length);
                     return true;
                 }
                 else
@@ -402,24 +403,14 @@ namespace AlephVault.Unity.Meetgard
             /// <param name="clientIds">The ids to send the same message - use null to specify ALL the available ids</param>
             /// <param name="protocolId">The id of protocol for this message</param>
             /// <param name="messageTag">The tag of the message being sent</param>
-            /// <param name="input">The input stream</param>
+            /// <param name="content">The input array, typically with a non-zero capacity</param>
+            /// <param name="length">The actual length of the content in the array</param>
             /// <param name="failedEndpoints">The output list of the endpoints that are not found or raised an error on send</param>
-            public async Task TryBroadcast(ulong[] clientIds, ushort protocolId, ushort messageTag, Stream input, HashSet<ulong> failedEndpoints)
+            public async Task TryBroadcast(ulong[] clientIds, ushort protocolId, ushort messageTag, byte[] content, int length, HashSet<ulong> failedEndpoints)
             {
                 if (!IsRunning)
                 {
                     throw new InvalidOperationException("The server is not running - cannot send any message");
-                }
-
-                Binary.Buffer buffer;
-                if (input is Binary.Buffer buffer2)
-                {
-                    buffer = buffer2;
-                }
-                else
-                {
-                    // The buffer is meant to be copied.
-                    buffer = new Binary.Buffer(new Reader(input).ReadByteArray(new byte[input.Length]));
                 }
 
                 if (failedEndpoints != null) failedEndpoints.Clear();
@@ -432,13 +423,12 @@ namespace AlephVault.Unity.Meetgard
                         {
                             try
                             {
-                                await endpoint.Send(protocolId, messageTag, buffer);
+                                await endpoint.Send(protocolId, messageTag, content, length);
                             }
                             catch
                             {
                                 if (failedEndpoints != null) failedEndpoints.Add(clientId);
                             }
-                            buffer.Seek(0, SeekOrigin.Begin);
                         }
                         else
                         {
@@ -452,13 +442,12 @@ namespace AlephVault.Unity.Meetgard
                     {
                         try
                         {
-                            await pair.Value.Send(protocolId, messageTag, buffer);
+                            await pair.Value.Send(protocolId, messageTag, content, length);
                         }
                         catch
                         {
                             if (failedEndpoints != null) failedEndpoints.Add(pair.Key);
                         }
-                        buffer.Seek(0, SeekOrigin.Begin);
                     }
                 }
             }

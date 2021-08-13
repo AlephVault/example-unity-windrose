@@ -27,7 +27,7 @@ namespace AlephVault.Unity.Meetgard
                 serializer.Serialize(ref MessageSize);
             }
 
-            public void CheckSize(ushort maxMessageSize)
+            public void CheckSize(long maxMessageSize)
             {
                 if (MessageSize > maxMessageSize)
                 {

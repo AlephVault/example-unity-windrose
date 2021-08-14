@@ -14,14 +14,6 @@ namespace AlephVault.Unity.Meetgard
         /// </summary>
         public static class MessageUtils
         {
-            // Reads content from an arraay.
-            private static string DebugByteArray(byte[] array, int length)
-            {
-                var builder = new StringBuilder("");
-                for (int i = 0; i < length; i++) { builder.Append($"\\x{array[i]:X}"); }
-                return builder.ToString();
-            }
-
             /// <summary>
             ///   Reads a message from a stream. Instantiates an
             ///   object of the appropriate type to receive the

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using UnityEngine;
 
 
@@ -11,6 +12,20 @@ namespace AlephVault.Unity.Binary
     /// </summary>
     public static class BinaryUtils
     {
+        /// <summary>
+        ///   Returns a debug representation of a byte array, up to certain length, optionally.
+        /// </summary>
+        /// <param name="array">The array to debug</param>
+        /// <param name="length">The length up to which debug</param>
+        /// <returns>A string representation of the 0..{length-1} bytes in hexadecimal</returns>
+        public static string DebugByteArray(byte[] array, int length = -1)
+        {
+            if (length < 0) length = array.Length;
+            var builder = new StringBuilder("");
+            for (int i = 0; i < length; i++) { builder.Append($"\\x{array[i]:X}"); }
+            return builder.ToString();
+        }
+
         /// <summary>
         ///   Creates a writer from a source array.
         /// </summary>

@@ -22,9 +22,18 @@ namespace AlephVault.Unity.Meetgard
 
             public void Serialize(Serializer serializer)
             {
-                serializer.Serialize(ref ProtocolId);
-                serializer.Serialize(ref MessageTag);
-                serializer.Serialize(ref MessageSize);
+                if (serializer.IsReading)
+                {
+                    ProtocolId = serializer.Reader.ReadUInt16();
+                    MessageTag = serializer.Reader.ReadUInt16();
+                    MessageSize = serializer.Reader.ReadUInt16();
+                }
+                else
+                {
+                    serializer.Writer.WriteUInt16(ProtocolId);
+                    serializer.Writer.WriteUInt16(MessageTag);
+                    serializer.Writer.WriteUInt16(MessageSize);
+                }
             }
 
             public void CheckSize(long maxMessageSize)

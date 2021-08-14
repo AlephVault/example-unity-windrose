@@ -1,5 +1,6 @@
 using AlephVault.Unity.Binary;
 using AlephVault.Unity.Meetgard.Server;
+using AlephVault.Unity.Meetgard.Types;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -20,6 +21,29 @@ namespace AlephVault.Unity.Meetgard
         [RequireComponent(typeof(NetworkServer))]
         public class ChatServer : MonoBehaviour
         {
+            private class SampleMessage : ISerializable
+            {
+                public int IntegerValue = 1000000;
+                public string StringValue = "Sample String";
+                public bool BoolValue = false;
+                public float FloatValue = 4.0f;
+
+                public void Serialize(Serializer serializer)
+                {
+                    serializer.Serialize(ref IntegerValue);
+                    serializer.Serialize(ref StringValue);
+                    serializer.Serialize(ref BoolValue);
+                    serializer.Serialize(ref FloatValue);
+                }
+
+                public override bool Equals(object obj)
+                {
+                    return (obj is SampleMessage obj2) && (obj2.BoolValue == BoolValue)
+                        && (obj2.FloatValue == FloatValue) && (obj2.IntegerValue == IntegerValue)
+                        && (obj2.StringValue == StringValue);
+                }
+            }
+
             private NetworkServer server;
             private byte[] buffer = new byte[1024];
             private HashSet<ulong> failedEndpoints = new HashSet<ulong>();
@@ -30,6 +54,9 @@ namespace AlephVault.Unity.Meetgard
 
             [SerializeField]
             private KeyCode stopKey;
+
+            [SerializeField]
+            private KeyCode handshakeTestKey;
 
             private void Awake()
             {
@@ -49,6 +76,26 @@ namespace AlephVault.Unity.Meetgard
             {
                 if (Input.GetKeyDown(startKey) && !server.IsListening) server.StartServer(6666);
                 if (Input.GetKeyDown(stopKey) && server.IsListening) server.StopServer();
+                if (Input.GetKeyDown(handshakeTestKey)) TestHandshake();
+            }
+
+            private void TestHandshake()
+            {
+                SampleMessage sentMessage = new SampleMessage() { BoolValue = true, FloatValue = 1.0f, StringValue = "Hello", IntegerValue = 7 };
+                byte[] tmpArray = new byte[1024];
+                Buffer sampleStream = new Buffer(6144);
+                MessageUtils.WriteMessage(sampleStream, 3, 4, sentMessage, tmpArray);
+
+                // Clear streams and fill array.
+                sampleStream.Seek(0, System.IO.SeekOrigin.Begin);
+                for (int i = 0; i < 1024; i++) tmpArray[i] = 0;
+
+                // Get the message.
+                var result = MessageUtils.ReadMessage(sampleStream, (pid, mt) => new SampleMessage(), tmpArray);
+                SampleMessage receivedMessage = (SampleMessage)result.Item2;
+                Debug.Log($"Protocol id: {result.Item1.ProtocolId} vs 3, Message tag: {result.Item1.MessageTag} vs 4, Object equality: {receivedMessage.Equals(sentMessage)}");
+                Debug.Log($"Object equality details: Integer: {sentMessage.IntegerValue} vs {receivedMessage.IntegerValue}, Float: {sentMessage.FloatValue} vs {receivedMessage.FloatValue}, " +
+                          $"String: '{sentMessage.StringValue}' vs '{receivedMessage.StringValue}', Bool: {sentMessage.BoolValue} vs {receivedMessage.BoolValue}");
             }
 
             private void Server_OnServerStarted()

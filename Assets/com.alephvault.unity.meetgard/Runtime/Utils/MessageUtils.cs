@@ -1,7 +1,8 @@
 using AlephVault.Unity.Binary;
 using System;
 using System.IO;
-
+using System.Text;
+using UnityEngine;
 
 namespace AlephVault.Unity.Meetgard
 {
@@ -13,6 +14,14 @@ namespace AlephVault.Unity.Meetgard
         /// </summary>
         public static class MessageUtils
         {
+            // Reads content from an arraay.
+            private static string DebugByteArray(byte[] array, int length)
+            {
+                var builder = new StringBuilder("");
+                for (int i = 0; i < length; i++) { builder.Append($"\\x{array[i]:X}"); }
+                return builder.ToString();
+            }
+
             /// <summary>
             ///   Reads a message from a stream. Instantiates an
             ///   object of the appropriate type to receive the
@@ -83,7 +92,7 @@ namespace AlephVault.Unity.Meetgard
                 {
                     length = BinaryUtils.Dump(content, tempArray);
                 }
-                catch(NotSupportedException)
+                catch (NotSupportedException)
                 {
                     throw new MessageOverflowException($"The content to serialize requires more bytes than the allocated in the temporary array ({tempArray.Length})");
                 }
@@ -94,6 +103,9 @@ namespace AlephVault.Unity.Meetgard
                 }
                 // Serializing both the header and the message body.
                 MessageHeader header = new MessageHeader() { ProtocolId = protocolId, MessageTag = messageTag, MessageSize = (ushort)length };
+                // No need to dump the header in the intermediary array.
+                // Just send the header through the stream, and then the content
+                // (which is, yes, previously dumped into array)
                 header.Serialize(new Serializer(new Writer(output)));
                 output.Write(tempArray, 0, (int)length);
             }

@@ -266,6 +266,26 @@ namespace AlephVault.Unity.Meetgard
             }
 
             /// <summary>
+            ///   Gets the corresponding name for a server message tag.
+            /// </summary>
+            /// <param name="tag">The message tag to get the underlying type for</param>
+            /// <returns>The message name corresponding to that tag</returns>
+            public string GetServerMessageNameByTag(ushort tag)
+            {
+                return registeredServerMessageNameByTag[tag];
+            }
+
+            /// <summary>
+            ///   Gets the corresponding name for a client message tag.
+            /// </summary>
+            /// <param name="tag">The message tag to get the underlying type for</param>
+            /// <returns>The message name corresponding to that tag</returns>
+            public string GetClientMessageNameByTag(ushort tag)
+            {
+                return registeredClientMessageNameByTag[tag];
+            }
+
+            /// <summary>
             ///   <para>
             ///     Given a tag, it retrieves the type of server message
             ///     corresponding to it. That type is instantiated. On

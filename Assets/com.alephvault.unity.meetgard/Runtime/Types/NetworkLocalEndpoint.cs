@@ -2,6 +2,7 @@ using AlephVault.Unity.Binary;
 using AlephVault.Unity.Support.Utils;
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -19,10 +20,16 @@ namespace AlephVault.Unity.Meetgard
         /// </summary>
         public class NetworkLocalEndpoint : NetworkEndpoint
         {
+            // Whether this fake socket is disposed or not.
             private bool disposed = false;
-            private bool messageSending = false;
+
+            // Triggered when this fake socket is just created.
             private Action onConnectionStart;
-            private Action<ushort, ushort, Reader> onMessage;
+
+            // Triggered when this fake socket receives a message.
+            private Action<ushort, ushort, ISerializable> onMessage;
+
+            // Triggered when this fake socket is closed.
             private Action onConnectionEnd;
 
             /// <summary>
@@ -39,6 +46,9 @@ namespace AlephVault.Unity.Meetgard
             /// </summary>
             public override bool IsConnected => !disposed;
 
+            // The list of queued outgoing messages.
+            private ConcurrentQueue<Tuple<ushort, ushort, ISerializable>> queuedOutgoingMessages = new ConcurrentQueue<Tuple<ushort, ushort, ISerializable>>();
+
             /// <summary>
             ///   Closes the local endpoint.
             /// </summary>
@@ -49,34 +59,18 @@ namespace AlephVault.Unity.Meetgard
             }
 
             /// <summary>
-            ///   Sends a stream locally (not by network). This function is asynchronous
-            ///   and will wait until no other messages are pending to be sent.
+            ///   Queues the message to be sent. It only asks for a mutex
             /// </summary>
             /// <param name="protocolId">The id of protocol for this message</param>
             /// <param name="messageTag">The tag of the message being sent</param>
-            /// <param name="content">The input array, typically with a non-zero capacity</param>
-            /// <param name="length">The actual length of the content in the array</param>
-            public override async Task Send(ushort protocolId, ushort messageTag, byte[] content, int length)
+            /// <param name="data">The object to serialize and send</param>
+            protected override async Task DoSend(ushort protocolId, ushort messageTag, ISerializable data)
             {
-                if (!IsConnected)
-                {
-                    throw new InvalidOperationException("The endpoint is disposed - No data can be sent");
-                }
-
-                if (length > content.Length)
-                {
-                    throw new ArgumentException($"The actual length of the content ({length}) cannot be greater than the content capacity");
-                }
-
-
-                while (messageSending) await Tasks.Blink();
-                messageSending = true;
-                Binary.Buffer buffer;
-
-                TriggerOnMessageEvent(protocolId, messageTag, content, length);
+                queuedOutgoingMessages.Enqueue(new Tuple<ushort, ushort, ISerializable>(protocolId, messageTag, data));
+                TriggerOnMessageEvent();
             }
 
-            public NetworkLocalEndpoint(Action onConnected, Action<ushort, ushort, Reader> onArrival, Action onDisconnected)
+            public NetworkLocalEndpoint(Action onConnected, Action<ushort, ushort, ISerializable> onArrival, Action onDisconnected)
             {
                 if (onConnected.GetInvocationList().Length != 1)
                 {
@@ -108,29 +102,14 @@ namespace AlephVault.Unity.Meetgard
                 onConnectionEnd?.Invoke();
             }
 
-            // Asynchronously invokes the method DoTriggerOnMessageEvent,
-            // and then it clears the message buffer.
-            private async void TriggerOnMessageEvent(ushort protocolId, ushort messageTag, byte[] content, int length)
+            // Asynchronously pops a message from the list and
+            // triggers the event. In this case, the order will
+            // be guaranteed.
+            private async void TriggerOnMessageEvent()
             {
-                var bufferAndReader = BinaryUtils.ReaderFor(content);
-                try
+                if (queuedOutgoingMessages.TryDequeue(out var result))
                 {
-                    // Filling the messageContentUnderlyingBuffer from the network input data.
-                    // An exception will be thrown here if fetching the result involves an
-                    // attack on message size.
-                    Debug.Log($"Processing an incoming message ({protocolId}.{messageTag})");
-                    // Now, the message is to be processed.
-                    onMessage?.Invoke(protocolId, messageTag, bufferAndReader.Item2);
-                }
-                finally
-                {
-                    messageSending = true;
-                    // Releasing the buffer, if any. But also giving a warning.
-                    if (content != null && length > 0)
-                    {
-                        Debug.LogWarning($"After processing a NetworkEndpoint incoming message, {length - bufferAndReader.Item1.Position} remained, and were discarded - unexhausted incoming buffers might be a sign of user implementation issues");
-                        new Writer(Stream.Null).ReadAndWrite(bufferAndReader.Item2, length - bufferAndReader.Item1.Position);
-                    }
+                    onMessage?.Invoke(result.Item1, result.Item2, result.Item3);
                 }
             }
         }

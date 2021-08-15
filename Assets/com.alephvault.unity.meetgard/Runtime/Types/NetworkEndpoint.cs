@@ -1,7 +1,10 @@
 using AlephVault.Unity.Binary;
+using AlephVault.Unity.Support.Utils;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -48,14 +51,35 @@ namespace AlephVault.Unity.Meetgard
             public abstract void Close();
 
             /// <summary>
-            ///   Performs, asynchronously, a data send using
-            ///   that metadata and input.
+            ///   Sends a message, specifying metadata for
+            ///   it (protocol id and message tag) and also
+            ///   the data to serialize.
             /// </summary>
-            /// <param name="protocolID">The id of protocol for this message</param>
+            /// <param name="protocolId">The id of protocol for this message</param>
             /// <param name="messageTag">The tag of the message being sent</param>
-            /// <param name="content">The input array, typically with a non-zero capacity</param>
-            /// <param name="length">The actual length of the content in the array</param>
-            public abstract Task Send(ushort protocolId, ushort messageTag, byte[] content, int length);
+            /// <param name="data">The object to serialize and send</param>
+            public async Task Send(ushort protocolId, ushort messageTag, ISerializable data)
+            {
+                if (!IsConnected)
+                {
+                    throw new InvalidOperationException("The socket is not connected - No data can be sent");
+                }
+
+                if (data == null)
+                {
+                    throw new ArgumentNullException("data");
+                }
+
+                await DoSend(protocolId, messageTag, data);
+            }
+
+            /// <summary>
+            ///   Queues the message to be sent.
+            /// </summary>
+            /// <param name="protocolId">The id of protocol for this message</param>
+            /// <param name="messageTag">The tag of the message being sent</param>
+            /// <param name="data">The object to serialize and send</param>
+            protected abstract Task DoSend(ushort protocolId, ushort messageTag, ISerializable data);
         }
     }
 }

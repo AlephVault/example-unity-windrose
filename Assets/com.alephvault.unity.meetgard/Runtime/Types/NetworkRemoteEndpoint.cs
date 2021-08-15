@@ -1,17 +1,15 @@
 using AlephVault.Unity.Support.Utils;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Threading;
-using UnityEngine;
 
 namespace AlephVault.Unity.Meetgard
 {
     namespace Types
     {
         using AlephVault.Unity.Binary;
-        using System.IO;
+        using System.Collections.Concurrent;
         using System.Threading.Tasks;
 
         /// <summary>
@@ -37,16 +35,7 @@ namespace AlephVault.Unity.Meetgard
             // king of architecture.
             private static HashSet<TcpClient> endpointSocketsInUse = new HashSet<TcpClient>();
 
-            // The id of the next buffer filling request (inside a
-            // call to Send()) that will be processed.
-            private ulong nextFillBufferRequestToQueue = 1;
-
-            // Queue of currently waiting buffer filling requests (
-            // inside Send() calls).
-            private List<ulong> fillBufferRequestsQueue = new List<ulong>();
-
-            // A mutex to increment the nextFillBufferRequestToQueue and also queuing it.
-            private SemaphoreSlim fillBufferRequestsMutex = new SemaphoreSlim(1, 1);
+            // Related to the internal buffering and threads.
 
             /// <summary>
             ///   The time to sleep, on each iteration, when no data to
@@ -93,15 +82,7 @@ namespace AlephVault.Unity.Meetgard
             /// </summary>
             public readonly ushort TrainBufferThresholdSize;
 
-            // The train buffer.
-            private Buffer trainBuffer;
-
-            // A writer for the train buffer.
-            private Writer trainWriter;
-            
-            // Tells whether a call to DelayedTrainSend is in progress.
-            // This, to avoid delaying twice.
-            private bool delayedTrainSendRunning = false;
+            // Related to the life-cycle and underlying objects.
 
             // A life-cycle thread for our socket.
             private Thread lifeCycle = null;
@@ -109,27 +90,36 @@ namespace AlephVault.Unity.Meetgard
             // The socket, created in our life-cycle.
             private TcpClient remoteSocket = null;
 
-            // This event allows us to synchronize sending the newly read data
-            // and its handling: if data is still being handled, then this object
-            // will block the lifecycle thread until this behaviour is ready
-            // to attend more incoming data.
-            private ManualResetEvent incomingDataToll = new ManualResetEvent(false);
+            // Related to the events.
 
             // When a connection is established, this callback is processed.
             private Action onConnectionStart = null;
 
             // When a message is received, this callback is processed, passing
             // a protocol ID, a message tag, and a reader for the incoming buffer.
-            private Action<ushort, ushort, Reader> onMessage = null;
+            private Action<ushort, ushort, ISerializable> onMessage = null;
 
             // When a connection is terminated, this callback is processed.
             // If the termination was not graceful, the exception that caused
             // the termination will be given. Otherwise, it will be null.
             private Action<System.Exception> onConnectionEnd = null;
 
+            // On each arriving message, this function will be invoked to get
+            // the get an object of the appropriate type to deserialize the
+            // message content into.
+            private Func<ushort, ushort, ISerializable> protocolMessageFactory = null;
+
+            // Related to the messages.
+
+            // The list of queued outgoing messages.
+            private ConcurrentQueue<Tuple<ushort, ushort, ISerializable>> queuedOutgoingMessages = new ConcurrentQueue<Tuple<ushort, ushort, ISerializable>>();
+
+            // The list of queued incoming messages.
+            private ConcurrentQueue<Tuple<ushort, ushort, ISerializable>> queuedIncomingMessages = new ConcurrentQueue<Tuple<ushort, ushort, ISerializable>>();
+
             public NetworkRemoteEndpoint(
-                TcpClient endpointSocket,
-                Action onConnected, Action<ushort, ushort, Reader> onArrival, Action<System.Exception> onDisconnected,
+                TcpClient endpointSocket, Func<ushort, ushort, ISerializable> protocolMessageFactory,
+                Action onConnected, Action<ushort, ushort, ISerializable> onArrival, Action<System.Exception> onDisconnected,
                 ushort maxMessageSize = 1024, float trainBoardingTime = 0.75f, float idleSleepTime = 0.01f
             ) {
                 if (endpointSocket == null || !endpointSocket.Connected || endpointSocketsInUse.Contains(endpointSocket))
@@ -154,20 +144,34 @@ namespace AlephVault.Unity.Meetgard
                 }
                 onConnectionEnd += onDisconnected;
 
+                // Prepare values related to the internal buffering.
                 MaxMessageSize = Values.Clamp(512, maxMessageSize, 6144);
                 TrainBoardingTime = Values.Clamp(0.5f, trainBoardingTime, 1f);
                 IdleSleepTime = Values.Clamp(0.005f, idleSleepTime, 0.5f);
                 TrainBufferSize = (ushort)(6 * MaxMessageSize);
                 TrainBufferThresholdSize = (ushort)(4 * MaxMessageSize);
+
+                // Prepare the settings for incoming messages.
+                if (protocolMessageFactory.GetInvocationList().Length != 1)
+                {
+                    throw new ArgumentException("Only one handler for the getMessage callback is allowed");
+                }
+                this.protocolMessageFactory += protocolMessageFactory;
+
+                // Mark the socket as in use, and also start the lifecycle.
                 remoteSocket = endpointSocket;
                 endpointSocketsInUse.Add(endpointSocket);
-                // Set the buffer event, so reads are allowed.
-                incomingDataToll.Set();
-                // Run a life-cycle thread.
                 lifeCycle = new Thread(new ThreadStart(LifeCycle));
                 lifeCycle.IsBackground = true;
                 lifeCycle.Start();
             }
+
+            ~NetworkRemoteEndpoint()
+            {
+                endpointSocketsInUse.Remove(remoteSocket);
+            }
+
+            // Related to connection's status.
 
             /// <summary>
             ///   Tells whether the life-cycle is active or not. While Active, another
@@ -180,6 +184,8 @@ namespace AlephVault.Unity.Meetgard
             ///   Tells whether the underlying socket is instantiated and connected.
             /// </summary>
             public override bool IsConnected { get { return remoteSocket.Connected; } }
+
+            // Related to the available actions over a socket.
 
             /// <summary>
             ///   Closes the active connection, if any. This, actually,
@@ -196,109 +202,14 @@ namespace AlephVault.Unity.Meetgard
             }
 
             /// <summary>
-            ///   Sends a stream through the network. This function is asynchronous
-            ///   and will wait until no other messages are pending to be sent.
+            ///   Queues the message to be sent.
             /// </summary>
             /// <param name="protocolId">The id of protocol for this message</param>
             /// <param name="messageTag">The tag of the message being sent</param>
-            /// <param name="content">The input array, typically with a non-zero capacity</param>
-            /// <param name="length">The actual length of the content in the array</param>
-            public override async Task Send(ushort protocolId, ushort messageTag, byte[] content, int length)
+            /// <param name="data">The object to serialize and send</param>
+            protected override async Task DoSend(ushort protocolId, ushort messageTag, ISerializable data)
             {
-                if (!IsConnected)
-                {
-                    throw new InvalidOperationException("The socket is not connected - No data can be sent");
-                }
-
-                if (length > MaxMessageSize)
-                {
-                    throw new ArgumentException($"The size of the stream ({length}) cannot be greater than the allowed message size ({MaxMessageSize})");
-                }
-
-                if (length > content.Length)
-                {
-                    throw new ArgumentException($"The actual length of the content ({length}) cannot be greater than the content capacity");
-                }
-
-                await DoSend(protocolId, messageTag, content, length);
-            }
-
-            protected async Task DoSend(ushort protocolId, ushort messageTag, byte[] content, int length)
-            {
-                if (content == null)
-                {
-                    throw new ArgumentNullException("content");
-                }
-
-                // Atomically getting the next id to use for send, and queuing it.
-                // Notice how we intentionally avoid using sendId == 0.
-                await fillBufferRequestsMutex.WaitAsync();
-                ulong sendId = nextFillBufferRequestToQueue;
-                if (nextFillBufferRequestToQueue == ulong.MaxValue)
-                {
-                    nextFillBufferRequestToQueue = 1;
-                }
-                else
-                {
-                    nextFillBufferRequestToQueue += 1;
-                }
-                fillBufferRequestsQueue.Add(sendId);
-                fillBufferRequestsMutex.Release();
-
-                // Then, waiting until we find our id as the head of the queue.
-                while (fillBufferRequestsQueue[0] != sendId) await Tasks.Blink();
-                // The buffer is ready to be written, so the message is now
-                // being written and, then, it will be determined whether
-                // it must send or not the whole buffer.
-                trainWriter.WriteUInt16(protocolId);
-                trainWriter.WriteUInt16(messageTag);
-                trainWriter.WriteUInt16((ushort)length);
-                trainWriter.ReadAndWrite(BinaryUtils.ReaderFor(content).Item2, length);
-                if (trainBuffer.Length >= TrainBufferThresholdSize)
-                {
-                    // Here, we do nothing. The server will understand that
-                    // there is a value on fillBufferRequestsQueue and will
-                    // send the buffer. After that, the server will release
-                    // by calling fillBufferRequestsQueue.RemoveAt(0);
-                }
-                else
-                {
-                    // So far, we can remove our buffer interaction
-                    // id, since we're done with this request.
-                    fillBufferRequestsQueue.Remove(sendId);
-                    // However, we tell that the buffer will be used
-                    // and sent... later.
-                    DelayTrainSend();                    
-                }
-            }
-
-            // We delay marking the train ready to be sent. Once there, the
-            // thread will understand the message and send the data. After
-            // the data is sent, the thread will clear that flag.
-            private async void DelayTrainSend()
-            {
-                if (delayedTrainSendRunning) return;
-                try
-                {
-                    delayedTrainSendRunning = true;
-                    float time = 0;
-                    while(time < TrainBoardingTime)
-                    {
-                        await Tasks.Blink();
-                        time += Time.unscaledDeltaTime;
-                    }
-
-                    // Atomically adding the send request 0, which is a magical
-                    // token telling the server to automatically send any
-                    // pending buffer.
-                    await fillBufferRequestsMutex.WaitAsync();
-                    fillBufferRequestsQueue.Add(0);
-                    fillBufferRequestsMutex.Release();
-                }
-                finally
-                {
-                    delayedTrainSendRunning = false;
-                }
+                queuedOutgoingMessages.Enqueue(new Tuple<ushort, ushort, ISerializable>(protocolId, messageTag, data));
             }
 
             // Invokes the method DoTriggerOnConnectionStart, which is
@@ -330,38 +241,19 @@ namespace AlephVault.Unity.Meetgard
             }
 
             // Invokes the method DoTriggerOnMessageEvent, which is asynchronous
-            // in nature, but after resetting the toll.
-            private void TriggerOnMessageEvent(ushort protocolId, ushort messageTag, byte[] content, int length)
+            // in nature.
+            private void TriggerOnMessageEvent()
             {
-                DoTriggerOnMessageEvent(protocolId, messageTag, content, length);
+                DoTriggerOnMessageEvent();
             }
 
             // Triggers the onMessage event into the main Unity thread.
             // This operation is done asynchronously, however.
-            private async void DoTriggerOnMessageEvent(ushort protocolId, ushort messageTag, byte[] content, int length)
+            private async void DoTriggerOnMessageEvent()
             {
-                var bufferAndReader = BinaryUtils.ReaderFor(content);
-                try
+                if (queuedIncomingMessages.TryDequeue(out var result))
                 {
-                    // Filling the messageContentUnderlyingBuffer from the network input data.
-                    // An exception will be thrown here if fetching the result involves an
-                    // attack on message size.
-                    Debug.Log($"Processing an incoming message ({protocolId}.{messageTag})");
-                    // Now, the message is to be processed.
-                    onMessage?.Invoke(protocolId, messageTag, bufferAndReader.Item2);
-                }
-                finally
-                {
-                    // Releasing the buffer, if any. But also giving a warning.
-                    if (content != null && length > 0)
-                    {
-                        Debug.LogWarning($"After processing a NetworkEndpoint incoming message, {length - bufferAndReader.Item1.Position} remained, and were discarded - unexhausted incoming buffers might be a sign of user implementation issues");
-                        new Writer(Stream.Null).ReadAndWrite(bufferAndReader.Item2, length - bufferAndReader.Item1.Position);
-                    }
-                    // We remove the mark of incoming data and also we
-                    // set the event so the lifecycle can read anything
-                    // as normal.
-                    incomingDataToll.Set();
+                    onMessage?.Invoke(result.Item1, result.Item2, result.Item3);
                 }
             }
 
@@ -369,15 +261,11 @@ namespace AlephVault.Unity.Meetgard
             private void LifeCycle()
             {
                 System.Exception lifeCycleException = null;
-                byte[] incomingMessageArray;
-                byte[] trainArray;
+                byte[] outgoingMessageArray = new byte[MaxMessageSize];
+                byte[] incomingMessageArray = new byte[MaxMessageSize];
                 try
                 {
-                    trainArray = new byte[TrainBufferSize];
-                    trainBuffer = new Buffer(trainArray);
-                    trainWriter = new Writer(trainBuffer);
                     lifeCycleException = null;
-                    incomingMessageArray = new byte[6 + MaxMessageSize];
                     // So far, remoteSocket WILL be connected.
                     TriggerOnConnectionStart();
                     // We get the stream once.
@@ -389,65 +277,21 @@ namespace AlephVault.Unity.Meetgard
                             bool inactive = true;
                             if (stream.CanRead && stream.DataAvailable)
                             {
-                                // Before reading anything, we must ensure we're allowed
-                                // to read or we must wait since another read is in progress
-                                // for this thread. We then lock the allowance.
-                                incomingDataToll.WaitOne();
-                                incomingDataToll.Reset();
-                                // First, we read the message header: 6 bytes, and rewinding.
-                                BinaryUtils.ReadUntil(stream, incomingMessageArray, 0, 6);
-                                // Then we read the message header from the buffer and check for
-                                // a valid, allowed, size.
-                                Tuple<Buffer, Reader> bufferAndReader = BinaryUtils.ReaderFor(incomingMessageArray);
-                                Debug.Log("Incoming message :: fetching header");
-                                ushort protocolId = bufferAndReader.Item2.ReadUInt16();
-                                ushort messageTag = bufferAndReader.Item2.ReadUInt16();
-                                ushort messageSize = bufferAndReader.Item2.ReadUInt16();
-                                Debug.Log($"Incoming message :: header is ({protocolId}, {messageTag}, {messageSize})");
-                                Debug.Log("Incoming message :: checking size");
-                                if (messageSize >= MaxMessageSize)
-                                {
-                                    Debug.Log($"Incoming message :: bad size! {messageSize} >= {MaxMessageSize}");
-                                    throw new MessageOverflowException($"A message was received telling it had {messageSize} bytes, which is more than the {MaxMessageSize} bytes allowed per message");
-                                }
-                                // Then we read the message content. Right now the buffer will
-                                // be at position=6, so we rewind and we will read on it, instead.
-                                Debug.Log("Incoming message :: fetching content");
-                                BinaryUtils.ReadUntil(stream, incomingMessageArray, 6, messageSize);
-                                // Triggering the event, asynchronously.
-                                TriggerOnMessageEvent(protocolId, messageTag, incomingMessageArray, messageSize);
+                                Tuple<MessageHeader, ISerializable> result;
+                                // protocolMessageFactory must throw an exception when
+                                // the message is not understood. Such exception will
+                                // blindly close the connection.
+                                result = MessageUtils.ReadMessage(stream, protocolMessageFactory, outgoingMessageArray);
+                                queuedIncomingMessages.Enqueue(new Tuple<ushort, ushort, ISerializable>(result.Item1.ProtocolId, result.Item1.MessageTag, result.Item2));
+                                TriggerOnMessageEvent();
                                 inactive = false;
                             }
-                            if (stream.CanWrite)
+                            if (stream.CanWrite && !queuedOutgoingMessages.IsEmpty)
                             {
-                                try
-                                {
-                                    fillBufferRequestsMutex.Wait();
-                                    bool hasWaiting = fillBufferRequestsQueue.Count > 0;
-                                    if (hasWaiting)
-                                    {
-                                        try
-                                        {
-                                            Debug.Log($"Sending data ({trainBuffer.Position} bytes)...");
-                                            long size = trainBuffer.Position;
-                                            // Rewinding the buffer before reading is needed!
-                                            trainBuffer.Seek(0, SeekOrigin.Begin);
-                                            if (trainBuffer.Length > 0) new Writer(stream).ReadAndWrite(new Reader(trainBuffer), size);
-                                            // Rewinding the train buffer after reading is needed as well!
-                                            trainBuffer.Seek(0, SeekOrigin.Begin);
-                                            Debug.Log("Data sent.");
-                                        }
-                                        finally
-                                        {
-                                            fillBufferRequestsQueue.RemoveAt(0);
-                                            inactive = false;
-                                        }
-                                    }
+                                while (queuedOutgoingMessages.TryDequeue(out var result)) {
+                                    MessageUtils.WriteMessage(stream, result.Item1, result.Item2, result.Item3, outgoingMessageArray);
                                 }
-                                finally
-                                {
-                                    fillBufferRequestsMutex.Release();
-                                }
+                                inactive = false;
                             }
                             if (inactive)
                             {
@@ -483,12 +327,6 @@ namespace AlephVault.Unity.Meetgard
                     }
                     // Also, clear the thread reference.
                     lifeCycle = null;
-                    // Also, if by chance there is a buffer to
-                    // send that was not by any reason, then
-                    // it must be cleared (and any pending).
-                    trainBuffer.Dispose();
-                    trainBuffer = null;
-                    trainWriter = null;
                     // Finally, trigger the disconnected event.
                     TriggerOnConnectionEnd(lifeCycleException);
                 }

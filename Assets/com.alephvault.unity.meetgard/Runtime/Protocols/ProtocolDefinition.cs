@@ -1,9 +1,7 @@
 using AlephVault.Unity.Binary;
 using System;
 using System.Linq;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace AlephVault.Unity.Meetgard
 {
@@ -41,41 +39,55 @@ namespace AlephVault.Unity.Meetgard
             // sent by the client and handled by the server.
             // While the messages' implementations will not
             // be defined here, their types will.
-            private SortedDictionary<string, Type> registeredClientMessageTypes = new SortedDictionary<string, Type>();
+            private SortedDictionary<string, Type> registeredClientMessageTypeByName = new SortedDictionary<string, Type>();
 
             // Each client message name will be mapped against
             // the tag it will have. These tags are known in
             // the object's construction, right after the
             // messages are defined and it is locked from any
             // further definition.
-            private Dictionary<string, ushort> registeredClientMessageTag = new Dictionary<string, ushort>();
+            private Dictionary<string, ushort> registeredClientMessageTagByName = new Dictionary<string, ushort>();
+
+            // Each client message type will be mapped from
+            // the tag it will have. These tags are known in
+            // the object's construction, right ater the
+            // messages are defined and it is locked from any
+            // further definition.
+            private Type[] registeredClientMessageTypeByTag = null;
 
             // Each client message name will be mapped from
             // the tag it will have. These tags are known in
             // the object's construction, right after the
             // messages are defined and it is locked from any
             // further definition.
-            private string[] registeredClientMessageByTag = null;
+            private string[] registeredClientMessageNameByTag = null;
 
             // The server messages are those that will be
             // sent by the server and handled by the client.
             // While the messages' implementations will not
             // be defined here, their types will.
-            private SortedDictionary<string, Type> registeredServerMessageTypes = new SortedDictionary<string, Type>();
+            private SortedDictionary<string, Type> registeredServerMessageTypeByName = new SortedDictionary<string, Type>();
 
             // Each server message name will be mapped against
             // the tag it will have. These tags are known in
             // the object's construction, right after the
             // messages are defined and it is locked from any
             // further definition.
-            private Dictionary<string, ushort> registeredServerMessageTag = new Dictionary<string, ushort>();
+            private Dictionary<string, ushort> registeredServerMessageTagByName = new Dictionary<string, ushort>();
+
+            // Each server message type will be mapped from
+            // the tag it will have. These tags are known in
+            // the object's construction, right after the
+            // messages are defined and it is locked from any
+            // further definition.
+            private Type[] registeredServerMessageTypeByTag = null;
 
             // Each server message name will be mapped from
             // the tag it will have. These tags are known in
             // the object's construction, right after the
             // messages are defined and it is locked from any
             // further definition.
-            private string[] registeredServerMessageByTag = null;
+            private string[] registeredServerMessageNameByTag = null;
 
             // Tells whether the definition is already done.
             // This flag is true after the object is fully
@@ -86,15 +98,17 @@ namespace AlephVault.Unity.Meetgard
             {
                 DefineMessages();
                 isDefined = true;
-                registeredClientMessageByTag = registeredClientMessageTypes.Keys.ToArray();
-                for(ushort i = 0; i < registeredClientMessageByTag.Length; i++)
+                registeredClientMessageNameByTag = registeredClientMessageTypeByName.Keys.ToArray();
+                registeredClientMessageTypeByTag = registeredClientMessageTypeByName.Values.ToArray();
+                for (ushort i = 0; i < registeredClientMessageNameByTag.Length; i++)
                 {
-                    registeredClientMessageTag.Add(registeredClientMessageByTag[i], i);
+                    registeredClientMessageTagByName.Add(registeredClientMessageNameByTag[i], i);
                 }
-                registeredServerMessageByTag = registeredServerMessageTypes.Keys.ToArray();
-                for (ushort i = 0; i < registeredServerMessageByTag.Length; i++)
+                registeredServerMessageNameByTag = registeredServerMessageTypeByName.Keys.ToArray();
+                registeredServerMessageTypeByTag = registeredServerMessageTypeByName.Values.ToArray();
+                for (ushort i = 0; i < registeredServerMessageNameByTag.Length; i++)
                 {
-                    registeredServerMessageTag.Add(registeredServerMessageByTag[i], i);
+                    registeredServerMessageTagByName.Add(registeredServerMessageNameByTag[i], i);
                 }
             }
 
@@ -111,9 +125,9 @@ namespace AlephVault.Unity.Meetgard
             /// </summary>
             /// <typeparam name="T">The tpye of the message's content</typeparam>
             /// <param name="messageKey">The message's key</param>
-            protected void DefineClientMessage<T>(string messageKey) where T : ISerializable
+            protected void DefineClientMessage<T>(string messageKey) where T : ISerializable, new()
             {
-                DefineMessage<T>(messageKey, "client", registeredClientMessageTypes);
+                DefineMessage<T>(messageKey, "client", registeredClientMessageTypeByName);
             }
 
             /// <summary>
@@ -122,14 +136,14 @@ namespace AlephVault.Unity.Meetgard
             /// </summary>
             /// <typeparam name="T">The type of the message's content</typeparam>
             /// <param name="messageKey">The message's key</param>
-            protected void DefineServerMessage<T>(string messageKey) where T : ISerializable
+            protected void DefineServerMessage<T>(string messageKey) where T : ISerializable, new()
             {
-                DefineMessage<T>(messageKey, "server", registeredServerMessageTypes);
+                DefineMessage<T>(messageKey, "server", registeredServerMessageTypeByName);
             }
 
             // Registers a message using a particular serializable
             // type, and a particular context.
-            private void DefineMessage<T>(string messageKey, string scope, SortedDictionary<string, Type> messages) where T : ISerializable
+            private void DefineMessage<T>(string messageKey, string scope, SortedDictionary<string, Type> messages) where T : ISerializable, new()
             {
                 if (isDefined)
                 {
@@ -164,9 +178,9 @@ namespace AlephVault.Unity.Meetgard
             /// </summary>
             /// <param name="messageKey">The message's key</param>
             /// <returns>The type of the message's content</returns>
-            public Type GetClientMessageType(string messageKey)
+            public Type GetClientMessageTypeByName(string messageKey)
             {
-                return GetMessageType(messageKey, registeredClientMessageTypes);
+                return GetMessageTypeByName(messageKey, registeredClientMessageTypeByName);
             }
 
             /// <summary>
@@ -175,14 +189,14 @@ namespace AlephVault.Unity.Meetgard
             /// </summary>
             /// <param name="messageKey">The message's key</param>
             /// <returns>The type of the message's content</returns>
-            public Type GetServerMessageType(string messageKey)
+            public Type GetServerMessageTypeByName(string messageKey)
             {
-                return GetMessageType(messageKey, registeredServerMessageTypes);
+                return GetMessageTypeByName(messageKey, registeredServerMessageTypeByName);
             }
 
             // Gets a registered message's type. The type will be
             // an ISerializable implementor.
-            private Type GetMessageType(string messageKey, SortedDictionary<string, Type> messages)
+            private Type GetMessageTypeByName(string messageKey, SortedDictionary<string, Type> messages)
             {
                 return messages[messageKey];
             }
@@ -193,7 +207,7 @@ namespace AlephVault.Unity.Meetgard
             /// <returns>An enumerator over all of the client message types</returns>
             public SortedDictionary<string, Type>.Enumerator GetClientMessageTypes()
             {
-                return registeredClientMessageTypes.GetEnumerator();
+                return registeredClientMessageTypeByName.GetEnumerator();
             }
 
             /// <summary>
@@ -202,7 +216,7 @@ namespace AlephVault.Unity.Meetgard
             /// <returns>An enumerator over all of the server message types</returns>
             public SortedDictionary<string, Type>.Enumerator GetServerMessageTypes()
             {
-                return registeredServerMessageTypes.GetEnumerator();
+                return registeredServerMessageTypeByName.GetEnumerator();
             }
 
             /// <summary>
@@ -213,9 +227,9 @@ namespace AlephVault.Unity.Meetgard
             /// </summary>
             /// <param name="messageKey">The key of the message of our interest</param>
             /// <returns>The tag that will be sent or mapped</returns>
-            public ushort GetServerMessageTag(string messageKey)
+            public ushort GetServerMessageTagByName(string messageKey)
             {
-                return registeredServerMessageTag[messageKey];
+                return registeredServerMessageTagByName[messageKey];
             }
 
             /// <summary>
@@ -226,9 +240,76 @@ namespace AlephVault.Unity.Meetgard
             /// </summary>
             /// <param name="messageKey">The key of the message of our interest</param>
             /// <returns>The tag that will be sent or mapped</returns>
-            public ushort GetClientMessageTag(string messageKey)
+            public ushort GetClientMessageTagByName(string messageKey)
             {
-                return registeredClientMessageTag[messageKey];
+                return registeredClientMessageTagByName[messageKey];
+            }
+
+            /// <summary>
+            ///   Gets the corresponding type for a server message tag.
+            /// </summary>
+            /// <param name="tag">The message tag to get the underlying type for</param>
+            /// <returns>The message type corresponding to that tag</returns>
+            public Type GetServerMessageTypeByTag(ushort tag)
+            {
+                return registeredServerMessageTypeByTag[tag];
+            }
+
+            /// <summary>
+            ///   Gets the corresponding type for a client message tag.
+            /// </summary>
+            /// <param name="tag">The message tag to get the underlying type for</param>
+            /// <returns>The message type corresponding to that tag</returns>
+            public Type GetClientMessageTypeByTag(ushort tag)
+            {
+                return registeredClientMessageTypeByTag[tag];
+            }
+
+            /// <summary>
+            ///   <para>
+            ///     Given a tag, it retrieves the type of server message
+            ///     corresponding to it. That type is instantiated. On
+            ///     key not found (unknown tag) the result will be null.
+            ///   </para>
+            ///   <para>
+            ///     Meant to be used by clients when receiving server messages.
+            ///   </para>
+            /// </summary>
+            /// <param name="tag">The tag to spawn a message for</param>
+            /// <returns>A new <see cref="ISerializable"/> instance, or null on unknown tag</returns>
+            public ISerializable NewServerMessageContainer(ushort tag)
+            {
+                return NewMessageContainer(tag, registeredServerMessageTypeByTag);
+            }
+
+            /// <summary>
+            ///   <para>
+            ///     Given a tag, it retrieves the type of client message
+            ///     corresponding to it. That type is instantiated. On
+            ///     key not found (unknown tag) the result will be null.
+            ///   </para>
+            ///   <para>
+            ///     Meant to be used by servers when receiving server messages.
+            ///   </para>
+            /// </summary>
+            /// <param name="tag">The tag to spawn a message for</param>
+            /// <returns>A new <see cref="ISerializable"/> instance, or null on unknown tag</returns>
+            public ISerializable NewClientMessageContainer(ushort tag)
+            {
+                return NewMessageContainer(tag, registeredClientMessageTypeByTag);
+            }
+
+            // Instantiates an ISerializable object according to its tag.
+            private ISerializable NewMessageContainer(ushort tag, Type[] typeByTag)
+            {
+                if (tag >= typeByTag.Length)
+                {
+                    return null;
+                }
+                else
+                {
+                    return (ISerializable)Activator.CreateInstance(typeByTag[tag]);
+                }
             }
         }
     }

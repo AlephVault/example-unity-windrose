@@ -25,7 +25,12 @@ namespace AlephVault.Unity.Meetgard
         /// </summary>
         public partial class NetworkRemoteEndpoint : NetworkEndpoint
         {
-            // Related to the life-cycle and underlying objects.
+            /// <summary>
+            ///   The time to sleep, on each iteration, when no data to
+            ///   read or write is present in the socket on a given
+            ///   iteration.
+            /// </summary>
+            public readonly float IdleSleepTime;
 
             // A life-cycle thread for our socket.
             private Thread lifeCycle = null;

@@ -33,22 +33,6 @@ namespace AlephVault.Unity.Meetgard
             // king of architecture.
             private static HashSet<TcpClient> endpointSocketsInUse = new HashSet<TcpClient>();
 
-            // Related to the internal buffering and threads.
-
-            /// <summary>
-            ///   The time to sleep, on each iteration, when no data to
-            ///   read or write is present in the socket on a given
-            ///   iteration.
-            /// </summary>
-            public readonly float IdleSleepTime;
-
-            /// <summary>
-            ///   The maximum size of each individual message to be sent.
-            /// </summary>
-            public readonly ushort MaxMessageSize;
-
-            // Related to the life-cycle and underlying objects.
-
             // The socket, created in our life-cycle.
             private TcpClient remoteSocket = null;
 
@@ -60,7 +44,7 @@ namespace AlephVault.Unity.Meetgard
             public NetworkRemoteEndpoint(
                 TcpClient endpointSocket, Func<ushort, ushort, ISerializable> protocolMessageFactory,
                 Action onConnected, Action<ushort, ushort, ISerializable> onArrival, Action<System.Exception> onDisconnected,
-                ushort maxMessageSize = 1024, float trainBoardingTime = 0.75f, float idleSleepTime = 0.01f
+                ushort maxMessageSize = 1024, float idleSleepTime = 0.01f
             ) {
                 if (endpointSocket == null || !endpointSocket.Connected || endpointSocketsInUse.Contains(endpointSocket))
                 {

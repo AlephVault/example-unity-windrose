@@ -14,6 +14,11 @@ namespace AlephVault.Unity.Meetgard
 
         public partial class NetworkRemoteEndpoint : NetworkEndpoint
         {
+            /// <summary>
+            ///   The maximum size of each individual message to be sent.
+            /// </summary>
+            public readonly ushort MaxMessageSize;
+
             // The list of queued outgoing messages.
             private ConcurrentQueue<Tuple<ushort, ushort, ISerializable>> queuedOutgoingMessages = new ConcurrentQueue<Tuple<ushort, ushort, ISerializable>>();
 

@@ -1,3 +1,4 @@
+using AlephVault.Unity.Binary;
 using AlephVault.Unity.Meetgard.Protocols;
 using System.Collections;
 using System.Collections.Generic;
@@ -16,6 +17,13 @@ namespace AlephVault.Unity.Meetgard
         /// </summary>
         public interface IProtocolClientSide
         {
+            /// <summary>
+            ///   Creates a message container for an incoming server message,
+            ///   with a particular inner message tag.
+            /// </summary>
+            /// <param name="tag">The message tag to get the container for</param>
+            /// <returns>The message container</returns>
+            public ISerializable NewMessageContainer(ushort tag);
         }
     }
 }

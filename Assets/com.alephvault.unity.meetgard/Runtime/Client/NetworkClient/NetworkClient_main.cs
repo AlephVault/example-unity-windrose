@@ -1,6 +1,5 @@
 using AlephVault.Unity.Support.Utils;
 using System;
-using System.IO;
 using UnityEngine;
 
 namespace AlephVault.Unity.Meetgard
@@ -21,7 +20,7 @@ namespace AlephVault.Unity.Meetgard
         ///     instantiated in the same scene.
         ///   </para>
         /// </summary>
-        public class NetworkClient : MonoBehaviour
+        public partial class NetworkClient : MonoBehaviour
         {
             /// <summary>
             ///   <para>
@@ -52,43 +51,6 @@ namespace AlephVault.Unity.Meetgard
             // The underlying network endpoint, or null if the connection
             // is not established.
             private NetworkRemoteEndpoint endpoint = null;
-
-            /// <summary>
-            ///   <para>
-            ///     This event is triggered on successful connection.
-            ///   </para>
-            ///   <para>
-            ///     This event is triggered in an asynchronous context.
-            ///   </para>
-            /// </summary>
-            public event Action OnConnected = null;
-
-            /// <summary>
-            ///   <para>
-            ///     This event is triggered when a new message arrives.
-            ///     PLEASE NOTE: ONLY ONE HANDLER SHOULD HANDLE THE INCOMING MESSAGE, AND IT
-            ///     SHOULD EXHAUST THE BUFFER COMPLETELY.
-            ///   </para>
-            ///   <para>
-            ///     This event is triggered in an asynchronous context.
-            ///   </para>
-            /// </summary>
-            public event Action<ushort, ushort, ISerializable> OnMessage = null;
-
-            /// <summary>
-            ///   <para>
-            ///     This event is triggered on disconnection. An Exception argument tells
-            ///     whether the disconnection was graceful or not: by having a null
-            ///     value, it was a graceful termination.
-            ///   </para>
-            ///   <para>
-            ///     This event is triggered in an asynchronous context.
-            ///   </para>
-            /// </summary>
-            public event Action<System.Exception> OnDisconnected = null;
-
-            // Protocols will exist by their id (0-based)
-            private IProtocolClientSide[] protocols = null;
 
             /// <summary>
             ///   Tells whether the endpoint is active or not. While Active, another
@@ -143,37 +105,6 @@ namespace AlephVault.Unity.Meetgard
                     client, NewMessageContainer, TriggerOnConnected, TriggerOnMessage, TriggerOnDisconnected,
                     maxMessageSize, idleSleepTime
                 );
-            }
-
-            // Returns an object to serve as the receiver of specific
-            // message data. This must be implemented with the protocol.
-            private ISerializable NewMessageContainer(ushort protocolId, ushort messageTag)
-            {
-                // TODO Implement this!!!
-                throw new NotImplementedException();
-            }
-
-            // Triggers the OnConnected event. This occurs inside an asynchronous
-            // context, already.
-            private void TriggerOnConnected()
-            {
-                OnConnected?.Invoke();
-            }
-
-            // Triggers the OnMessage event. This occurs inside an asynchronous
-            // context, already.
-            private void TriggerOnMessage(ushort protocolId, ushort messageTag, ISerializable content)
-            {
-                OnMessage?.Invoke(protocolId, messageTag, content);
-            }
-
-            // Triggers the OnDisconnected event. This occurs inside an asynchronous
-            // context, already. Before triggering, it releases the current value in
-            // the endpoint variable.
-            private void TriggerOnDisconnected(System.Exception e)
-            {
-                endpoint = null;
-                OnDisconnected?.Invoke(e);
             }
 
             /// <summary>

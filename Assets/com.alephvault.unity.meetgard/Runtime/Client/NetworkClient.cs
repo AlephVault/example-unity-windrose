@@ -49,20 +49,6 @@ namespace AlephVault.Unity.Meetgard
             [SerializeField]
             private ushort maxMessageSize = 1024;
 
-            /// <summary>
-            ///   <para>
-            ///     The time this client waits for more data after some
-            ///     message data was sent to the internal outgoing messages
-            ///     buffer.
-            ///   </para>
-            ///   <para>
-            ///     This setting should match whatever is set in the server
-            ///     and supported by the protocols to use.
-            ///   </para>
-            /// </summary>
-            [SerializeField]
-            private float trainBoardingTime = 0.75f;
-
             // The underlying network endpoint, or null if the connection
             // is not established.
             private NetworkRemoteEndpoint endpoint = null;
@@ -87,7 +73,7 @@ namespace AlephVault.Unity.Meetgard
             ///     This event is triggered in an asynchronous context.
             ///   </para>
             /// </summary>
-            public event Action<ushort, ushort, Reader> OnMessage = null;
+            public event Action<ushort, ushort, ISerializable> OnMessage = null;
 
             /// <summary>
             ///   <para>
@@ -100,6 +86,9 @@ namespace AlephVault.Unity.Meetgard
             ///   </para>
             /// </summary>
             public event Action<System.Exception> OnDisconnected = null;
+
+            // Protocols will exist by their id (0-based)
+            private IProtocolClientSide[] protocols = null;
 
             /// <summary>
             ///   Tells whether the endpoint is active or not. While Active, another
@@ -116,7 +105,6 @@ namespace AlephVault.Unity.Meetgard
             private void Awake()
             {
                 maxMessageSize = Values.Clamp(512, maxMessageSize, 6144);
-                trainBoardingTime = Values.Clamp(0.5f, trainBoardingTime, 1f);
                 idleSleepTime = Values.Clamp(0.005f, idleSleepTime, 0.5f);
             }
 
@@ -152,9 +140,17 @@ namespace AlephVault.Unity.Meetgard
                 TcpClient client = new TcpClient();
                 client.Connect(address, port);
                 endpoint = new NetworkRemoteEndpoint(
-                    client, TriggerOnConnected, TriggerOnMessage, TriggerOnDisconnected,
-                    maxMessageSize, trainBoardingTime, idleSleepTime
+                    client, NewMessageContainer, TriggerOnConnected, TriggerOnMessage, TriggerOnDisconnected,
+                    maxMessageSize, idleSleepTime
                 );
+            }
+
+            // Returns an object to serve as the receiver of specific
+            // message data. This must be implemented with the protocol.
+            private ISerializable NewMessageContainer(ushort protocolId, ushort messageTag)
+            {
+                // TODO Implement this!!!
+                throw new NotImplementedException();
             }
 
             // Triggers the OnConnected event. This occurs inside an asynchronous
@@ -166,9 +162,9 @@ namespace AlephVault.Unity.Meetgard
 
             // Triggers the OnMessage event. This occurs inside an asynchronous
             // context, already.
-            private void TriggerOnMessage(ushort protocolId, ushort messageTag, Reader reader)
+            private void TriggerOnMessage(ushort protocolId, ushort messageTag, ISerializable content)
             {
-                OnMessage?.Invoke(protocolId, messageTag, reader);
+                OnMessage?.Invoke(protocolId, messageTag, content);
             }
 
             // Triggers the OnDisconnected event. This occurs inside an asynchronous
@@ -187,15 +183,14 @@ namespace AlephVault.Unity.Meetgard
             /// <param name="protocolId">The id of protocol for this message</param>
             /// <param name="messageTag">The tag of the message being sent</param>
             /// <param name="content">The input array, typically with a non-zero capacity</param>
-            /// <param name="length">The actual length of the content in the array</param>
-            public Task Send(ushort protocolId, ushort messageTag, byte[] content, int length)
+            public Task Send(ushort protocolId, ushort messageTag, ISerializable content)
             {
                 if (!IsRunning)
                 {
                     throw new InvalidOperationException("The endpoint is not running - No data can be sent");
                 }
 
-                return endpoint.Send(protocolId, messageTag, content, length);
+                return endpoint.Send(protocolId, messageTag, content);
             }
 
             /// <summary>

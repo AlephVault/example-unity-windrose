@@ -68,6 +68,7 @@ namespace AlephVault.Unity.Meetgard
             {
                 maxMessageSize = Values.Clamp(512, maxMessageSize, 6144);
                 idleSleepTime = Values.Clamp(0.005f, idleSleepTime, 0.5f);
+                SetupClientProtocols();
             }
 
             private void OnDestroy()

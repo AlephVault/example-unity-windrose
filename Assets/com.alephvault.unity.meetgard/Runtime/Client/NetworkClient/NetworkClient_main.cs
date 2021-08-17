@@ -115,11 +115,17 @@ namespace AlephVault.Unity.Meetgard
             /// <param name="protocolId">The id of protocol for this message</param>
             /// <param name="messageTag">The tag of the message being sent</param>
             /// <param name="content">The input array, typically with a non-zero capacity</param>
-            public Task Send(ushort protocolId, ushort messageTag, ISerializable content)
+            public Task Send<T>(ushort protocolId, ushort messageTag, T content) where T : ISerializable
             {
                 if (!IsRunning)
                 {
                     throw new InvalidOperationException("The endpoint is not running - No data can be sent");
+                }
+
+                Type expectedType = GetOutgoingMessageType(protocolId, messageTag);
+                if (typeof(T) != expectedType)
+                {
+                    throw new OutgoingMessageTypeMismatchException($"Outgoing message ({protocolId}, {messageTag}) was attempted with type {typeof(T).FullName} when {expectedType.FullName} was expected");
                 }
 
                 return endpoint.Send(protocolId, messageTag, content);

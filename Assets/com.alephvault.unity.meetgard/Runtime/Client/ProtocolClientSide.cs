@@ -57,6 +57,24 @@ namespace AlephVault.Unity.Meetgard
             }
 
             /// <summary>
+            ///   Gets the type of a particular outgoing message tag. Returns
+            ///   null if the tag is not valid.
+            /// </summary>
+            /// <param name="tag">The tag to get the type for</param>
+            /// <returns>The type for the given tag</returns>
+            public Type GetOutgoingMessageType(ushort tag)
+            {
+                try
+                {
+                    return definition.GetClientMessageTypeByTag(tag);
+                }
+                catch(IndexOutOfRangeException)
+                {
+                    return null;
+                }
+            }
+
+            /// <summary>
             ///   Gets the handler for a given requested tag.
             /// </summary>
             /// <param name="tag">The message tag to get the handler for</param>

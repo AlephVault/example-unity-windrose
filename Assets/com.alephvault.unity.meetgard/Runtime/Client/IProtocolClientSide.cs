@@ -19,6 +19,14 @@ namespace AlephVault.Unity.Meetgard
         public interface IProtocolClientSide
         {
             /// <summary>
+            ///   Gets the type of a particular outgoing message tag. Returns
+            ///   null if the tag is not valid.
+            /// </summary>
+            /// <param name="tag">The tag to get the type for</param>
+            /// <returns>The type for the given tag</returns>
+            public Type GetOutgoingMessageType(ushort tag);
+
+            /// <summary>
             ///   Creates a message container for an incoming server message,
             ///   with a particular inner message tag.
             /// </summary>

@@ -30,12 +30,30 @@ namespace AlephVault.Unity.Meetgard
             {
                 if (protocolId >= protocols.Length)
                 {
-                    throw new UnexpectedMessageException($"Unexpected message header: ({protocolId}, {messageTag})");
+                    throw new UnexpectedMessageException($"Unexpected incoming message protocol/tag: ({protocolId}, {messageTag})");
                 }
                 ISerializable result = protocols[protocolId].NewMessageContainer(messageTag);
                 if (result == null)
                 {
-                    throw new UnexpectedMessageException($"Unexpected message header: ({protocolId}, {messageTag})");
+                    throw new UnexpectedMessageException($"Unexpected outgoing message protocol/tag: ({protocolId}, {messageTag})");
+                }
+                else
+                {
+                    return result;
+                }
+            }
+
+            // Returns the expected type for a message to be sent.
+            private Type GetOutgoingMessageType(ushort protocolId, ushort messageTag)
+            {
+                if (protocolId >= protocols.Length)
+                {
+                    throw new UnexpectedMessageException($"Unexpected outgoing message protocol/tag: ({protocolId}, {messageTag})");
+                }
+                Type result = protocols[protocolId].GetOutgoingMessageType(messageTag);
+                if (result == null)
+                {
+                    throw new UnexpectedMessageException($"Unexpected outgoing message protocol/tag: ({protocolId}, {messageTag})");
                 }
                 else
                 {

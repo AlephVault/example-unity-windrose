@@ -11,12 +11,15 @@ namespace AlephVault.Unity.Meetgard
     namespace Client
     {
         /// <summary>
-        ///   Client-side implementation for the
-        ///   "zero" protocol.
+        ///   Client-side implementation for the "zero" protocol.
         /// </summary>
         public class ZeroProtocolClientSide : ProtocolClientSide<ZeroProtocolDefinition>
         {
-            // TODO implement
+            protected override void SetIncomingMessageHandlers()
+            {
+                // TODO implement this!!! And also implement the ZeroProtocolDefinition itself.
+                throw new NotImplementedException();
+            }
         }
     }
 }

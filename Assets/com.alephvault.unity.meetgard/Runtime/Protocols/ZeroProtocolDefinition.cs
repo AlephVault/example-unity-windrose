@@ -18,7 +18,8 @@ namespace AlephVault.Unity.Meetgard
         {
             protected override void DefineMessages()
             {
-                // TODO implement later.
+                // TODO implement this!!!
+                throw new NotImplementedException();
             }
         }
     }

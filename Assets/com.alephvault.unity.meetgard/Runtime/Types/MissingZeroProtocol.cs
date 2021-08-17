@@ -12,7 +12,7 @@ namespace AlephVault.Unity.Meetgard
         {
             public MissingZeroProtocol() : base() {}
             public MissingZeroProtocol(string message) : base(message) {}
-            public v(string message, System.Exception inner) : base(message, inner) {}
+            public MissingZeroProtocol(string message, System.Exception inner) : base(message, inner) {}
         }
     }
 }

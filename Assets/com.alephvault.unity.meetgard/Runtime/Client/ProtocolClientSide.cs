@@ -1,8 +1,8 @@
 using AlephVault.Unity.Binary;
 using AlephVault.Unity.Meetgard.Protocols;
 using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace AlephVault.Unity.Meetgard
@@ -19,22 +19,26 @@ namespace AlephVault.Unity.Meetgard
         ///   </para>
         /// </summary>
         [RequireComponent(typeof(NetworkClient))]
-        // TODO also require: "Zero-th Protocol Client Side".
+        // TODO Later, ensure NetworkClient is abstract and we have
+        // TODO both NetworkRemoteClient and NetworkLocalClient.
         [DisallowMultipleComponent]
         public abstract class ProtocolClientSide<Definition> : MonoBehaviour, IProtocolClientSide where Definition : ProtocolDefinition, new()
         {
+            // The related network client.
+            private NetworkClient client;
+
             // The protocol definition instance is created on construction.
             private Definition definition = new Definition();
 
-            // The handlers for this protocol.
-            private Action<NetworkClient, ISerializable>[] incomingMessageHandlers = null;
+            // The handlers for this protocol. The action is already wrapped
+            // to refer the current protocol.
+            private Action<ISerializable>[] incomingMessageHandlers = null;
 
-            /// <summary>
-            ///   Initializes the handlers, according to its definition.
-            /// </summary>
-            public ProtocolClientSide()
+            // Initializes the handlers, according to its definition.
+            private void Awake()
             {
-                incomingMessageHandlers = new Action<NetworkClient, ISerializable>[definition.ServerMessagesCount()];
+                client = GetComponent<NetworkClient>();
+                incomingMessageHandlers = new Action<ISerializable>[definition.ServerMessagesCount()];
             }
 
             /// <summary>
@@ -93,11 +97,13 @@ namespace AlephVault.Unity.Meetgard
             }
 
             /// <summary>
-            ///   Gets the handler for a given requested tag.
+            ///   Gets the handler for a given requested tag. The returned
+            ///   handler already wraps an original handler also referencing
+            ///   the current protocol.
             /// </summary>
             /// <param name="tag">The message tag to get the handler for</param>
             /// <returns>The message container</returns>
-            public Action<NetworkClient, ISerializable> GetIncomingMessageHandler(ushort tag)
+            public Action<ISerializable> GetIncomingMessageHandler(ushort tag)
             {
                 try
                 {
@@ -107,6 +113,33 @@ namespace AlephVault.Unity.Meetgard
                 {
                     return null;
                 }
+            }
+
+            /// <summary>
+            ///   Sends a message using another protocol. The type must match
+            ///   whatever was used to register the message. Also, the protocol
+            ///   specified in the type must exist as a sibling component.
+            /// </summary>
+            /// <typeparam name="T">The type of the message being sent</typeparam>
+            /// <param name="message">The name of the message being sent</param>
+            /// <param name="content">The content of the message being sent</param>
+            public Task Send<T>(string message, T content) where T : ISerializable
+            {
+                return client.Send(this, message, content);
+            }
+
+            /// <summary>
+            ///   Sends a message using this protocol. The type must match
+            ///   whatever was used to register the message.
+            /// </summary>
+            /// <typeparam name="T">The type of the message being sent</typeparam>
+            /// <param name="message">The name of the message being sent</param>
+            /// <param name="content">The content of the message being sent</param>
+            public Task Send<ProtocolType, T>(string message, T content)
+                where ProtocolType : IProtocolClientSide
+                where T : ISerializable
+            {
+                return client.Send<ProtocolType, T>(message, content);
             }
         }
     }

@@ -3,6 +3,7 @@ using AlephVault.Unity.Meetgard.Protocols;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace AlephVault.Unity.Meetgard
@@ -43,11 +44,32 @@ namespace AlephVault.Unity.Meetgard
             public ISerializable NewMessageContainer(ushort tag);
 
             /// <summary>
-            ///   Gets a registered client side handler for a given tag.
+            ///   Gets the handler for a given requested tag. The returned
+            ///   handler already wraps an original handler also referencing
+            ///   the current protocol.
             /// </summary>
             /// <param name="tag">The message tag to get the handler for</param>
             /// <returns>The message handler</returns>
-            public Action<NetworkClient, ISerializable> GetIncomingMessageHandler(ushort tag);
+            public Action<ISerializable> GetIncomingMessageHandler(ushort tag);
+
+            /// <summary>
+            ///   Sends a message using this protocol. The type must match
+            ///   whatever was used to register the message.
+            /// </summary>
+            /// <typeparam name="T">The type of the message being sent</typeparam>
+            /// <param name="message">The name of the message being sent</param>
+            /// <param name="content">The content of the message being sent</param>
+            public Task Send<T>(string message, T content) where T : ISerializable;
+
+            /// <summary>
+            ///   Sends a message using another protocol. The type must match
+            ///   whatever was used to register the message. Also, the protocol
+            ///   specified in the type must exist as a sibling component.
+            /// </summary>
+            /// <typeparam name="T">The type of the message being sent</typeparam>
+            /// <param name="message">The name of the message being sent</param>
+            /// <param name="content">The content of the message being sent</param>
+            public Task Send<ProtocolType, T>(string message, T content) where ProtocolType : IProtocolClientSide where T : ISerializable;
         }
     }
 }

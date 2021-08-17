@@ -109,7 +109,7 @@ namespace AlephVault.Unity.Meetgard
             }
 
             /// <summary>
-            ///   Sends a stream through the network. This function is asynchronous
+            ///   Sends a message through the network. This function is asynchronous
             ///   and will wait until no other messages are pending to be sent.
             /// </summary>
             /// <typeparam name="T">The type of the message being sent</typeparam>
@@ -151,7 +151,7 @@ namespace AlephVault.Unity.Meetgard
             }
 
             /// <summary>
-            ///   Sends a stream through the network. This function is asynchronous
+            ///   Sends a message through the network. This function is asynchronous
             ///   and will wait until no other messages are pending to be sent.
             /// </summary>
             /// <typeparam name="T">The type of the message being sent</typeparam>

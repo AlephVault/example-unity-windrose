@@ -100,10 +100,10 @@ namespace AlephVault.Unity.Meetgard
             {
                 // At this point, the protocolId exists. Also, the messageTag exists.
                 // We get the client-side handler, and we invoke it.
-                Action<NetworkClient, ISerializable> handler = protocols[protocolId].GetIncomingMessageHandler(messageTag);
+                Action<ISerializable> handler = protocols[protocolId].GetIncomingMessageHandler(messageTag);
                 if (handler != null)
                 {
-                    handler(this, message);
+                    handler(message);
                 }
                 else
                 {

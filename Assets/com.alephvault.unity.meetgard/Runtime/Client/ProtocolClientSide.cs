@@ -104,6 +104,35 @@ namespace AlephVault.Unity.Meetgard
             }
 
             /// <summary>
+            ///   Creates a sender shortcut, intended to send the message multiple times
+            ///   and spend time on message mapping only once. Intended to be used on
+            ///   lazy initialization of senders, or eager initializationin some sort of
+            ///   extended <see cref="Awake"/> or similar method.
+            /// </summary>
+            /// <typeparam name="T">The type of the message being sent</typeparam>
+            /// <typeparam name="ProtocolType">The protocol type for this message. One instance of it must be an already attached component</param>
+            /// <param name="message">The message (as it was registered) that this sender will send</param>
+            protected Func<T, Task> MakeSender<T>(string message) where T : ISerializable
+            {
+                return client.MakeSender<T>(this, message);
+            }
+
+            /// <summary>
+            ///   Creates a sender shortcut, intended to send the message multiple times
+            ///   and spend time on message mapping only once. Intended to be used on
+            ///   lazy initialization of senders, or eager initializationin some sort of
+            ///   extended <see cref="Awake"/> or similar method.
+            /// </summary>
+            /// <typeparam name="ProtocolType">The protocol type for this message. One instance of it must be an already attached component</param>
+            /// <typeparam name="T">The type of the message this sender will send</typeparam>
+            /// <param name="message">The name of the message this sender will send</param>
+            /// <returns>A function that takes the message to send, of the appropriate type, and sends it (asynchronously)</returns>
+            protected Func<T, Task> MakeSender<ProtocolType, T>(string message) where ProtocolType : IProtocolClientSide where T : ISerializable
+            {
+                return client.MakeSender<ProtocolType, T>(message);
+            }
+
+            /// <summary>
             ///   Creates a message container for an incoming server message,
             ///   with a particular inner message tag.
             /// </summary>

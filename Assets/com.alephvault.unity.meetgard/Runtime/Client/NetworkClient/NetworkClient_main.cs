@@ -142,9 +142,9 @@ namespace AlephVault.Unity.Meetgard
                     throw new UnexpectedMessageException($"Unexpected outgoing protocol/message: ({protocol.GetType().FullName}, {message})", e);
                 }
 
-                if (typeof(T) != expectedType)
+                if (content.GetType() != expectedType)
                 {
-                    throw new OutgoingMessageTypeMismatchException($"Outgoing message ({protocol.GetType().FullName}, {message}) was attempted with type {typeof(T).FullName} when {expectedType.FullName} was expected");
+                    throw new OutgoingMessageTypeMismatchException($"Outgoing message ({protocol.GetType().FullName}, {message}) was attempted with type {content.GetType().FullName} when {expectedType.FullName} was expected");
                 }
 
                 return endpoint.Send(protocolId, messageTag, content);
@@ -168,6 +168,76 @@ namespace AlephVault.Unity.Meetgard
                 else
                 {
                     return Send(protocol, message, content);
+                }
+            }
+
+            /// <summary>
+            ///   Creates a sender shortcut, intended to send the message multiple times
+            ///   and spend time on message mapping only once.
+            /// </summary>
+            /// <typeparam name="T">The type of the message being sent</typeparam>
+            /// <typeparam name="ProtocolType">The protocol type for this message. One instance of it must be an already attached component</param>
+            /// <param name="message">The message (as it was registered) that this sender will send</param>
+            public Func<T, Task> MakeSender<T>(IProtocolClientSide protocol, string message) where T : ISerializable
+            {
+                if (protocol == null)
+                {
+                    throw new ArgumentNullException("protocol");
+                }
+
+                ushort protocolId = GetProtocolId(protocol);
+                ushort messageTag;
+                Type expectedType;
+                try
+                {
+                    messageTag = GetOutgoingMessageTag(protocolId, message);
+                    expectedType = GetOutgoingMessageType(protocolId, messageTag);
+                }
+                catch (UnexpectedMessageException e)
+                {
+                    // Reformatting the exception.
+                    throw new UnexpectedMessageException($"Unexpected outgoing protocol/message: ({protocol.GetType().FullName}, {message})", e);
+                }
+
+                if (typeof(T) != expectedType)
+                {
+                    throw new OutgoingMessageTypeMismatchException($"Message sender creation for protocol / message ({protocol.GetType().FullName}, {message}) was attempted with type {typeof(T).FullName} when {expectedType.FullName} was expected");
+                }
+
+                return (content) =>
+                {
+                    if (!IsRunning)
+                    {
+                        throw new InvalidOperationException("The endpoint is not running - No data can be sent");
+                    }
+
+                    if (content.GetType() != expectedType)
+                    {
+                        throw new OutgoingMessageTypeMismatchException($"Outgoing message ({protocol.GetType().FullName}, {message}) was attempted with type {content.GetType().FullName} when {expectedType.FullName} was expected");
+                    }
+
+                    return endpoint.Send(protocolId, messageTag, content);
+                };
+            }
+
+            /// <summary>
+            ///   Creates a sender shortcut, intended to send the message multiple times
+            ///   and spend time on message mapping only once.
+            /// </summary>
+            /// <typeparam name="ProtocolType">The protocol type for this message. One instance of it must be an already attached component</param>
+            /// <typeparam name="T">The type of the message this sender will send</typeparam>
+            /// <param name="message">The name of the message this sender will send</param>
+            /// <returns>A function that takes the message to send, of the appropriate type, and sends it (asynchronously)</returns>
+            public Func<T, Task> MakeSender<ProtocolType, T>(string message) where ProtocolType : IProtocolClientSide where T : ISerializable
+            {
+                ProtocolType protocol = GetComponent<ProtocolType>();
+                if (protocol == null)
+                {
+                    throw new UnknownProtocolException($"This object does not have a protocol of type {protocol.GetType().FullName} attached to it");
+                }
+                else
+                {
+                    return MakeSender<T>(protocol, message);
                 }
             }
 

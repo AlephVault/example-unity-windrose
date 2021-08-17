@@ -165,6 +165,7 @@ namespace AlephVault.Unity.Meetgard
                 {
                     throw new ArgumentException("Message key is empty");
                 }
+
                 if (messages.ContainsKey(messageKey))
                 {
                     throw new ArgumentException($"Message key already registered as a {scope} message: {messageKey}");
@@ -330,6 +331,22 @@ namespace AlephVault.Unity.Meetgard
                 {
                     return (ISerializable)Activator.CreateInstance(typeByTag[tag]);
                 }
+            }
+
+            /// <summary>
+            ///   Gets the count of registered client messages.
+            /// </summary>
+            public int ClientMessagesCount()
+            {
+                return registeredClientMessageTypeByName.Count;
+            }
+
+            /// <summary>
+            ///   Gets the count of registered server messages.
+            /// </summary>
+            public int ServerMessagesCount()
+            {
+                return registeredServerMessageTypeByName.Count;
             }
         }
     }

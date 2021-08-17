@@ -1,5 +1,6 @@
 using AlephVault.Unity.Binary;
 using AlephVault.Unity.Meetgard.Protocols;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -24,6 +25,13 @@ namespace AlephVault.Unity.Meetgard
             /// <param name="tag">The message tag to get the container for</param>
             /// <returns>The message container</returns>
             public ISerializable NewMessageContainer(ushort tag);
+
+            /// <summary>
+            ///   Gets a registered client side handler for a given tag.
+            /// </summary>
+            /// <param name="tag">The message tag to get the handler for</param>
+            /// <returns>The message handler</returns>
+            public Action<NetworkClient, ISerializable> GetHandler(ushort tag);
         }
     }
 }

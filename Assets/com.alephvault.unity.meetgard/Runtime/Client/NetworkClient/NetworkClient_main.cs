@@ -103,7 +103,7 @@ namespace AlephVault.Unity.Meetgard
                 TcpClient client = new TcpClient();
                 client.Connect(address, port);
                 endpoint = new NetworkRemoteEndpoint(
-                    client, NewMessageContainer, TriggerOnConnected, TriggerOnMessage, TriggerOnDisconnected,
+                    client, NewMessageContainer, TriggerOnConnected, HandleMessage, TriggerOnDisconnected,
                     maxMessageSize, idleSleepTime
                 );
             }

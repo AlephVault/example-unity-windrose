@@ -26,6 +26,17 @@ namespace AlephVault.Unity.Meetgard
             // The protocol definition instance is created on construction.
             private Definition definition = new Definition();
 
+            // The handlers for this protocol.
+            private Action<NetworkClient, ISerializable>[] handlers = null;
+
+            /// <summary>
+            ///   Initializes the handlers, according to its definition.
+            /// </summary>
+            public ProtocolClientSide()
+            {
+                handlers = new Action<NetworkClient, ISerializable>[definition.ServerMessagesCount()];
+            }
+
             /// <summary>
             ///   Creates a message container for an incoming server message,
             ///   with a particular inner message tag.
@@ -38,6 +49,23 @@ namespace AlephVault.Unity.Meetgard
                 {
                     Type messageType = definition.GetServerMessageTypeByTag(tag);
                     return (ISerializable)Activator.CreateInstance(messageType);
+                }
+                catch(IndexOutOfRangeException)
+                {
+                    return null;
+                }
+            }
+
+            /// <summary>
+            ///   Gets the handler for a given requested tag.
+            /// </summary>
+            /// <param name="tag">The message tag to get the handler for</param>
+            /// <returns>The message container</returns>
+            public Action<NetworkClient, ISerializable> GetHandler(ushort tag)
+            {
+                try
+                {
+                    return handlers[tag];
                 }
                 catch(IndexOutOfRangeException)
                 {

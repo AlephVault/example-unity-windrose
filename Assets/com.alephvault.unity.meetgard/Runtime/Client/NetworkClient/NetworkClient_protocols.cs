@@ -48,6 +48,23 @@ namespace AlephVault.Unity.Meetgard
                 }
             }
 
+            // Handles a received message. The received message will be
+            // handled by the underlying protocol handler.
+            private void HandleMessage(ushort protocolId, ushort messageTag, ISerializable message)
+            {
+                // At this point, the protocolId exists. Also, the messageTag exists.
+                // We get the client-side handler, and we invoke it.
+                Action<NetworkClient, ISerializable> handler = protocols[protocolId].GetHandler(messageTag);
+                if (handler != null)
+                {
+                    handler(this, message);
+                }
+                else
+                {
+                    Debug.LogWarning($"Message ({protocolId}, {messageTag}) does not have any handler!");
+                }
+            }
+
             // Enumerates all of the protocols in this connection.
             // This method will be invoked on Awake, to prepare
             // the list of protocols.

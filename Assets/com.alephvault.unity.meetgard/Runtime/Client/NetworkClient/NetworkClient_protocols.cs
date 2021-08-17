@@ -61,6 +61,20 @@ namespace AlephVault.Unity.Meetgard
                 }
             }
 
+            // Returns the index for a given protocol id.
+            private ushort GetProtocolId(IProtocolClientSide protocol)
+            {
+                int index = Array.IndexOf(protocols, protocol);
+                if (index == protocols.GetLowerBound(0) - 1)
+                {
+                    throw new UnknownProtocolException($"The given instance of {protocol.GetType().FullName} is not a component on this object");
+                }
+                else
+                {
+                    return (ushort)index;
+                }
+            }
+
             // Returns the message tag for the given protocol and message name.
             private ushort GetOutgoingMessageTag(ushort protocolId, string messageName)
             {

@@ -112,21 +112,38 @@ namespace AlephVault.Unity.Meetgard
             ///   Sends a stream through the network. This function is asynchronous
             ///   and will wait until no other messages are pending to be sent.
             /// </summary>
-            /// <param name="protocolId">The id of protocol for this message</param>
+            /// <param name="protocol">The protocol for this message. It must be an already attached component</param>
             /// <param name="message">The message (as it was registered) being sent</param>
             /// <param name="content">The input array, typically with a non-zero capacity</param>
-            public Task Send<T>(ushort protocolId, string message, T content) where T : ISerializable
+            public Task Send<T>(IProtocolClientSide protocol, string message, T content) where T : ISerializable
             {
+                if (protocol == null)
+                {
+                    throw new ArgumentNullException("protocol");
+                }
+
                 if (!IsRunning)
                 {
                     throw new InvalidOperationException("The endpoint is not running - No data can be sent");
                 }
 
-                ushort messageTag = GetOutgoingMessageTag(protocolId, message);
-                Type expectedType = GetOutgoingMessageType(protocolId, messageTag);
+                ushort protocolId = GetProtocolId(protocol);
+                ushort messageTag;
+                Type expectedType;
+                try
+                {
+                    messageTag = GetOutgoingMessageTag(protocolId, message);
+                    expectedType = GetOutgoingMessageType(protocolId, messageTag);
+                }
+                catch(UnexpectedMessageException e)
+                {
+                    // Reformatting the exception.
+                    throw new UnexpectedMessageException($"Unexpected outgoing protocol/message: ({protocol.GetType().FullName}, {message})", e);
+                }
+
                 if (typeof(T) != expectedType)
                 {
-                    throw new OutgoingMessageTypeMismatchException($"Outgoing message ({protocolId}, {messageTag}) was attempted with type {typeof(T).FullName} when {expectedType.FullName} was expected");
+                    throw new OutgoingMessageTypeMismatchException($"Outgoing message ({protocol.GetType().FullName}, {message}) was attempted with type {typeof(T).FullName} when {expectedType.FullName} was expected");
                 }
 
                 return endpoint.Send(protocolId, messageTag, content);

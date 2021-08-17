@@ -3,7 +3,8 @@
     "rootNamespace": "",
     "references": [
         "AlephVault.Unity.Binary.Runtime",
-        "AlephVault.Unity.Support.Runtime"
+        "AlephVault.Unity.Support.Runtime",
+        "AlephVault.Unity.Layout.Runtime"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

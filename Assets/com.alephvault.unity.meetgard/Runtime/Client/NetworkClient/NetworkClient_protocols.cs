@@ -1,19 +1,14 @@
-using AlephVault.Unity.Support.Utils;
 using System;
 using UnityEngine;
+using AlephVault.Unity.Binary;
+using AlephVault.Unity.Meetgard.Types;
+using AlephVault.Unity.Layout.Utils;
+using System.Linq;
 
 namespace AlephVault.Unity.Meetgard
 {
     namespace Client
     {
-        using AlephVault.Unity.Binary;
-        using AlephVault.Unity.Meetgard.Types;
-        using System.Collections.Generic;
-        using System.Linq;
-        using System.Net;
-        using System.Net.Sockets;
-        using System.Threading.Tasks;
-
         public partial class NetworkClient : MonoBehaviour
         {
             /// <summary>
@@ -80,23 +75,11 @@ namespace AlephVault.Unity.Meetgard
                     Destroy(gameObject);
                     throw new MissingZeroProtocol("This NetworkClient does not have a ZeroProtocolClientSide protocol behaviour added - it must have one");
                 }
-                var protocolList = GetComponents<IProtocolClientSide>().ToList();
+                var protocolList = (from protocolClientSide in GetComponents<IProtocolClientSide>() select (Component)protocolClientSide).ToList();
                 protocolList.Remove(zeroProtocol);
-                protocolList.Sort((a, b) => {
-                    var fa = a.GetType().FullName;
-                    var fb = a.GetType().FullName;
-
-                    if (fa == fb)
-                    {
-                        return 0;
-                    }
-                    else
-                    {
-                        return fa.CompareTo(fb);
-                    }
-                });
+                Behaviours.SortByDependencies(protocolList.ToArray()).ToList();
                 protocolList.Insert(0, zeroProtocol);
-                protocols = protocolList.ToArray();
+                protocols = (from protocolClientSide in protocolList select (IProtocolClientSide)protocolClientSide).ToArray();
             }
         }
     }

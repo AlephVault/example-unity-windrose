@@ -1,5 +1,6 @@
 using AlephVault.Unity.Binary;
 using AlephVault.Unity.Meetgard.Protocols;
+using AlephVault.Unity.Meetgard.Types;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -39,6 +40,67 @@ namespace AlephVault.Unity.Meetgard
             {
                 client = GetComponent<NetworkClient>();
                 incomingMessageHandlers = new Action<ISerializable>[definition.ServerMessagesCount()];
+                try
+                {
+                    SetIncomingMessageHandlers();
+                }
+                catch(System.Exception)
+                {
+                    Destroy(gameObject);
+                    throw;
+                }
+            }
+
+            /// <summary>
+            ///   Implement this method with several calls to <see cref="AddIncomingMessageHandler{T}(string, Action{ProtocolClientSide{Definition}, T})"/>.
+            /// </summary>
+            protected abstract void SetIncomingMessageHandlers();
+
+            /// <summary>
+            ///   Adds a handler to a defined incoming message. The handler to
+            ///   add must also allow a reference to the protocol as a generic
+            ///   parent class reference.
+            /// </summary>
+            /// <typeparam name="T">The tpye of the message's content</typeparam>
+            /// <param name="message">The message name</param>
+            /// <param name="handler">The handler to register</param>
+            protected void AddIncomingMessageHandler<T>(string message, Action<ProtocolClientSide<Definition>, T> handler) where T : ISerializable
+            {
+                if (message == null || message.Trim().Length == 0)
+                {
+                    throw new ArgumentException("The message name must not be null or empty");
+                }
+
+                if (handler == null)
+                {
+                    throw new ArgumentNullException("handler");
+                }
+
+                ushort incomingMessageTag;
+                Type expectedIncomingMessageType;
+                try
+                {
+                    incomingMessageTag = definition.GetServerMessageTagByName(message);
+                    expectedIncomingMessageType = definition.GetServerMessageTypeByName(message);
+                }
+                catch (KeyNotFoundException)
+                {
+                    throw new UnexpectedMessageException($"The protocol definition of type {typeof(Definition).FullName} does not define a message: {message}");
+                }
+
+                if (expectedIncomingMessageType != typeof(T))
+                {
+                    throw new IncomingMessageTypeMismatchException($"Incoming message ({message}) in protocol {GetType().FullName} was attempted to handle with type {typeof(T).FullName} when {expectedIncomingMessageType.FullName} was expected");
+                }
+
+                if (incomingMessageHandlers[incomingMessageTag] == null)
+                {
+                    throw new HandlerAlreadyRegisteredException($"Incoming message ({message}) is already handled by {GetType().FullName} - cannot set an additional handler");
+                }
+                else
+                {
+                    incomingMessageHandlers[incomingMessageTag] = (content) => handler(this, (T)content);
+                }
             }
 
             /// <summary>

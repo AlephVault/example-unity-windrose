@@ -132,6 +132,47 @@ namespace AlephVault.Unity.Meetgard
                 protocolList.Insert(0, zeroProtocol);
                 protocols = (from protocolClientSide in protocolList select (IProtocolClientSide)protocolClientSide).ToArray();
             }
+
+            // This function gets invoked when the network client
+            // successfully connects to a server. It invokes all
+            // of the OnConnected handlers on each protocol.
+            private void TriggerOnConnected()
+            {
+                foreach(IProtocolClientSide protocol in protocols)
+                {
+                    try
+                    {
+                        protocol.OnConnected();
+                    }
+                    catch(System.Exception e)
+                    {
+                        Debug.LogWarning("An exception was triggered. Ensure exceptions are captured and handled properly, " +
+                                         "for this warning will not be available on deployed games");
+                        Debug.LogException(e);
+                    }
+                }
+            }
+
+            // This function gets invoked when the network client
+            // disconnects from a server, be it normally or not.
+            // It invokes all of the OnConnected handlers on each
+            // protocol.
+            private void TriggerOnDisconnected(System.Exception reason)
+            {
+                foreach (IProtocolClientSide protocol in protocols)
+                {
+                    try
+                    {
+                        protocol.OnDisconnected(reason);
+                    }
+                    catch (System.Exception e)
+                    {
+                        Debug.LogWarning("An exception was triggered. Ensure exceptions are captured and handled properly, " +
+                                         "for this warning will not be available on deployed games");
+                        Debug.LogException(e);
+                    }
+                }
+            }
         }
     }
 }

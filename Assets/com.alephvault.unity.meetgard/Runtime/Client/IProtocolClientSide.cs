@@ -70,6 +70,20 @@ namespace AlephVault.Unity.Meetgard
             /// <param name="message">The name of the message being sent</param>
             /// <param name="content">The content of the message being sent</param>
             public Task Send<ProtocolType, T>(string message, T content) where ProtocolType : IProtocolClientSide where T : ISerializable;
+
+            /// <summary>
+            ///   This is a callback that gets invoked when the client successfully
+            ///   established a connection to a server.
+            /// </summary>
+            public void OnConnected();
+
+            /// <summary>
+            ///   This is a callback that  gets invoked when the client is disconnected
+            ///   from the server. This can happen gracefully locally, gracefully remotely.
+            ///   or abnormally.
+            /// </summary>
+            /// <param name="reason">If not null, tells the abnormal reason of closure</param>
+            public void OnDisconnected(Exception reason);
         }
     }
 }

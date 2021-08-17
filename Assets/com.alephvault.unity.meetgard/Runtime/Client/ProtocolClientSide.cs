@@ -232,6 +232,34 @@ namespace AlephVault.Unity.Meetgard
             {
                 return client.Send<ProtocolType, T>(message, content);
             }
+
+            /// <summary>
+            ///   <para>
+            ///     This is a callback that gets invoked when the client successfully
+            ///     established a connection to a server.
+            ///   </para>
+            ///   <para>
+            ///     Override it at need.
+            ///   </para>
+            /// </summary>
+            public virtual void OnConnected()
+            {
+            }
+
+            /// <summary>
+            ///   <para>
+            ///     This is a callback that  gets invoked when the client is disconnected
+            ///     from the server. This can happen gracefully locally, gracefully remotely.
+            ///     or abnormally.
+            ///   </para>
+            ///   <para>
+            ///     Override it at need.
+            ///   </para>
+            /// </summary>
+            /// <param name="reason">If not null, tells the abnormal reason of closure</param>
+            public virtual void OnDisconnected(System.Exception reason)
+            {
+            }
         }
     }
 }

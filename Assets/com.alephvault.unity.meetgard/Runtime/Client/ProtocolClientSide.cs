@@ -27,14 +27,14 @@ namespace AlephVault.Unity.Meetgard
             private Definition definition = new Definition();
 
             // The handlers for this protocol.
-            private Action<NetworkClient, ISerializable>[] handlers = null;
+            private Action<NetworkClient, ISerializable>[] incomingMessageHandlers = null;
 
             /// <summary>
             ///   Initializes the handlers, according to its definition.
             /// </summary>
             public ProtocolClientSide()
             {
-                handlers = new Action<NetworkClient, ISerializable>[definition.ServerMessagesCount()];
+                incomingMessageHandlers = new Action<NetworkClient, ISerializable>[definition.ServerMessagesCount()];
             }
 
             /// <summary>
@@ -51,6 +51,24 @@ namespace AlephVault.Unity.Meetgard
                     return (ISerializable)Activator.CreateInstance(messageType);
                 }
                 catch(IndexOutOfRangeException)
+                {
+                    return null;
+                }
+            }
+
+            /// <summary>
+            ///   For a given message name, gets the tag it acquired when
+            ///   it was registered. Returns null if absent.
+            /// </summary>
+            /// <param name="message">The name of the message to get the tag for</param>
+            /// <returns>The tag (nullable)</returns>
+            public ushort? GetOutgoingMessageTag(string message)
+            {
+                try
+                {
+                    return definition.GetClientMessageTagByName(message);
+                }
+                catch(KeyNotFoundException)
                 {
                     return null;
                 }
@@ -79,11 +97,11 @@ namespace AlephVault.Unity.Meetgard
             /// </summary>
             /// <param name="tag">The message tag to get the handler for</param>
             /// <returns>The message container</returns>
-            public Action<NetworkClient, ISerializable> GetHandler(ushort tag)
+            public Action<NetworkClient, ISerializable> GetIncomingMessageHandler(ushort tag)
             {
                 try
                 {
-                    return handlers[tag];
+                    return incomingMessageHandlers[tag];
                 }
                 catch(IndexOutOfRangeException)
                 {

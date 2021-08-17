@@ -61,13 +61,32 @@ namespace AlephVault.Unity.Meetgard
                 }
             }
 
+            // Returns the message tag for the given protocol and message name.
+            private ushort GetOutgoingMessageTag(ushort protocolId, string messageName)
+            {
+                if (protocolId >= protocols.Length)
+                {
+                    throw new UnexpectedMessageException($"Unexpected outgoing message protocol/name: ({protocolId}, {messageName})");
+                }
+                ushort? tag = protocols[protocolId].GetOutgoingMessageTag(messageName);
+                if (tag == null)
+                {
+                    throw new UnexpectedMessageException($"Unexpected outgoing message protocol/name: ({protocolId}, {messageName})");
+                }
+                else
+                {
+                    return tag.Value;
+                }
+            }
+
+
             // Handles a received message. The received message will be
             // handled by the underlying protocol handler.
             private void HandleMessage(ushort protocolId, ushort messageTag, ISerializable message)
             {
                 // At this point, the protocolId exists. Also, the messageTag exists.
                 // We get the client-side handler, and we invoke it.
-                Action<NetworkClient, ISerializable> handler = protocols[protocolId].GetHandler(messageTag);
+                Action<NetworkClient, ISerializable> handler = protocols[protocolId].GetIncomingMessageHandler(messageTag);
                 if (handler != null)
                 {
                     handler(this, message);

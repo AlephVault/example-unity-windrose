@@ -113,15 +113,16 @@ namespace AlephVault.Unity.Meetgard
             ///   and will wait until no other messages are pending to be sent.
             /// </summary>
             /// <param name="protocolId">The id of protocol for this message</param>
-            /// <param name="messageTag">The tag of the message being sent</param>
+            /// <param name="message">The message (as it was registered) being sent</param>
             /// <param name="content">The input array, typically with a non-zero capacity</param>
-            public Task Send<T>(ushort protocolId, ushort messageTag, T content) where T : ISerializable
+            public Task Send<T>(ushort protocolId, string message, T content) where T : ISerializable
             {
                 if (!IsRunning)
                 {
                     throw new InvalidOperationException("The endpoint is not running - No data can be sent");
                 }
 
+                ushort messageTag = GetOutgoingMessageTag(protocolId, message);
                 Type expectedType = GetOutgoingMessageType(protocolId, messageTag);
                 if (typeof(T) != expectedType)
                 {

@@ -19,6 +19,14 @@ namespace AlephVault.Unity.Meetgard
         public interface IProtocolClientSide
         {
             /// <summary>
+            ///   For a given message name, gets the tag it acquired when
+            ///   it was registered. Returns null if absent.
+            /// </summary>
+            /// <param name="message">The name of the message to get the tag for</param>
+            /// <returns>The tag (nullable)</returns>
+            public ushort? GetOutgoingMessageTag(string message);
+
+            /// <summary>
             ///   Gets the type of a particular outgoing message tag. Returns
             ///   null if the tag is not valid.
             /// </summary>
@@ -39,7 +47,7 @@ namespace AlephVault.Unity.Meetgard
             /// </summary>
             /// <param name="tag">The message tag to get the handler for</param>
             /// <returns>The message handler</returns>
-            public Action<NetworkClient, ISerializable> GetHandler(ushort tag);
+            public Action<NetworkClient, ISerializable> GetIncomingMessageHandler(ushort tag);
         }
     }
 }

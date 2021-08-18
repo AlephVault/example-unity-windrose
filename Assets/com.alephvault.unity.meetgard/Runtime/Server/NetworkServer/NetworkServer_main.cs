@@ -29,7 +29,7 @@ namespace AlephVault.Unity.Meetgard
         ///     a per-server basis.
         ///   </para>
         /// </summary>
-        public class NetworkServer : MonoBehaviour
+        public partial class NetworkServer : MonoBehaviour
         {
             // The endpoint id for the host.
             public const ulong HostEndpointId = 0;
@@ -59,20 +59,6 @@ namespace AlephVault.Unity.Meetgard
             /// </summary>
             [SerializeField]
             private ushort maxMessageSize = 1024;
-
-            /// <summary>
-            ///   <para>
-            ///     The time an endpoint waits for more data after some
-            ///     message data was sent to the internal outgoing messages
-            ///     buffer.
-            ///   </para>
-            ///   <para>
-            ///     This setting should match whatever is set in the clients
-            ///     and supported by the protocols to use.
-            ///   </para>
-            /// </summary>
-            [SerializeField]
-            private float trainBoardingTime = 0.75f;
 
             // The next id to use, when a new connection is spawned.
             // Please note: id=0 is reserved for a single network

@@ -91,18 +91,65 @@ namespace AlephVault.Unity.Meetgard
             /// <summary>
             ///   Sends a message to a registered endpoint by its id.
             /// </summary>
+            /// <typeparam name="T">The type of the message being sent</typeparam>
             /// <param name="clientId">The id of the client</param>
-            /// <param name="protocolId">The id of protocol for this message</param>
-            /// <param name="messageTag">The tag of the message being sent</param>
-            /// <param name="input">The input stream</param>
-            public async Task Send(ulong clientId, ushort protocolId, ushort messageTag, byte[] content, int length)
+            /// <param name="protocol">The protocol for this message. It must be an already attached component</param>
+            /// <param name="message">The message (as it was registered) being sent</param>
+            /// <param name="content">The message content</param>
+            public Task Send<T>(IProtocolServerSide protocol, string message, ulong clientId, T content) where T : ISerializable
             {
+                if (protocol == null)
+                {
+                    throw new ArgumentNullException("protocol");
+                }
+
                 if (!IsRunning)
                 {
                     throw new InvalidOperationException("The server is not running - cannot send any message");
                 }
 
-                await endpointById[clientId].Send(protocolId, messageTag, content, length);
+                ushort protocolId = GetProtocolId(protocol);
+                ushort messageTag;
+                Type expectedType;
+                try
+                {
+                    messageTag = GetOutgoingMessageTag(protocolId, message);
+                    expectedType = GetOutgoingMessageType(protocolId, messageTag);
+                }
+                catch (UnexpectedMessageException e)
+                {
+                    // Reformatting the exception.
+                    throw new UnexpectedMessageException($"Unexpected outgoing protocol/message: ({protocol.GetType().FullName}, {message})", e);
+                }
+
+                if (content.GetType() != expectedType)
+                {
+                    throw new OutgoingMessageTypeMismatchException($"Outgoing message ({protocol.GetType().FullName}, {message}) was attempted with type {content.GetType().FullName} when {expectedType.FullName} was expected");
+                }
+
+                return endpointById[clientId].Send(protocolId, messageTag, content);
+            }
+
+            /// <summary>
+            ///   Sends a message through the network. This function is asynchronous
+            ///   and will wait until no other messages are pending to be sent.
+            /// </summary>
+            /// <typeparam name="T">The type of the message being sent</typeparam>
+            /// <typeparam name="ProtocolType">The protocol type for this message. One instance of it must be an already attached component</param>
+            /// <param name="clientId">The id of the client</param>
+            /// <param name="message">The message (as it was registered) being sent</param>
+            /// <param name="content">The message content</param>
+            public Task Send<ProtocolType, T>(string message, ulong clientId, T content) where ProtocolType : IProtocolServerSide where T : ISerializable
+            {
+                ProtocolType protocol = GetComponent<ProtocolType>();
+                if (protocol == null)
+                {
+                    throw new UnknownProtocolException($"This object does not have a protocol of type {protocol.GetType().FullName} attached to it");
+                }
+                else
+                {
+                    return Send(protocol, message, clientId, content);
+                }
             }
 
             /// <summary>

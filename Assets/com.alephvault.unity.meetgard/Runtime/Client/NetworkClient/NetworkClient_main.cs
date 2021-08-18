@@ -115,7 +115,7 @@ namespace AlephVault.Unity.Meetgard
             /// <typeparam name="T">The type of the message being sent</typeparam>
             /// <param name="protocol">The protocol for this message. It must be an already attached component</param>
             /// <param name="message">The message (as it was registered) being sent</param>
-            /// <param name="content">The input array, typically with a non-zero capacity</param>
+            /// <param name="content">The message content</param>
             public Task Send<T>(IProtocolClientSide protocol, string message, T content) where T : ISerializable
             {
                 if (protocol == null)
@@ -157,7 +157,7 @@ namespace AlephVault.Unity.Meetgard
             /// <typeparam name="T">The type of the message being sent</typeparam>
             /// <typeparam name="ProtocolType">The protocol type for this message. One instance of it must be an already attached component</param>
             /// <param name="message">The message (as it was registered) being sent</param>
-            /// <param name="content">The input array, typically with a non-zero capacity</param>
+            /// <param name="content">The message content</param>
             public Task Send<ProtocolType, T>(string message, T content) where ProtocolType : IProtocolClientSide where T : ISerializable
             {
                 ProtocolType protocol = GetComponent<ProtocolType>();

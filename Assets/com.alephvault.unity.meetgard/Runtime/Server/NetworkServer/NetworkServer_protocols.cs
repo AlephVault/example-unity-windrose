@@ -203,13 +203,13 @@ namespace AlephVault.Unity.Meetgard
             // This function gets invoked when the network server
             // stopped. It invokes all of the OnServerStopped
             // handlers on each protocol.
-            private void TriggerOnServerStopped(System.Exception e)
+            private void TriggerOnServerStopped(System.Exception reason)
             {
                 foreach (IProtocolServerSide protocol in protocols)
                 {
                     try
                     {
-                        protocol.OnServerStopped(e);
+                        protocol.OnServerStopped(reason);
                     }
                     catch (System.Exception e)
                     {

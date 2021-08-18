@@ -17,37 +17,10 @@ namespace AlephVault.Unity.Meetgard
     {
         public partial class NetworkServer : MonoBehaviour
         {
-            /// <summary>
-            ///   <para>
-            ///     This event is triggered after a client message arrives.
-            ///     The arguments for this message are: client id, protocol id,
-            ///     message tag, and a buffer reader with the contents.
-            ///   </para>
-            ///   <para>
-            ///     PLEASE NOTE: ONLY ONE HANDLER SHOULD HANDLE THE INCOMING MESSAGE, AND IT
-            ///     SHOULD EXHAUST THE BUFFER COMPLETELY.
-            ///   </para>
-            ///   <para>
-            ///     Please note: for id <see cref="HostEndpointId"/>, the
-            ///     involved client is the local / host one.
-            ///   </para>
-            ///   <para>
-            ///     This event is triggered in an asynchronous context.
-            ///   </para>
-            /// </summary>
-            public event Action<ulong, ushort, ushort, Reader> OnMessage = null;
-
             // Asynchronously triggers the OnServerStarted event.
             private async void DoTriggerOnServerStarted()
             {
                 TriggerOnServerStarted();
-            }
-
-            // Triggers the OnMessage event. This occurs in an asynchronous context,
-            // already.
-            private void TriggerOnMessage(ulong clientId, ushort protocolId, ushort messageTag, Reader content)
-            {
-                OnMessage?.Invoke(clientId, protocolId, messageTag, content);
             }
 
             // Asynchronously triggers the OnServerStopped event, but after telling

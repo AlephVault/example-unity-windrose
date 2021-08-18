@@ -209,7 +209,7 @@ namespace AlephVault.Unity.Meetgard
                 {
                     try
                     {
-                        protocol.OnServerStopped();
+                        protocol.OnServerStopped(e);
                     }
                     catch (System.Exception e)
                     {

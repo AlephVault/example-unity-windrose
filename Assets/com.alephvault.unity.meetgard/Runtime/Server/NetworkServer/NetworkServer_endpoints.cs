@@ -103,19 +103,19 @@ namespace AlephVault.Unity.Meetgard
             private void AddNetworkClientEndpoint(TcpClient clientSocket)
             {
                 ulong nextId = GetNextEndpointId();
-                NetworkEndpoint endpoint = new NetworkRemoteEndpoint(clientSocket, () =>
+                NetworkEndpoint endpoint = new NetworkRemoteEndpoint(clientSocket, NewMessageContainer, () =>
                 {
                     TriggerOnConnected(nextId);
-                }, (protocolId, messageTag, reader) =>
+                }, (protocolId, messageTag, content) =>
                 {
-                    TriggerOnMessage(nextId, protocolId, messageTag, reader);
+                    HandleMessage(nextId, protocolId, messageTag, content);
                 }, (e) =>
                 {
                     NetworkEndpoint endpoint = endpointById[nextId];
                     endpointById.Remove(nextId);
                     endpointIds.Remove(endpoint);
-                    TriggerOnClientDisconnected(nextId, e);
-                }, maxMessageSize, trainBoardingTime, idleSleepTime);
+                    TriggerOnDisconnected(nextId, e);
+                }, maxMessageSize, idleSleepTime);
                 endpointById.Add(nextId, endpoint);
                 endpointIds.Add(endpoint, nextId);
             }

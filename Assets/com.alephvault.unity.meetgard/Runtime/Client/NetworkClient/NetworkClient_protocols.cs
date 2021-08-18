@@ -93,7 +93,6 @@ namespace AlephVault.Unity.Meetgard
                 }
             }
 
-
             // Handles a received message. The received message will be
             // handled by the underlying protocol handler.
             private void HandleMessage(ushort protocolId, ushort messageTag, ISerializable message)

@@ -92,7 +92,7 @@ namespace AlephVault.Unity.Meetgard
                 {
                     endpointById.Remove(HostEndpointId);
                     endpointIds.Remove(endpoint);
-                    TriggerOnClientDisconnected(HostEndpointId, null);
+                    TriggerOnDisconnected(HostEndpointId, null);
                 }
             }
 
@@ -105,7 +105,7 @@ namespace AlephVault.Unity.Meetgard
                 ulong nextId = GetNextEndpointId();
                 NetworkEndpoint endpoint = new NetworkRemoteEndpoint(clientSocket, () =>
                 {
-                    TriggerOnClientConnected(nextId);
+                    TriggerOnConnected(nextId);
                 }, (protocolId, messageTag, reader) =>
                 {
                     TriggerOnMessage(nextId, protocolId, messageTag, reader);
@@ -161,6 +161,16 @@ namespace AlephVault.Unity.Meetgard
             public bool EndpointExists(ulong clientId)
             {
                 return endpointById.ContainsKey(clientId);
+            }
+
+            // Closes all the remaining living endpoints.
+            private void CloseAllEndpoints()
+            {
+                ulong[] keys = endpointById.Keys.ToArray();
+                foreach (ulong key in keys)
+                {
+                    if (endpointById.TryGetValue(key, out NetworkEndpoint value)) value.Close();
+                }
             }
         }
     }

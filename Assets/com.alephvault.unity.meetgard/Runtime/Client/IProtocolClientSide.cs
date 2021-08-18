@@ -78,7 +78,7 @@ namespace AlephVault.Unity.Meetgard
             public void OnConnected();
 
             /// <summary>
-            ///   This is a callback that  gets invoked when the client is disconnected
+            ///   This is a callback that gets invoked when the client is disconnected
             ///   from the server. This can happen gracefully locally, gracefully remotely.
             ///   or abnormally.
             /// </summary>

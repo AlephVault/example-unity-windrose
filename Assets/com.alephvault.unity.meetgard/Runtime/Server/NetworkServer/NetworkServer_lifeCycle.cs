@@ -1,14 +1,5 @@
-using AlephVault.Unity.Binary;
-using AlephVault.Unity.Meetgard.Types;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net;
 using System.Net.Sockets;
 using System.Threading;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace AlephVault.Unity.Meetgard
@@ -35,7 +26,7 @@ namespace AlephVault.Unity.Meetgard
                 try
                 {
                     // The server is considered connected right now.
-                    TriggerOnServerStarted();
+                    DoTriggerOnServerStarted();
                     // Accepts all of the incoming connections, ad eternum.
                     while(true) AddNetworkClientEndpoint(listener.AcceptTcpClient());
                 }
@@ -56,7 +47,7 @@ namespace AlephVault.Unity.Meetgard
                         listener.Stop();
                         listener = null;
                     }
-                    TriggerOnServerStopped(lifeCycleException);
+                    DoTriggerOnServerStopped(lifeCycleException);
                 }
             }
         }

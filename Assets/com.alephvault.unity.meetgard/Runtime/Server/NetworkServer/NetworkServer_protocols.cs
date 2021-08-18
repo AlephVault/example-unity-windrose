@@ -1,19 +1,26 @@
-using System;
-using UnityEngine;
 using AlephVault.Unity.Binary;
-using AlephVault.Unity.Meetgard.Types;
 using AlephVault.Unity.Layout.Utils;
+using AlephVault.Unity.Meetgard.Types;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
+using System.Threading;
+using System.Threading.Tasks;
+using UnityEngine;
 
 namespace AlephVault.Unity.Meetgard
 {
-    namespace Client
+    namespace Server
     {
-        public partial class NetworkClient : MonoBehaviour
+        public partial class NetworkServer : MonoBehaviour
         {
             /// <summary>
             ///   A value telling the version of the current protocol
-            ///   set in this network client. This must be changed as
+            ///   set in this network server. This must be changed as
             ///   per deployment, since certain game changes are meant
             ///   to be not retro-compatible and thus the version must
             ///   be marked as mismatching.
@@ -22,7 +29,7 @@ namespace AlephVault.Unity.Meetgard
             private Protocols.Version Version;
 
             // Protocols will exist by their id (0-based)
-            private IProtocolClientSide[] protocols = null;
+            private IProtocolServerSide[] protocols = null;
 
             // Returns an object to serve as the receiver of specific
             // message data. This must be implemented with the protocol.
@@ -62,7 +69,7 @@ namespace AlephVault.Unity.Meetgard
             }
 
             // Returns the index for a given protocol id.
-            private ushort GetProtocolId(IProtocolClientSide protocol)
+            private ushort GetProtocolId(IProtocolServerSide protocol)
             {
                 int index = Array.IndexOf(protocols, protocol);
                 if (index == protocols.GetLowerBound(0) - 1)
@@ -93,17 +100,16 @@ namespace AlephVault.Unity.Meetgard
                 }
             }
 
-
             // Handles a received message. The received message will be
             // handled by the underlying protocol handler.
-            private void HandleMessage(ushort protocolId, ushort messageTag, ISerializable message)
+            private void HandleMessage(ulong clientId, ushort protocolId, ushort messageTag, ISerializable message)
             {
                 // At this point, the protocolId exists. Also, the messageTag exists.
                 // We get the client-side handler, and we invoke it.
-                Action<ISerializable> handler = protocols[protocolId].GetIncomingMessageHandler(messageTag);
+                Action<ulong, ISerializable> handler = protocols[protocolId].GetIncomingMessageHandler(messageTag);
                 if (handler != null)
                 {
-                    handler(message);
+                    handler(clientId, message);
                 }
                 else
                 {
@@ -120,31 +126,31 @@ namespace AlephVault.Unity.Meetgard
                 // This is done because, otherwise, adding RequireComponent
                 // would force the Zero protocol into a circular dependency
                 // in the editor.
-                ZeroProtocolClientSide zeroProtocol = GetComponent<ZeroProtocolClientSide>();
+                ZeroProtocolServerSide zeroProtocol = GetComponent<ZeroProtocolServerSide>();
                 if (zeroProtocol == null)
                 {
                     Destroy(gameObject);
-                    throw new MissingZeroProtocol("This NetworkClient does not have a ZeroProtocolClientSide protocol behaviour added - it must have one");
+                    throw new MissingZeroProtocol("This NetworkServer does not have a ZeroProtocolServerSide protocol behaviour added - it must have one");
                 }
-                var protocolList = (from protocolClientSide in GetComponents<IProtocolClientSide>() select (Component)protocolClientSide).ToList();
+                var protocolList = (from protocolServerSide in GetComponents<IProtocolServerSide>() select (Component)protocolServerSide).ToList();
                 protocolList.Remove(zeroProtocol);
                 Behaviours.SortByDependencies(protocolList.ToArray()).ToList();
                 protocolList.Insert(0, zeroProtocol);
-                protocols = (from protocolClientSide in protocolList select (IProtocolClientSide)protocolClientSide).ToArray();
+                protocols = (from protocolServerSide in protocolList select (IProtocolServerSide)protocolServerSide).ToArray();
             }
 
-            // This function gets invoked when the network client
-            // successfully connects to a server. It invokes all
-            // of the OnConnected handlers on each protocol.
-            private void TriggerOnConnected()
+            // This function gets invoked when the network server
+            // started. It invokes all of the OnServerStarted
+            // handlers on each protocol.
+            private void TriggerOnServerStarted()
             {
-                foreach(IProtocolClientSide protocol in protocols)
+                foreach (IProtocolServerSide protocol in protocols)
                 {
                     try
                     {
-                        protocol.OnConnected();
+                        protocol.OnServerStarted();
                     }
-                    catch(System.Exception e)
+                    catch (System.Exception e)
                     {
                         Debug.LogWarning("An exception was triggered. Ensure exceptions are captured and handled properly, " +
                                          "for this warning will not be available on deployed games");
@@ -153,17 +159,57 @@ namespace AlephVault.Unity.Meetgard
                 }
             }
 
-            // This function gets invoked when the network client
-            // disconnects from a server, be it normally or not.
-            // It invokes all of the OnDisconnected handlers on
-            // each protocol.
-            private void TriggerOnDisconnected(System.Exception reason)
+            // This function gets invoked when a network client
+            // successfully connects to this server. It invokes
+            // all of the OnConnected handlers on each protocol.
+            private void TriggerOnConnected(ulong clientId)
             {
-                foreach (IProtocolClientSide protocol in protocols)
+                foreach (IProtocolServerSide protocol in protocols)
                 {
                     try
                     {
-                        protocol.OnDisconnected(reason);
+                        protocol.OnConnected(clientId);
+                    }
+                    catch (System.Exception e)
+                    {
+                        Debug.LogWarning("An exception was triggered. Ensure exceptions are captured and handled properly, " +
+                                         "for this warning will not be available on deployed games");
+                        Debug.LogException(e);
+                    }
+                }
+            }
+
+            // This function gets invoked when a network client
+            // disconnects from this server, be it normally or
+            // not. It invokes all of the OnDisconnected handlers
+            // on each protocol.
+            private void TriggerOnDisconnected(ulong clientId, System.Exception reason)
+            {
+                foreach (IProtocolServerSide protocol in protocols)
+                {
+                    try
+                    {
+                        protocol.OnDisconnected(clientId, reason);
+                    }
+                    catch (System.Exception e)
+                    {
+                        Debug.LogWarning("An exception was triggered. Ensure exceptions are captured and handled properly, " +
+                                         "for this warning will not be available on deployed games");
+                        Debug.LogException(e);
+                    }
+                }
+            }
+
+            // This function gets invoked when the network server
+            // stopped. It invokes all of the OnServerStopped
+            // handlers on each protocol.
+            private void TriggerOnServerStopped(System.Exception e)
+            {
+                foreach (IProtocolServerSide protocol in protocols)
+                {
+                    try
+                    {
+                        protocol.OnServerStopped();
                     }
                     catch (System.Exception e)
                     {

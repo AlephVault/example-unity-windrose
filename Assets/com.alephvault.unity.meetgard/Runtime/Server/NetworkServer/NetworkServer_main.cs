@@ -96,7 +96,8 @@ namespace AlephVault.Unity.Meetgard
             /// <param name="protocol">The protocol for this message. It must be an already attached component</param>
             /// <param name="message">The message (as it was registered) being sent</param>
             /// <param name="content">The message content</param>
-            public Task Send<T>(IProtocolServerSide protocol, string message, ulong clientId, T content) where T : ISerializable
+            /// <returns>Whether the endpoint existed or not (if true, the message was sent)</returns>
+            public async Task<bool> Send<T>(IProtocolServerSide protocol, string message, ulong clientId, T content) where T : ISerializable
             {
                 if (protocol == null)
                 {
@@ -127,19 +128,27 @@ namespace AlephVault.Unity.Meetgard
                     throw new OutgoingMessageTypeMismatchException($"Outgoing message ({protocol.GetType().FullName}, {message}) was attempted with type {content.GetType().FullName} when {expectedType.FullName} was expected");
                 }
 
-                return endpointById[clientId].Send(protocolId, messageTag, content);
+                if (endpointById.TryGetValue(clientId, out NetworkEndpoint endpoint))
+                {
+                    await endpoint.Send(protocolId, messageTag, content);
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
 
             /// <summary>
-            ///   Sends a message through the network. This function is asynchronous
-            ///   and will wait until no other messages are pending to be sent.
+            ///   Sends a message through the network.
             /// </summary>
             /// <typeparam name="T">The type of the message being sent</typeparam>
             /// <typeparam name="ProtocolType">The protocol type for this message. One instance of it must be an already attached component</param>
             /// <param name="clientId">The id of the client</param>
             /// <param name="message">The message (as it was registered) being sent</param>
             /// <param name="content">The message content</param>
-            public Task Send<ProtocolType, T>(string message, ulong clientId, T content) where ProtocolType : IProtocolServerSide where T : ISerializable
+            /// <returns>Whether the endpoint existed or not (if true, the message was sent)</returns>
+            public Task<bool> Send<ProtocolType, T>(string message, ulong clientId, T content) where ProtocolType : IProtocolServerSide where T : ISerializable
             {
                 ProtocolType protocol = GetComponent<ProtocolType>();
                 if (protocol == null)
@@ -149,34 +158,6 @@ namespace AlephVault.Unity.Meetgard
                 else
                 {
                     return Send(protocol, message, clientId, content);
-                }
-            }
-
-            /// <summary>
-            ///   Sends a message to a registered endpoint by its id.
-            ///   If the endpoint is not found, <code>false</code> is
-            ///   returned instead of raising an exception.
-            /// </summary>
-            /// <param name="clientId">The id of the client</param>
-            /// <param name="protocolId">The id of protocol for this message</param>
-            /// <param name="messageTag">The tag of the message being sent</param>
-            /// <param name="content">The input array, typically with a non-zero capacity</param>
-            /// <param name="length">The actual length of the content in the array</param>
-            public async Task<bool> TrySend(ulong clientId, ushort protocolId, ushort messageTag, byte[] content, int length)
-            {
-                if (!IsRunning)
-                {
-                    throw new InvalidOperationException("The server is not running - cannot send any message");
-                }
-
-                if (endpointById.TryGetValue(clientId, out NetworkEndpoint value))
-                {
-                    await value.Send(protocolId, messageTag, content, length);
-                    return true;
-                }
-                else
-                {
-                    return false;
                 }
             }
 
@@ -192,55 +173,115 @@ namespace AlephVault.Unity.Meetgard
             ///     to all the available registered endpoints.
             ///   </para>
             /// </summary>
+            /// <typeparam name="T">The type of the message being sent</typeparam>
             /// <param name="clientIds">The ids to send the same message - use null to specify ALL the available ids</param>
-            /// <param name="protocolId">The id of protocol for this message</param>
-            /// <param name="messageTag">The tag of the message being sent</param>
-            /// <param name="content">The input array, typically with a non-zero capacity</param>
-            /// <param name="length">The actual length of the content in the array</param>
+            /// <param name="protocol">The protocol for this message. It must be an already attached component</param>
+            /// <param name="message">The message (as it was registered) being sent</param>
+            /// <param name="content">The message content</param>
             /// <param name="failedEndpoints">The output list of the endpoints that are not found or raised an error on send</param>
-            public async Task TryBroadcast(ulong[] clientIds, ushort protocolId, ushort messageTag, byte[] content, int length, HashSet<ulong> failedEndpoints)
+            public async Task Broadcast<T>(ulong[] clientIds, IProtocolServerSide protocol, string message, T content, HashSet<ulong> failedEndpoints) where T : ISerializable
             {
+                if (protocol == null)
+                {
+                    throw new ArgumentNullException("protocol");
+                }
+
                 if (!IsRunning)
                 {
                     throw new InvalidOperationException("The server is not running - cannot send any message");
                 }
 
-                if (failedEndpoints != null) failedEndpoints.Clear();
+                ushort protocolId = GetProtocolId(protocol);
+                ushort messageTag;
+                Type expectedType;
+                try
+                {
+                    messageTag = GetOutgoingMessageTag(protocolId, message);
+                    expectedType = GetOutgoingMessageType(protocolId, messageTag);
+                }
+                catch (UnexpectedMessageException e)
+                {
+                    // Reformatting the exception.
+                    throw new UnexpectedMessageException($"Unexpected outgoing protocol/message: ({protocol.GetType().FullName}, {message})", e);
+                }
+
+                if (content.GetType() != expectedType)
+                {
+                    throw new OutgoingMessageTypeMismatchException($"Outgoing message ({protocol.GetType().FullName}, {message}) was attempted with type {content.GetType().FullName} when {expectedType.FullName} was expected");
+                }
+
+                // Now, with everything ready, the send can be done.
+
+                // Clearing the target set is the first thing to do.
+                failedEndpoints?.Clear();
 
                 if (clientIds == null)
                 {
+                    // Only the specified endpoints will be iterated.
                     foreach (ulong clientId in clientIds)
                     {
                         if (endpointById.TryGetValue(clientId, out NetworkEndpoint endpoint))
                         {
                             try
                             {
-                                await endpoint.Send(protocolId, messageTag, content, length);
+                                await endpoint.Send(protocolId, messageTag, content);
                             }
                             catch
                             {
-                                if (failedEndpoints != null) failedEndpoints.Add(clientId);
+                                failedEndpoints?.Add(clientId);
                             }
                         }
                         else
                         {
-                            if (failedEndpoints != null) failedEndpoints.Add(clientId);
+                            failedEndpoints?.Add(clientId);
                         }
                     }
                 }
                 else
                 {
+                    // All of the endpoints will be iterated.
                     foreach(KeyValuePair<ulong, NetworkEndpoint> pair in endpointById.ToArray())
                     {
                         try
                         {
-                            await pair.Value.Send(protocolId, messageTag, content, length);
+                            await pair.Value.Send(protocolId, messageTag, content);
                         }
                         catch
                         {
-                            if (failedEndpoints != null) failedEndpoints.Add(pair.Key);
+                            failedEndpoints?.Add(pair.Key);
                         }
                     }
+                }
+            }
+
+            /// <summary>
+            ///   <para>
+            ///     Sends a message to many registered endpoints by their ids.
+            ///     All the endpoints that are not found, or throw an exception
+            ///     on send, are ignored and kept in an output bag of failed
+            ///     endpoints.
+            ///   </para>
+            ///   <para>
+            ///     Notes: use <code>null</code> as the first argument to notify
+            ///     to all the available registered endpoints.
+            ///   </para>
+            /// </summary>
+            /// <typeparam name="T">The type of the message being sent</typeparam>
+            /// <typeparam name="ProtocolType">The protocol type for this message. One instance of it must be an already attached component</param>
+            /// <param name="clientIds">The ids to send the same message - use null to specify ALL the available ids</param>
+            /// <param name="message">The message (as it was registered) being sent</param>
+            /// <param name="content">The message content</param>
+            /// <param name="failedEndpoints">The output list of the endpoints that are not found or raised an error on send</param>
+            public Task Broadcast<ProtocolType, T>(ulong[] clientIds, string message, T content, HashSet<ulong> failedEndpoints) where ProtocolType : IProtocolServerSide where T : ISerializable
+            {
+                ProtocolType protocol = GetComponent<ProtocolType>();
+                if (protocol == null)
+                {
+                    throw new UnknownProtocolException($"This object does not have a protocol of type {protocol.GetType().FullName} attached to it");
+                }
+                else
+                {
+                    return Broadcast(clientIds, protocol, message, content, failedEndpoints);
                 }
             }
 
@@ -248,24 +289,8 @@ namespace AlephVault.Unity.Meetgard
             ///   Closes a registered endpoint by its id.
             /// </summary>
             /// <param name="clientId">The id of the client</param>
-            public void Close(ulong clientId)
-            {
-                if (!IsRunning)
-                {
-                    throw new InvalidOperationException("The server is not running - cannot close any connection");
-                }
-
-                endpointById[clientId].Close();
-            }
-
-            /// <summary>
-            ///   Closes a registered endpoint by its id.
-            ///   If the endpoint is not found, <code>false</code> is
-            ///   returned instead of raising an exception.
-            /// </summary>
-            /// <param name="clientId"></param>
-            /// <returns>Whether an endpoint existed with that id, and was closed</returns>
-            public bool TryClose(ulong clientId)
+            /// <returns>Whether the endpoint existed or not (if true, it was also closed)</returns>
+            public bool Close(ulong clientId)
             {
                 if (!IsRunning)
                 {

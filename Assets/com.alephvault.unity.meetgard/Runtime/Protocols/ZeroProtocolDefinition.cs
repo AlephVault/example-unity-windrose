@@ -2,6 +2,7 @@ using AlephVault.Unity.Binary;
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using AlephVault.Unity.Meetgard.Types;
 
 namespace AlephVault.Unity.Meetgard
 {
@@ -18,8 +19,11 @@ namespace AlephVault.Unity.Meetgard
         {
             protected override void DefineMessages()
             {
-                // TODO implement this!!!
-                throw new NotImplementedException();
+                DefineServerMessage<Nothing>("LetsAgree");
+                DefineServerMessage<Nothing>("Timeout");
+                DefineClientMessage<Version>("MyVersion");
+                DefineServerMessage<Nothing>("VersionMatch");
+                DefineServerMessage<Nothing>("VersionMismatch");
             }
         }
     }

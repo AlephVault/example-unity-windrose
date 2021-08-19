@@ -2,6 +2,7 @@ using AlephVault.Unity.Binary;
 using AlephVault.Unity.Meetgard.Types;
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -54,10 +55,10 @@ namespace AlephVault.Unity.Meetgard
 
             // A mapping of the connections currently established. Each
             // connection is mapped against a generated id for them.
-            private Dictionary<NetworkEndpoint, ulong> endpointIds = new Dictionary<NetworkEndpoint, ulong>();
+            private ConcurrentDictionary<NetworkEndpoint, ulong> endpointIds = new ConcurrentDictionary<NetworkEndpoint, ulong>();
 
             // A mapping of the connections by their ids.
-            private SortedDictionary<ulong, NetworkEndpoint> endpointById = new SortedDictionary<ulong, NetworkEndpoint>();
+            private ConcurrentDictionary<ulong, NetworkEndpoint> endpointById = new ConcurrentDictionary<ulong, NetworkEndpoint>();
 
             // Gets the next id to use. If the next endpoint id is the
             // maximum value, it tries searching a free id among the
@@ -88,10 +89,9 @@ namespace AlephVault.Unity.Meetgard
             // events as if it were a remote endpoint.
             private async void RemoveHostEndpoint()
             {
-                if (endpointById.TryGetValue(HostEndpointId, out NetworkEndpoint endpoint))
+                if (endpointById.TryRemove(HostEndpointId, out NetworkEndpoint endpoint))
                 {
-                    endpointById.Remove(HostEndpointId);
-                    endpointIds.Remove(endpoint);
+                    endpointIds.TryRemove(endpoint, out var _);
                     TriggerOnDisconnected(HostEndpointId, null);
                 }
             }
@@ -111,13 +111,12 @@ namespace AlephVault.Unity.Meetgard
                     HandleMessage(nextId, protocolId, messageTag, content);
                 }, (e) =>
                 {
-                    NetworkEndpoint endpoint = endpointById[nextId];
-                    endpointById.Remove(nextId);
-                    endpointIds.Remove(endpoint);
+                    endpointById.TryRemove(nextId, out var endpoint);
+                    endpointIds.TryRemove(endpoint, out var _);
                     TriggerOnDisconnected(nextId, e);
                 }, maxMessageSize, idleSleepTime);
-                endpointById.Add(nextId, endpoint);
-                endpointIds.Add(endpoint, nextId);
+                endpointById.TryAdd(nextId, endpoint);
+                endpointIds.TryAdd(endpoint, nextId);
             }
 
             // Creates a NetworkLocalEndpoint, on request, and adds it

@@ -1,5 +1,6 @@
 using AlephVault.Unity.Binary;
 using AlephVault.Unity.Meetgard.Types;
+using AlephVault.Unity.Support.Utils;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -45,6 +46,13 @@ namespace AlephVault.Unity.Meetgard
             ///   Tells whether the server is currently listening.
             /// </summary>
             public bool IsListening { get { return listener != null; } }
+
+            private void Awake()
+            {
+                maxMessageSize = Values.Clamp(512, maxMessageSize, 6144);
+                idleSleepTime = Values.Clamp(0.005f, idleSleepTime, 0.5f);
+                SetupClientProtocols();
+            }
 
             /// <summary>
             ///   Starts the server, if it is not already started, in all the

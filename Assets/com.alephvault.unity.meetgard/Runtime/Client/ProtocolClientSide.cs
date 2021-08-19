@@ -248,8 +248,8 @@ namespace AlephVault.Unity.Meetgard
 
             /// <summary>
             ///   <para>
-            ///     This is a callback that  gets invoked when the client is disconnected
-            ///     from the server. This can happen gracefully locally, gracefully remotely.
+            ///     This is a callback that gets invoked when the client is disconnected
+            ///     from the server. This can happen gracefully locally, gracefully remotely,
             ///     or abnormally.
             ///   </para>
             ///   <para>

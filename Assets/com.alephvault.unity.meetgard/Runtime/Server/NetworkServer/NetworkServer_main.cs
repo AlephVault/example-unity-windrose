@@ -260,12 +260,12 @@ namespace AlephVault.Unity.Meetgard
             ///   </para>
             /// </summary>
             /// <typeparam name="T">The type of the message being sent</typeparam>
-            /// <param name="clientIds">The ids to send the same message - use null to specify ALL the available ids</param>
             /// <param name="protocol">The protocol for this message. It must be an already attached component</param>
             /// <param name="message">The message (as it was registered) being sent</param>
+            /// <param name="clientIds">The ids to send the same message - use null to specify ALL the available ids</param>
             /// <param name="content">The message content</param>
             /// <param name="failedEndpoints">The output list of the endpoints that are not found or raised an error on send</param>
-            public async Task Broadcast<T>(ulong[] clientIds, IProtocolServerSide protocol, string message, T content, HashSet<ulong> failedEndpoints) where T : ISerializable
+            public async Task Broadcast<T>(IProtocolServerSide protocol, string message, ulong[] clientIds, T content, HashSet<ulong> failedEndpoints) where T : ISerializable
             {
                 if (protocol == null)
                 {
@@ -297,10 +297,10 @@ namespace AlephVault.Unity.Meetgard
                 }
 
                 // Now, with everything ready, the send can be done.
-                await DoBroadcast(clientIds, protocolId, messageTag, content, failedEndpoints);
+                await DoBroadcast(protocolId, messageTag, clientIds, content, failedEndpoints);
             }
 
-            private async Task DoBroadcast<T>(ulong[] clientIds, ushort protocolId, ushort messageTag, T content, HashSet<ulong> failedEndpoints) where T : ISerializable
+            private async Task DoBroadcast<T>(ushort protocolId, ushort messageTag, ulong[] clientIds, T content, HashSet<ulong> failedEndpoints) where T : ISerializable
             {
                 // Clearing the target set is the first thing to do.
                 failedEndpoints?.Clear();
@@ -358,11 +358,11 @@ namespace AlephVault.Unity.Meetgard
             /// </summary>
             /// <typeparam name="T">The type of the message being sent</typeparam>
             /// <typeparam name="ProtocolType">The protocol type for this message. One instance of it must be an already attached component</param>
-            /// <param name="clientIds">The ids to send the same message - use null to specify ALL the available ids</param>
             /// <param name="message">The message (as it was registered) being sent</param>
+            /// <param name="clientIds">The ids to send the same message - use null to specify ALL the available ids</param>
             /// <param name="content">The message content</param>
             /// <param name="failedEndpoints">The output list of the endpoints that are not found or raised an error on send</param>
-            public Task Broadcast<ProtocolType, T>(ulong[] clientIds, string message, T content, HashSet<ulong> failedEndpoints) where ProtocolType : IProtocolServerSide where T : ISerializable
+            public Task Broadcast<ProtocolType, T>(string message, ulong[] clientIds, T content, HashSet<ulong> failedEndpoints) where ProtocolType : IProtocolServerSide where T : ISerializable
             {
                 ProtocolType protocol = GetComponent<ProtocolType>();
                 if (protocol == null)
@@ -371,7 +371,7 @@ namespace AlephVault.Unity.Meetgard
                 }
                 else
                 {
-                    return Broadcast(clientIds, protocol, message, content, failedEndpoints);
+                    return Broadcast(protocol, message, clientIds, content, failedEndpoints);
                 }
             }
 
@@ -421,7 +421,7 @@ namespace AlephVault.Unity.Meetgard
                         throw new OutgoingMessageTypeMismatchException($"Outgoing message ({protocol.GetType().FullName}, {message}) was attempted with type {content.GetType().FullName} when {expectedType.FullName} was expected");
                     }
 
-                    await DoBroadcast(clientIds, protocolId, messageTag, content, failedEndpoints);
+                    await DoBroadcast(protocolId, messageTag, clientIds, content, failedEndpoints);
                 };
             }
 

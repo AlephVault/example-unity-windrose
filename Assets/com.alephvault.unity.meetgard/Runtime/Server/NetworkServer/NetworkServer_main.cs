@@ -170,6 +170,84 @@ namespace AlephVault.Unity.Meetgard
             }
 
             /// <summary>
+            ///   Creates a sender shortcut, intended to send the message multiple times
+            ///   and spend time on message mapping only once.
+            /// </summary>
+            /// <typeparam name="T">The type of the message being sent</typeparam>
+            /// <param name="protocol">The protocol for this message. It must be an already attached component</param>
+            /// <param name="message">The message (as it was registered) that this sender will send</param>
+            public Func<ulong, T, Task<bool>> MakeSender<T>(IProtocolServerSide protocol, string message) where T : ISerializable
+            {
+                if (protocol == null)
+                {
+                    throw new ArgumentNullException("protocol");
+                }
+
+                ushort protocolId = GetProtocolId(protocol);
+                ushort messageTag;
+                Type expectedType;
+                try
+                {
+                    messageTag = GetOutgoingMessageTag(protocolId, message);
+                    expectedType = GetOutgoingMessageType(protocolId, messageTag);
+                }
+                catch (UnexpectedMessageException e)
+                {
+                    // Reformatting the exception.
+                    throw new UnexpectedMessageException($"Unexpected outgoing protocol/message: ({protocol.GetType().FullName}, {message})", e);
+                }
+
+                if (typeof(T) != expectedType)
+                {
+                    throw new OutgoingMessageTypeMismatchException($"Message sender creation for protocol / message ({protocol.GetType().FullName}, {message}) was attempted with type {typeof(T).FullName} when {expectedType.FullName} was expected");
+                }
+
+                return async (clientId, content) =>
+                {
+                    if (!IsRunning)
+                    {
+                        throw new InvalidOperationException("The server is not running - cannot send any message");
+                    }
+
+                    if (content.GetType() != expectedType)
+                    {
+                        throw new OutgoingMessageTypeMismatchException($"Outgoing message ({protocol.GetType().FullName}, {message}) was attempted with type {content.GetType().FullName} when {expectedType.FullName} was expected");
+                    }
+
+                    if (endpointById.TryGetValue(clientId, out NetworkEndpoint endpoint))
+                    {
+                        await endpoint.Send(protocolId, messageTag, content);
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                };
+            }
+
+            /// <summary>
+            ///   Creates a sender shortcut, intended to send the message multiple times
+            ///   and spend time on message mapping only once.
+            /// </summary>
+            /// <typeparam name="ProtocolType">The protocol type for this message. One instance of it must be an already attached component</param>
+            /// <typeparam name="T">The type of the message this sender will send</typeparam>
+            /// <param name="message">The name of the message this sender will send</param>
+            /// <returns>A function that takes the message to send, of the appropriate type, and sends it (asynchronously)</returns>
+            public Func<ulong, T, Task<bool>> MakeSender<ProtocolType, T>(string message) where ProtocolType : IProtocolServerSide where T : ISerializable
+            {
+                ProtocolType protocol = GetComponent<ProtocolType>();
+                if (protocol == null)
+                {
+                    throw new UnknownProtocolException($"This object does not have a protocol of type {protocol.GetType().FullName} attached to it");
+                }
+                else
+                {
+                    return MakeSender<T>(protocol, message);
+                }
+            }
+
+            /// <summary>
             ///   <para>
             ///     Sends a message to many registered endpoints by their ids.
             ///     All the endpoints that are not found, or throw an exception
@@ -219,7 +297,11 @@ namespace AlephVault.Unity.Meetgard
                 }
 
                 // Now, with everything ready, the send can be done.
+                await DoBroadcast(clientIds, protocolId, messageTag, content, failedEndpoints);
+            }
 
+            private async Task DoBroadcast<T>(ulong[] clientIds, ushort protocolId, ushort messageTag, T content, HashSet<ulong> failedEndpoints) where T : ISerializable
+            {
                 // Clearing the target set is the first thing to do.
                 failedEndpoints?.Clear();
 
@@ -248,7 +330,7 @@ namespace AlephVault.Unity.Meetgard
                 else
                 {
                     // All of the endpoints will be iterated.
-                    foreach(KeyValuePair<ulong, NetworkEndpoint> pair in endpointById.ToArray())
+                    foreach (KeyValuePair<ulong, NetworkEndpoint> pair in endpointById.ToArray())
                     {
                         try
                         {
@@ -290,6 +372,77 @@ namespace AlephVault.Unity.Meetgard
                 else
                 {
                     return Broadcast(clientIds, protocol, message, content, failedEndpoints);
+                }
+            }
+
+            /// <summary>
+            ///   Creates a broadcaster shortcut, intended to send the message multiple times
+            ///   and spend time on message mapping only once.
+            /// </summary>
+            /// <typeparam name="T">The type of the message this sender will send</typeparam>
+            /// <param name="protocol">The protocol for this message. It must be an already attached component</param>
+            /// <param name="message">The name of the message this sender will send</param>
+            /// <returns>A function that takes the list of clients and the message to send, of the appropriate type, and sends it (asynchronously)</returns>
+            public Func<ulong[], T, HashSet<ulong>, Task> MakeBroadcaster<T>(IProtocolServerSide protocol, string message) where T : ISerializable
+            {
+                if (protocol == null)
+                {
+                    throw new ArgumentNullException("protocol");
+                }
+
+                ushort protocolId = GetProtocolId(protocol);
+                ushort messageTag;
+                Type expectedType;
+                try
+                {
+                    messageTag = GetOutgoingMessageTag(protocolId, message);
+                    expectedType = GetOutgoingMessageType(protocolId, messageTag);
+                }
+                catch (UnexpectedMessageException e)
+                {
+                    // Reformatting the exception.
+                    throw new UnexpectedMessageException($"Unexpected outgoing protocol/message: ({protocol.GetType().FullName}, {message})", e);
+                }
+
+                if (typeof(T) != expectedType)
+                {
+                    throw new OutgoingMessageTypeMismatchException($"Message sender creation for protocol / message ({protocol.GetType().FullName}, {message}) was attempted with type {typeof(T).FullName} when {expectedType.FullName} was expected");
+                }
+
+                return async (clientIds, content, failedEndpoints) =>
+                {
+                    if (!IsRunning)
+                    {
+                        throw new InvalidOperationException("The endpoint is not running - No data can be sent");
+                    }
+
+                    if (content.GetType() != expectedType)
+                    {
+                        throw new OutgoingMessageTypeMismatchException($"Outgoing message ({protocol.GetType().FullName}, {message}) was attempted with type {content.GetType().FullName} when {expectedType.FullName} was expected");
+                    }
+
+                    await DoBroadcast(clientIds, protocolId, messageTag, content, failedEndpoints);
+                };
+            }
+
+            /// <summary>
+            ///   Creates a broadcaster shortcut, intended to send the message multiple times
+            ///   and spend time on message mapping only once.
+            /// </summary>
+            /// <typeparam name="ProtocolType">The protocol type for this message. One instance of it must be an already attached component</param>
+            /// <typeparam name="T">The type of the message this sender will send</typeparam>
+            /// <param name="message">The name of the message this sender will send</param>
+            /// <returns>A function that takes the list of clients and the message to send, of the appropriate type, and sends it (asynchronously)</returns>
+            public Func<ulong[], T, HashSet<ulong>, Task> MakeBroadcaster<ProtocolType, T>(string message) where ProtocolType : IProtocolServerSide where T : ISerializable
+            {
+                ProtocolType protocol = GetComponent<ProtocolType>();
+                if (protocol == null)
+                {
+                    throw new UnknownProtocolException($"This object does not have a protocol of type {protocol.GetType().FullName} attached to it");
+                }
+                else
+                {
+                    return MakeBroadcaster<T>(protocol, message);
                 }
             }
 

@@ -35,7 +35,7 @@ namespace AlephVault.Unity.Meetgard
             private Action<ulong, ISerializable>[] incomingMessageHandlers = null;
 
             // Initializes the handlers, according to its definition.
-            private void Awake()
+            protected void Awake()
             {
                 server = GetComponent<NetworkServer>();
                 incomingMessageHandlers = new Action<ulong, ISerializable>[definition.ClientMessagesCount()];

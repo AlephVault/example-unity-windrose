@@ -24,6 +24,7 @@ namespace AlephVault.Unity.Meetgard
                 DefineClientMessage<Version>("MyVersion");
                 DefineServerMessage<Nothing>("VersionMatch");
                 DefineServerMessage<Nothing>("VersionMismatch");
+                DefineServerMessage<Nothing>("NotReady");
             }
         }
     }

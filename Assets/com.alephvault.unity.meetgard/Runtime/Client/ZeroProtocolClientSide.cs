@@ -86,6 +86,13 @@ namespace AlephVault.Unity.Meetgard
                     // agreeing with this zero protocol).
                     OnNotReadyError?.Invoke();
                 });
+                AddIncomingMessageHandler<Nothing>("AlreadyDone", (proto, _) =>
+                {
+                    // This is a debug message. Typically, it will never occur.
+                    // It involved rejecting a MyVersion message because the
+                    // handshake is already done. This message is harmless.
+                    OnAlreadyDoneError?.Invoke();
+                });
             }
 
             /// <summary>
@@ -113,6 +120,13 @@ namespace AlephVault.Unity.Meetgard
             ///   completed in either side.
             /// </summary>
             public event Action OnNotReadyError = null;
+
+            /// <summary>
+            ///   Triggered when the client sent another MyVersion message,
+            ///   but the server had previously approved the handhske for
+            ///   this client connection.
+            /// </summary>
+            public event Action OnAlreadyDoneError = null;
 
             /// <summary>
             ///   Triggered when the client received the notification that the

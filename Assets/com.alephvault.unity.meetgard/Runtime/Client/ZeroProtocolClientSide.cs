@@ -34,6 +34,16 @@ namespace AlephVault.Unity.Meetgard
             /// </summary>
             public bool Ready { get; private set; }
 
+            public override void OnConnected()
+            {
+                Ready = false;
+            }
+
+            public override void OnDisconnected(System.Exception reason)
+            {
+                Ready = false;
+            }
+
             protected override void SetIncomingMessageHandlers()
             {
                 AddIncomingMessageHandler<Nothing>("LetsAgree", (proto, _) =>
@@ -58,6 +68,7 @@ namespace AlephVault.Unity.Meetgard
                     // use of this event, since typically other protocols will
                     // in turn initialize on their own for this client and send
                     // their own messages. But it is available anyway.
+                    Ready = true;
                     OnVersionMatch?.Invoke();
                 });
                 AddIncomingMessageHandler<Nothing>("VersionMismatch", (proto, _) =>

@@ -18,16 +18,6 @@ namespace AlephVault.Unity.Meetgard
     {
         public partial class NetworkServer : MonoBehaviour
         {
-            /// <summary>
-            ///   A value telling the version of the current protocol
-            ///   set in this network server. This must be changed as
-            ///   per deployment, since certain game changes are meant
-            ///   to be not retro-compatible and thus the version must
-            ///   be marked as mismatching.
-            /// </summary>
-            [SerializeField]
-            private Protocols.Version Version;
-
             // Protocols will exist by their id (0-based)
             private IProtocolServerSide[] protocols = null;
 

@@ -104,6 +104,19 @@ namespace AlephVault.Unity.Meetgard
             }
 
             /// <summary>
+            ///   Adds a handler to a defined incoming message. The handler to
+            ///   add must also allow a reference to the protocol as a generic
+            ///   parent class reference. The handler is for a message without
+            ///   any body.
+            /// </summary>
+            /// <param name="message">The message name</param>
+            /// <param name="handler">The handler to register</param>
+            protected void AddIncomingMessageHandler(string message, Func<ProtocolClientSide<Definition>, Task> handler)
+            {
+                AddIncomingMessageHandler<Nothing>(message, (proto, _) => handler(proto));
+            }
+
+            /// <summary>
             ///   Creates a sender shortcut, intended to send the message multiple times
             ///   and spend time on message mapping only once. Intended to be used on
             ///   lazy initialization of senders, or eager initializationin some sort of

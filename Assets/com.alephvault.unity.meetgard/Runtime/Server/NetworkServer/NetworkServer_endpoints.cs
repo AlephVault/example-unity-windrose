@@ -92,7 +92,7 @@ namespace AlephVault.Unity.Meetgard
                 if (endpointById.TryRemove(HostEndpointId, out NetworkEndpoint endpoint))
                 {
                     endpointIds.TryRemove(endpoint, out var _);
-                    TriggerOnDisconnected(HostEndpointId, null);
+                    await TriggerOnDisconnected(HostEndpointId, null);
                 }
             }
 
@@ -103,17 +103,17 @@ namespace AlephVault.Unity.Meetgard
             private void AddNetworkClientEndpoint(TcpClient clientSocket)
             {
                 ulong nextId = GetNextEndpointId();
-                NetworkEndpoint endpoint = new NetworkRemoteEndpoint(clientSocket, NewMessageContainer, () =>
+                NetworkEndpoint endpoint = new NetworkRemoteEndpoint(clientSocket, NewMessageContainer, async () =>
                 {
-                    TriggerOnConnected(nextId);
-                }, (protocolId, messageTag, content) =>
+                    await TriggerOnConnected(nextId);
+                }, async (protocolId, messageTag, content) =>
                 {
-                    HandleMessage(nextId, protocolId, messageTag, content);
-                }, (e) =>
+                    await HandleMessage(nextId, protocolId, messageTag, content);
+                }, async (e) =>
                 {
                     endpointById.TryRemove(nextId, out var endpoint);
                     endpointIds.TryRemove(endpoint, out var _);
-                    TriggerOnDisconnected(nextId, e);
+                    await TriggerOnDisconnected(nextId, e);
                 }, maxMessageSize, idleSleepTime);
                 endpointById.TryAdd(nextId, endpoint);
                 endpointIds.TryAdd(endpoint, nextId);

@@ -3,6 +3,7 @@ using AlephVault.Unity.Meetgard.Protocols;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace AlephVault.Unity.Meetgard
@@ -49,18 +50,18 @@ namespace AlephVault.Unity.Meetgard
             /// </summary>
             /// <param name="tag">The message tag to get the handler for</param>
             /// <returns>The message handler</returns>
-            public Action<ulong, ISerializable> GetIncomingMessageHandler(ushort tag);
+            public Func<ulong, ISerializable, Task> GetIncomingMessageHandler(ushort tag);
 
             /// <summary>
             ///   This is a callback that gets invoked when the server starts.
             /// </summary>
-            public void OnServerStarted();
+            public Task OnServerStarted();
 
             /// <summary>
             ///   This is a callback that gets invoked when a client successfully
             ///   established a connection to this server.
             /// </summary>
-            public void OnConnected(ulong clientId);
+            public Task OnConnected(ulong clientId);
 
             /// <summary>
             ///   This is a callback that gets invoked when a client is disconnected from
@@ -68,12 +69,12 @@ namespace AlephVault.Unity.Meetgard
             ///   abnormally.
             /// </summary>
             /// <param name="reason">If not null, tells the abnormal reason of closure</param>
-            public void OnDisconnected(ulong clientId, Exception reason);
+            public Task OnDisconnected(ulong clientId, Exception reason);
 
             /// <summary>
             ///   This is a callback that gets invoked when the server is stopped.
             /// </summary>
-            public void OnServerStopped(Exception e);
+            public Task OnServerStopped(Exception e);
         }
     }
 }

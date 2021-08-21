@@ -92,14 +92,14 @@ namespace AlephVault.Unity.Meetgard
 
             // Handles a received message. The received message will be
             // handled by the underlying protocol handler.
-            private void HandleMessage(ulong clientId, ushort protocolId, ushort messageTag, ISerializable message)
+            private async Task HandleMessage(ulong clientId, ushort protocolId, ushort messageTag, ISerializable message)
             {
                 // At this point, the protocolId exists. Also, the messageTag exists.
                 // We get the client-side handler, and we invoke it.
-                Action<ulong, ISerializable> handler = protocols[protocolId].GetIncomingMessageHandler(messageTag);
+                Func<ulong, ISerializable, Task> handler = protocols[protocolId].GetIncomingMessageHandler(messageTag);
                 if (handler != null)
                 {
-                    handler(clientId, message);
+                    await handler(clientId, message);
                 }
                 else
                 {
@@ -132,13 +132,13 @@ namespace AlephVault.Unity.Meetgard
             // This function gets invoked when the network server
             // started. It invokes all of the OnServerStarted
             // handlers on each protocol.
-            private void TriggerOnServerStarted()
+            private async Task TriggerOnServerStarted()
             {
                 foreach (IProtocolServerSide protocol in protocols)
                 {
                     try
                     {
-                        protocol.OnServerStarted();
+                        await protocol.OnServerStarted();
                     }
                     catch (System.Exception e)
                     {
@@ -152,13 +152,13 @@ namespace AlephVault.Unity.Meetgard
             // This function gets invoked when a network client
             // successfully connects to this server. It invokes
             // all of the OnConnected handlers on each protocol.
-            private void TriggerOnConnected(ulong clientId)
+            private async Task TriggerOnConnected(ulong clientId)
             {
                 foreach (IProtocolServerSide protocol in protocols)
                 {
                     try
                     {
-                        protocol.OnConnected(clientId);
+                        await protocol.OnConnected(clientId);
                     }
                     catch (System.Exception e)
                     {
@@ -173,13 +173,13 @@ namespace AlephVault.Unity.Meetgard
             // disconnects from this server, be it normally or
             // not. It invokes all of the OnDisconnected handlers
             // on each protocol.
-            private void TriggerOnDisconnected(ulong clientId, System.Exception reason)
+            private async Task TriggerOnDisconnected(ulong clientId, System.Exception reason)
             {
                 foreach (IProtocolServerSide protocol in protocols)
                 {
                     try
                     {
-                        protocol.OnDisconnected(clientId, reason);
+                        await protocol.OnDisconnected(clientId, reason);
                     }
                     catch (System.Exception e)
                     {
@@ -193,13 +193,13 @@ namespace AlephVault.Unity.Meetgard
             // This function gets invoked when the network server
             // stopped. It invokes all of the OnServerStopped
             // handlers on each protocol.
-            private void TriggerOnServerStopped(System.Exception reason)
+            private async Task TriggerOnServerStopped(System.Exception reason)
             {
                 foreach (IProtocolServerSide protocol in protocols)
                 {
                     try
                     {
-                        protocol.OnServerStopped(reason);
+                        await protocol.OnServerStopped(reason);
                     }
                     catch (System.Exception e)
                     {

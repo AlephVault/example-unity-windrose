@@ -5,6 +5,7 @@ namespace AlephVault.Unity.Meetgard
     namespace Types
     {
         using AlephVault.Unity.Binary;
+        using System.Threading.Tasks;
 
         /// <summary>
         ///   <para>
@@ -24,59 +25,38 @@ namespace AlephVault.Unity.Meetgard
         public partial class NetworkRemoteEndpoint : NetworkEndpoint
         {
             // When a connection is established, this callback is processed.
-            private Action onConnectionStart = null;
+            private Func<Task> onConnectionStart = null;
 
             // When a message is received, this callback is processed, passing
             // a protocol ID, a message tag, and a reader for the incoming buffer.
-            private Action<ushort, ushort, ISerializable> onMessage = null;
+            private Func<ushort, ushort, ISerializable, Task> onMessage = null;
 
             // When a connection is terminated, this callback is processed.
             // If the termination was not graceful, the exception that caused
             // the termination will be given. Otherwise, it will be null.
-            private Action<System.Exception> onConnectionEnd = null;
+            private Func<System.Exception, Task> onConnectionEnd = null;
 
             // Invokes the method DoTriggerOnConnectionStart, which is
             // asynchronous in nature.
-            private void TriggerOnConnectionStart()
+            private async void TriggerOnConnectionStart()
             {
-                DoTriggerOnConnectionStart();
-            }
-
-            // Triggers the onConnectionStart event into the main Unity thread.
-            // This operation is done asynchronously, however.
-            private async void DoTriggerOnConnectionStart()
-            {
-                onConnectionStart?.Invoke();
+                await onConnectionStart?.Invoke();
             }
 
             // Invokes the method DoTriggerOnConnectionEnd, which is asynchronous
             // in nature.
-            private void TriggerOnConnectionEnd(System.Exception exception)
+            private async void TriggerOnConnectionEnd(System.Exception exception)
             {
-                DoTriggerOnConnectionEnd(exception);
-            }
-
-            // Triggers the onConnectionEnd event into the main Unity thread.
-            // This operation is done asynchronously, however.
-            private async void DoTriggerOnConnectionEnd(System.Exception exception)
-            {
-                onConnectionEnd?.Invoke(exception);
+                await onConnectionEnd?.Invoke(exception);
             }
 
             // Invokes the method DoTriggerOnMessageEvent, which is asynchronous
             // in nature.
-            private void TriggerOnMessageEvent()
-            {
-                DoTriggerOnMessageEvent();
-            }
-
-            // Triggers the onMessage event into the main Unity thread.
-            // This operation is done asynchronously, however.
-            private async void DoTriggerOnMessageEvent()
+            private async void TriggerOnMessageEvent()
             {
                 if (queuedIncomingMessages.TryDequeue(out var result))
                 {
-                    onMessage?.Invoke(result.Item1, result.Item2, result.Item3);
+                    await onMessage ?.Invoke(result.Item1, result.Item2, result.Item3);
                 }
             }
         }

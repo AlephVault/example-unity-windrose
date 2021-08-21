@@ -43,7 +43,7 @@ namespace AlephVault.Unity.Meetgard
 
             public NetworkRemoteEndpoint(
                 TcpClient endpointSocket, Func<ushort, ushort, ISerializable> protocolMessageFactory,
-                Action onConnected, Action<ushort, ushort, ISerializable> onArrival, Action<System.Exception> onDisconnected,
+                Func<Task> onConnected, Func<ushort, ushort, ISerializable, Task> onArrival, Func<System.Exception, Task> onDisconnected,
                 ushort maxMessageSize = 1024, float idleSleepTime = 0.01f
             ) {
                 if (endpointSocket == null || !endpointSocket.Connected || endpointSocketsInUse.Contains(endpointSocket))

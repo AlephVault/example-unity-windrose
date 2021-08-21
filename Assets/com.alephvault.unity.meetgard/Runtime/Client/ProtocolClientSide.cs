@@ -33,13 +33,13 @@ namespace AlephVault.Unity.Meetgard
 
             // The handlers for this protocol. The action is already wrapped
             // to refer the current protocol.
-            private Action<ISerializable>[] incomingMessageHandlers = null;
+            private Func<ISerializable, Task>[] incomingMessageHandlers = null;
 
             // Initializes the handlers, according to its definition.
             protected void Awake()
             {
                 client = GetComponent<NetworkClient>();
-                incomingMessageHandlers = new Action<ISerializable>[definition.ServerMessagesCount()];
+                incomingMessageHandlers = new Func<ISerializable, Task>[definition.ServerMessagesCount()];
                 try
                 {
                     SetIncomingMessageHandlers();
@@ -64,7 +64,7 @@ namespace AlephVault.Unity.Meetgard
             /// <typeparam name="T">The tpye of the message's content</typeparam>
             /// <param name="message">The message name</param>
             /// <param name="handler">The handler to register</param>
-            protected void AddIncomingMessageHandler<T>(string message, Action<ProtocolClientSide<Definition>, T> handler) where T : ISerializable
+            protected void AddIncomingMessageHandler<T>(string message, Func<ProtocolClientSide<Definition>, T, Task> handler) where T : ISerializable
             {
                 if (message == null || message.Trim().Length == 0)
                 {
@@ -194,7 +194,7 @@ namespace AlephVault.Unity.Meetgard
             /// </summary>
             /// <param name="tag">The message tag to get the handler for</param>
             /// <returns>The message container</returns>
-            public Action<ISerializable> GetIncomingMessageHandler(ushort tag)
+            public Func<ISerializable, Task> GetIncomingMessageHandler(ushort tag)
             {
                 try
                 {
@@ -242,7 +242,7 @@ namespace AlephVault.Unity.Meetgard
             ///     Override it at need.
             ///   </para>
             /// </summary>
-            public virtual void OnConnected()
+            public virtual async Task OnConnected()
             {
             }
 
@@ -257,7 +257,7 @@ namespace AlephVault.Unity.Meetgard
             ///   </para>
             /// </summary>
             /// <param name="reason">If not null, tells the abnormal reason of closure</param>
-            public virtual void OnDisconnected(System.Exception reason)
+            public virtual async Task OnDisconnected(System.Exception reason)
             {
             }
         }

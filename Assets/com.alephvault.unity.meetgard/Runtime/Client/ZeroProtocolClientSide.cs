@@ -34,64 +34,64 @@ namespace AlephVault.Unity.Meetgard
             /// </summary>
             public bool Ready { get; private set; }
 
-            public override void OnConnected()
+            public override async Task OnConnected()
             {
                 Ready = false;
             }
 
-            public override void OnDisconnected(System.Exception reason)
+            public override async Task OnDisconnected(System.Exception reason)
             {
                 Ready = false;
             }
 
             protected override void SetIncomingMessageHandlers()
             {
-                AddIncomingMessageHandler<Nothing>("LetsAgree", (proto, _) =>
+                AddIncomingMessageHandler<Nothing>("LetsAgree", async (proto, _) =>
                 {
-                    Send("MyVersion", Version);
+                    await Send("MyVersion", Version);
                     // This will be invoked after the client repied with MyVersion
                     // message. This means: after the handshake started in client
                     // (protocol-wise) side.
-                    OnZeroHandshakeStarted?.Invoke();
+                    await (OnZeroHandshakeStarted ?.Invoke() ?? Task.CompletedTask);
                 });
-                AddIncomingMessageHandler<Nothing>("Timeout", (proto, _) =>
+                AddIncomingMessageHandler<Nothing>("Timeout", async (proto, _) =>
                 {
                     // This may be invoked regardless the LetsAgree being received
                     // or the MyVersion message being sent. This is due to the
                     // client taking too long to respond to LetsAgree message.
                     // Expect a disconnection after this message.
-                    OnTimeout?.Invoke();
+                    await (OnTimeout?.Invoke() ?? Task.CompletedTask);
                 });
-                AddIncomingMessageHandler<Nothing>("VersionMatch", (proto, _) =>
+                AddIncomingMessageHandler<Nothing>("VersionMatch", async (proto, _) =>
                 {
                     // The version was matched. Don't worry: we will seldom make
                     // use of this event, since typically other protocols will
                     // in turn initialize on their own for this client and send
                     // their own messages. But it is available anyway.
                     Ready = true;
-                    OnVersionMatch?.Invoke();
+                    await (OnVersionMatch ?.Invoke() ?? Task.CompletedTask);
                 });
-                AddIncomingMessageHandler<Nothing>("VersionMismatch", (proto, _) =>
+                AddIncomingMessageHandler<Nothing>("VersionMismatch", async (proto, _) =>
                 {
                     // This message is received when there is a mismatch between
                     // the server version and the client version. After receiving
                     // this message, expect a sudden graceful disconnection.
-                    OnVersionMismatch?.Invoke();
+                    await (OnVersionMismatch?.Invoke() ?? Task.CompletedTask);
                 });
-                AddIncomingMessageHandler<Nothing>("NotReady", (proto, _) =>
+                AddIncomingMessageHandler<Nothing>("NotReady", async (proto, _) =>
                 {
                     // This is a debug message. Typically, it involves rejecting
                     // any message other than MyVersion, since the protocols are
                     // not ready for this client (being ready occurs after
                     // agreeing with this zero protocol).
-                    OnNotReadyError?.Invoke();
+                    await (OnNotReadyError?.Invoke() ?? Task.CompletedTask);
                 });
-                AddIncomingMessageHandler<Nothing>("AlreadyDone", (proto, _) =>
+                AddIncomingMessageHandler<Nothing>("AlreadyDone", async (proto, _) =>
                 {
                     // This is a debug message. Typically, it will never occur.
                     // It involved rejecting a MyVersion message because the
                     // handshake is already done. This message is harmless.
-                    OnAlreadyDoneError?.Invoke();
+                    await (OnAlreadyDoneError?.Invoke() ?? Task.CompletedTask);
                 });
             }
 
@@ -99,34 +99,34 @@ namespace AlephVault.Unity.Meetgard
             ///   Triggered when the client received a LetsAgree message and replied
             ///   with MyVersion message.
             /// </summary>
-            public event Action OnZeroHandshakeStarted = null;
+            public event Func<Task> OnZeroHandshakeStarted = null;
 
             /// <summary>
             ///   Triggered when the client received the notification that the
             ///   version handshake was correct.
             /// </summary>
-            public event Action OnVersionMatch = null;
+            public event Func<Task> OnVersionMatch = null;
 
             /// <summary>
             ///   Triggered when the client received the notification that the
             ///   version handshake was incorrect. Expect a sudden yet graceful
             ///   disconnection after this message.
             /// </summary>
-            public event Action OnVersionMismatch = null;
+            public event Func<Task> OnVersionMismatch = null;
 
             /// <summary>
             ///   Triggered when the client attempted any message other than
             ///   MyVersion message while the handshake is still not successfully
             ///   completed in either side.
             /// </summary>
-            public event Action OnNotReadyError = null;
+            public event Func<Task> OnNotReadyError = null;
 
             /// <summary>
             ///   Triggered when the client sent another MyVersion message,
             ///   but the server had previously approved the handhske for
             ///   this client connection.
             /// </summary>
-            public event Action OnAlreadyDoneError = null;
+            public event Func<Task> OnAlreadyDoneError = null;
 
             /// <summary>
             ///   Triggered when the client received the notification that the
@@ -134,7 +134,7 @@ namespace AlephVault.Unity.Meetgard
             ///   due to malicius attempts or networking problems. Expect a sudden
             ///   yet graceful disconnection after this message.
             /// </summary>
-            public event Action OnTimeout = null;
+            public event Func<Task> OnTimeout = null;
         }
     }
 }

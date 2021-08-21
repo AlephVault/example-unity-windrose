@@ -50,7 +50,7 @@ namespace AlephVault.Unity.Meetgard
             /// </summary>
             /// <param name="tag">The message tag to get the handler for</param>
             /// <returns>The message handler</returns>
-            public Action<ISerializable> GetIncomingMessageHandler(ushort tag);
+            public Func<ISerializable, Task> GetIncomingMessageHandler(ushort tag);
 
             /// <summary>
             ///   Sends a message using this protocol. The type must match
@@ -75,7 +75,7 @@ namespace AlephVault.Unity.Meetgard
             ///   This is a callback that gets invoked when the client successfully
             ///   established a connection to a server.
             /// </summary>
-            public void OnConnected();
+            public Task OnConnected();
 
             /// <summary>
             ///   This is a callback that gets invoked when the client is disconnected
@@ -83,7 +83,7 @@ namespace AlephVault.Unity.Meetgard
             ///   or abnormally.
             /// </summary>
             /// <param name="reason">If not null, tells the abnormal reason of closure</param>
-            public void OnDisconnected(Exception reason);
+            public Task OnDisconnected(Exception reason);
         }
     }
 }

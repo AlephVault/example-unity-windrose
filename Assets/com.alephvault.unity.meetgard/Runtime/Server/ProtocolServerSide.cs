@@ -32,13 +32,13 @@ namespace AlephVault.Unity.Meetgard
 
             // The handlers for this protocol. The action is already wrapped
             // to refer the current protocol.
-            private Action<ulong, ISerializable>[] incomingMessageHandlers = null;
+            private Func<ulong, ISerializable, Task>[] incomingMessageHandlers = null;
 
             // Initializes the handlers, according to its definition.
             protected void Awake()
             {
                 server = GetComponent<NetworkServer>();
-                incomingMessageHandlers = new Action<ulong, ISerializable>[definition.ClientMessagesCount()];
+                incomingMessageHandlers = new Func<ulong, ISerializable, Task>[definition.ClientMessagesCount()];
                 try
                 {
                     SetIncomingMessageHandlers();
@@ -63,7 +63,7 @@ namespace AlephVault.Unity.Meetgard
             /// <typeparam name="T">The tpye of the message's content</typeparam>
             /// <param name="message">The message name</param>
             /// <param name="handler">The handler to register</param>
-            protected void AddIncomingMessageHandler<T>(string message, Action<ProtocolServerSide<Definition>, ulong, T> handler) where T : ISerializable
+            protected void AddIncomingMessageHandler<T>(string message, Func<ProtocolServerSide<Definition>, ulong, T, Task> handler) where T : ISerializable
             {
                 if (message == null || message.Trim().Length == 0)
                 {
@@ -222,7 +222,7 @@ namespace AlephVault.Unity.Meetgard
             /// </summary>
             /// <param name="tag">The message tag to get the handler for</param>
             /// <returns>The message container</returns>
-            public Action<ulong, ISerializable> GetIncomingMessageHandler(ushort tag)
+            public Func<ulong, ISerializable, Task> GetIncomingMessageHandler(ushort tag)
             {
                 try
                 {
@@ -303,7 +303,7 @@ namespace AlephVault.Unity.Meetgard
             ///     Override it at need.
             ///   </para>
             /// </summary>
-            public virtual void OnConnected(ulong clientId)
+            public virtual async Task OnConnected(ulong clientId)
             {
             }
 
@@ -318,14 +318,14 @@ namespace AlephVault.Unity.Meetgard
             ///   </para>
             /// </summary>
             /// <param name="reason">If not null, tells the abnormal reason of closure</param>
-            public virtual void OnDisconnected(ulong clientId, System.Exception reason)
+            public virtual async Task OnDisconnected(ulong clientId, System.Exception reason)
             {
             }
 
             /// <summary>
             ///   This is a callback that gets invoked when the server has just started.
             /// </summary>
-            public virtual void OnServerStarted()
+            public virtual async Task OnServerStarted()
             {
             }
 
@@ -334,7 +334,7 @@ namespace AlephVault.Unity.Meetgard
             ///   all the client connections are as well) told to stop.
             /// </summary>
             /// <param name="e"></param>
-            public virtual void OnServerStopped(System.Exception e)
+            public virtual async Task OnServerStopped(System.Exception e)
             {
             }
         }

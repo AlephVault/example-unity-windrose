@@ -4,6 +4,7 @@ using AlephVault.Unity.Binary;
 using AlephVault.Unity.Meetgard.Types;
 using AlephVault.Unity.Layout.Utils;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace AlephVault.Unity.Meetgard
 {
@@ -85,14 +86,14 @@ namespace AlephVault.Unity.Meetgard
 
             // Handles a received message. The received message will be
             // handled by the underlying protocol handler.
-            private void HandleMessage(ushort protocolId, ushort messageTag, ISerializable message)
+            private async Task HandleMessage(ushort protocolId, ushort messageTag, ISerializable message)
             {
                 // At this point, the protocolId exists. Also, the messageTag exists.
                 // We get the client-side handler, and we invoke it.
-                Action<ISerializable> handler = protocols[protocolId].GetIncomingMessageHandler(messageTag);
+                Func<ISerializable, Task> handler = protocols[protocolId].GetIncomingMessageHandler(messageTag);
                 if (handler != null)
                 {
-                    handler(message);
+                    await handler(message);
                 }
                 else
                 {
@@ -125,13 +126,13 @@ namespace AlephVault.Unity.Meetgard
             // This function gets invoked when the network client
             // successfully connects to a server. It invokes all
             // of the OnConnected handlers on each protocol.
-            private void TriggerOnConnected()
+            private async Task TriggerOnConnected()
             {
                 foreach(IProtocolClientSide protocol in protocols)
                 {
                     try
                     {
-                        protocol.OnConnected();
+                        await protocol.OnConnected();
                     }
                     catch(System.Exception e)
                     {
@@ -146,13 +147,13 @@ namespace AlephVault.Unity.Meetgard
             // disconnects from a server, be it normally or not.
             // It invokes all of the OnDisconnected handlers on
             // each protocol.
-            private void TriggerOnDisconnected(System.Exception reason)
+            private async Task TriggerOnDisconnected(System.Exception reason)
             {
                 foreach (IProtocolClientSide protocol in protocols)
                 {
                     try
                     {
-                        protocol.OnDisconnected(reason);
+                        await protocol.OnDisconnected(reason);
                     }
                     catch (System.Exception e)
                     {

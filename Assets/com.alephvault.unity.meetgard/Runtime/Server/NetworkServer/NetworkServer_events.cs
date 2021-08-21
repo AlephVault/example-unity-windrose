@@ -20,7 +20,7 @@ namespace AlephVault.Unity.Meetgard
             // Asynchronously triggers the OnServerStarted event.
             private async void DoTriggerOnServerStarted()
             {
-                TriggerOnServerStarted();
+                await TriggerOnServerStarted();
             }
 
             // Asynchronously triggers the OnServerStopped event, but after telling
@@ -30,7 +30,7 @@ namespace AlephVault.Unity.Meetgard
             private async void DoTriggerOnServerStopped(System.Exception e)
             {
                 CloseAllEndpoints();
-                TriggerOnServerStopped(e);
+                await TriggerOnServerStopped(e);
             }
         }
     }

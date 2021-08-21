@@ -34,6 +34,14 @@ namespace AlephVault.Unity.Meetgard
             /// </summary>
             public bool Ready { get; private set; }
 
+            private Func<Protocols.Version, Task> SendMyVersion;
+
+            protected new void Awake()
+            {
+                base.Awake();
+                SendMyVersion = MakeSender<Protocols.Version>("MyVersion");
+            }
+
             public override async Task OnConnected()
             {
                 Ready = false;
@@ -46,15 +54,15 @@ namespace AlephVault.Unity.Meetgard
 
             protected override void SetIncomingMessageHandlers()
             {
-                AddIncomingMessageHandler<Nothing>("LetsAgree", async (proto, _) =>
+                AddIncomingMessageHandler("LetsAgree", async (proto) =>
                 {
-                    await Send("MyVersion", Version);
+                    await SendMyVersion(Version);
                     // This will be invoked after the client repied with MyVersion
                     // message. This means: after the handshake started in client
                     // (protocol-wise) side.
                     await (OnZeroHandshakeStarted ?.Invoke() ?? Task.CompletedTask);
                 });
-                AddIncomingMessageHandler<Nothing>("Timeout", async (proto, _) =>
+                AddIncomingMessageHandler("Timeout", async (proto) =>
                 {
                     // This may be invoked regardless the LetsAgree being received
                     // or the MyVersion message being sent. This is due to the
@@ -62,7 +70,7 @@ namespace AlephVault.Unity.Meetgard
                     // Expect a disconnection after this message.
                     await (OnTimeout?.Invoke() ?? Task.CompletedTask);
                 });
-                AddIncomingMessageHandler<Nothing>("VersionMatch", async (proto, _) =>
+                AddIncomingMessageHandler("VersionMatch", async (proto) =>
                 {
                     // The version was matched. Don't worry: we will seldom make
                     // use of this event, since typically other protocols will
@@ -71,14 +79,14 @@ namespace AlephVault.Unity.Meetgard
                     Ready = true;
                     await (OnVersionMatch ?.Invoke() ?? Task.CompletedTask);
                 });
-                AddIncomingMessageHandler<Nothing>("VersionMismatch", async (proto, _) =>
+                AddIncomingMessageHandler("VersionMismatch", async (proto) =>
                 {
                     // This message is received when there is a mismatch between
                     // the server version and the client version. After receiving
                     // this message, expect a sudden graceful disconnection.
                     await (OnVersionMismatch?.Invoke() ?? Task.CompletedTask);
                 });
-                AddIncomingMessageHandler<Nothing>("NotReady", async (proto, _) =>
+                AddIncomingMessageHandler("NotReady", async (proto) =>
                 {
                     // This is a debug message. Typically, it involves rejecting
                     // any message other than MyVersion, since the protocols are
@@ -86,7 +94,7 @@ namespace AlephVault.Unity.Meetgard
                     // agreeing with this zero protocol).
                     await (OnNotReadyError?.Invoke() ?? Task.CompletedTask);
                 });
-                AddIncomingMessageHandler<Nothing>("AlreadyDone", async (proto, _) =>
+                AddIncomingMessageHandler("AlreadyDone", async (proto) =>
                 {
                     // This is a debug message. Typically, it will never occur.
                     // It involved rejecting a MyVersion message because the

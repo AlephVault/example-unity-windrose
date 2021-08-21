@@ -19,13 +19,13 @@ namespace AlephVault.Unity.Meetgard
         {
             protected override void DefineMessages()
             {
-                DefineServerMessage<Nothing>("LetsAgree");
-                DefineServerMessage<Nothing>("Timeout");
-                DefineClientMessage<Version>("MyVersion");
-                DefineServerMessage<Nothing>("VersionMatch");
-                DefineServerMessage<Nothing>("VersionMismatch");
-                DefineServerMessage<Nothing>("NotReady");
-                DefineServerMessage<Nothing>("AlreadyDone");
+                DefineServerMessage("LetsAgree");
+                DefineServerMessage("Timeout");
+                DefineClientMessage("MyVersion");
+                DefineServerMessage("VersionMatch");
+                DefineServerMessage("VersionMismatch");
+                DefineServerMessage("NotReady");
+                DefineServerMessage("AlreadyDone");
             }
         }
     }

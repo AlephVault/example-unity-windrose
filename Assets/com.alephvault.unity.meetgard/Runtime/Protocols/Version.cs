@@ -7,6 +7,9 @@ namespace AlephVault.Unity.Meetgard
 {
     namespace Protocols
     {
+        /// <summary>
+        ///   Tracks a version as manor.minor.revision-releaseType.
+        /// </summary>
         public class Version : ISerializable
         {
             public const byte Stable = 0;
@@ -28,6 +31,11 @@ namespace AlephVault.Unity.Meetgard
                 serializer.Serialize(ref Minor);
                 serializer.Serialize(ref Revision);
                 serializer.Serialize(ref ReleaseType);
+            }
+
+            public bool Equals(Version other)
+            {
+                return Major == other.Major && Minor == other.Minor && Revision == other.Revision && ReleaseType == other.ReleaseType;
             }
         }
     }

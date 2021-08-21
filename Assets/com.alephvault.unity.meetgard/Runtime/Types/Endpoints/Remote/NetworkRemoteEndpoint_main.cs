@@ -126,9 +126,12 @@ namespace AlephVault.Unity.Meetgard
             /// <param name="protocolId">The id of protocol for this message</param>
             /// <param name="messageTag">The tag of the message being sent</param>
             /// <param name="data">The object to serialize and send</param>
-            protected override async Task DoSend(ushort protocolId, ushort messageTag, ISerializable data)
+            /// <returns>The task that can be waited for: when the message is done</returns>
+            protected override Task DoSend(ushort protocolId, ushort messageTag, ISerializable data)
             {
-                queuedOutgoingMessages.Enqueue(new Tuple<ushort, ushort, ISerializable>(protocolId, messageTag, data));
+                TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>();
+                queuedOutgoingMessages.Enqueue(new Tuple<ushort, ushort, ISerializable, TaskCompletionSource<bool>>(protocolId, messageTag, data, tcs));
+                return tcs.Task;
             }
         }
     }

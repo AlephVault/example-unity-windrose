@@ -76,6 +76,8 @@ namespace AlephVault.Unity.Meetgard
                             {
                                 while (queuedOutgoingMessages.TryDequeue(out var result)) {
                                     MessageUtils.WriteMessage(stream, result.Item1, result.Item2, result.Item3, outgoingMessageArray);
+                                    // The task is marked as complete.
+                                    result.Item4.TrySetResult(true);
                                 }
                                 inactive = false;
                             }

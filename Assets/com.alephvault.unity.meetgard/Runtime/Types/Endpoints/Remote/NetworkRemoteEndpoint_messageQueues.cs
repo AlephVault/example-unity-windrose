@@ -19,8 +19,10 @@ namespace AlephVault.Unity.Meetgard
             /// </summary>
             public readonly ushort MaxMessageSize;
 
-            // The list of queued outgoing messages.
-            private ConcurrentQueue<Tuple<ushort, ushort, ISerializable>> queuedOutgoingMessages = new ConcurrentQueue<Tuple<ushort, ushort, ISerializable>>();
+            // The list of queued outgoing messages. They include a
+            // task that will be resolved when the message is actually
+            // having been sent.
+            private ConcurrentQueue<Tuple<ushort, ushort, ISerializable, TaskCompletionSource<bool>>> queuedOutgoingMessages = new ConcurrentQueue<Tuple<ushort, ushort, ISerializable, TaskCompletionSource<bool>>>();
 
             // The list of queued incoming messages.
             private ConcurrentQueue<Tuple<ushort, ushort, ISerializable>> queuedIncomingMessages = new ConcurrentQueue<Tuple<ushort, ushort, ISerializable>>();

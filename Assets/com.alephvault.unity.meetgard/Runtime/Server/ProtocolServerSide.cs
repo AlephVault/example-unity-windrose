@@ -25,7 +25,7 @@ namespace AlephVault.Unity.Meetgard
         public abstract class ProtocolServerSide<Definition> : MonoBehaviour, IProtocolServerSide where Definition : ProtocolDefinition, new()
         {
             // The related network server.
-            private NetworkServer server;
+            protected NetworkServer server;
 
             // The protocol definition instance is created on construction.
             private Definition definition = new Definition();

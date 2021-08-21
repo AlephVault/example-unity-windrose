@@ -40,14 +40,14 @@ namespace AlephVault.Unity.Meetgard
             // asynchronous in nature.
             private async void TriggerOnConnectionStart()
             {
-                await onConnectionStart?.Invoke();
+                await (onConnectionStart?.Invoke() ?? Task.CompletedTask);
             }
 
             // Invokes the method DoTriggerOnConnectionEnd, which is asynchronous
             // in nature.
             private async void TriggerOnConnectionEnd(System.Exception exception)
             {
-                await onConnectionEnd?.Invoke(exception);
+                await (onConnectionEnd?.Invoke(exception) ?? Task.CompletedTask);
             }
 
             // Invokes the method DoTriggerOnMessageEvent, which is asynchronous
@@ -56,7 +56,7 @@ namespace AlephVault.Unity.Meetgard
             {
                 if (queuedIncomingMessages.TryDequeue(out var result))
                 {
-                    await onMessage ?.Invoke(result.Item1, result.Item2, result.Item3);
+                    await (onMessage?.Invoke(result.Item1, result.Item2, result.Item3) ?? Task.CompletedTask);
                 }
             }
         }

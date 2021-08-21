@@ -94,8 +94,16 @@ namespace AlephVault.Unity.Meetgard
             // handled by the underlying protocol handler.
             private async Task HandleMessage(ulong clientId, ushort protocolId, ushort messageTag, ISerializable message)
             {
+                ZeroProtocolServerSide zeroProtocol = (ZeroProtocolServerSide)protocols[0];
+                if (protocolId != 0 && !zeroProtocol.Ready(clientId))
+                {
+                    await zeroProtocol.SendNotReady(clientId, new Nothing());
+                    return;
+                }
+
                 // At this point, the protocolId exists. Also, the messageTag exists.
-                // We get the client-side handler, and we invoke it.
+                // Also, the client is ready to interact freely with the server. We
+                // get the client-side handler, and we invoke it.
                 Func<ulong, ISerializable, Task> handler = protocols[protocolId].GetIncomingMessageHandler(messageTag);
                 if (handler != null)
                 {
@@ -127,6 +135,40 @@ namespace AlephVault.Unity.Meetgard
                 Behaviours.SortByDependencies(protocolList.ToArray()).ToList();
                 protocolList.Insert(0, zeroProtocol);
                 protocols = (from protocolServerSide in protocolList select (IProtocolServerSide)protocolServerSide).ToArray();
+                zeroProtocol.OnReady += async (clientId) =>
+                {
+                    for (int i = 1; i < protocols.Length; i++)
+                    {
+                        IProtocolServerSide protocol = protocols[i];
+                        try
+                        {
+                            await protocol.OnConnected(clientId);
+                        }
+                        catch (System.Exception e)
+                        {
+                            Debug.LogWarning("An exception was triggered. Ensure exceptions are captured and handled properly, " +
+                                             "for this warning will not be available on deployed games");
+                            Debug.LogException(e);
+                        }
+                    }
+                };
+                zeroProtocol.OnReadyClosing += async (clientId, reason) =>
+                {
+                    for (int i = 1; i < protocols.Length; i++)
+                    {
+                        IProtocolServerSide protocol = protocols[i];
+                        try
+                        {
+                            await protocol.OnDisconnected(clientId, reason);
+                        }
+                        catch (System.Exception e)
+                        {
+                            Debug.LogWarning("An exception was triggered. Ensure exceptions are captured and handled properly, " +
+                                             "for this warning will not be available on deployed games");
+                            Debug.LogException(e);
+                        }
+                    }
+                };
             }
 
             // This function gets invoked when the network server
@@ -151,43 +193,21 @@ namespace AlephVault.Unity.Meetgard
 
             // This function gets invoked when a network client
             // successfully connects to this server. It invokes
-            // all of the OnConnected handlers on each protocol.
+            // the OnConnected only in the Zero protocol. The
+            // zero protocol, at a different moment, will trigger
+            // the OnConnected method in the other protocols.
             private async Task TriggerOnConnected(ulong clientId)
             {
-                foreach (IProtocolServerSide protocol in protocols)
-                {
-                    try
-                    {
-                        await protocol.OnConnected(clientId);
-                    }
-                    catch (System.Exception e)
-                    {
-                        Debug.LogWarning("An exception was triggered. Ensure exceptions are captured and handled properly, " +
-                                         "for this warning will not be available on deployed games");
-                        Debug.LogException(e);
-                    }
-                }
+                await protocols[0].OnConnected(clientId);
             }
 
             // This function gets invoked when a network client
             // disconnects from this server, be it normally or
-            // not. It invokes all of the OnDisconnected handlers
-            // on each protocol.
+            // not. It invokes the OnDisconnected handler only
+            // in the zero protocol.
             private async Task TriggerOnDisconnected(ulong clientId, System.Exception reason)
             {
-                foreach (IProtocolServerSide protocol in protocols)
-                {
-                    try
-                    {
-                        await protocol.OnDisconnected(clientId, reason);
-                    }
-                    catch (System.Exception e)
-                    {
-                        Debug.LogWarning("An exception was triggered. Ensure exceptions are captured and handled properly, " +
-                                         "for this warning will not be available on deployed games");
-                        Debug.LogException(e);
-                    }
-                }
+                await protocols[0].OnDisconnected(clientId, reason);
             }
 
             // This function gets invoked when the network server

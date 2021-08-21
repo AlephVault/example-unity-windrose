@@ -41,8 +41,12 @@ namespace AlephVault.Unity.Meetgard
             private Func<ulong, Nothing, Task> SendTimeout;
             private Func<ulong, Nothing, Task> SendVersionMatch;
             private Func<ulong, Nothing, Task> SendVersionMismatch;
-            private Func<ulong, Nothing, Task> SendNotReady;
             private Func<ulong, Nothing, Task> SendAlreadyDone;
+
+            /// <summary>
+            ///   Sends a NotReady message to a client.
+            /// </summary>
+            public Func<ulong, Nothing, Task> SendNotReady { get; private set; }
 
             protected new void Awake()
             {
@@ -54,6 +58,18 @@ namespace AlephVault.Unity.Meetgard
                 SendNotReady = MakeSender<Nothing>("NotReady");
                 SendAlreadyDone = MakeSender<Nothing>("AlreadyDone");
             }
+
+            /// <summary>
+            ///   Triggered when a connection is ready (i.e. it
+            ///   passed a version check).
+            /// </summary>
+            public event Func<ulong, Task> OnReady = null;
+
+            /// <summary>
+            ///   Triggered when a connection that was ready (i.e.
+            ///   it passed a version check) is now closing.
+            /// </summary>
+            public event Func<ulong, System.Exception, Task> OnReadyClosing = null;
 
             /// <summary>
             ///   Tells whether a particular client id is "ready" or
@@ -87,7 +103,10 @@ namespace AlephVault.Unity.Meetgard
 
             public override async Task OnDisconnected(ulong clientId, System.Exception reason)
             {
-                readyConnections.Remove(clientId);
+                if (readyConnections.Remove(clientId))
+                {
+                    await OnReadyClosing(clientId, reason);
+                }
             }
 
             protected override void SetIncomingMessageHandlers()
@@ -100,12 +119,13 @@ namespace AlephVault.Unity.Meetgard
                     }
                     else if (version.Equals(Version))
                     {
-                        await SendVersionMatch (clientId, new Nothing());
+                        await SendVersionMatch(clientId, new Nothing());
                         readyConnections.Add(clientId);
+                        await OnReady(clientId);
                     }
                     else
                     {
-                        await SendVersionMismatch (clientId, new Nothing());
+                        await SendVersionMismatch(clientId, new Nothing());
                         server.Close(clientId);
                     }
                 });

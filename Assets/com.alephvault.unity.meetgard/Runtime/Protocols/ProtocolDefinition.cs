@@ -2,6 +2,7 @@ using AlephVault.Unity.Binary;
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using AlephVault.Unity.Meetgard.Types;
 
 namespace AlephVault.Unity.Meetgard
 {
@@ -131,6 +132,17 @@ namespace AlephVault.Unity.Meetgard
             }
 
             /// <summary>
+            ///   Registers a client message without body (i.e.
+            ///   using the special <see cref="Nothing"/> type
+            ///   as serializable type).
+            /// </summary>
+            /// <param name="messageKey">The message's key</param>
+            protected void DefineClientMessage(string messageKey)
+            {
+                DefineClientMessage<Nothing>(messageKey);
+            }
+
+            /// <summary>
             ///   Registers a server message using a particular
             ///   serializable type.
             /// </summary>
@@ -139,6 +151,17 @@ namespace AlephVault.Unity.Meetgard
             protected void DefineServerMessage<T>(string messageKey) where T : ISerializable, new()
             {
                 DefineMessage<T>(messageKey, "server", registeredServerMessageTypeByName);
+            }
+
+            /// <summary>
+            ///   Registers a server message without body (i.e.
+            ///   using the special <see cref="Nothing"/> type
+            ///   as serializable type).
+            /// </summary>
+            /// <param name="messageKey">The message's key</param>
+            protected void DefineServerMessage(string messageKey)
+            {
+                DefineServerMessage<Nothing>(messageKey);
             }
 
             // Registers a message using a particular serializable

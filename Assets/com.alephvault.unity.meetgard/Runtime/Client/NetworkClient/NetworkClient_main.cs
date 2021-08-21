@@ -155,6 +155,19 @@ namespace AlephVault.Unity.Meetgard
             ///   and will wait until no other messages are pending to be sent.
             /// </summary>
             /// <typeparam name="T">The type of the message being sent</typeparam>
+            /// <param name="protocol">The protocol for this message. It must be an already attached component</param>
+            /// <param name="message">The message (as it was registered) being sent</param>
+            /// <param name="content">The message content</param>
+            public Task Send(IProtocolClientSide protocol, string message)
+            {
+                return Send(protocol, message, new Nothing());
+            }
+
+            /// <summary>
+            ///   Sends a message through the network. This function is asynchronous
+            ///   and will wait until no other messages are pending to be sent.
+            /// </summary>
+            /// <typeparam name="T">The type of the message being sent</typeparam>
             /// <typeparam name="ProtocolType">The protocol type for this message. One instance of it must be an already attached component</param>
             /// <param name="message">The message (as it was registered) being sent</param>
             /// <param name="content">The message content</param>
@@ -172,11 +185,23 @@ namespace AlephVault.Unity.Meetgard
             }
 
             /// <summary>
+            ///   Sends a message through the network. This function is asynchronous
+            ///   and will wait until no other messages are pending to be sent. The
+            ///   message has no content (i.e. it is of <see cref="Nothing"/> type).
+            /// </summary>
+            /// <typeparam name="ProtocolType">The protocol type for this message. One instance of it must be an already attached component</param>
+            /// <param name="message">The message (as it was registered) being sent</param>
+            public Task Send<ProtocolType>(string message) where ProtocolType : IProtocolClientSide
+            {
+                return Send<ProtocolType, Nothing>(message, new Nothing());
+            }
+
+            /// <summary>
             ///   Creates a sender shortcut, intended to send the message multiple times
             ///   and spend time on message mapping only once.
             /// </summary>
             /// <typeparam name="T">The type of the message being sent</typeparam>
-            /// <typeparam name="ProtocolType">The protocol type for this message. One instance of it must be an already attached component</param>
+            /// <param name="protocol">The protocol to use in the returned sender function</param>
             /// <param name="message">The message (as it was registered) that this sender will send</param>
             public Func<T, Task> MakeSender<T>(IProtocolClientSide protocol, string message) where T : ISerializable
             {
@@ -222,6 +247,19 @@ namespace AlephVault.Unity.Meetgard
 
             /// <summary>
             ///   Creates a sender shortcut, intended to send the message multiple times
+            ///   and spend time on message mapping only once. The message does not have
+            ///   any body.
+            /// </summary>
+            /// <param name="protocol">The protocol to use in the returned sender function</param>
+            /// <param name="message">The message (as it was registered) that this sender will send</param>
+            public Func<Task> MakeSender(IProtocolClientSide protocol, string message)
+            {
+                Func<Nothing, Task> sender = MakeSender<Nothing>(protocol, message);
+                return () => sender(new Nothing());
+            }
+
+            /// <summary>
+            ///   Creates a sender shortcut, intended to send the message multiple times
             ///   and spend time on message mapping only once.
             /// </summary>
             /// <typeparam name="ProtocolType">The protocol type for this message. One instance of it must be an already attached component</param>
@@ -239,6 +277,21 @@ namespace AlephVault.Unity.Meetgard
                 {
                     return MakeSender<T>(protocol, message);
                 }
+            }
+
+            /// <summary>
+            ///   Creates a sender shortcut, intended to send the message multiple times
+            ///   and spend time on message mapping only once. The message does not have
+            ///   any body.
+            /// </summary>
+            /// <typeparam name="ProtocolType">The protocol type for this message. One instance of it must be an already attached component</param>
+            /// <typeparam name="T">The type of the message this sender will send</typeparam>
+            /// <param name="message">The name of the message this sender will send</param>
+            /// <returns>A function that takes the message to send, of the appropriate type, and sends it (asynchronously)</returns>
+            public Func<Task> MakeSender<ProtocolType>(string message) where ProtocolType : IProtocolClientSide
+            {
+                Func<Nothing, Task > sender = MakeSender<ProtocolType, Nothing>(message);
+                return () => sender(new Nothing());
             }
 
             /// <summary>

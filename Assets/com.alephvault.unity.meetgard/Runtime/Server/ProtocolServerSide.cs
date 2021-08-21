@@ -103,17 +103,44 @@ namespace AlephVault.Unity.Meetgard
             }
 
             /// <summary>
+            ///   Adds a handler to a defined incoming message. The handler to
+            ///   add must also allow a reference to the protocol as a generic
+            ///   parent class reference. The handler is for a message without
+            ///   any body.
+            /// </summary>
+            /// <param name="message">The message name</param>
+            /// <param name="handler">The handler to register</param>
+            protected void AddIncomingMessageHandler(string message, Func<ProtocolServerSide<Definition>, ulong, Task> handler)
+            {
+                AddIncomingMessageHandler<Nothing>(message, (proto, clientIds, _) => handler(proto, clientIds));
+            }
+
+            /// <summary>
             ///   Creates a sender shortcut, intended to send the message multiple times
             ///   and spend time on message mapping only once. Intended to be used on
             ///   lazy initialization of senders, or eager initializationin some sort of
             ///   extended <see cref="Awake"/> or similar method.
             /// </summary>
             /// <typeparam name="T">The type of the message being sent</typeparam>
-            /// <typeparam name="ProtocolType">The protocol type for this message. One instance of it must be an already attached component</param>
             /// <param name="message">The message (as it was registered) that this sender will send</param>
-            protected Func<ulong, T, Task<bool>> MakeSender<T>(string message) where T : ISerializable
+            protected Func<ulong, T, Task> MakeSender<T>(string message) where T : ISerializable
             {
                 return server.MakeSender<T>(this, message);
+            }
+
+            /// <summary>
+            ///   Creates a sender shortcut, intended to send the message multiple times
+            ///   and spend time on message mapping only once. Intended to be used on
+            ///   lazy initialization of senders, or eager initializationin some sort of
+            ///   extended <see cref="Awake"/> or similar method. The message to send
+            ///   does not have any body.
+            /// </summary>
+            /// <typeparam name="T">The type of the message being sent</typeparam>
+            /// <param name="message">The message (as it was registered) that this sender will send</param>
+            /// <returns>A function that takes the client to send the message, and sends the message (asynchronously)</returns>
+            protected Func<ulong, Task> MakeSender(string message)
+            {
+                return server.MakeSender(this, message);
             }
 
             /// <summary>
@@ -126,7 +153,7 @@ namespace AlephVault.Unity.Meetgard
             /// <typeparam name="T">The type of the message this sender will send</typeparam>
             /// <param name="message">The name of the message this sender will send</param>
             /// <returns>A function that takes the message to send, of the appropriate type, and sends it (asynchronously)</returns>
-            protected Func<ulong, T, Task<bool>> MakeSender<ProtocolType, T>(string message) where ProtocolType : IProtocolServerSide where T : ISerializable
+            protected Func<ulong, T, Task> MakeSender<ProtocolType, T>(string message) where ProtocolType : IProtocolServerSide where T : ISerializable
             {
                 return server.MakeSender<ProtocolType, T>(message);
             }
@@ -140,9 +167,22 @@ namespace AlephVault.Unity.Meetgard
             /// <typeparam name="T">The type of the message being sent</typeparam>
             /// <typeparam name="ProtocolType">The protocol type for this message. One instance of it must be an already attached component</param>
             /// <param name="message">The message (as it was registered) that this sender will send</param>
-            protected Func<ulong[], T, HashSet<ulong>, Task> MakeBroadcaster<T>(string message) where T : ISerializable
+            protected Action<ulong[], T, Dictionary<ulong, Task>> MakeBroadcaster<T>(string message) where T : ISerializable
             {
                 return server.MakeBroadcaster<T>(this, message);
+            }
+
+            /// <summary>
+            ///   Creates a broadcaster shortcut, intended to send the message multiple times
+            ///   and spend time on message mapping only once. Intended to be used on
+            ///   lazy initialization of senders, or eager initializationin some sort of
+            ///   extended <see cref="Awake"/> or similar method. The message to send does
+            ///   not have any body. The message to send does not have any body.
+            /// </summary>
+            /// <param name="message">The message (as it was registered) that this sender will send</param>
+            protected Action<ulong[], Dictionary<ulong, Task>> MakeBroadcaster(string message)
+            {
+                return server.MakeBroadcaster(this, message);
             }
 
             /// <summary>
@@ -155,7 +195,7 @@ namespace AlephVault.Unity.Meetgard
             /// <typeparam name="T">The type of the message this sender will send</typeparam>
             /// <param name="message">The name of the message this sender will send</param>
             /// <returns>A function that takes the message to send, of the appropriate type, and sends it (asynchronously)</returns>
-            protected Func<ulong[], T, HashSet<ulong>, Task> MakeBroadcaster<ProtocolType, T>(string message) where ProtocolType : IProtocolServerSide where T : ISerializable
+            protected Action<ulong[], T, Dictionary<ulong, Task>> MakeBroadcaster<ProtocolType, T>(string message) where ProtocolType : IProtocolServerSide where T : ISerializable
             {
                 return server.MakeBroadcaster<ProtocolType, T>(message);
             }
@@ -272,10 +312,10 @@ namespace AlephVault.Unity.Meetgard
             /// <param name="message">The message (as it was registered) being sent</param>
             /// <param name="clientIds">The ids to send the same message - use null to specify ALL the available ids</param>
             /// <param name="content">The message content</param>
-            /// <param name="failedEndpoints">The output list of the endpoints that are not found or raised an error on send</param>
-            public Task Broadcast<T>(string message, ulong[] clientIds, T content, HashSet<ulong> failedEndpoints) where T : ISerializable
+            /// <param name="endpointTasks">The send tasks for each endpoint that was iterated</param>
+            public void Broadcast<T>(string message, ulong[] clientIds, T content, Dictionary<ulong, Task> endpointTasks) where T : ISerializable
             {
-                return server.Broadcast(this, message, clientIds, content, failedEndpoints);
+                server.Broadcast(this, message, clientIds, content, endpointTasks);
             }
 
             /// <summary>
@@ -286,12 +326,12 @@ namespace AlephVault.Unity.Meetgard
             /// <param name="message">The message (as it was registered) being sent</param>
             /// <param name="clientIds">The ids to send the same message - use null to specify ALL the available ids</param>
             /// <param name="content">The message content</param>
-            /// <param name="failedEndpoints">The output list of the endpoints that are not found or raised an error on send</param>
-            public Task Broadcast<ProtocolType, T>(string message, ulong[] clientIds, T content, HashSet<ulong> failedEndpoints)
+            /// <param name="endpointTasks">The send tasks for each endpoint that was iterated</param>
+            public void Broadcast<ProtocolType, T>(string message, ulong[] clientIds, T content, Dictionary<ulong, Task> endpointTasks)
                 where ProtocolType : IProtocolServerSide
                 where T : ISerializable
             {
-                return server.Broadcast<ProtocolType, T>(message, clientIds, content, failedEndpoints);
+                server.Broadcast<ProtocolType, T>(message, clientIds, content, endpointTasks);
             }
 
             /// <summary>

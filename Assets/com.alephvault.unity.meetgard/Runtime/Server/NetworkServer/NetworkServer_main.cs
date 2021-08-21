@@ -104,8 +104,8 @@ namespace AlephVault.Unity.Meetgard
             /// <param name="protocol">The protocol for this message. It must be an already attached component</param>
             /// <param name="message">The message (as it was registered) being sent</param>
             /// <param name="content">The message content</param>
-            /// <returns>Whether the endpoint existed or not (if true, the message was sent)</returns>
-            public async Task<bool> Send<T>(IProtocolServerSide protocol, string message, ulong clientId, T content) where T : ISerializable
+            /// <returns>A task, if the client exists, or null otherwise</returns>
+            public Task Send<T>(IProtocolServerSide protocol, string message, ulong clientId, T content) where T : ISerializable
             {
                 if (protocol == null)
                 {
@@ -138,13 +138,25 @@ namespace AlephVault.Unity.Meetgard
 
                 if (endpointById.TryGetValue(clientId, out NetworkEndpoint endpoint))
                 {
-                    await endpoint.Send(protocolId, messageTag, content);
-                    return true;
+                    return endpoint.Send(protocolId, messageTag, content);
                 }
                 else
                 {
-                    return false;
+                    return null;
                 }
+            }
+
+            /// <summary>
+            ///   Sends a message to a registered endpoint by its id. The message
+            ///   does not have any body.
+            /// </summary>
+            /// <param name="clientId">The id of the client</param>
+            /// <param name="protocol">The protocol for this message. It must be an already attached component</param>
+            /// <param name="message">The message (as it was registered) being sent</param>
+            /// <returns>A task, if the client exists, or null otherwise</returns>
+            public Task Send(IProtocolServerSide protocol, string message, ulong clientId)
+            {
+                return Send(protocol, message, clientId, new Nothing());
             }
 
             /// <summary>
@@ -155,8 +167,8 @@ namespace AlephVault.Unity.Meetgard
             /// <param name="clientId">The id of the client</param>
             /// <param name="message">The message (as it was registered) being sent</param>
             /// <param name="content">The message content</param>
-            /// <returns>Whether the endpoint existed or not (if true, the message was sent)</returns>
-            public Task<bool> Send<ProtocolType, T>(string message, ulong clientId, T content) where ProtocolType : IProtocolServerSide where T : ISerializable
+            /// <returns>A task, if the client exists, or null otherwise</returns>
+            public Task Send<ProtocolType, T>(string message, ulong clientId, T content) where ProtocolType : IProtocolServerSide where T : ISerializable
             {
                 ProtocolType protocol = GetComponent<ProtocolType>();
                 if (protocol == null)
@@ -170,13 +182,27 @@ namespace AlephVault.Unity.Meetgard
             }
 
             /// <summary>
+            ///   Sends a message through the network. The message does not
+            ///   have any body.
+            /// </summary>
+            /// <typeparam name="ProtocolType">The protocol type for this message. One instance of it must be an already attached component</param>
+            /// <param name="clientId">The id of the client</param>
+            /// <param name="message">The message (as it was registered) being sent</param>
+            /// <returns>A task, if the client exists, or null otherwise</returns>
+            public Task Send<ProtocolType>(string message, ulong clientId) where ProtocolType : IProtocolServerSide
+            {
+                return Send<ProtocolType, Nothing>(message, clientId, new Nothing());
+            }
+
+            /// <summary>
             ///   Creates a sender shortcut, intended to send the message multiple times
             ///   and spend time on message mapping only once.
             /// </summary>
             /// <typeparam name="T">The type of the message being sent</typeparam>
             /// <param name="protocol">The protocol for this message. It must be an already attached component</param>
             /// <param name="message">The message (as it was registered) that this sender will send</param>
-            public Func<ulong, T, Task<bool>> MakeSender<T>(IProtocolServerSide protocol, string message) where T : ISerializable
+            /// <returns>A function that takes the message to send, of the appropriate type, and sends it (asynchronously)</returns>
+            public Func<ulong, T, Task> MakeSender<T>(IProtocolServerSide protocol, string message) where T : ISerializable
             {
                 if (protocol == null)
                 {
@@ -202,7 +228,7 @@ namespace AlephVault.Unity.Meetgard
                     throw new OutgoingMessageTypeMismatchException($"Message sender creation for protocol / message ({protocol.GetType().FullName}, {message}) was attempted with type {typeof(T).FullName} when {expectedType.FullName} was expected");
                 }
 
-                return async (clientId, content) =>
+                return (clientId, content) =>
                 {
                     if (!IsRunning)
                     {
@@ -216,14 +242,27 @@ namespace AlephVault.Unity.Meetgard
 
                     if (endpointById.TryGetValue(clientId, out NetworkEndpoint endpoint))
                     {
-                        await endpoint.Send(protocolId, messageTag, content);
-                        return true;
+                        return endpoint.Send(protocolId, messageTag, content);
                     }
                     else
                     {
-                        return false;
+                        return null;
                     }
                 };
+            }
+
+            /// <summary>
+            ///   Creates a sender shortcut, intended to send the message multiple times
+            ///   and spend time on message mapping only once. The message to send does
+            ///   not have any body.
+            /// </summary>
+            /// <param name="protocol">The protocol for this message. It must be an already attached component</param>
+            /// <param name="message">The message (as it was registered) that this sender will send</param>
+            /// <returns>A function that takes the target client, and sends the message (asynchronously)</returns>
+            public Func<ulong, Task> MakeSender(IProtocolServerSide protocol, string message)
+            {
+                Func<ulong, Nothing, Task> sender = MakeSender<Nothing>(protocol, message);
+                return (clientId) => sender(clientId, new Nothing());
             }
 
             /// <summary>
@@ -234,7 +273,7 @@ namespace AlephVault.Unity.Meetgard
             /// <typeparam name="T">The type of the message this sender will send</typeparam>
             /// <param name="message">The name of the message this sender will send</param>
             /// <returns>A function that takes the message to send, of the appropriate type, and sends it (asynchronously)</returns>
-            public Func<ulong, T, Task<bool>> MakeSender<ProtocolType, T>(string message) where ProtocolType : IProtocolServerSide where T : ISerializable
+            public Func<ulong, T, Task> MakeSender<ProtocolType, T>(string message) where ProtocolType : IProtocolServerSide where T : ISerializable
             {
                 ProtocolType protocol = GetComponent<ProtocolType>();
                 if (protocol == null)
@@ -245,6 +284,20 @@ namespace AlephVault.Unity.Meetgard
                 {
                     return MakeSender<T>(protocol, message);
                 }
+            }
+
+            /// <summary>
+            ///   Creates a sender shortcut, intended to send the message multiple times
+            ///   and spend time on message mapping only once. The message to send does
+            ///   not have any body.
+            /// </summary>
+            /// <typeparam name="ProtocolType">The protocol type for this message. One instance of it must be an already attached component</param>
+            /// <param name="message">The name of the message this sender will send</param>
+            /// <returns>A function that takes the target client, and sends the message (asynchronously)</returns>
+            public Func<ulong, Task> MakeSender<ProtocolType>(string message) where ProtocolType : IProtocolServerSide
+            {
+                Func<ulong, Nothing, Task> sender = MakeSender<ProtocolType, Nothing>(message);
+                return (clientId) => sender(clientId, new Nothing());
             }
 
             /// <summary>
@@ -298,6 +351,29 @@ namespace AlephVault.Unity.Meetgard
 
                 // Now, with everything ready, the send can be done. 
                 DoBroadcast(protocolId, messageTag, clientIds, content, endpointTasks);
+            }
+
+            /// <summary>
+            ///   <para>
+            ///     Sends a message to many registered endpoints by their ids.
+            ///     All the endpoints that are not found, or throw an exception
+            ///     on send, are ignored and kept in an output bag of failed
+            ///     endpoints. The message to send does not have any body.
+            ///   </para>
+            ///   <para>
+            ///     Notes: use <code>null</code> as the first argument to notify
+            ///     to all the available registered endpoints.
+            ///   </para>
+            /// </summary>
+            /// <typeparam name="T">The type of the message being sent</typeparam>
+            /// <param name="protocol">The protocol for this message. It must be an already attached component</param>
+            /// <param name="message">The message (as it was registered) being sent</param>
+            /// <param name="clientIds">The ids to send the same message - use null to specify ALL the available ids</param>
+            /// <param name="content">The message content</param>
+            /// <param name="endpointTasks">The send tasks for each endpoint that was iterated</param>
+            public void Broadcast(IProtocolServerSide protocol, string message, ulong[] clientIds, Dictionary<ulong, Task> endpointTasks)
+            {
+                Broadcast(protocol, message, clientIds, new Nothing(), endpointTasks);
             }
 
             private void DoBroadcast<T>(ushort protocolId, ushort messageTag, ulong[] clientIds, T content, Dictionary<ulong, Task> endpointTasks) where T : ISerializable
@@ -376,6 +452,27 @@ namespace AlephVault.Unity.Meetgard
             }
 
             /// <summary>
+            ///   <para>
+            ///     Sends a message to many registered endpoints by their ids.
+            ///     All the endpoints that are not found, or throw an exception
+            ///     on send, are ignored and kept in an output bag of failed
+            ///     endpoints. The message to send does not have any body.
+            ///   </para>
+            ///   <para>
+            ///     Notes: use <code>null</code> as the first argument to notify
+            ///     to all the available registered endpoints.
+            ///   </para>
+            /// </summary>
+            /// <typeparam name="ProtocolType">The protocol type for this message. One instance of it must be an already attached component</param>
+            /// <param name="message">The message (as it was registered) being sent</param>
+            /// <param name="clientIds">The ids to send the same message - use null to specify ALL the available ids</param>
+            /// <param name="endpointTasks">The send tasks for each endpoint that was iterated</param>
+            public void Broadcast<ProtocolType>(string message, ulong[] clientIds, Dictionary<ulong, Task> endpointTasks) where ProtocolType : IProtocolServerSide
+            {
+                Broadcast<ProtocolType, Nothing>(message, clientIds, new Nothing(), endpointTasks);
+            }
+
+            /// <summary>
             ///   Creates a broadcaster shortcut, intended to send the message multiple times
             ///   and spend time on message mapping only once.
             /// </summary>
@@ -427,6 +524,20 @@ namespace AlephVault.Unity.Meetgard
 
             /// <summary>
             ///   Creates a broadcaster shortcut, intended to send the message multiple times
+            ///   and spend time on message mapping only once. The message to send does not
+            ///   have any body.
+            /// </summary>
+            /// <param name="protocol">The protocol for this message. It must be an already attached component</param>
+            /// <param name="message">The name of the message this sender will send</param>
+            /// <returns>A function that takes the list of clients and sends the message (asynchronously)</returns>
+            public Action<ulong[], Dictionary<ulong, Task>> MakeBroadcaster(IProtocolServerSide protocol, string message)
+            {
+                Action<ulong[], Nothing, Dictionary<ulong, Task>> broadcaster = MakeBroadcaster<Nothing>(protocol, message);
+                return (clientIds, endpointTasks) => broadcaster(clientIds, new Nothing(), endpointTasks);
+            }
+
+            /// <summary>
+            ///   Creates a broadcaster shortcut, intended to send the message multiple times
             ///   and spend time on message mapping only once.
             /// </summary>
             /// <typeparam name="ProtocolType">The protocol type for this message. One instance of it must be an already attached component</param>
@@ -444,6 +555,20 @@ namespace AlephVault.Unity.Meetgard
                 {
                     return MakeBroadcaster<T>(protocol, message);
                 }
+            }
+
+            /// <summary>
+            ///   Creates a broadcaster shortcut, intended to send the message multiple times
+            ///   and spend time on message mapping only once. The message to send does not
+            ///   have any body.
+            /// </summary>
+            /// <typeparam name="ProtocolType">The protocol type for this message. One instance of it must be an already attached component</param>
+            /// <param name="message">The name of the message this sender will send</param>
+            /// <returns>A function that takes the list of clients, and sends the message (asynchronously)</returns>
+            public Action<ulong[], Dictionary<ulong, Task>> MakeBroadcaster<ProtocolType>(string message) where ProtocolType : IProtocolServerSide
+            {
+                Action<ulong[], Nothing, Dictionary<ulong, Task>> broadcaster = MakeBroadcaster<ProtocolType, Nothing>(message);
+                return (clientIds, endpointTasks) => broadcaster(clientIds, new Nothing(), endpointTasks);
             }
 
             /// <summary>

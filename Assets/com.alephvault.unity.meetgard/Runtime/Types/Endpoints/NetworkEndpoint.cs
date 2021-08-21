@@ -58,7 +58,7 @@ namespace AlephVault.Unity.Meetgard
             /// <param name="protocolId">The id of protocol for this message</param>
             /// <param name="messageTag">The tag of the message being sent</param>
             /// <param name="data">The object to serialize and send</param>
-            public async Task Send(ushort protocolId, ushort messageTag, ISerializable data)
+            public Task Send(ushort protocolId, ushort messageTag, ISerializable data)
             {
                 if (!IsConnected)
                 {
@@ -70,7 +70,7 @@ namespace AlephVault.Unity.Meetgard
                     throw new ArgumentNullException("data");
                 }
 
-                await DoSend(protocolId, messageTag, data);
+                return DoSend(protocolId, messageTag, data);
             }
 
             /// <summary>

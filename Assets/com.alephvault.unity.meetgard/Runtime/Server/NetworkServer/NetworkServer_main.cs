@@ -264,8 +264,8 @@ namespace AlephVault.Unity.Meetgard
             /// <param name="message">The message (as it was registered) being sent</param>
             /// <param name="clientIds">The ids to send the same message - use null to specify ALL the available ids</param>
             /// <param name="content">The message content</param>
-            /// <param name="failedEndpoints">The output list of the endpoints that are not found or raised an error on send</param>
-            public async Task Broadcast<T>(IProtocolServerSide protocol, string message, ulong[] clientIds, T content, HashSet<ulong> failedEndpoints) where T : ISerializable
+            /// <param name="endpointTasks">The send tasks for each endpoint that was iterated</param>
+            public void Broadcast<T>(IProtocolServerSide protocol, string message, ulong[] clientIds, T content, Dictionary<ulong, Task> endpointTasks) where T : ISerializable
             {
                 if (protocol == null)
                 {
@@ -296,14 +296,14 @@ namespace AlephVault.Unity.Meetgard
                     throw new OutgoingMessageTypeMismatchException($"Outgoing message ({protocol.GetType().FullName}, {message}) was attempted with type {content.GetType().FullName} when {expectedType.FullName} was expected");
                 }
 
-                // Now, with everything ready, the send can be done.
-                await DoBroadcast(protocolId, messageTag, clientIds, content, failedEndpoints);
+                // Now, with everything ready, the send can be done. 
+                DoBroadcast(protocolId, messageTag, clientIds, content, endpointTasks);
             }
 
-            private async Task DoBroadcast<T>(ushort protocolId, ushort messageTag, ulong[] clientIds, T content, HashSet<ulong> failedEndpoints) where T : ISerializable
+            private void DoBroadcast<T>(ushort protocolId, ushort messageTag, ulong[] clientIds, T content, Dictionary<ulong, Task> endpointTasks) where T : ISerializable
             {
                 // Clearing the target set is the first thing to do.
-                failedEndpoints?.Clear();
+                endpointTasks?.Clear();
 
                 if (clientIds == null)
                 {
@@ -314,16 +314,16 @@ namespace AlephVault.Unity.Meetgard
                         {
                             try
                             {
-                                await endpoint.Send(protocolId, messageTag, content);
+                                endpointTasks?.Add(clientId, endpoint.Send(protocolId, messageTag, content));
                             }
                             catch
                             {
-                                failedEndpoints?.Add(clientId);
+                                endpointTasks?.Add(clientId, null);
                             }
                         }
                         else
                         {
-                            failedEndpoints?.Add(clientId);
+                            endpointTasks?.Add(clientId, null);
                         }
                     }
                 }
@@ -334,11 +334,11 @@ namespace AlephVault.Unity.Meetgard
                     {
                         try
                         {
-                            await pair.Value.Send(protocolId, messageTag, content);
+                            endpointTasks?.Add(pair.Key, pair.Value.Send(protocolId, messageTag, content));
                         }
                         catch
                         {
-                            failedEndpoints?.Add(pair.Key);
+                            endpointTasks?.Add(pair.Key, null);
                         }
                     }
                 }
@@ -361,8 +361,8 @@ namespace AlephVault.Unity.Meetgard
             /// <param name="message">The message (as it was registered) being sent</param>
             /// <param name="clientIds">The ids to send the same message - use null to specify ALL the available ids</param>
             /// <param name="content">The message content</param>
-            /// <param name="failedEndpoints">The output list of the endpoints that are not found or raised an error on send</param>
-            public Task Broadcast<ProtocolType, T>(string message, ulong[] clientIds, T content, HashSet<ulong> failedEndpoints) where ProtocolType : IProtocolServerSide where T : ISerializable
+            /// <param name="endpointTasks">The send tasks for each endpoint that was iterated</param>
+            public void Broadcast<ProtocolType, T>(string message, ulong[] clientIds, T content, Dictionary<ulong, Task> endpointTasks) where ProtocolType : IProtocolServerSide where T : ISerializable
             {
                 ProtocolType protocol = GetComponent<ProtocolType>();
                 if (protocol == null)
@@ -371,7 +371,7 @@ namespace AlephVault.Unity.Meetgard
                 }
                 else
                 {
-                    return Broadcast(protocol, message, clientIds, content, failedEndpoints);
+                    Broadcast(protocol, message, clientIds, content, endpointTasks);
                 }
             }
 
@@ -383,7 +383,7 @@ namespace AlephVault.Unity.Meetgard
             /// <param name="protocol">The protocol for this message. It must be an already attached component</param>
             /// <param name="message">The name of the message this sender will send</param>
             /// <returns>A function that takes the list of clients and the message to send, of the appropriate type, and sends it (asynchronously)</returns>
-            public Func<ulong[], T, HashSet<ulong>, Task> MakeBroadcaster<T>(IProtocolServerSide protocol, string message) where T : ISerializable
+            public Action<ulong[], T, Dictionary<ulong, Task>> MakeBroadcaster<T>(IProtocolServerSide protocol, string message) where T : ISerializable
             {
                 if (protocol == null)
                 {
@@ -409,7 +409,7 @@ namespace AlephVault.Unity.Meetgard
                     throw new OutgoingMessageTypeMismatchException($"Message sender creation for protocol / message ({protocol.GetType().FullName}, {message}) was attempted with type {typeof(T).FullName} when {expectedType.FullName} was expected");
                 }
 
-                return async (clientIds, content, failedEndpoints) =>
+                return (clientIds, content, failedEndpoints) =>
                 {
                     if (!IsRunning)
                     {
@@ -421,7 +421,7 @@ namespace AlephVault.Unity.Meetgard
                         throw new OutgoingMessageTypeMismatchException($"Outgoing message ({protocol.GetType().FullName}, {message}) was attempted with type {content.GetType().FullName} when {expectedType.FullName} was expected");
                     }
 
-                    await DoBroadcast(protocolId, messageTag, clientIds, content, failedEndpoints);
+                    DoBroadcast(protocolId, messageTag, clientIds, content, failedEndpoints);
                 };
             }
 
@@ -433,7 +433,7 @@ namespace AlephVault.Unity.Meetgard
             /// <typeparam name="T">The type of the message this sender will send</typeparam>
             /// <param name="message">The name of the message this sender will send</param>
             /// <returns>A function that takes the list of clients and the message to send, of the appropriate type, and sends it (asynchronously)</returns>
-            public Func<ulong[], T, HashSet<ulong>, Task> MakeBroadcaster<ProtocolType, T>(string message) where ProtocolType : IProtocolServerSide where T : ISerializable
+            public Action<ulong[], T, Dictionary<ulong, Task>> MakeBroadcaster<ProtocolType, T>(string message) where ProtocolType : IProtocolServerSide where T : ISerializable
             {
                 ProtocolType protocol = GetComponent<ProtocolType>();
                 if (protocol == null)

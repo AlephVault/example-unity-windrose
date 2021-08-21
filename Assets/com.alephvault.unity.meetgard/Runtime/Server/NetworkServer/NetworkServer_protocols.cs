@@ -110,7 +110,7 @@ namespace AlephVault.Unity.Meetgard
             // Enumerates all of the protocols in this connection.
             // This method will be invoked on Awake, to prepare
             // the list of protocols.
-            private void SetupClientProtocols()
+            private void SetupServerProtocols()
             {
                 // The first thing is to detect the Zero protocol manually.
                 // This is done because, otherwise, adding RequireComponent

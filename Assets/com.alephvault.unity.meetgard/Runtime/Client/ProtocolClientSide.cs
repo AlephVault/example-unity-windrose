@@ -110,11 +110,24 @@ namespace AlephVault.Unity.Meetgard
             ///   extended <see cref="Awake"/> or similar method.
             /// </summary>
             /// <typeparam name="T">The type of the message being sent</typeparam>
-            /// <typeparam name="ProtocolType">The protocol type for this message. One instance of it must be an already attached component</param>
             /// <param name="message">The message (as it was registered) that this sender will send</param>
             protected Func<T, Task> MakeSender<T>(string message) where T : ISerializable
             {
                 return client.MakeSender<T>(this, message);
+            }
+
+            /// <summary>
+            ///   Creates a sender shortcut, intended to send the message multiple times
+            ///   and spend time on message mapping only once. Intended to be used on
+            ///   lazy initialization of senders, or eager initializationin some sort of
+            ///   extended <see cref="Awake"/> or similar method. The message does not have
+            ///   any body.
+            /// </summary>
+            /// <param name="message">The message (as it was registered) that this sender will send</param>
+            protected Func<Task> MakeSender(string message)
+            {
+                Func<Nothing, Task> sender = MakeSender<Nothing>(message);
+                return () => sender(new Nothing());
             }
 
             /// <summary>

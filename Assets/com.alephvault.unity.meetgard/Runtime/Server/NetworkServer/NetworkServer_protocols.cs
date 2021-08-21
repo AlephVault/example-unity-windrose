@@ -97,7 +97,7 @@ namespace AlephVault.Unity.Meetgard
                 ZeroProtocolServerSide zeroProtocol = (ZeroProtocolServerSide)protocols[0];
                 if (protocolId != 0 && !zeroProtocol.Ready(clientId))
                 {
-                    await zeroProtocol.SendNotReady(clientId, new Nothing());
+                    await zeroProtocol.SendNotReady(clientId);
                     return;
                 }
 

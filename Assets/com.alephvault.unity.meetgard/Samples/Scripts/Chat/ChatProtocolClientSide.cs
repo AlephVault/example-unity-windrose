@@ -83,6 +83,16 @@ namespace AlephVault.Unity.Meetgard.Samples
                 Debug.Log($"client({Nickname}) :: me >>> Say {text}");
                 return task;
             }
+
+            public override async Task OnConnected()
+            {
+                Debug.Log($"client({Nickname}) :: me >>> Connected");
+            }
+
+            public override async Task OnDisconnected(Exception reason)
+            {
+                Debug.Log($"client({Nickname}) :: me >>> Disconnected");
+            }
         }
     }
 }

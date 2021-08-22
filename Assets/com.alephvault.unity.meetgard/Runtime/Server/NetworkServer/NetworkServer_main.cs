@@ -367,7 +367,7 @@ namespace AlephVault.Unity.Meetgard
                 // Clearing the target set is the first thing to do.
                 endpointTasks?.Clear();
 
-                if (clientIds == null)
+                if (clientIds != null)
                 {
                     // Only the specified endpoints will be iterated.
                     foreach (ulong clientId in clientIds)

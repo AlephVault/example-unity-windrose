@@ -97,7 +97,7 @@ namespace AlephVault.Unity.Meetgard
             ///   life-cycle (e.g. a call to <see cref="Connect(IPAddress, int)"/> or
             ///   <see cref="Connect(string, int)"/>) cannot be done.
             /// </summary>
-            public override bool IsActive { get { return lifeCycle.IsAlive; } }
+            public override bool IsActive { get { return lifeCycle != null && lifeCycle.IsAlive; } }
 
             /// <summary>
             ///   Tells whether the underlying socket is instantiated and connected.

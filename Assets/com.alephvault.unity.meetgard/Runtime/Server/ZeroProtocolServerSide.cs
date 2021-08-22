@@ -45,9 +45,8 @@ namespace AlephVault.Unity.Meetgard
             /// </summary>
             public Func<ulong, Task> SendNotReady { get; private set; }
 
-            protected new void Awake()
+            protected void Start()
             {
-                base.Awake();
                 SendLetsAgree = MakeSender("LetsAgree");
                 SendTimeout = MakeSender("Timeout");
                 SendVersionMatch = MakeSender("VersionMatch");

@@ -18,9 +18,8 @@ namespace AlephVault.Unity.Meetgard.Samples
             private Func<Line, Task> SendLine;
             private Func<Echo, Task> SendPong;
 
-            protected new void Awake()
+            protected void Start()
             {
-                base.Awake();
                 SendNickname = MakeSender<Nickname>("Nickname");
                 SendLine = MakeSender<Line>("Say");
                 SendPong = MakeSender<Echo>("Ping:Pong");
@@ -34,7 +33,7 @@ namespace AlephVault.Unity.Meetgard.Samples
                     await SendNickname(new Nickname() { Nick = Nickname });
                     Debug.Log($"client({Nickname}) :: me >>> Nickname {Nickname}");
                 });
-                AddIncomingMessageHandler<Said>("Said", async (proto, content) =>
+                AddIncomingMessageHandler<Said>("Say:Said", async (proto, content) =>
                 {
                     Debug.Log($"client({Nickname}) :: server >>> Said: {content}");
                 });

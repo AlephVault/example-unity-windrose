@@ -92,7 +92,7 @@ namespace AlephVault.Unity.Meetgard
                     throw new IncomingMessageTypeMismatchException($"Incoming message ({message}) in protocol {GetType().FullName} was attempted to handle with type {typeof(T).FullName} when {expectedIncomingMessageType.FullName} was expected");
                 }
 
-                if (incomingMessageHandlers[incomingMessageTag] == null)
+                if (incomingMessageHandlers[incomingMessageTag] != null)
                 {
                     throw new HandlerAlreadyRegisteredException($"Incoming message ({message}) is already handled by {GetType().FullName} - cannot set an additional handler");
                 }

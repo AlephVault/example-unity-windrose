@@ -39,9 +39,8 @@ namespace AlephVault.Unity.Meetgard.Samples
             private Func<ulong, Task> SendPingTimeout;
             private Action<ulong[], Echo, Dictionary<ulong, Task>> BroadcastPing;
 
-            protected new void Awake()
+            protected void Start()
             {
-                base.Awake();
                 nicknameTimeout = Values.Clamp(1f, nicknameTimeout, 5f);
                 pingTimeout = Values.Clamp(10f, pingTimeout, 20f);
                 pingCycle = pingTimeout * 6f;

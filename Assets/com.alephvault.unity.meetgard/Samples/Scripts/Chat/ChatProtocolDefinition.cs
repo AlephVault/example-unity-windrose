@@ -16,8 +16,8 @@ namespace AlephVault.Unity.Meetgard.Samples
                 DefineServerMessage("Nickname:OK");
                 DefineServerMessage("Nickname:Duplicated");
                 DefineServerMessage("Nickname:AlreadyIntroduced");
-                DefineServerMessage("Nickname:Joined");
-                DefineServerMessage("Nickname:Left");
+                DefineServerMessage<Nickname>("Nickname:Joined");
+                DefineServerMessage<Nickname>("Nickname:Left");
                 DefineClientMessage<Line>("Say");
                 DefineServerMessage<Said>("Say:Said");
                 DefineServerMessage("Say:OK");

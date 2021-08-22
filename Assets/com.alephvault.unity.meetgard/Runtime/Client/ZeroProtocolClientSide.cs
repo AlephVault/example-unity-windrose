@@ -32,9 +32,8 @@ namespace AlephVault.Unity.Meetgard
 
             private Func<Protocols.Version, Task> SendMyVersion;
 
-            protected new void Awake()
+            protected void Start()
             {
-                base.Awake();
                 SendMyVersion = MakeSender<Protocols.Version>("MyVersion");
             }
 

@@ -60,8 +60,6 @@ namespace AlephVault.Unity.Meetgard
             /// <param name="data">The object to serialize and send</param>
             public Task Send(ushort protocolId, ushort messageTag, ISerializable data)
             {
-                Debug.Log($"Preparing message ({protocolId}, {messageTag}, start) -> {data}");
-
                 if (!IsConnected)
                 {
                     throw new InvalidOperationException("The socket is not connected - No data can be sent");
@@ -71,8 +69,6 @@ namespace AlephVault.Unity.Meetgard
                 {
                     throw new ArgumentNullException("data");
                 }
-
-                Debug.Log($"Preparing message ({protocolId}, {messageTag}, end) -> {data}");
 
                 return DoSend(protocolId, messageTag, data);
             }

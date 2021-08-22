@@ -362,14 +362,11 @@ namespace AlephVault.Unity.Meetgard
 
             private Dictionary<ulong, Task> DoBroadcast<T>(ushort protocolId, ushort messageTag, ulong[] clientIds, T content) where T : ISerializable
             {
-                Debug.Log($"Doing broadcast ({protocolId}, {messageTag})");
-
                 Dictionary<ulong, Task> endpointTasks = new Dictionary<ulong, Task>();
 
                 if (clientIds != null)
                 {
                     // Only the specified endpoints will be iterated.
-                    Debug.Log($"Broadcasting to {clientIds.Length} chosen clients");
                     foreach (ulong clientId in clientIds)
                     {
                         if (endpointById.TryGetValue(clientId, out NetworkEndpoint endpoint))
@@ -392,17 +389,14 @@ namespace AlephVault.Unity.Meetgard
                 else
                 {
                     // All of the endpoints will be iterated.
-                    Debug.Log($"Broadcasting to all the {endpointById.Count} clients");
                     foreach (KeyValuePair<ulong, NetworkEndpoint> pair in endpointById.ToArray())
                     {
                         try
                         {
-                            Debug.Log($"Sending to client {pair.Key}");
                             endpointTasks?.Add(pair.Key, pair.Value.Send(protocolId, messageTag, content));
                         }
                         catch
                         {
-                            Debug.Log($"Exception triggered on broadcast!");
                             endpointTasks?.Add(pair.Key, null);
                         }
                     }

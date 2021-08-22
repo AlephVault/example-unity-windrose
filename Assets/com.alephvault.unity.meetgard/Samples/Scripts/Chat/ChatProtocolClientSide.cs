@@ -91,7 +91,7 @@ namespace AlephVault.Unity.Meetgard.Samples
 
             public override async Task OnDisconnected(Exception reason)
             {
-                Debug.Log($"client({Nickname}) :: me >>> Disconnected");
+                Debug.Log($"client({Nickname}) :: me >>> Disconnected because: {reason}");
             }
         }
     }

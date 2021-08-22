@@ -1,5 +1,13 @@
 {
   "dependencies": {
+    "com.alephvault.unity.binary": {
+      "version": "file:C:/Users/luism/Projects/unity-binary",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {
+        "com.alephvault.unity.support": "0.0.1"
+      }
+    },
     "com.alephvault.unity.camjam": {
       "version": "file:C:/Users/luism/Projects/unity-camjam",
       "depth": 0,

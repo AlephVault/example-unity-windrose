@@ -197,6 +197,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99cb9b2dcd6ec7746a4d458a8222c8fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Version:
+    Major: 1
+    Minor: 0
+    Revision: 0
+    ReleaseType: 0
   timeout: 3
 --- !u!114 &338910600
 MonoBehaviour:
@@ -212,6 +217,285 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   idleSleepTime: 0.01
   maxMessageSize: 1024
+--- !u!1 &564580325
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 564580326}
+  - component: {fileID: 564580328}
+  - component: {fileID: 564580327}
+  - component: {fileID: 564580330}
+  - component: {fileID: 564580329}
+  m_Layer: 0
+  m_Name: Client(Pedro)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &564580326
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 564580325}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 3.0101743, y: 1.1534679, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &564580327
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 564580325}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05a514d9bbeceda46958dc6fab3a25e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Version:
+    Major: 1
+    Minor: 0
+    Revision: 0
+    ReleaseType: 0
+--- !u!114 &564580328
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 564580325}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 864d8e893ef669f4ca17048e47f1b24f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  idleSleepTime: 0.01
+  maxMessageSize: 1024
+--- !u!114 &564580329
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 564580325}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1692221776a35540a266832cd06ba03, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  connectKey: 113
+  disconnectKey: 119
+  dumbMessageSendKey: 101
+--- !u!114 &564580330
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 564580325}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 486445ebd63189b459e55d03e8cd7de7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Nickname: Pedro
+--- !u!1 &595099129
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 595099134}
+  - component: {fileID: 595099133}
+  - component: {fileID: 595099132}
+  - component: {fileID: 595099131}
+  - component: {fileID: 595099130}
+  m_Layer: 0
+  m_Name: Client(Juan)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &595099130
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 595099129}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1692221776a35540a266832cd06ba03, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  connectKey: 113
+  disconnectKey: 119
+  dumbMessageSendKey: 101
+--- !u!114 &595099131
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 595099129}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 486445ebd63189b459e55d03e8cd7de7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Nickname: Juan
+--- !u!114 &595099132
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 595099129}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05a514d9bbeceda46958dc6fab3a25e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Version:
+    Major: 1
+    Minor: 0
+    Revision: 0
+    ReleaseType: 0
+--- !u!114 &595099133
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 595099129}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 864d8e893ef669f4ca17048e47f1b24f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  idleSleepTime: 0.01
+  maxMessageSize: 1024
+--- !u!4 &595099134
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 595099129}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 3.0101743, y: 1.1534679, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1323881419
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1323881424}
+  - component: {fileID: 1323881423}
+  - component: {fileID: 1323881422}
+  - component: {fileID: 1323881421}
+  - component: {fileID: 1323881420}
+  m_Layer: 0
+  m_Name: Client(Pablo)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1323881420
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1323881419}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1692221776a35540a266832cd06ba03, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  connectKey: 113
+  disconnectKey: 119
+  dumbMessageSendKey: 101
+--- !u!114 &1323881421
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1323881419}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 486445ebd63189b459e55d03e8cd7de7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Nickname: Pablo
+--- !u!114 &1323881422
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1323881419}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05a514d9bbeceda46958dc6fab3a25e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Version:
+    Major: 1
+    Minor: 0
+    Revision: 0
+    ReleaseType: 0
+--- !u!114 &1323881423
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1323881419}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 864d8e893ef669f4ca17048e47f1b24f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  idleSleepTime: 0.01
+  maxMessageSize: 1024
+--- !u!4 &1323881424
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1323881419}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 3.0101743, y: 1.1534679, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1821481159
 GameObject:
   m_ObjectHideFlags: 0

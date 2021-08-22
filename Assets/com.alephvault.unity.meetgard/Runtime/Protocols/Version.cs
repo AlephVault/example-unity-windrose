@@ -1,4 +1,5 @@
 using AlephVault.Unity.Binary;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,6 +11,7 @@ namespace AlephVault.Unity.Meetgard
         /// <summary>
         ///   Tracks a version as manor.minor.revision-releaseType.
         /// </summary>
+        [Serializable]
         public class Version : ISerializable
         {
             public const byte Stable = 0;

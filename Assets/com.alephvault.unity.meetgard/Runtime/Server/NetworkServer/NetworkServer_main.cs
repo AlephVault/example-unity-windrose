@@ -303,8 +303,8 @@ namespace AlephVault.Unity.Meetgard
             /// <param name="message">The message (as it was registered) being sent</param>
             /// <param name="clientIds">The ids to send the same message - use null to specify ALL the available ids</param>
             /// <param name="content">The message content</param>
-            /// <param name="endpointTasks">The send tasks for each endpoint that was iterated</param>
-            public void Broadcast<T>(IProtocolServerSide protocol, string message, ulong[] clientIds, T content, Dictionary<ulong, Task> endpointTasks) where T : ISerializable
+            /// <returns>The send tasks for each endpoint that was iterated</returns>
+            public Dictionary<ulong, Task> Broadcast<T>(IProtocolServerSide protocol, string message, ulong[] clientIds, T content) where T : ISerializable
             {
                 if (protocol == null)
                 {
@@ -336,7 +336,7 @@ namespace AlephVault.Unity.Meetgard
                 }
 
                 // Now, with everything ready, the send can be done. 
-                DoBroadcast(protocolId, messageTag, clientIds, content, endpointTasks);
+                return DoBroadcast(protocolId, messageTag, clientIds, content);
             }
 
             /// <summary>
@@ -351,25 +351,25 @@ namespace AlephVault.Unity.Meetgard
             ///     to all the available registered endpoints.
             ///   </para>
             /// </summary>
-            /// <typeparam name="T">The type of the message being sent</typeparam>
             /// <param name="protocol">The protocol for this message. It must be an already attached component</param>
             /// <param name="message">The message (as it was registered) being sent</param>
             /// <param name="clientIds">The ids to send the same message - use null to specify ALL the available ids</param>
-            /// <param name="content">The message content</param>
-            /// <param name="endpointTasks">The send tasks for each endpoint that was iterated</param>
-            public void Broadcast(IProtocolServerSide protocol, string message, ulong[] clientIds, Dictionary<ulong, Task> endpointTasks)
+            /// <returns>The send tasks for each endpoint that was iterated</returns>
+            public Dictionary<ulong, Task> Broadcast(IProtocolServerSide protocol, string message, ulong[] clientIds)
             {
-                Broadcast(protocol, message, clientIds, new Nothing(), endpointTasks);
+                return Broadcast(protocol, message, clientIds, new Nothing());
             }
 
-            private void DoBroadcast<T>(ushort protocolId, ushort messageTag, ulong[] clientIds, T content, Dictionary<ulong, Task> endpointTasks) where T : ISerializable
+            private Dictionary<ulong, Task> DoBroadcast<T>(ushort protocolId, ushort messageTag, ulong[] clientIds, T content) where T : ISerializable
             {
-                // Clearing the target set is the first thing to do.
-                endpointTasks?.Clear();
+                Debug.Log($"Doing broadcast ({protocolId}, {messageTag})");
+
+                Dictionary<ulong, Task> endpointTasks = new Dictionary<ulong, Task>();
 
                 if (clientIds != null)
                 {
                     // Only the specified endpoints will be iterated.
+                    Debug.Log($"Broadcasting to {clientIds.Length} chosen clients");
                     foreach (ulong clientId in clientIds)
                     {
                         if (endpointById.TryGetValue(clientId, out NetworkEndpoint endpoint))
@@ -392,18 +392,23 @@ namespace AlephVault.Unity.Meetgard
                 else
                 {
                     // All of the endpoints will be iterated.
+                    Debug.Log($"Broadcasting to all the {endpointById.Count} clients");
                     foreach (KeyValuePair<ulong, NetworkEndpoint> pair in endpointById.ToArray())
                     {
                         try
                         {
+                            Debug.Log($"Sending to client {pair.Key}");
                             endpointTasks?.Add(pair.Key, pair.Value.Send(protocolId, messageTag, content));
                         }
                         catch
                         {
+                            Debug.Log($"Exception triggered on broadcast!");
                             endpointTasks?.Add(pair.Key, null);
                         }
                     }
                 }
+
+                return endpointTasks;
             }
 
             /// <summary>
@@ -423,8 +428,8 @@ namespace AlephVault.Unity.Meetgard
             /// <param name="message">The message (as it was registered) being sent</param>
             /// <param name="clientIds">The ids to send the same message - use null to specify ALL the available ids</param>
             /// <param name="content">The message content</param>
-            /// <param name="endpointTasks">The send tasks for each endpoint that was iterated</param>
-            public void Broadcast<ProtocolType, T>(string message, ulong[] clientIds, T content, Dictionary<ulong, Task> endpointTasks) where ProtocolType : IProtocolServerSide where T : ISerializable
+            /// <returns>The send tasks for each endpoint that was iterated</returns>
+            public Dictionary<ulong, Task> Broadcast<ProtocolType, T>(string message, ulong[] clientIds, T content) where ProtocolType : IProtocolServerSide where T : ISerializable
             {
                 ProtocolType protocol = GetComponent<ProtocolType>();
                 if (protocol == null)
@@ -433,7 +438,7 @@ namespace AlephVault.Unity.Meetgard
                 }
                 else
                 {
-                    Broadcast(protocol, message, clientIds, content, endpointTasks);
+                    return Broadcast(protocol, message, clientIds, content );
                 }
             }
 
@@ -452,10 +457,10 @@ namespace AlephVault.Unity.Meetgard
             /// <typeparam name="ProtocolType">The protocol type for this message. One instance of it must be an already attached component</param>
             /// <param name="message">The message (as it was registered) being sent</param>
             /// <param name="clientIds">The ids to send the same message - use null to specify ALL the available ids</param>
-            /// <param name="endpointTasks">The send tasks for each endpoint that was iterated</param>
-            public void Broadcast<ProtocolType>(string message, ulong[] clientIds, Dictionary<ulong, Task> endpointTasks) where ProtocolType : IProtocolServerSide
+            /// <returns>The send tasks for each endpoint that was iterated</returns>
+            public Dictionary<ulong, Task> Broadcast<ProtocolType>(string message, ulong[] clientIds) where ProtocolType : IProtocolServerSide
             {
-                Broadcast<ProtocolType, Nothing>(message, clientIds, new Nothing(), endpointTasks);
+                return Broadcast<ProtocolType, Nothing>(message, clientIds, new Nothing());
             }
 
             /// <summary>
@@ -466,7 +471,7 @@ namespace AlephVault.Unity.Meetgard
             /// <param name="protocol">The protocol for this message. It must be an already attached component</param>
             /// <param name="message">The name of the message this sender will send</param>
             /// <returns>A function that takes the list of clients and the message to send, of the appropriate type, and sends it (asynchronously)</returns>
-            public Action<ulong[], T, Dictionary<ulong, Task>> MakeBroadcaster<T>(IProtocolServerSide protocol, string message) where T : ISerializable
+            public Func<ulong[], T, Dictionary<ulong, Task>> MakeBroadcaster<T>(IProtocolServerSide protocol, string message) where T : ISerializable
             {
                 if (protocol == null)
                 {
@@ -492,7 +497,7 @@ namespace AlephVault.Unity.Meetgard
                     throw new OutgoingMessageTypeMismatchException($"Message sender creation for protocol / message ({protocol.GetType().FullName}, {message}) was attempted with type {typeof(T).FullName} when {expectedType.FullName} was expected");
                 }
 
-                return (clientIds, content, failedEndpoints) =>
+                return (clientIds, content) =>
                 {
                     if (!IsRunning)
                     {
@@ -504,7 +509,7 @@ namespace AlephVault.Unity.Meetgard
                         throw new OutgoingMessageTypeMismatchException($"Outgoing message ({protocol.GetType().FullName}, {message}) was attempted with type {content.GetType().FullName} when {expectedType.FullName} was expected");
                     }
 
-                    DoBroadcast(protocolId, messageTag, clientIds, content, failedEndpoints);
+                    return DoBroadcast(protocolId, messageTag, clientIds, content);
                 };
             }
 
@@ -516,10 +521,10 @@ namespace AlephVault.Unity.Meetgard
             /// <param name="protocol">The protocol for this message. It must be an already attached component</param>
             /// <param name="message">The name of the message this sender will send</param>
             /// <returns>A function that takes the list of clients and sends the message (asynchronously)</returns>
-            public Action<ulong[], Dictionary<ulong, Task>> MakeBroadcaster(IProtocolServerSide protocol, string message)
+            public Func<ulong[], Dictionary<ulong, Task>> MakeBroadcaster(IProtocolServerSide protocol, string message)
             {
-                Action<ulong[], Nothing, Dictionary<ulong, Task>> broadcaster = MakeBroadcaster<Nothing>(protocol, message);
-                return (clientIds, endpointTasks) => broadcaster(clientIds, new Nothing(), endpointTasks);
+                Func<ulong[], Nothing, Dictionary<ulong, Task>> broadcaster = MakeBroadcaster<Nothing>(protocol, message);
+                return (clientIds) => broadcaster(clientIds, new Nothing());
             }
 
             /// <summary>
@@ -530,7 +535,7 @@ namespace AlephVault.Unity.Meetgard
             /// <typeparam name="T">The type of the message this sender will send</typeparam>
             /// <param name="message">The name of the message this sender will send</param>
             /// <returns>A function that takes the list of clients and the message to send, of the appropriate type, and sends it (asynchronously)</returns>
-            public Action<ulong[], T, Dictionary<ulong, Task>> MakeBroadcaster<ProtocolType, T>(string message) where ProtocolType : IProtocolServerSide where T : ISerializable
+            public Func<ulong[], T, Dictionary<ulong, Task>> MakeBroadcaster<ProtocolType, T>(string message) where ProtocolType : IProtocolServerSide where T : ISerializable
             {
                 ProtocolType protocol = GetComponent<ProtocolType>();
                 if (protocol == null)
@@ -551,10 +556,10 @@ namespace AlephVault.Unity.Meetgard
             /// <typeparam name="ProtocolType">The protocol type for this message. One instance of it must be an already attached component</param>
             /// <param name="message">The name of the message this sender will send</param>
             /// <returns>A function that takes the list of clients, and sends the message (asynchronously)</returns>
-            public Action<ulong[], Dictionary<ulong, Task>> MakeBroadcaster<ProtocolType>(string message) where ProtocolType : IProtocolServerSide
+            public Func<ulong[], Dictionary<ulong, Task>> MakeBroadcaster<ProtocolType>(string message) where ProtocolType : IProtocolServerSide
             {
-                Action<ulong[], Nothing, Dictionary<ulong, Task>> broadcaster = MakeBroadcaster<ProtocolType, Nothing>(message);
-                return (clientIds, endpointTasks) => broadcaster(clientIds, new Nothing(), endpointTasks);
+                Func<ulong[], Nothing, Dictionary<ulong, Task>> broadcaster = MakeBroadcaster<ProtocolType, Nothing>(message);
+                return (clientIds) => broadcaster(clientIds, new Nothing());
             }
 
             /// <summary>

@@ -1,7 +1,6 @@
 using AlephVault.Unity.Meetgard.Server;
 using AlephVault.Unity.Support.Utils;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -33,11 +32,11 @@ namespace AlephVault.Unity.Meetgard.Samples
             private Func<ulong, Task> SendNicknameAlreadyIntroduced;
             private Func<ulong, Task> SendSayOK;
             private Func<ulong, Task> SendSayNotIntroduced;
-            private Action<ulong[], Said, Dictionary<ulong, Task>> BroadcastSaid;
-            private Action<ulong[], Nickname, Dictionary<ulong, Task>> BroadcastJoined;
-            private Action<ulong[], Nickname, Dictionary<ulong, Task>> BroadcastLeft;
+            private Func<ulong[], Said, Dictionary<ulong, Task>> BroadcastSaid;
+            private Func<ulong[], Nickname, Dictionary<ulong, Task>> BroadcastJoined;
+            private Func<ulong[], Nickname, Dictionary<ulong, Task>> BroadcastLeft;
             private Func<ulong, Task> SendPingTimeout;
-            private Action<ulong[], Echo, Dictionary<ulong, Task>> BroadcastPing;
+            private Func<ulong[], Echo, Dictionary<ulong, Task>> BroadcastPing;
 
             protected void Start()
             {
@@ -68,16 +67,19 @@ namespace AlephVault.Unity.Meetgard.Samples
                 {
                     foreach (ulong clientId in Connections)
                     {
-                        Timeouts[clientId] = currentPingTime - pingStart;
+                        Debug.Log($"server :: resetting timeout for client {clientId}");
+                        Timeouts[clientId] = 0;
                     }
-                    BroadcastPing(null, new Echo() { Content = "Lalala" }, null);
+                    BroadcastPingToAll();
                 }
                 else if (isInPingRange)
                 {
-                    foreach (ulong clientId in Timeouts.Keys.ToArray())
+                    ulong[] keys = Timeouts.Keys.ToArray();
+                    foreach (ulong clientId in keys)
                     {
                         if (Timeouts[clientId] > pingTimeout)
                         {
+                            Debug.Log($"server :: timeout-kicking client {clientId}");
                             TimeoutKick(clientId);
                             Timeouts.Remove(clientId);
                         }
@@ -91,6 +93,11 @@ namespace AlephVault.Unity.Meetgard.Samples
                 {
                     currentPingTime -= pingCycle;
                 }
+            }
+
+            private async void BroadcastPingToAll()
+            {
+                await UntilBroadcastIsDone(BroadcastPing(null, new Echo() { Content = "Lalala" }));
             }
 
             private async void TimeoutKick(ulong clientId)
@@ -115,7 +122,7 @@ namespace AlephVault.Unity.Meetgard.Samples
                 if (Nicknames.TryGetValue(clientId, out string nickname))
                 {
                     Nicknames.Remove(clientId);
-                    BroadcastLeft(null, new Nickname() { Nick = nickname }, null);
+                    await UntilBroadcastIsDone(BroadcastLeft(null, new Nickname() { Nick = nickname }));
                     Debug.Log($"server :: server >>> Nickname:Left({nickname}) >>> all");
                 }
             }
@@ -151,7 +158,7 @@ namespace AlephVault.Unity.Meetgard.Samples
                         Nicknames.Add(clientId, nick.Nick);
                         await SendNicknameOK(clientId);
                         Debug.Log($"server :: server >>> Nickname:OK >>> client({clientId})");
-                        BroadcastJoined(null, nick, null);
+                        await UntilBroadcastIsDone(BroadcastJoined(null, nick));
                         Debug.Log($"server :: server >>> Nickname:Joined({nick}) >>> all");
                     }
                 });
@@ -162,7 +169,7 @@ namespace AlephVault.Unity.Meetgard.Samples
                     {
                         await SendSayOK(clientId);
                         Debug.Log($"server :: server >>> Say:OK >>> client({clientId})");
-                        BroadcastSaid(null, new Said() { Nickname = nick, Content = line.Content, When = DateTime.Now.ToString("F") }, null);
+                        await UntilBroadcastIsDone(BroadcastSaid(null, new Said() { Nickname = nick, Content = line.Content, When = DateTime.Now.ToString("F") }));
                         Debug.Log($"server :: server >>> Say:Said({nick}, {line.Content}) >>> all");
                     }
                     else
@@ -170,6 +177,11 @@ namespace AlephVault.Unity.Meetgard.Samples
                         await SendSayNotIntroduced(clientId);
                         Debug.Log($"server :: server >>> Say:NotIntroduced >>> client({clientId})");
                     }
+                });
+                AddIncomingMessageHandler<Echo>("Ping:Pong", async (proto, clientId, echo) =>
+                {
+                    Debug.Log($"server :: client({clientId}) >>> Pong({echo}) >>> server");
+                    Timeouts[clientId] = 0;
                 });
             }
         }

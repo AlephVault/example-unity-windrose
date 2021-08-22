@@ -165,9 +165,8 @@ namespace AlephVault.Unity.Meetgard
             ///   extended <see cref="Awake"/> or similar method.
             /// </summary>
             /// <typeparam name="T">The type of the message being sent</typeparam>
-            /// <typeparam name="ProtocolType">The protocol type for this message. One instance of it must be an already attached component</param>
             /// <param name="message">The message (as it was registered) that this sender will send</param>
-            protected Action<ulong[], T, Dictionary<ulong, Task>> MakeBroadcaster<T>(string message) where T : ISerializable
+            protected Func<ulong[], T, Dictionary<ulong, Task>> MakeBroadcaster<T>(string message) where T : ISerializable
             {
                 return server.MakeBroadcaster<T>(this, message);
             }
@@ -180,7 +179,7 @@ namespace AlephVault.Unity.Meetgard
             ///   not have any body. The message to send does not have any body.
             /// </summary>
             /// <param name="message">The message (as it was registered) that this sender will send</param>
-            protected Action<ulong[], Dictionary<ulong, Task>> MakeBroadcaster(string message)
+            protected Func<ulong[], Dictionary<ulong, Task>> MakeBroadcaster(string message)
             {
                 return server.MakeBroadcaster(this, message);
             }
@@ -195,7 +194,7 @@ namespace AlephVault.Unity.Meetgard
             /// <typeparam name="T">The type of the message this sender will send</typeparam>
             /// <param name="message">The name of the message this sender will send</param>
             /// <returns>A function that takes the message to send, of the appropriate type, and sends it (asynchronously)</returns>
-            protected Action<ulong[], T, Dictionary<ulong, Task>> MakeBroadcaster<ProtocolType, T>(string message) where ProtocolType : IProtocolServerSide where T : ISerializable
+            protected Func<ulong[], T, Dictionary<ulong, Task>> MakeBroadcaster<ProtocolType, T>(string message) where ProtocolType : IProtocolServerSide where T : ISerializable
             {
                 return server.MakeBroadcaster<ProtocolType, T>(message);
             }
@@ -312,10 +311,10 @@ namespace AlephVault.Unity.Meetgard
             /// <param name="message">The message (as it was registered) being sent</param>
             /// <param name="clientIds">The ids to send the same message - use null to specify ALL the available ids</param>
             /// <param name="content">The message content</param>
-            /// <param name="endpointTasks">The send tasks for each endpoint that was iterated</param>
-            public void Broadcast<T>(string message, ulong[] clientIds, T content, Dictionary<ulong, Task> endpointTasks) where T : ISerializable
+            /// <returns>The send tasks for each endpoint that was iterated</returns>
+            public Dictionary<ulong, Task> Broadcast<T>(string message, ulong[] clientIds, T content) where T : ISerializable
             {
-                server.Broadcast(this, message, clientIds, content, endpointTasks);
+                return server.Broadcast(this, message, clientIds, content);
             }
 
             /// <summary>
@@ -326,12 +325,23 @@ namespace AlephVault.Unity.Meetgard
             /// <param name="message">The message (as it was registered) being sent</param>
             /// <param name="clientIds">The ids to send the same message - use null to specify ALL the available ids</param>
             /// <param name="content">The message content</param>
-            /// <param name="endpointTasks">The send tasks for each endpoint that was iterated</param>
-            public void Broadcast<ProtocolType, T>(string message, ulong[] clientIds, T content, Dictionary<ulong, Task> endpointTasks)
+            /// <returns>The send tasks for each endpoint that was iterated</returns>
+            public Dictionary<ulong, Task> Broadcast<ProtocolType, T>(string message, ulong[] clientIds, T content)
                 where ProtocolType : IProtocolServerSide
                 where T : ISerializable
             {
-                server.Broadcast<ProtocolType, T>(message, clientIds, content, endpointTasks);
+                return server.Broadcast<ProtocolType, T>(message, clientIds, content);
+            }
+
+            /// <summary>
+            ///   This task iterates over all of the broadcast tasks, awaiting to be done.
+            /// </summary>
+            /// <param name="tasks">The dictionary clientId => (task?)</param>
+            protected async Task UntilBroadcastIsDone(Dictionary<ulong, Task> tasks)
+            {
+                foreach(KeyValuePair<ulong, Task> pair in tasks) {
+                    await (pair.Value ?? Task.CompletedTask);
+                }
             }
 
             /// <summary>

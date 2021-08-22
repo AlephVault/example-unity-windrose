@@ -2,6 +2,7 @@ using AlephVault.Unity.Support.Utils;
 using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
+using UnityEngine;
 
 namespace AlephVault.Unity.Meetgard
 {
@@ -130,6 +131,7 @@ namespace AlephVault.Unity.Meetgard
             protected override Task DoSend(ushort protocolId, ushort messageTag, ISerializable data)
             {
                 TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>();
+                Debug.Log($"Queuing message to send ({protocolId}, {messageTag}) -> {data}");
                 queuedOutgoingMessages.Enqueue(new Tuple<ushort, ushort, ISerializable, TaskCompletionSource<bool>>(protocolId, messageTag, data, tcs));
                 return tcs.Task;
             }

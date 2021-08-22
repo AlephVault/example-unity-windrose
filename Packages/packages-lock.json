@@ -22,6 +22,16 @@
         "com.alephvault.unity.support": "0.0.1"
       }
     },
+    "com.alephvault.unity.meetgard": {
+      "version": "file:C:/Users/luism/Projects/unity-meetgard",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {
+        "com.alephvault.unity.support": "0.0.1",
+        "com.alephvault.unity.layout": "0.0.1",
+        "com.alephvault.unity.binary": "0.0.1"
+      }
+    },
     "com.alephvault.unity.menuactions": {
       "version": "file:C:/Users/luism/Projects/unity-menu-actions",
       "depth": 0,
@@ -186,15 +196,6 @@
       "dependencies": {},
       "url": "https://packages.unity.com"
     },
-    "com.unity.multiplayer-hlapi": {
-      "version": "1.0.8",
-      "depth": 0,
-      "source": "registry",
-      "dependencies": {
-        "nuget.mono-cecil": "0.1.6-preview"
-      },
-      "url": "https://packages.unity.com"
-    },
     "com.unity.multiplayer.mlapi": {
       "version": "file:C:/Users/luism/Projects/com.unity.multiplayer.mlapi/com.unity.multiplayer.mlapi",
       "depth": 0,
@@ -307,13 +308,6 @@
         "com.unity.modules.vr": "1.0.0",
         "com.unity.modules.xr": "1.0.0"
       },
-      "url": "https://packages.unity.com"
-    },
-    "nuget.mono-cecil": {
-      "version": "0.1.6-preview",
-      "depth": 1,
-      "source": "registry",
-      "dependencies": {},
       "url": "https://packages.unity.com"
     },
     "com.unity.modules.ai": {

@@ -21,32 +21,6 @@ namespace AlephVault.Unity.Meetgard
             // The endpoint id for the host.
             public const ulong HostEndpointId = 0;
 
-            /// <summary>
-            ///   <para>
-            ///     The time to sleep, on each iteration, when no data to
-            ///     read or write is present in the socket on a given
-            ///     iteration.
-            ///   </para>
-            ///   <para>
-            ///     This setting should match whatever is set in the clients
-            ///     and supported by the protocols to use.
-            ///   </para>
-            /// </summary>
-            [SerializeField]
-            private float idleSleepTime = 0.01f;
-
-            /// <summary>
-            ///   <para>
-            ///     The maximum size of each individual message to be sent.
-            ///   </para>
-            ///   <para>
-            ///     This setting should match whatever is set in the clients
-            ///     and supported by the protocols to use.
-            ///   </para>
-            /// </summary>
-            [SerializeField]
-            private ushort maxMessageSize = 1024;
-
             // The next id to use, when a new connection is spawned.
             // Please note: id=0 is reserved for a single network
             // endpoint of type NetworkHostEndpoint (i.e. the host

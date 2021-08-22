@@ -16,20 +16,6 @@ namespace AlephVault.Unity.Meetgard
 {
     namespace Server
     {
-        /// <summary>
-        ///   <para>
-        ///     Network servers are behaviours that spawn an additional
-        ///     thread to listen for connections. Each connection is
-        ///     accepted and, for each one, a new thread is spawned to
-        ///     handle it. Each server can listen in one address:port
-        ///     at once, but many different servers can be instantiated
-        ///     in the same scene.
-        ///   </para>
-        ///   <para>
-        ///     Additionally, a local connection ("host") is allowed in
-        ///     a per-server basis.
-        ///   </para>
-        /// </summary>
         public partial class NetworkServer : MonoBehaviour
         {
             // The current listener.

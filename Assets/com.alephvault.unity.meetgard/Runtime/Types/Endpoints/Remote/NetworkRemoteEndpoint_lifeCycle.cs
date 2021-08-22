@@ -61,6 +61,11 @@ namespace AlephVault.Unity.Meetgard
                         try
                         {
                             bool inactive = true;
+                            if (!remoteSocket.Connected)
+                            {
+                                // Close, if the socket is not connected.
+                                return;
+                            }
                             if (stream.CanRead && stream.DataAvailable)
                             {
                                 Tuple<MessageHeader, ISerializable> result;

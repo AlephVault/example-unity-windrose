@@ -120,6 +120,16 @@ namespace AlephVault.Unity.Meetgard.Samples
                 }
             }
 
+            public override async Task OnServerStarted()
+            {
+                Debug.Log($"server :: started");
+            }
+
+            public override async Task OnServerStopped(Exception e)
+            {
+                Debug.Log($"server: stopped");
+            }
+
             protected override void SetIncomingMessageHandlers()
             {
                 AddIncomingMessageHandler<Nickname>("Nickname", async (proto, clientId, nick) =>

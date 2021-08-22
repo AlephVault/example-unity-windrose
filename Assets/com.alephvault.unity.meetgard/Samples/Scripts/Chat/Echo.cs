@@ -3,17 +3,22 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace AlephVault.Unity.Meetgard
+namespace AlephVault.Unity.Meetgard.Samples
 {
-    namespace Samples
+    namespace Chat
     {
-        public class Message : ISerializable
+        public class Line : ISerializable
         {
             public string Content;
 
             public void Serialize(Serializer serializer)
             {
                 serializer.Serialize(ref Content);
+            }
+
+            public override string ToString()
+            {
+                return Content;
             }
         }
     }

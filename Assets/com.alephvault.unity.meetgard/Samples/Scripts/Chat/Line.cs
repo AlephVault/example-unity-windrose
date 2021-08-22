@@ -3,9 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace AlephVault.Unity.Meetgard
+namespace AlephVault.Unity.Meetgard.Samples
 {
-    namespace Samples
+    namespace Chat
     {
         public class Echo : ISerializable
         {
@@ -15,7 +15,11 @@ namespace AlephVault.Unity.Meetgard
             {
                 serializer.Serialize(ref Content);
             }
-        }
 
+            public override string ToString()
+            {
+                return Content;
+            }
+        }
     }
 }

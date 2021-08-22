@@ -123,7 +123,7 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &296288965
+--- !u!1 &338910595
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -131,135 +131,9 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 296288968}
-  - component: {fileID: 296288967}
-  - component: {fileID: 296288966}
-  m_Layer: 0
-  m_Name: Pedro
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &296288966
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 296288965}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e0714ee85ab49b94c9222136f5de155f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  name: Pedro
-  connectKey: 113
-  disconnectKey: 101
-  helloKey: 119
---- !u!114 &296288967
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 296288965}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a7e5bd6343b7cd549890eff0b21532b1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  idleSleepTime: 0.01
-  maxMessageSize: 1024
-  trainBoardingTime: 0.75
---- !u!4 &296288968
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 296288965}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.0101743, y: 1.1534679, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &590824448
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 590824451}
-  - component: {fileID: 590824450}
-  - component: {fileID: 590824449}
-  m_Layer: 0
-  m_Name: Carlos
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &590824449
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 590824448}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e0714ee85ab49b94c9222136f5de155f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  name: Carlos
-  connectKey: 114
-  disconnectKey: 121
-  helloKey: 116
---- !u!114 &590824450
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 590824448}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a7e5bd6343b7cd549890eff0b21532b1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  idleSleepTime: 0.01
-  maxMessageSize: 1024
-  trainBoardingTime: 0.75
---- !u!4 &590824451
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 590824448}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.0101743, y: 1.1534679, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 3
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &648699238
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 648699241}
-  - component: {fileID: 648699240}
-  - component: {fileID: 648699239}
+  - component: {fileID: 338910598}
+  - component: {fileID: 338910597}
+  - component: {fileID: 338910596}
   m_Layer: 0
   m_Name: Server
   m_TagString: Untagged
@@ -267,112 +141,47 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &648699239
+--- !u!114 &338910596
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 648699238}
+  m_GameObject: {fileID: 338910595}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c59ef616bfd1b5440b2ddd64e1e4f570, type: 3}
+  m_Script: {fileID: 11500000, guid: 083dbe8f22230e9469fe289c05961c0b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startKey: 122
-  stopKey: 120
-  handshakeTestKey: 99
---- !u!114 &648699240
+  startKey: 0
+  stopKey: 0
+--- !u!114 &338910597
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 648699238}
+  m_GameObject: {fileID: 338910595}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6fd436228229b9a4cace9a434fca7c73, type: 3}
+  m_Script: {fileID: 11500000, guid: adeee28c8aaa3ea4ebe4247e3987802f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  idleSleepTime: 0.01
-  maxMessageSize: 1024
-  trainBoardingTime: 0.75
---- !u!4 &648699241
+  nicknameTimeout: 2
+  pingTimeout: 10
+--- !u!4 &338910598
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 648699238}
+  m_GameObject: {fileID: 338910595}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 3.0101743, y: 1.1534679, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &989733588
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 989733591}
-  - component: {fileID: 989733590}
-  - component: {fileID: 989733589}
-  m_Layer: 0
-  m_Name: Jose
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &989733589
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 989733588}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e0714ee85ab49b94c9222136f5de155f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  name: Jose
-  connectKey: 117
-  disconnectKey: 111
-  helloKey: 105
---- !u!114 &989733590
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 989733588}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a7e5bd6343b7cd549890eff0b21532b1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  idleSleepTime: 0.01
-  maxMessageSize: 1024
-  trainBoardingTime: 0.75
---- !u!4 &989733591
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 989733588}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.0101743, y: 1.1534679, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1821481159
 GameObject:

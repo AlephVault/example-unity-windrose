@@ -35,7 +35,12 @@ namespace AlephVault.Unity.Meetgard.Auth
                     DefineServerMessage<Kicked>("Kicked");
                     DefineClientMessage("Logout");
                     DefineServerMessage("LoggedOut");
+                    // These messages are intended for action-wrapping
+                    // requiring login (and perhaps a permission criterion),
+                    // or requiring not login.
                     DefineServerMessage("NotLoggedIn");
+                    DefineServerMessage("AlreadyLoggedIn");
+                    DefineServerMessage("Forbidden");
                 }
 
                 /// <summary>

@@ -20,7 +20,7 @@ namespace AlephVault.Unity.Meetgard.Auth
             ///   single server (it may be used in more complex
             ///   login interactions, though).
             /// </summary>
-            /// <typeparam name="Definition">A subclass of <see cref="SimpleAuthProtocolClientSide{Definition, LoginOK, LoginFailed, Kicked}"/></typeparam>
+            /// <typeparam name="Definition">A subclass of <see cref="SimpleAuthProtocolDefinition{LoginOK, LoginFailed, Kicked}"/></typeparam>
             /// <typeparam name="LoginOK">The type of the "successful login" message</typeparam>
             /// <typeparam name="LoginFailed">The type of the "failed login" message</typeparam>
             /// <typeparam name="Kicked">The type of the "kicked" message</typeparam>
@@ -38,6 +38,8 @@ namespace AlephVault.Unity.Meetgard.Auth
                 /// <summary>
                 ///   Typically, in this Start callback function
                 ///   all the Send* shortcuts will be instantiated.
+                ///   Override this method with super-call to
+                ///   instantiate all the needed Send* shortcuts.
                 /// </summary>
                 protected void Start()
                 {

@@ -17,7 +17,7 @@ namespace AlephVault.Unity.Meetgard.Auth
             > : ProtocolServerSide<Definition>
                 where LoginOK : ISerializable, new()
                 where LoginFailed : ISerializable, new()
-                where Kicked : ISerializable, new()
+                where Kicked : IKickMessage<Kicked>, new()
                 where AccountPreviewDataType : ISerializable, new()
                 where AccountDataType : IRecordWithPreview<AccountIDType, AccountPreviewDataType>
                 where Definition : SimpleAuthProtocolDefinition<LoginOK, LoginFailed, Kicked>, new()

@@ -16,7 +16,7 @@ namespace AlephVault.Unity.Meetgard.Auth
             > : ProtocolServerSide<Definition>
                 where LoginOK : ISerializable, new()
                 where LoginFailed : ISerializable, new()
-                where Kicked : ISerializable, new()
+                where Kicked : IKickMessage<Kicked>, new()
                 where AccountPreviewDataType : ISerializable, new()
                 where AccountDataType : IRecordWithPreview<AccountIDType, AccountPreviewDataType>
                 where Definition : SimpleAuthProtocolDefinition<LoginOK, LoginFailed, Kicked>, new()
@@ -41,6 +41,7 @@ namespace AlephVault.Unity.Meetgard.Auth
                 {
                     AccountLoad,
                     Initialization,
+                    PermissionCheck,
                     Termination
                 }
 
@@ -83,7 +84,7 @@ namespace AlephVault.Unity.Meetgard.Auth
                             await OnSessionError(clientId, SessionStage.AccountLoad, e);
                         }
                         catch { /* Diaper pattern - intentional */ }
-                        // TODO: Send kicked message (account load).
+                        await SendKicked(clientId, new Kicked().WithAccountLoadErrorReason());
                         server.Close(clientId);
                     }
                     // 3. Add the session.
@@ -104,7 +105,7 @@ namespace AlephVault.Unity.Meetgard.Auth
                             await OnSessionError(clientId, SessionStage.Initialization, e);
                         }
                         catch { /* Diaper pattern - intentional */ }
-                        // TODO: Send kicked message (session initialization).
+                        await SendKicked(clientId, new Kicked().WithSessionInitializationError());
                         server.Close(clientId);
                     }
                 }
@@ -135,6 +136,7 @@ namespace AlephVault.Unity.Meetgard.Auth
                         }
                         catch { /* Diaper pattern - intentional */ }
                     }
+                    RemoveSession(clientId);
                     server.Close(clientId);
                 }
 

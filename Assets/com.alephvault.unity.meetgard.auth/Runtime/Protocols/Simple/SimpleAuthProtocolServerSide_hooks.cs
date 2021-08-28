@@ -22,6 +22,17 @@ namespace AlephVault.Unity.Meetgard.Auth
                 where Definition : SimpleAuthProtocolDefinition<LoginOK, LoginFailed, Kicked>, new()
             {
                 /// <summary>
+                ///   Tells when an account was not found by its ID.
+                /// </summary>
+                public class AccountNotFound : Exception {
+                    public readonly AccountIDType ID;
+
+                    public AccountNotFound(AccountIDType id) : base() { ID = id; }
+                    public AccountNotFound(AccountIDType id, string message) : base(message) { ID = id; }
+                    public AccountNotFound(AccountIDType id, string message, Exception cause) : base(message, cause) { ID = id; }
+                }
+
+                /// <summary>
                 ///   The current stage of the session. This stage
                 ///   involves load / unload session operations,
                 ///   and not the gameplay itself.
@@ -51,17 +62,51 @@ namespace AlephVault.Unity.Meetgard.Auth
                 // it was due to an unexpected error.
                 private async Task OnLoggedIn(ulong clientId, AccountIDType accountId)
                 {
+                    AccountDataType accountData = default;
                     // 1. Get the account data.
                     // 2. On error:
                     //   2.1. Handle the error appropriately.
                     //   2.2. Send a kick message with "unexpected error on account load".
                     //   2.3. Close the connection.
+                    try
+                    {
+                        accountData = await FindAccount(accountId);
+                        if (accountData.Equals(default(AccountDataType)))
+                        {
+                            throw new AccountNotFound(accountId);
+                        }
+                    }
+                    catch(Exception e)
+                    {
+                        try
+                        {
+                            await OnSessionError(clientId, SessionStage.AccountLoad, e);
+                        }
+                        catch { /* Diaper pattern - intentional */ }
+                        // TODO: Send kicked message (account load).
+                        server.Close(clientId);
+                    }
                     // 3. Add the session.
                     // 4. Invoke the "session initializing" hook, considering account data.
                     // 5. On error:
                     //   5.1. Handle the error appropriately.
                     //   5.2. Send a kick message with "unexpected error on session start".
                     //   5.3. Close the connection.
+                    AddSession(clientId, accountId);
+                    try
+                    {
+                        await OnSessionStarting(clientId, accountData);
+                    }
+                    catch(Exception e)
+                    {
+                        try
+                        {
+                            await OnSessionError(clientId, SessionStage.Initialization, e);
+                        }
+                        catch { /* Diaper pattern - intentional */ }
+                        // TODO: Send kicked message (session initialization).
+                        server.Close(clientId);
+                    }
                 }
 
                 // This function is invoked when a client was logged out due
@@ -78,7 +123,19 @@ namespace AlephVault.Unity.Meetgard.Auth
                     //   3.1. Handle the error appropriately.
                     // 4. Remove the session.
                     // 5. Close the connection.
-
+                    try
+                    {
+                        await OnSessionTerminating(clientId, reason);
+                    }
+                    catch (Exception e)
+                    {
+                        try
+                        {
+                            await OnSessionError(clientId, SessionStage.Termination, e);
+                        }
+                        catch { /* Diaper pattern - intentional */ }
+                    }
+                    server.Close(clientId);
                 }
 
                 /// <summary>
@@ -104,7 +161,7 @@ namespace AlephVault.Unity.Meetgard.Auth
                 /// </summary>
                 /// <param name="clientId">The id of the connection whose session is being initialized</param>
                 /// <param name="accountDta">The account data to initialize the session for</param>
-                protected abstract Task OnSessionStarting(ulong clientId, AccountDataType accountDta);
+                protected abstract Task OnSessionStarting(ulong clientId, AccountDataType accountData);
 
                 /// <summary>
                 ///   Terminates the session for a connection id with a given reason.

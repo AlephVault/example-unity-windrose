@@ -1,4 +1,5 @@
 using AlephVault.Unity.Meetgard.Auth.Protocols.Simple;
+using AlephVault.Unity.Meetgard.Auth.Types;
 using AlephVault.Unity.Meetgard.Types;
 using System;
 using System.Collections;
@@ -22,6 +23,12 @@ namespace AlephVault.Unity.Meetgard.Auth
             [SerializeField]
             private Dictionary<string, SampleAccount> accounts = new Dictionary<string, SampleAccount>();
 
+            /// <summary>
+            ///   The duplicate account management mode.
+            /// </summary>
+            [SerializeField]
+            private MultipleSessionsManagementMode MultipleSessionsManagementMode = MultipleSessionsManagementMode.Reject;
+
             protected override async Task<SampleAccount> FindAccount(string id)
             {
                 foreach (var pair in accounts)
@@ -34,19 +41,14 @@ namespace AlephVault.Unity.Meetgard.Auth
                 return null;
             }
 
+            protected override MultipleSessionsManagementMode IfAccountAlreadyLoggedIn()
+            {
+                return MultipleSessionsManagementMode;
+            }
+
             protected override async Task OnSessionError(ulong clientId, SessionStage stage, System.Exception error)
             {
                 Debug.Log($"Exception on session stage {stage} for client id {clientId}: {error.GetType().FullName} - {error.Message}");
-            }
-
-            protected override Task OnSessionStarting(ulong clientId, SampleAccount accountData)
-            {
-                throw new NotImplementedException();
-            }
-
-            protected override Task OnSessionTerminating(ulong clientId, Kicked reason)
-            {
-                throw new NotImplementedException();
             }
 
             protected override void SetLoginMessageHandlers()

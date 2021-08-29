@@ -1,4 +1,5 @@
 using AlephVault.Unity.Binary;
+using AlephVault.Unity.Meetgard.Auth.Types;
 using AlephVault.Unity.Meetgard.Protocols;
 
 namespace AlephVault.Unity.Meetgard.Auth
@@ -20,7 +21,7 @@ namespace AlephVault.Unity.Meetgard.Auth
             public abstract class SimpleAuthProtocolDefinition<LoginOK, LoginFailed, Kicked> : ProtocolDefinition
                 where LoginOK : ISerializable, new()
                 where LoginFailed : ISerializable, new()
-                where Kicked : ISerializable, new()
+                where Kicked : IKickMessage<Kicked>, new()
             {
                 protected override void DefineMessages()
                 {

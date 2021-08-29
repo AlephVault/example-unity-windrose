@@ -42,6 +42,7 @@ namespace AlephVault.Unity.Meetgard.Auth
             ///   was an abrupt disconnection and that caused the kick.
             ///   This kick reason is never sent to theu ser.
             /// </summary>
+            /// <param name="e">The exception that was triggered</param>
             /// <returns>The same object</returns>
             public T WithNonGracefulDisconnectionErrorReason(Exception reason);
         }

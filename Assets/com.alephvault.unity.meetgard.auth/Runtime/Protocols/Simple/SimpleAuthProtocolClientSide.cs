@@ -1,4 +1,5 @@
 using AlephVault.Unity.Binary;
+using AlephVault.Unity.Meetgard.Auth.Types;
 using AlephVault.Unity.Meetgard.Client;
 using System;
 using System.Collections;
@@ -27,7 +28,7 @@ namespace AlephVault.Unity.Meetgard.Auth
             public abstract class SimpleAuthProtocolClientSide<Definition, LoginOK, LoginFailed, Kicked> : ProtocolClientSide<Definition>
                 where LoginOK : ISerializable, new()
                 where LoginFailed : ISerializable, new()
-                where Kicked : ISerializable, new()
+                where Kicked : IKickMessage<Kicked>, new()
                 where Definition : SimpleAuthProtocolDefinition<LoginOK, LoginFailed, Kicked>, new()
             {
                 /// <summary>

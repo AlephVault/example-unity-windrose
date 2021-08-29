@@ -96,7 +96,7 @@ namespace AlephVault.Unity.Meetgard.Auth
                     AddSession(clientId, accountId);
                     try
                     {
-                        await OnSessionStarting(clientId, accountData);
+                        foreach(var handler in OnSessionStarting.GetInvocationList()) await ((Func<ulong, AccountDataType, Task>)handler)(clientId, accountData);
                     }
                     catch(Exception e)
                     {
@@ -126,7 +126,7 @@ namespace AlephVault.Unity.Meetgard.Auth
                     // 5. Close the connection.
                     try
                     {
-                        await OnSessionTerminating(clientId, reason);
+                        foreach (var handler in OnSessionTerminating.GetInvocationList()) await ((Func<ulong, Kicked, Task>)handler)(clientId, reason);
                     }
                     catch (Exception e)
                     {
@@ -163,7 +163,7 @@ namespace AlephVault.Unity.Meetgard.Auth
                 /// </summary>
                 /// <param name="clientId">The id of the connection whose session is being initialized</param>
                 /// <param name="accountDta">The account data to initialize the session for</param>
-                protected abstract Task OnSessionStarting(ulong clientId, AccountDataType accountData);
+                public event Func<ulong, AccountDataType, Task> OnSessionStarting;
 
                 /// <summary>
                 ///   Terminates the session for a connection id with a given reason.
@@ -174,8 +174,7 @@ namespace AlephVault.Unity.Meetgard.Auth
                 /// </summary>
                 /// <param name="clientId">The id of the connection whose session is being terminated</param>
                 /// <param name="reason">The kick reason. It will be null if it was graceful logout</param>
-                /// <returns></returns>
-                protected abstract Task OnSessionTerminating(ulong clientId, Kicked reason);
+                public event Func<ulong, Kicked, Task> OnSessionTerminating;
 
                 /// <summary>
                 ///   Handles any error, typically logging it, at a given session handling

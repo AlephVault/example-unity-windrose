@@ -209,7 +209,7 @@ namespace AlephVault.Unity.Meetgard.Auth
                         }
                         else
                         {
-                            await SendNotLoggedIn(clientId);
+                            await SendAlreadyLoggedIn(clientId);
                         }
                     };
                 }
@@ -237,7 +237,7 @@ namespace AlephVault.Unity.Meetgard.Auth
                         }
                         else
                         {
-                            await SendNotLoggedIn(clientId);
+                            await SendAlreadyLoggedIn(clientId);
                         }
                     };
                 }

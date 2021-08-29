@@ -43,14 +43,17 @@ namespace AlephVault.Unity.Meetgard.Auth
                 // Updates all of the pending connections.
                 private async void UpdatePendingLogin(float delta)
                 {
-                    foreach(var pair in pendingLoginConnections.ToArray())
+                    await Exclusive(async () =>
                     {
-                        pendingLoginConnections.TryUpdate(pair.Key, pair.Value + delta, pair.Value);
-                        if (pendingLoginConnections.TryGetValue(pair.Key, out float value) && value >= loginTimeout)
+                        foreach (var pair in pendingLoginConnections.ToArray())
                         {
-                            await SendKicked(pair.Key, new Kicked().WithLoginTimeoutReason());
+                            pendingLoginConnections.TryUpdate(pair.Key, pair.Value + delta, pair.Value);
+                            if (pendingLoginConnections.TryGetValue(pair.Key, out float value) && value >= loginTimeout)
+                            {
+                                await SendTimeout(pair.Key);
+                            }
                         }
-                    }
+                    });
                 }
 
                 /// <summary>
@@ -80,20 +83,22 @@ namespace AlephVault.Unity.Meetgard.Auth
                         // 2. Process the message.
                         // 3. On success: trigger the success.
                         // 4. On failure: trigger the failure.
-                        if (RemovePendingLogin(clientId))
-                        {
-                            Tuple<bool, LoginOK, LoginFailed, AccountIDType> result = await doLogin(message);
-                            if (result.Item1)
+                        await Exclusive(async () => {
+                            if (RemovePendingLogin(clientId))
                             {
-                                await SendLoginOK(clientId, result.Item2);
-                                await OnLoggedIn(clientId, result.Item4);
+                                Tuple<bool, LoginOK, LoginFailed, AccountIDType> result = await doLogin(message);
+                                if (result.Item1)
+                                {
+                                    await SendLoginOK(clientId, result.Item2);
+                                    await OnLoggedIn(clientId, result.Item4);
+                                }
+                                else
+                                {
+                                    await SendLoginFailed(clientId, result.Item3);
+                                    server.Close(clientId);
+                                }
                             }
-                            else
-                            {
-                                await SendLoginFailed(clientId, result.Item3);
-                                server.Close(clientId);
-                            }
-                        }
+                        });
                     }));
                 }
             }

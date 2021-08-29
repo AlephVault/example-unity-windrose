@@ -4,6 +4,7 @@ using AlephVault.Unity.Meetgard.Auth.Types;
 using AlephVault.Unity.Meetgard.Server;
 using System.Collections.Generic;
 using System.Linq;
+using System.Collections.Concurrent;
 
 namespace AlephVault.Unity.Meetgard.Auth
 {
@@ -62,7 +63,10 @@ namespace AlephVault.Unity.Meetgard.Auth
                 }
 
                 // A session mapped by its connection id.
-                private class SessionByConnectionId : Dictionary<ulong, Session> { }
+                private class SessionByConnectionId : ConcurrentDictionary<ulong, Session> { }
+
+                // All the sessions mapped by a single account id.
+                private class SessionByAccountId : ConcurrentDictionary<AccountIDType, HashSet<Session>> { }
 
                 //
                 //
@@ -74,6 +78,9 @@ namespace AlephVault.Unity.Meetgard.Auth
 
                 // Sessions will be tracked by the connection they belong to.
                 private SessionByConnectionId sessionByConnectionId = new SessionByConnectionId();
+
+                // Sessions will be tracked by the account id they belong to.
+                private SessionByAccountId sessionByAccountId = new SessionByAccountId();
 
                 //
                 //
@@ -87,14 +94,22 @@ namespace AlephVault.Unity.Meetgard.Auth
                 private Session AddSession(ulong clientId, AccountIDType accountId)
                 {
                     Session session = new Session(clientId, accountId);
-                    sessionByConnectionId.Add(clientId, session);
+                    sessionByConnectionId.TryAdd(clientId, session);
+                    sessionByAccountId.TryAdd(accountId, new HashSet<Session>());
+                    sessionByAccountId[accountId].Add(session);
                     return session;
                 }
 
                 // Removes a session by its connection id.
                 private bool RemoveSession(ulong clientId)
                 {
-                    return sessionByConnectionId.Remove(clientId);
+                    if (sessionByConnectionId.TryRemove(clientId, out Session session))
+                    {
+                        sessionByAccountId[session.Item2].Remove(session);
+                        if (sessionByAccountId[session.Item2].Count == 0) sessionByAccountId.TryRemove(session.Item2, out _);
+                        return true;
+                    }
+                    return false;
                 }
 
                 /// <summary>
@@ -115,18 +130,14 @@ namespace AlephVault.Unity.Meetgard.Auth
                 /// <param name="value">The new value</param>
                 public void SetSessionData(ulong clientId, string key, object value)
                 {
-                    Session session;
-
                     try
                     {
-                        session = sessionByConnectionId[clientId];
+                        sessionByConnectionId[clientId].Item3[key] = value;
                     }
                     catch (KeyNotFoundException)
                     {
                         throw new Exception("Trying to access a missing session");
                     }
-
-                    session.Item3[key] = value;
                 }
 
                 /// <summary>
@@ -161,18 +172,14 @@ namespace AlephVault.Unity.Meetgard.Auth
                 /// <returns>Whether the key existed and data was retrieved</returns>
                 public bool TryGetSessionData(ulong clientId, string key, out object data)
                 {
-                    Session session;
-
                     try
                     {
-                        session = sessionByConnectionId[clientId];
+                        return sessionByConnectionId[clientId].Item3.TryGetValue(key, out data);
                     }
                     catch (KeyNotFoundException)
                     {
                         throw new Exception("Trying to access a missing session");
                     }
-
-                    return session.Item3.TryGetValue(key, out data);
                 }
 
                 /// <summary>
@@ -183,18 +190,14 @@ namespace AlephVault.Unity.Meetgard.Auth
                 /// <returns>Whether that key was removed or not</returns>
                 public bool RemoveSessionData(ulong clientId, string key)
                 {
-                    Session session;
-
                     try
                     {
-                        session = sessionByConnectionId[clientId];
+                        return sessionByConnectionId[clientId].Item3.Remove(key);
                     }
                     catch (KeyNotFoundException)
                     {
                         throw new Exception("Trying to access a missing session");
                     }
-
-                    return session.Item3.Remove(key);
                 }
 
                 /// <summary>
@@ -233,18 +236,14 @@ namespace AlephVault.Unity.Meetgard.Auth
                 /// <returns></returns>
                 public bool SessionContainsKey(ulong clientId, string key)
                 {
-                    Session session;
-
                     try
                     {
-                        session = sessionByConnectionId[clientId];
+                        return sessionByConnectionId[clientId].Item3.ContainsKey(key);
                     }
                     catch (KeyNotFoundException)
                     {
                         throw new Exception("Trying to access a missing session");
                     }
-
-                    return session.Item3.ContainsKey(key);
                 }
             }
         }

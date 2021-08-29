@@ -17,14 +17,6 @@ namespace AlephVault.Unity.Meetgard.Auth
         {
             /// <summary>
             ///   Updates the kick reason to use a message telling there
-            ///   was a timeout error: the user did not login in all the
-            ///   expected time that elapsed since connection.
-            /// </summary>
-            /// <returns>The same object</returns>
-            public T WithLoginTimeoutReason();
-
-            /// <summary>
-            ///   Updates the kick reason to use a message telling there
             ///   was an error while loading the account.
             /// </summary>
             /// <returns>The same object</returns>
@@ -40,7 +32,7 @@ namespace AlephVault.Unity.Meetgard.Auth
             /// <summary>
             ///   Updates the kick reason to use a message telling there
             ///   was an abrupt disconnection and that caused the kick.
-            ///   This kick reason is never sent to theu ser.
+            ///   This kick reason is never sent to the user.
             /// </summary>
             /// <param name="e">The exception that was triggered</param>
             /// <returns>The same object</returns>

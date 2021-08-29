@@ -20,16 +20,23 @@ namespace AlephVault.Unity.Meetgard.Auth
             ///   The list of valid accounts.
             /// </summary>
             [SerializeField]
-            private List<UserPass> accounts = new List<UserPass>();
+            private Dictionary<string, SampleAccount> accounts = new Dictionary<string, SampleAccount>();
 
-            protected override Task<SampleAccount> FindAccount(string id)
+            protected override async Task<SampleAccount> FindAccount(string id)
             {
-                throw new NotImplementedException();
+                foreach (var pair in accounts)
+                {
+                    if (id == pair.Key.Trim().ToLower())
+                    {
+                        return pair.Value;
+                    }
+                }
+                return null;
             }
 
-            protected override Task OnSessionError(ulong clientId, SessionStage stage, System.Exception error)
+            protected override async Task OnSessionError(ulong clientId, SessionStage stage, System.Exception error)
             {
-                throw new NotImplementedException();
+                Debug.Log($"Exception on session stage {stage} for client id {clientId}: {error.GetType().FullName} - {error.Message}");
             }
 
             protected override Task OnSessionStarting(ulong clientId, SampleAccount accountData)
@@ -46,9 +53,9 @@ namespace AlephVault.Unity.Meetgard.Auth
             {
                 AddLoginMessageHandler<UserPass>("Sample", async (message) =>
                 {
-                    foreach(UserPass account in  accounts)
+                    foreach(var pair in  accounts)
                     {
-                        if (message.Username.Trim().ToLower() == account.Username.Trim().ToLower() && message.Password == account.Password)
+                        if (message.Username.Trim().ToLower() == pair.Key.Trim().ToLower() && message.Password == pair.Value.Password)
                         {
                             return new Tuple<bool, Nothing, LoginFailed, string>(true, new Nothing(), null, message.Username);
                         }

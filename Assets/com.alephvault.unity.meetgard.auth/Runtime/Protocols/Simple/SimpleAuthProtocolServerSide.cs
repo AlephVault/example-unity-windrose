@@ -4,6 +4,7 @@ using AlephVault.Unity.Meetgard.Server;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -46,7 +47,7 @@ namespace AlephVault.Unity.Meetgard.Auth
                 [SerializeField]
                 private float loginTimeout = 5f;
 
-                // This holds the
+                // This holds the login-pending connections.
                 private Coroutine loginTimeoutCoroutine;
 
                 /// <summary>
@@ -87,20 +88,11 @@ namespace AlephVault.Unity.Meetgard.Auth
                     SetLoginMessageHandlers();
                     AddIncomingMessageHandler("Logout", LoginRequired<Definition, ProtocolServerSide<Definition>>(async (proto, clientId) =>
                     {
-                        try
+                        await Exclusive(async () =>
                         {
-                            await OnSessionTerminating(clientId, default(Kicked));
-                        }
-                        catch (Exception e)
-                        {
-                            try
-                            {
-                                await OnSessionError(clientId, SessionStage.Termination, e);
-                            }
-                            catch { /* Diaper pattern - intentional */ }
-                        }
-                        RemoveSession(clientId);
-                        await SendLoggedOut(clientId);
+                            await SendLoggedOut(clientId);
+                            await OnLoggedOut(clientId, default(Kicked));
+                        });
                     }));
                 }
 
@@ -131,23 +123,34 @@ namespace AlephVault.Unity.Meetgard.Auth
                 /// <param name="reason">The exception which is the disconnection reason, if abrupt</param>
                 public override async Task OnDisconnected(ulong clientId, Exception reason)
                 {
-                    RemovePendingLogin(clientId);
-                    if (SessionExists(clientId))
+                    await Exclusive(async () =>
                     {
-                        try
+                        RemovePendingLogin(clientId);
+                        if (SessionExists(clientId))
                         {
-                            await OnSessionTerminating(clientId, new Kicked().WithNonGracefulDisconnectionErrorReason(reason));
+                            await OnLoggedOut(clientId, new Kicked().WithNonGracefulDisconnectionErrorReason(reason));
                         }
-                        catch (Exception e)
+                    });
+                }
+
+                /// <summary>
+                ///   Kick an account by its ID.
+                /// </summary>
+                /// <param name="accountId">The account id to kick</param>
+                /// <param name="reason">The reason to kick the account</param>
+                public async Task Kick(AccountIDType accountId, Kicked reason)
+                {
+                    await Exclusive(async () =>
+                    {
+                        if (sessionByAccountId.TryGetValue(accountId, out HashSet<Session> sessions))
                         {
-                            try
+                            foreach (Session session in sessions.ToArray())
                             {
-                                await OnSessionError(clientId, SessionStage.Termination, e);
+                                await SendKicked(session.Item1, reason);
+                                await OnLoggedOut(session.Item1, reason);
                             }
-                            catch { /* Diaper pattern - intentional */ }
                         }
-                        RemoveSession(clientId);
-                    }
+                    });
                 }
             }
         }

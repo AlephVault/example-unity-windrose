@@ -87,11 +87,23 @@ namespace AlephVault.Unity.Meetgard.Auth
                         // after this event triggers.
                         await (OnLoggedOut?.Invoke() ?? Task.CompletedTask);
                     });
+                    AddIncomingMessageHandler("AlreadyLoggedIn", async (proto) =>
+                    {
+                        // The AlreadyLoggedIn event is triggered. The implementation
+                        // should refresh the UI appropriately.
+                        await (OnAlreadyLoggedIn?.Invoke() ?? Task.CompletedTask);
+                    });
                     AddIncomingMessageHandler("NotLoggedIn", async (proto) =>
                     {
                         // The NotLoggedIn event is triggered. The implementation
                         // should refresh the UI appropriately.
                         await (OnNotLoggedIn?.Invoke() ?? Task.CompletedTask);
+                    });
+                    AddIncomingMessageHandler("Forbidden", async (proto) =>
+                    {
+                        // The Forbidden event is triggered. The implementation
+                        // should refresh the UI appropriately.
+                        await (OnForbidden?.Invoke() ?? Task.CompletedTask);
                     });
                 }
 
@@ -145,9 +157,20 @@ namespace AlephVault.Unity.Meetgard.Auth
                 public event Func<Task> OnLoggedOut = null;
 
                 /// <summary>
-                ///   Triggered when the server tells the user is not logged in.
+                ///   Triggered when the server tells the client is already logged in.
+                /// </summary>
+                public event Func<Task> OnAlreadyLoggedIn = null;
+
+                /// <summary>
+                ///   Triggered when the server tells the client is not logged in.
                 /// </summary>
                 public event Func<Task> OnNotLoggedIn = null;
+
+                /// <summary>
+                ///   Triggered when the server tells the client attempted an action they
+                ///   have not permission to perform.
+                /// </summary>
+                public event Func<Task> OnForbidden = null;
             }
         }
     }

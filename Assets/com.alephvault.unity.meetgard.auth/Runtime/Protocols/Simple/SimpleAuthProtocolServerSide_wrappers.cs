@@ -62,6 +62,16 @@ namespace AlephVault.Unity.Meetgard.Auth
                     return true;
                 }
 
+                /// <summary>
+                ///   Wraps a handler to require the client to be logged in.
+                ///   This is related to a custom target definition type and
+                ///   protocol server side type.
+                /// </summary>
+                /// <typeparam name="TargetDefinitionType">The related protocol definition type</typeparam>
+                /// <typeparam name="TargetProtocolType">The related protocol server side type</typeparam>
+                /// <param name="allowed">The callback to check whether the client is allowed to perform the action</param>
+                /// <param name="handler">The message handler</param>
+                /// <returns>The wrapped message handler</returns>
                 public Func<TargetProtocolType, ulong, Task> LoginRequired<TargetDefinitionType, TargetProtocolType>(Func<ulong, Task<bool>> allowed, Func<TargetProtocolType, ulong, Task> handler)
                     where TargetDefinitionType : ProtocolDefinition, new()
                     where TargetProtocolType : ProtocolServerSide<TargetDefinitionType>
@@ -87,6 +97,17 @@ namespace AlephVault.Unity.Meetgard.Auth
                     };
                 }
 
+                /// <summary>
+                ///   Wraps a handler to require the client to be logged in.
+                ///   This is related to a custom target definition type and
+                ///   protocol server side type.
+                /// </summary>
+                /// <typeparam name="TargetDefinitionType">The related protocol definition type</typeparam>
+                /// <typeparam name="TargetProtocolType">The related protocol server side type</typeparam>
+                /// <typeparam name="T">The message type</typeparam>
+                /// <param name="allowed">The callback to check whether the client is allowed to perform the action</param>
+                /// <param name="handler">The message handler</param>
+                /// <returns>The wrapped message handler</returns>
                 public Func<TargetProtocolType, ulong, T, Task> LoginRequired<TargetDefinitionType, TargetProtocolType, T>(Func<ulong, Task<bool>> allowed, Func<TargetProtocolType, ulong, T, Task> handler)
                     where T : ISerializable, new()
                     where TargetDefinitionType : ProtocolDefinition, new()
@@ -113,6 +134,15 @@ namespace AlephVault.Unity.Meetgard.Auth
                     };
                 }
 
+                /// <summary>
+                ///   Wraps a handler to require the client to be logged in.
+                ///   This is related to a custom target definition type and
+                ///   protocol server side type.
+                /// </summary>
+                /// <typeparam name="TargetDefinitionType">The related protocol definition type</typeparam>
+                /// <typeparam name="TargetProtocolType">The related protocol server side type</typeparam>
+                /// <param name="handler">The message handler</param>
+                /// <returns>The wrapped message handler</returns>
                 public Func<TargetProtocolType, ulong, Task> LoginRequired<TargetDefinitionType, TargetProtocolType>(Func<TargetProtocolType, ulong, Task> handler)
                     where TargetDefinitionType : ProtocolDefinition, new()
                     where TargetProtocolType : ProtocolServerSide<TargetDefinitionType>
@@ -130,6 +160,16 @@ namespace AlephVault.Unity.Meetgard.Auth
                     };
                 }
 
+                /// <summary>
+                ///   Wraps a handler to require the client to be logged in.
+                ///   This is related to a custom target definition type and
+                ///   protocol server side type.
+                /// </summary>
+                /// <typeparam name="TargetDefinitionType">The related protocol definition type</typeparam>
+                /// <typeparam name="TargetProtocolType">The related protocol server side type</typeparam>
+                /// <typeparam name="T">The message type</typeparam>
+                /// <param name="handler">The message handler</param>
+                /// <returns>The wrapped message handler</returns>
                 public Func<TargetProtocolType, ulong, T, Task> LoginRequired<TargetDefinitionType, TargetProtocolType, T>(Func<TargetProtocolType, ulong, T, Task> handler)
                     where T : ISerializable, new()
                     where TargetDefinitionType : ProtocolDefinition, new()
@@ -148,6 +188,15 @@ namespace AlephVault.Unity.Meetgard.Auth
                     };
                 }
 
+                /// <summary>
+                ///   Wraps a handler to require the client to be logged out.
+                ///   This is related to a custom target definition type and
+                ///   protocol server side type.
+                /// </summary>
+                /// <typeparam name="TargetDefinitionType">The related protocol definition type</typeparam>
+                /// <typeparam name="TargetProtocolType">The related protocol server side type</typeparam>
+                /// <param name="handler">The message handler</param>
+                /// <returns>The wrapped message handler</returns>
                 public Func<TargetProtocolType, ulong, Task> LogoutRequired<TargetDefinitionType, TargetProtocolType>(Func<TargetProtocolType, ulong, Task> handler)
                     where TargetDefinitionType : ProtocolDefinition, new()
                     where TargetProtocolType : ProtocolServerSide<TargetDefinitionType>
@@ -165,6 +214,16 @@ namespace AlephVault.Unity.Meetgard.Auth
                     };
                 }
 
+                /// <summary>
+                ///   Wraps a handler to require the client to be logged out.
+                ///   This is related to a custom target definition type and
+                ///   protocol server side type.
+                /// </summary>
+                /// <typeparam name="TargetDefinitionType">The related protocol definition type</typeparam>
+                /// <typeparam name="TargetProtocolType">The related protocol server side type</typeparam>
+                /// <typeparam name="T">The message type</typeparam>
+                /// <param name="handler">The message handler</param>
+                /// <returns>The wrapped message handler</returns>
                 public Func<TargetProtocolType, ulong, T, Task> LogoutRequired<TargetDefinitionType, TargetProtocolType, T>(Func<TargetProtocolType, ulong, T, Task> handler)
                     where T : ISerializable, new()
                     where TargetDefinitionType : ProtocolDefinition, new()

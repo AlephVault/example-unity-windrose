@@ -19,7 +19,9 @@ namespace AlephVault.Unity.Meetgard.Auth
             ///   authentication, is the server mounting the game.
             ///   This client is the counterpart and connects to a
             ///   single server (it may be used in more complex
-            ///   login interactions, though).
+            ///   login interactions, though). The server side also
+            ///   offers some helpers to wrap handlers to make them
+            ///   require login or logout on clients.
             /// </summary>
             /// <typeparam name="Definition">A subclass of <see cref="SimpleAuthProtocolDefinition{LoginOK, LoginFailed, Kicked}"/></typeparam>
             /// <typeparam name="LoginOK">The type of the "successful login" message</typeparam>
@@ -38,21 +40,68 @@ namespace AlephVault.Unity.Meetgard.Auth
                 where Definition : SimpleAuthProtocolDefinition<LoginOK, LoginFailed, Kicked>, new()
             {
                 /// <summary>
+                ///   The timeout to kick a connection that did
+                ///   not send a login message appropriately.
+                /// </summary>
+                [SerializeField]
+                private float loginTimeout = 5f;
+
+                // This holds the
+                private Coroutine loginTimeoutCoroutine;
+
+                /// <summary>
                 ///   Typically, in this Start callback function
                 ///   all the Send* shortcuts will be instantiated.
+                ///   This time, also the timeout coroutine is
+                ///   spawned immediately.
                 /// </summary>
                 protected void Start()
                 {
                     MakeSenders();
+                    loginTimeoutCoroutine = StartCoroutine(LoginTimeoutCoroutine());
                 }
 
+                private void OnDestroy()
+                {
+                    if (loginTimeoutCoroutine != null) StopCoroutine(loginTimeoutCoroutine);
+                    loginTimeoutCoroutine = null;
+                }
+
+                // Every second, it updates the login timeouts.
+                private IEnumerator LoginTimeoutCoroutine()
+                {
+                    while(true)
+                    {
+                        yield return new WaitForSeconds(1f);
+                        // Yes: it triggers an async function on each frame.
+                        // Checks every 1s that there are no pending connections.
+                        UpdatePendingLogin(1f);
+                    }
+                }
+
+                // The only client-side messages that will be set are:
+                // 1. Login:* (as much as needed).
+                // 2. Logout.
                 protected override void SetIncomingMessageHandlers()
                 {
                     SetLoginMessageHandlers();
-                    AddIncomingMessageHandler("Logout", async (proto, clientId) =>
+                    AddIncomingMessageHandler("Logout", LoginRequired<Definition, ProtocolServerSide<Definition>>(async (proto, clientId) =>
                     {
-                        // TODO implement Logout.
-                    });
+                        try
+                        {
+                            await OnSessionTerminating(clientId, default(Kicked));
+                        }
+                        catch (Exception e)
+                        {
+                            try
+                            {
+                                await OnSessionError(clientId, SessionStage.Termination, e);
+                            }
+                            catch { /* Diaper pattern - intentional */ }
+                        }
+                        RemoveSession(clientId);
+                        await SendLoggedOut(clientId);
+                    }));
                 }
 
                 /// <summary>
@@ -63,76 +112,43 @@ namespace AlephVault.Unity.Meetgard.Auth
                 protected abstract void SetLoginMessageHandlers();
 
                 /// <summary>
-                ///   <para>
-                ///     Adds a login handler for a specific method type.
-                ///     The login handler returns a tuple with 3 elements:
-                ///     whether the login was successful, the login success
-                ///     message (or null if it was successful) and the login
-                ///     failure message (or null if it was NOT successful).
-                ///     As a fourth parameter, the account id will be given
-                ///     (or its default value) when the login is successful.
-                ///   </para>
-                ///   <para>
-                ///     The login handler is responsible of logging. In
-                ///     case of success, the session will start for that
-                ///     account (each session type is differently handled),
-                ///     which will be implemented in a different component.
-                ///   </para>
+                ///   Sets up the connection to be login pending.
+                ///   Also greets the client.
                 /// </summary>
-                /// <typeparam name="T">The type of the login meesage</typeparam>
-                /// <param name="method">The name of the method to use</param>
-                /// <param name="handler">The handler to use to perform the login</param>
-                protected void AddLoginMessageHandler<T>(string method, Func<T, Task<Tuple<bool, LoginOK, LoginFailed, AccountIDType>>> doLogin) where T : ISerializable, new()
+                /// <param name="clientId">The just-connected client id</param>
+                public override async Task OnConnected(ulong clientId)
                 {
-                    AddIncomingMessageHandler<T>("Login:" + method, async (proto, clientId, message) => {
-                        // 1. Receive the message.
-                        // 2. Process the message.
-                        // 3. On success: trigger the success.
-                        // 4. On failure: trigger the failure.
-                        Tuple<bool, LoginOK, LoginFailed, AccountIDType> result = await doLogin(message);
-                        if (result.Item1)
-                        {
-                            await SendLoginOK(clientId, result.Item2);
-                            await (OnSessionStarted?.Invoke(clientId, result.Item4) ?? Task.CompletedTask);
-                        }
-                        else
-                        {
-                            await SendLoginFailed(clientId, result.Item3);
-                        }
-                    });
+                    AddPendingLogin(clientId);
+                    await SendWelcome(clientId);
                 }
 
                 /// <summary>
-                ///   This event is triggered when the login is successful.
-                ///   The connection id and also the id of the account that
-                ///   successfully logged in are given as arguments.
+                ///   Removes the connection from pending login and
+                ///   also removes the session, if any. Only one of
+                ///   them will, in practice, be executed.
                 /// </summary>
-                public event Func<ulong, AccountIDType, Task> OnSessionStarted = null;
-
-                /// <summary>
-                ///   This event is triggered when a user is logged out,
-                ///   be it gracefully or kicked. On graceful logout, the
-                ///   third argument will be null.
-                /// </summary>
-                public event Func<ulong, AccountIDType, Kicked, Task> OnSessionEnded = null;
-
-                /// <summary>
-                ///   A single method must be given here. Such method must
-                ///   try a kick of a given active session by its account
-                ///   id (one single active session at most can exist for
-                ///   a given account).
-                /// </summary>
-                public event Func<AccountIDType, Kicked, Task<bool>> OnKickByAccountIDRequested = null;
-
-                /// <summary>
-                ///   A single method must be given here. Such method must
-                ///   try a kick of a given active session by its connection
-                ///   id (one single active session at most can exist for
-                ///   a given connection).
-                /// </summary>
-                public event Func<AccountIDType, Kicked, Task<bool>> OnKickByConnectionIDRequested = null;
-
-
+                /// <param name="clientId">The just-disconnected client id</param>
+                /// <param name="reason">The exception which is the disconnection reason, if abrupt</param>
+                public override async Task OnDisconnected(ulong clientId, Exception reason)
+                {
+                    RemovePendingLogin(clientId);
+                    if (SessionExists(clientId))
+                    {
+                        try
+                        {
+                            await OnSessionTerminating(clientId, new Kicked().WithNonGracefulDisconnectionErrorReason(reason));
+                        }
+                        catch (Exception e)
+                        {
+                            try
+                            {
+                                await OnSessionError(clientId, SessionStage.Termination, e);
+                            }
+                            catch { /* Diaper pattern - intentional */ }
+                        }
+                        RemoveSession(clientId);
+                    }
+                }
             }
         }
     }

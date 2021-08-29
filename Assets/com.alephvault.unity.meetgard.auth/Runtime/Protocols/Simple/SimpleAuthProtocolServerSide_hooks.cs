@@ -105,7 +105,7 @@ namespace AlephVault.Unity.Meetgard.Auth
                             await OnSessionError(clientId, SessionStage.Initialization, e);
                         }
                         catch { /* Diaper pattern - intentional */ }
-                        await SendKicked(clientId, new Kicked().WithSessionInitializationError());
+                        await SendKicked(clientId, new Kicked().WithSessionInitializationErrorReason());
                         server.Close(clientId);
                     }
                 }

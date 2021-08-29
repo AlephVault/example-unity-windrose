@@ -22,6 +22,7 @@ namespace AlephVault.Unity.Meetgard.Auth
 
             public SampleAccountPreview GetProfileDisplayData()
             {
+                return new SampleAccountPreview() { Username = Username };
             }
         }
     }

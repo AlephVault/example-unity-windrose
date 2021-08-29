@@ -25,6 +25,12 @@ namespace AlephVault.Unity.Meetgard.Auth
                 return this;
             }
 
+            public Kicked WithGhostedReason()
+            {
+                Reason = "The same account logged in from another client connection";
+                return this;
+            }
+
             public Kicked WithLoginTimeoutReason()
             {
                 Reason = "Login timeout - the client took too much to login";

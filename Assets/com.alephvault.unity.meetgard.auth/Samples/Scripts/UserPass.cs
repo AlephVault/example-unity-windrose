@@ -10,37 +10,15 @@ namespace AlephVault.Unity.Meetgard.Auth
 {
     namespace Samples
     {
-        public class Kicked : IKickMessage<Kicked>
+        public class UserPass : ISerializable
         {
-            public string Reason;
+            public string Username;
+            public string Password;
 
             public void Serialize(Serializer serializer)
             {
-                serializer.Serialize(ref Reason);
-            }
-
-            public Kicked WithAccountLoadErrorReason()
-            {
-                Reason = "An error has occurred while trying to load the account";
-                return this;
-            }
-
-            public Kicked WithLoginTimeoutReason()
-            {
-                Reason = "Login timeout - the client took too much to login";
-                return this;
-            }
-
-            public Kicked WithNonGracefulDisconnectionErrorReason(Exception reason)
-            {
-                Reason = $"Exception of type {reason.GetType().FullName} on disconnection: {reason.Message}";
-                return this;
-            }
-
-            public Kicked WithSessionInitializationErrorReason()
-            {
-                Reason = $"An error has occurred while trying to initialize the session";
-                return this;
+                serializer.Serialize(ref Username);
+                serializer.Serialize(ref Password);
             }
         }
     }

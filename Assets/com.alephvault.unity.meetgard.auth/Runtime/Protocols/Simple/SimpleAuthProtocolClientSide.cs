@@ -45,7 +45,15 @@ namespace AlephVault.Unity.Meetgard.Auth
                 protected void Start()
                 {
                     SendLogout = MakeSender("Logout");
+                    MakeLoginRequestSenders();
                 }
+
+                /// <summary>
+                ///   Implement this method with several calls to
+                ///   <see cref="MakeLoginRequestSender{T}(string)"/>,
+                ///   each one for each allowed login method.
+                /// </summary>
+                protected abstract void MakeLoginRequestSenders();
 
                 protected override void SetIncomingMessageHandlers()
                 {

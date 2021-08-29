@@ -12,7 +12,7 @@ namespace AlephVault.Unity.Meetgard.Auth
         /// </summary>
         /// <typeparam name="IDType">The type of the record id</typeparam>
         /// <typeparam name="ProfileDisplayDataType">The type of the record display data (which is also <see cref="ISerializable"/>)</typeparam>
-        public interface IRecordWithPreview<IDType, ProfileDisplayDataType> : ISerializable
+        public interface IRecordWithPreview<IDType, ProfileDisplayDataType>
             where ProfileDisplayDataType : ISerializable
         {
             /// <summary>

@@ -16,6 +16,12 @@ namespace AlephVault.Unity.Meetgard.Auth
         /// </summary>
         public class SampleSimpleAuthProtocolServerSide : SimpleAuthProtocolServerSide<SampleSimpleAuthProtocolDefinition, Nothing, LoginFailed, Kicked, string, SampleAccountPreview, SampleAccount>
         {
+            /// <summary>
+            ///   The list of valid accounts.
+            /// </summary>
+            [SerializeField]
+            private List<UserPass> accounts = new List<UserPass>();
+
             protected override Task<SampleAccount> FindAccount(string id)
             {
                 throw new NotImplementedException();
@@ -40,8 +46,14 @@ namespace AlephVault.Unity.Meetgard.Auth
             {
                 AddLoginMessageHandler<UserPass>("Sample", async (message) =>
                 {
-                    // TODO implement this
-                    return new Tuple<bool, Nothing, LoginFailed, string>(true, new Nothing(), new LoginFailed(), "");
+                    foreach(UserPass account in  accounts)
+                    {
+                        if (message.Username.Trim().ToLower() == account.Username.Trim().ToLower() && message.Password == account.Password)
+                        {
+                            return new Tuple<bool, Nothing, LoginFailed, string>(true, new Nothing(), null, message.Username);
+                        }
+                    }
+                    return new Tuple<bool, Nothing, LoginFailed, string>(false, null, new LoginFailed(), "");
                 });
             }
         }

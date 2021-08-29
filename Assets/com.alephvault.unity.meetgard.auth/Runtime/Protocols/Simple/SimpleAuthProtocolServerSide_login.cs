@@ -78,7 +78,7 @@ namespace AlephVault.Unity.Meetgard.Auth
                 /// <param name="doLogin">The handler to use to perform the login</param>
                 protected void AddLoginMessageHandler<T>(string method, Func<T, Task<Tuple<bool, LoginOK, LoginFailed, AccountIDType>>> doLogin) where T : ISerializable, new()
                 {
-                    AddIncomingMessageHandler<T>("Login:" + method, LogoutRequired<Definition, ProtocolServerSide<Definition>, T>(async (proto, clientId, message) => {
+                    AddIncomingMessageHandler<T>("Login:" + method, LogoutRequired<Definition, T>(async (proto, clientId, message) => {
                         // 1. Receive the message.
                         // 2. Process the message.
                         // 3. On success: trigger the success.

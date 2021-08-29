@@ -86,7 +86,7 @@ namespace AlephVault.Unity.Meetgard.Auth
                 protected override void SetIncomingMessageHandlers()
                 {
                     SetLoginMessageHandlers();
-                    AddIncomingMessageHandler("Logout", LoginRequired<Definition, ProtocolServerSide<Definition>>(async (proto, clientId) =>
+                    AddIncomingMessageHandler("Logout", LoginRequired<Definition>(async (proto, clientId) =>
                     {
                         await Exclusive(async () =>
                         {

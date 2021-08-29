@@ -68,13 +68,11 @@ namespace AlephVault.Unity.Meetgard.Auth
                 ///   protocol server side type.
                 /// </summary>
                 /// <typeparam name="TargetDefinitionType">The related protocol definition type</typeparam>
-                /// <typeparam name="TargetProtocolType">The related protocol server side type</typeparam>
                 /// <param name="allowed">The callback to check whether the client is allowed to perform the action</param>
                 /// <param name="handler">The message handler</param>
                 /// <returns>The wrapped message handler</returns>
-                public Func<TargetProtocolType, ulong, Task> LoginRequired<TargetDefinitionType, TargetProtocolType>(Func<ulong, Task<bool>> allowed, Func<TargetProtocolType, ulong, Task> handler)
+                public Func<ProtocolServerSide<TargetDefinitionType>, ulong, Task> LoginRequired<TargetDefinitionType, TargetProtocolType>(Func<ulong, Task<bool>> allowed, Func<ProtocolServerSide<TargetDefinitionType>, ulong, Task> handler)
                     where TargetDefinitionType : ProtocolDefinition, new()
-                    where TargetProtocolType : ProtocolServerSide<TargetDefinitionType>
                 {
                     Func<ulong, Task<bool>> isAllowed = WrapAllowedCheck(allowed);
                     return async (proto, clientId) =>
@@ -108,10 +106,9 @@ namespace AlephVault.Unity.Meetgard.Auth
                 /// <param name="allowed">The callback to check whether the client is allowed to perform the action</param>
                 /// <param name="handler">The message handler</param>
                 /// <returns>The wrapped message handler</returns>
-                public Func<TargetProtocolType, ulong, T, Task> LoginRequired<TargetDefinitionType, TargetProtocolType, T>(Func<ulong, Task<bool>> allowed, Func<TargetProtocolType, ulong, T, Task> handler)
+                public Func<ProtocolServerSide<TargetDefinitionType>, ulong, T, Task> LoginRequired<TargetDefinitionType, T>(Func<ulong, Task<bool>> allowed, Func<ProtocolServerSide<TargetDefinitionType>, ulong, T, Task> handler)
                     where T : ISerializable, new()
                     where TargetDefinitionType : ProtocolDefinition, new()
-                    where TargetProtocolType : ProtocolServerSide<TargetDefinitionType>
                 {
                     Func<ulong, Task<bool>> isAllowed = WrapAllowedCheck(allowed);
                     return async (proto, clientId, message) =>
@@ -140,12 +137,10 @@ namespace AlephVault.Unity.Meetgard.Auth
                 ///   protocol server side type.
                 /// </summary>
                 /// <typeparam name="TargetDefinitionType">The related protocol definition type</typeparam>
-                /// <typeparam name="TargetProtocolType">The related protocol server side type</typeparam>
                 /// <param name="handler">The message handler</param>
                 /// <returns>The wrapped message handler</returns>
-                public Func<TargetProtocolType, ulong, Task> LoginRequired<TargetDefinitionType, TargetProtocolType>(Func<TargetProtocolType, ulong, Task> handler)
+                public Func<ProtocolServerSide<TargetDefinitionType>, ulong, Task> LoginRequired<TargetDefinitionType>(Func<ProtocolServerSide<TargetDefinitionType>, ulong, Task> handler)
                     where TargetDefinitionType : ProtocolDefinition, new()
-                    where TargetProtocolType : ProtocolServerSide<TargetDefinitionType>
                 {
                     return async (proto, clientId) =>
                     {
@@ -166,14 +161,12 @@ namespace AlephVault.Unity.Meetgard.Auth
                 ///   protocol server side type.
                 /// </summary>
                 /// <typeparam name="TargetDefinitionType">The related protocol definition type</typeparam>
-                /// <typeparam name="TargetProtocolType">The related protocol server side type</typeparam>
                 /// <typeparam name="T">The message type</typeparam>
                 /// <param name="handler">The message handler</param>
                 /// <returns>The wrapped message handler</returns>
-                public Func<TargetProtocolType, ulong, T, Task> LoginRequired<TargetDefinitionType, TargetProtocolType, T>(Func<TargetProtocolType, ulong, T, Task> handler)
+                public Func<ProtocolServerSide<TargetDefinitionType>, ulong, T, Task> LoginRequired<TargetDefinitionType, T>(Func<ProtocolServerSide<TargetDefinitionType>, ulong, T, Task> handler)
                     where T : ISerializable, new()
                     where TargetDefinitionType : ProtocolDefinition, new()
-                    where TargetProtocolType : ProtocolServerSide<TargetDefinitionType>
                 {
                     return async (proto, clientId, message) =>
                     {
@@ -194,12 +187,10 @@ namespace AlephVault.Unity.Meetgard.Auth
                 ///   protocol server side type.
                 /// </summary>
                 /// <typeparam name="TargetDefinitionType">The related protocol definition type</typeparam>
-                /// <typeparam name="TargetProtocolType">The related protocol server side type</typeparam>
                 /// <param name="handler">The message handler</param>
                 /// <returns>The wrapped message handler</returns>
-                public Func<TargetProtocolType, ulong, Task> LogoutRequired<TargetDefinitionType, TargetProtocolType>(Func<TargetProtocolType, ulong, Task> handler)
+                public Func<ProtocolServerSide<TargetDefinitionType>, ulong, Task> LogoutRequired<TargetDefinitionType>(Func<ProtocolServerSide<TargetDefinitionType>, ulong, Task> handler)
                     where TargetDefinitionType : ProtocolDefinition, new()
-                    where TargetProtocolType : ProtocolServerSide<TargetDefinitionType>
                 {
                     return async (proto, clientId) =>
                     {
@@ -220,14 +211,12 @@ namespace AlephVault.Unity.Meetgard.Auth
                 ///   protocol server side type.
                 /// </summary>
                 /// <typeparam name="TargetDefinitionType">The related protocol definition type</typeparam>
-                /// <typeparam name="TargetProtocolType">The related protocol server side type</typeparam>
                 /// <typeparam name="T">The message type</typeparam>
                 /// <param name="handler">The message handler</param>
                 /// <returns>The wrapped message handler</returns>
-                public Func<TargetProtocolType, ulong, T, Task> LogoutRequired<TargetDefinitionType, TargetProtocolType, T>(Func<TargetProtocolType, ulong, T, Task> handler)
+                public Func<ProtocolServerSide<TargetDefinitionType>, ulong, T, Task> LogoutRequired<TargetDefinitionType, T>(Func<ProtocolServerSide<TargetDefinitionType>, ulong, T, Task> handler)
                     where T : ISerializable, new()
                     where TargetDefinitionType : ProtocolDefinition, new()
-                    where TargetProtocolType : ProtocolServerSide<TargetDefinitionType>
                 {
                     return async (proto, clientId, message) =>
                     {

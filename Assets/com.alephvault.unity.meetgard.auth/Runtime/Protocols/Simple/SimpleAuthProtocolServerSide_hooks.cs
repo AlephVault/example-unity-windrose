@@ -71,13 +71,30 @@ namespace AlephVault.Unity.Meetgard.Auth
                     //   2.3. Close the connection.
                     try
                     {
-                        accountData = await FindAccount(accountId);
-                        if (accountData.Equals(default(AccountDataType)))
+                        switch(IfAccountAlreadyLoggedIn())
                         {
-                            throw new AccountNotFound(accountId);
+                            case MultipleSessionsManagementMode.Reject:
+                                await SendAccountAlreadyInUse(clientId);
+                                server.Close(clientId);
+                                return;
+                            case MultipleSessionsManagementMode.Ghost:
+                                await DoKick(accountId, new Kicked().WithGhostedReason());
+                                accountData = await FindAccount(accountId);
+                                if (accountData.Equals(default(AccountDataType)))
+                                {
+                                    throw new AccountNotFound(accountId);
+                                }
+                                break;
+                            default:
+                                accountData = await FindAccount(accountId);
+                                if (accountData.Equals(default(AccountDataType)))
+                                {
+                                    throw new AccountNotFound(accountId);
+                                }
+                                break;
                         }
                     }
-                    catch(Exception e)
+                    catch (Exception e)
                     {
                         try
                         {
@@ -152,6 +169,13 @@ namespace AlephVault.Unity.Meetgard.Auth
                 /// <param name="id">The id of the account to get the data from</param>
                 /// <returns>The account data</returns>
                 protected abstract Task<AccountDataType> FindAccount(AccountIDType id);
+
+                /// <summary>
+                ///   This is the current management mode when the logged
+                ///   account is already logged in another connection.
+                /// </summary>
+                /// <returns>The operation mode when the session is already logged in</returns>
+                protected abstract MultipleSessionsManagementMode IfAccountAlreadyLoggedIn();
 
                 /// <summary>
                 ///   Starts the session for a connection id with the given account

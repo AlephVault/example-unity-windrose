@@ -40,6 +40,7 @@ namespace AlephVault.Unity.Meetgard.Auth
                     // requiring login (and perhaps a permission criterion),
                     // or requiring not login.
                     DefineServerMessage("NotLoggedIn");
+                    DefineServerMessage("AccountAlreadyInUse");
                     DefineServerMessage("AlreadyLoggedIn");
                     DefineServerMessage("Forbidden");
                 }

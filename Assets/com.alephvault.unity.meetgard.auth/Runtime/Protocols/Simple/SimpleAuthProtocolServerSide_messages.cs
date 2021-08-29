@@ -62,6 +62,11 @@ namespace AlephVault.Unity.Meetgard.Auth
                 private Func<ulong, Task> SendForbidden;
 
                 /// <summary>
+                ///   This is a sender for the AccountAlreadyInUse message.
+                /// </summary>
+                private Func<ulong, Task> SendAccountAlreadyInUse;
+
+                /// <summary>
                 ///   This is a sender for the AlreadyLoggedIn message.
                 /// </summary>
                 private Func<ulong, Task> SendAlreadyLoggedIn;
@@ -79,6 +84,7 @@ namespace AlephVault.Unity.Meetgard.Auth
                     SendNotLoggedIn = MakeSender("NotLoggedIn");
                     SendForbidden = MakeSender("Forbidden");
                     SendAlreadyLoggedIn = MakeSender("AlreadyLoggedIn");
+                    SendAccountAlreadyInUse = MakeSender("AccountAlreadyInUse");
                 }
             }
         }

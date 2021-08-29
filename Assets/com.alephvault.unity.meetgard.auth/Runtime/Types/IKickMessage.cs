@@ -16,6 +16,14 @@ namespace AlephVault.Unity.Meetgard.Auth
         public interface IKickMessage<T> : ISerializable where T : IKickMessage<T>
         {
             /// <summary>
+            ///   Updates the kick reason to use a message telling the
+            ///   kick was done because the same account was loaded in
+            ///   another client connection
+            /// </summary>
+            /// <returns>The same object</returns>
+            public T WithGhostedReason();
+
+            /// <summary>
             ///   Updates the kick reason to use a message telling there
             ///   was an error while loading the account.
             /// </summary>

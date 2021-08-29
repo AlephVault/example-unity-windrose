@@ -96,6 +96,12 @@ namespace AlephVault.Unity.Meetgard.Auth
                         // after this event triggers.
                         await (OnLoggedOut?.Invoke() ?? Task.CompletedTask);
                     });
+                    AddIncomingMessageHandler("AccountAlreadyInUse", async (proto) =>
+                    {
+                        // The AccountAlreadyInUse event is triggered. The implementation
+                        // should refresh the UI appropriately.
+                        await (OnAccountAlreadyInUse?.Invoke() ?? Task.CompletedTask);
+                    });
                     AddIncomingMessageHandler("AlreadyLoggedIn", async (proto) =>
                     {
                         // The AlreadyLoggedIn event is triggered. The implementation
@@ -169,6 +175,11 @@ namespace AlephVault.Unity.Meetgard.Auth
                 ///   Triggered when the server tells the client is already logged in.
                 /// </summary>
                 public event Func<Task> OnAlreadyLoggedIn = null;
+
+                /// <summary>
+                ///   Triggered when the server tells the same account is already logged in.
+                /// </summary>
+                public event Func<Task> OnAccountAlreadyInUse = null;
 
                 /// <summary>
                 ///   Triggered when the server tells the client is not logged in.

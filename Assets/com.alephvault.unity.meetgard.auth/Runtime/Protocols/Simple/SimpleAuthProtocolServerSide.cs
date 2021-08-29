@@ -140,17 +140,20 @@ namespace AlephVault.Unity.Meetgard.Auth
                 /// <param name="reason">The reason to kick the account</param>
                 public async Task Kick(AccountIDType accountId, Kicked reason)
                 {
-                    await Exclusive(async () =>
+                    await Exclusive(() => DoKick(accountId, reason));
+                }
+
+                // Internal implementation of account kicking.
+                private async Task DoKick(AccountIDType accountId, Kicked reason)
+                {
+                    if (sessionByAccountId.TryGetValue(accountId, out HashSet<Session> sessions))
                     {
-                        if (sessionByAccountId.TryGetValue(accountId, out HashSet<Session> sessions))
+                        foreach (Session session in sessions.ToArray())
                         {
-                            foreach (Session session in sessions.ToArray())
-                            {
-                                await SendKicked(session.Item1, reason);
-                                await OnLoggedOut(session.Item1, reason);
-                            }
+                            await SendKicked(session.Item1, reason);
+                            await OnLoggedOut(session.Item1, reason);
                         }
-                    });
+                    }
                 }
             }
         }

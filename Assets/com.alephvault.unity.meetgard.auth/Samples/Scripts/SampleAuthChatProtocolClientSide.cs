@@ -17,11 +17,39 @@ namespace AlephVault.Unity.Meetgard.Auth
         ///   This is the client side of the authenticated
         ///   chat implementation.
         /// </summary>
+        [RequireComponent(typeof(SampleSimpleAuthProtocolClientSide))]
         public class SampleAuthChatProtocolClientSide : ProtocolClientSide<SampleAuthChatProtocolDefinition>
         {
+            private Func<Line, Task> SendSay;
+
+            private void Start()
+            {
+                SendSay = MakeSender<Line>("Say");
+            }
+
             protected override void SetIncomingMessageHandlers()
             {
-                throw new NotImplementedException();
+                AddIncomingMessageHandler<Said>("Said", async (proto, message) =>
+                {
+                    Debug.Log($"{message.When} {message.Nickname}: {message.Content}");
+                });
+                AddIncomingMessageHandler<SampleAccountPreview>("Left", async (proto, message) =>
+                {
+                    Debug.Log($"{message.Username} left");
+                });
+                AddIncomingMessageHandler<SampleAccountPreview>("Joined", async (proto, message) =>
+                {
+                    Debug.Log($"{message.Username} joined");
+                });
+            }
+
+            /// <summary>
+            ///   Says something to the server
+            /// </summary>
+            /// <param name="message">The text to say</param>
+            public Task Say(string message)
+            {
+                return SendSay(new Line() { Content = message });
             }
         }
     }

@@ -5,6 +5,7 @@ using AlephVault.Unity.Meetgard.Server;
 using System.Collections.Generic;
 using System.Linq;
 using System.Collections.Concurrent;
+using UnityEngine;
 
 namespace AlephVault.Unity.Meetgard.Auth
 {

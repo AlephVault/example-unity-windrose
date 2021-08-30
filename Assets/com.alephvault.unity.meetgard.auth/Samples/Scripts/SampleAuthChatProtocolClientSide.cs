@@ -23,7 +23,7 @@ namespace AlephVault.Unity.Meetgard.Auth
             private Func<Line, Task> SendSay;
 
             private void Start()
-            {
+            {                
                 SendSay = MakeSender<Line>("Say");
             }
 

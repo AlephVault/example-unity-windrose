@@ -31,10 +31,8 @@ namespace AlephVault.Unity.Meetgard.Auth
                 where Kicked : IKickMessage<Kicked>, new()
                 where Definition : SimpleAuthProtocolDefinition<LoginOK, LoginFailed, Kicked>, new()
             {
-                /// <summary>
-                ///   This is a sender for the Logout message.
-                /// </summary>
-                public Func<Task> SendLogout { get; private set; }
+                // This is a sender for the Logout message.
+                private Func<Task> SendLogout;
 
                 /// <summary>
                 ///   Typically, in this Start callback function
@@ -191,6 +189,15 @@ namespace AlephVault.Unity.Meetgard.Auth
                 ///   have not permission to perform.
                 /// </summary>
                 public event Func<Task> OnForbidden = null;
+
+                /// <summary>
+                ///   Sends a logout message and immediately closes.
+                /// </summary>
+                public async Task Logout()
+                {
+                    await SendLogout();
+                    client.Close();
+                }
             }
         }
     }

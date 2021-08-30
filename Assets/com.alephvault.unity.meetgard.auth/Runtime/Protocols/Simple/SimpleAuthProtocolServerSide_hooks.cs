@@ -2,6 +2,7 @@ using AlephVault.Unity.Binary;
 using AlephVault.Unity.Meetgard.Auth.Types;
 using AlephVault.Unity.Meetgard.Server;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace AlephVault.Unity.Meetgard.Auth
@@ -74,24 +75,26 @@ namespace AlephVault.Unity.Meetgard.Auth
                         switch(IfAccountAlreadyLoggedIn())
                         {
                             case AccountAlreadyLoggedManagementMode.Reject:
-                                await SendAccountAlreadyInUse(clientId);
-                                server.Close(clientId);
-                                return;
-                            case AccountAlreadyLoggedManagementMode.Ghost:
-                                await DoKick(accountId, new Kicked().WithGhostedReason());
-                                accountData = await FindAccount(accountId);
-                                if (accountData.Equals(default(AccountDataType)))
+                                // Reject the new, if already logged in.
+                                if (sessionByAccountId.ContainsKey(accountId))
                                 {
-                                    throw new AccountNotFound(accountId);
+                                    await SendAccountAlreadyInUse(clientId);
+                                    server.Close(clientId);
+                                    return;
                                 }
+                                break;
+                            case AccountAlreadyLoggedManagementMode.Ghost:
+                                // Kick any previous connections with the same account id.
+                                await DoKick(accountId, new Kicked().WithGhostedReason());
                                 break;
                             default:
-                                accountData = await FindAccount(accountId);
-                                if (accountData.Equals(default(AccountDataType)))
-                                {
-                                    throw new AccountNotFound(accountId);
-                                }
+                                // Do nothing.
                                 break;
+                        }
+                        accountData = await FindAccount(accountId);
+                        if (EqualityComparer<AccountDataType>.Default.Equals(accountData, default(AccountDataType)))
+                        {
+                            throw new AccountNotFound(accountId);
                         }
                     }
                     catch (Exception e)
@@ -103,6 +106,7 @@ namespace AlephVault.Unity.Meetgard.Auth
                         catch { /* Diaper pattern - intentional */ }
                         await SendKicked(clientId, new Kicked().WithAccountLoadErrorReason());
                         server.Close(clientId);
+                        return;
                     }
                     // 3. Add the session.
                     // 4. Invoke the "session initializing" hook, considering account data.

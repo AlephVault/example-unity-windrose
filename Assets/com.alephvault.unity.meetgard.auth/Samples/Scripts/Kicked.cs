@@ -39,7 +39,7 @@ namespace AlephVault.Unity.Meetgard.Auth
 
             public Kicked WithNonGracefulDisconnectionErrorReason(Exception reason)
             {
-                Reason = $"Exception of type {reason.GetType().FullName} on disconnection: {reason.Message}";
+                Reason = $"Exception of type {reason?.GetType()?.FullName ?? "<graceful>"} on disconnection: {reason?.Message ?? "graceful"}";
                 return this;
             }
 

@@ -21,12 +21,14 @@ namespace AlephVault.Unity.Meetgard.Auth
             [SerializeField]
             private KeyCode sendMessageKey;
 
+            private SampleSimpleAuthProtocolClientSide auth;
             private SampleAuthChatProtocolClientSide protocol;
             private NetworkClient client;
 
             // Start is called before the first frame update
             void Awake()
             {
+                auth = GetComponent<SampleSimpleAuthProtocolClientSide>();
                 protocol = GetComponent<SampleAuthChatProtocolClientSide>();
                 client = GetComponent<NetworkClient>();
             }
@@ -40,12 +42,17 @@ namespace AlephVault.Unity.Meetgard.Auth
                 }
                 else if (Input.GetKeyDown(disconnectKey) && client.IsConnected)
                 {
-                    client.Close();
+                    Logout();
                 }
                 else if (Input.GetKeyDown(sendMessageKey) && client.IsConnected)
                 {
                     protocol.Say("Lorem ipsum dolor sit amet");
                 }
+            }
+
+            private async void Logout()
+            {
+                await auth.Logout();
             }
         }
     }

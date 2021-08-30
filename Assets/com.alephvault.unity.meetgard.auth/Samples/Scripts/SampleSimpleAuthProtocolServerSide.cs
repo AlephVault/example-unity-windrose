@@ -42,9 +42,10 @@ namespace AlephVault.Unity.Meetgard.Auth
 
             protected override async Task<SampleAccount> FindAccount(string id)
             {
+                id = (id ?? "").Trim().ToLower();
                 foreach (var pair in accounts)
                 {
-                    if (id == pair.Key.Trim().ToLower())
+                    if (id.Trim().ToLower() == pair.Key.Trim().ToLower())
                     {
                         return pair.Value;
                     }
@@ -68,13 +69,23 @@ namespace AlephVault.Unity.Meetgard.Auth
                 {
                     foreach(var pair in  accounts)
                     {
-                        if (message.Username.Trim().ToLower() == pair.Key.Trim().ToLower() && message.Password == pair.Value.Password)
+                        if ((message.Username ?? "").Trim().ToLower() == pair.Key.Trim().ToLower() && message.Password == pair.Value.Password)
                         {
                             return new Tuple<bool, Nothing, LoginFailed, string>(true, new Nothing(), null, message.Username);
                         }
                     }
                     return new Tuple<bool, Nothing, LoginFailed, string>(false, null, new LoginFailed(), "");
                 });
+            }
+
+            public override async Task OnServerStarted()
+            {
+                Debug.Log($"SSAPServer :: Server started");
+            }
+
+            public override async Task OnServerStopped(System.Exception e)
+            {
+                Debug.Log($"SSAPServer :: Server stopped");
             }
         }
     }

@@ -37,17 +37,81 @@ namespace AlephVault.Unity.Meetgard.Auth
             protected new void Awake()
             {
                 base.Awake();
-                OnWelcome += SampleSimpleAuthProtocolClientSide_OnWelcome;
+                OnWelcome += AuthProtocol_OnWelcome;
+                OnTimeout += AuthProtocol_OnTimeout;
+                OnLoginOK += AuthProtocol_OnLoginOK;
+                OnLoginFailed += AuthProtocol_OnLoginFailed;
+                OnKicked += AuthProtocol_OnKicked;
+                OnForbidden += AuthProtocol_OnForbidden;
+                OnLoggedOut += AuthProtocol_OnLoggedOut;
+                OnNotLoggedIn += AuthProtocol_OnNotLoggedIn;
+                OnAlreadyLoggedIn += AuthProtocol_OnAlreadyLoggedIn;
+                OnAccountAlreadyInUse += AuthProtocol_OnAccountAlreadyInUse;
+            }
+
+            private async Task AuthProtocol_OnWelcome()
+            {
+                Debug.Log($"SSAPClient({Username}) :: welcome");
+                await SendSampleLogin(new UserPass() { Username = Username, Password = Password });
+            }
+
+            private async Task AuthProtocol_OnTimeout()
+            {
+                Debug.Log($"SSAPClient({Username}) :: timeout");
+            }
+
+            private async Task AuthProtocol_OnLoginOK(Nothing arg)
+            {
+                Debug.Log($"SSAPClient({Username}) :: login ok");
+            }
+
+            private async Task AuthProtocol_OnLoginFailed(LoginFailed arg)
+            {
+                Debug.Log($"SSAPClient({Username}) :: login failed: {arg}");
+            }
+
+            private async Task AuthProtocol_OnKicked(Kicked arg)
+            {
+                Debug.Log($"SSAPClient({Username}) :: Kicked: {arg}");
+            }
+
+            private async Task AuthProtocol_OnForbidden()
+            {
+                Debug.Log($"SSAPClient({Username}) :: forbidden");
+            }
+
+            private async Task AuthProtocol_OnLoggedOut()
+            {
+                Debug.Log($"SSAPClient({Username}) :: logged out");
+            }
+
+            private async Task AuthProtocol_OnNotLoggedIn()
+            {
+                Debug.Log($"SSAPClient({Username}) :: not logged in");
+            }
+
+            private async Task AuthProtocol_OnAlreadyLoggedIn()
+            {
+                Debug.Log($"SSAPClient({Username}) :: already logged in");
+            }
+
+            private async Task AuthProtocol_OnAccountAlreadyInUse()
+            {
+                Debug.Log($"SSAPClient({Username}) :: account already in use");
             }
 
             void OnDestroy()
             {
-                OnWelcome -= SampleSimpleAuthProtocolClientSide_OnWelcome;
-            }
-
-            private async Task SampleSimpleAuthProtocolClientSide_OnWelcome()
-            {
-                await SendSampleLogin(new UserPass() { Username = Username, Password = Password });
+                OnWelcome -= AuthProtocol_OnWelcome;
+                OnTimeout -= AuthProtocol_OnTimeout;
+                OnLoginOK -= AuthProtocol_OnLoginOK;
+                OnLoginFailed -= AuthProtocol_OnLoginFailed;
+                OnKicked -= AuthProtocol_OnKicked;
+                OnForbidden -= AuthProtocol_OnForbidden;
+                OnLoggedOut -= AuthProtocol_OnLoggedOut;
+                OnNotLoggedIn -= AuthProtocol_OnNotLoggedIn;
+                OnAlreadyLoggedIn -= AuthProtocol_OnAlreadyLoggedIn;
+                OnAccountAlreadyInUse -= AuthProtocol_OnAccountAlreadyInUse;
             }
 
             protected override void MakeLoginRequestSenders()

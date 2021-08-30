@@ -21,11 +21,11 @@ namespace AlephVault.Unity.Meetgard.Auth
         {
             SampleSimpleAuthProtocolServerSide authProtocol;
 
-            private Dictionary<ulong, string> users = new Dictionary<ulong, string>();
+            private Dictionary<ulong, SampleAccount> users = new Dictionary<ulong, SampleAccount>();
 
             private Func<IEnumerable<ulong>, SampleAccountPreview, Dictionary<ulong, Task>> SendJoined;
             private Func<IEnumerable<ulong>, SampleAccountPreview, Dictionary<ulong, Task>> SendLeft;
-            private Func<IEnumerable<ulong>, Line, Dictionary<ulong, Task>> SendSaid;
+            private Func<IEnumerable<ulong>, Said, Dictionary<ulong, Task>> SendSaid;
 
             protected new void Awake()
             {
@@ -39,7 +39,7 @@ namespace AlephVault.Unity.Meetgard.Auth
                 authProtocol.OnSessionTerminating += AuthProtocol_OnSessionTerminating;
                 SendJoined = MakeBroadcaster<SampleAccountPreview>("Joined");
                 SendLeft = MakeBroadcaster<SampleAccountPreview>("Left");
-                SendSaid = MakeBroadcaster<Line>("Said");
+                SendSaid = MakeBroadcaster<Said>("Said");
             }
 
             protected void OnDestroy()
@@ -50,21 +50,21 @@ namespace AlephVault.Unity.Meetgard.Auth
 
             private async Task AuthProtocol_OnSessionStarting(ulong arg1, SampleAccount arg2)
             {
-                users.Add(arg1, arg2.Username);
-                await UntilBroadcastIsDone(SendSaid(users.Keys, new Line() { Content = $"{arg2.Username} Joined" }));
+                users.Add(arg1, arg2);
+                await UntilBroadcastIsDone(SendJoined(users.Keys, arg2.GetProfileDisplayData()));
             }
 
             private async Task AuthProtocol_OnSessionTerminating(ulong arg1, Kicked arg2)
             {
-                string username = users[arg1];
+                SampleAccount account = users[arg1];
                 users.Remove(arg1);
-                await UntilBroadcastIsDone(SendSaid(users.Keys, new Line() { Content = $"{username} Left" }));
+                await UntilBroadcastIsDone(SendLeft(users.Keys, account.GetProfileDisplayData()));
             }
 
             protected override void SetIncomingMessageHandlers()
             {
-                AddIncomingMessageHandler<Line>("Say", authProtocol.LoginRequired<SampleAuthChatProtocolDefinition, Line>(async (proto, clientId, message) => {
-
+                AddIncomingMessageHandler<Line>("Say", authProtocol.LoginRequired<SampleAuthChatProtocolDefinition, Line>((proto, clientId, message) => {
+                    return UntilBroadcastIsDone(SendSaid(users.Keys, new Said() { Nickname = users[clientId].Username, Content = message.Content, When = DateTime.Now.ToString("F") }));
                 }));
             }
         }

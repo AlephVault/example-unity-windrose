@@ -10,16 +10,20 @@ namespace AlephVault.Unity.Meetgard.Auth
 {
     namespace Samples
     {
-        /// <summary>
-        ///   This sample account preview includes only the username.
-        /// </summary>
-        public class SampleAccountPreview : ISerializable
+        [Serializable]
+        public class SampleAccount : IRecordWithPreview<string, SampleAccountPreview>
         {
             public string Username;
+            public string Password;
 
-            public void Serialize(Serializer serializer)
+            public string GetID()
             {
-                serializer.Serialize(ref Username);
+                return Username;
+            }
+
+            public SampleAccountPreview GetProfileDisplayData()
+            {
+                return new SampleAccountPreview() { Username = Username };
             }
         }
     }

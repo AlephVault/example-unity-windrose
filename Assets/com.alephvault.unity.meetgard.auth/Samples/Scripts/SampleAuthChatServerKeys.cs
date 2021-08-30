@@ -17,7 +17,7 @@ namespace AlephVault.Unity.Meetgard.Auth
         ///   This behaviour lets manage the server side via
         ///   some keys in the inspector.
         /// </summary>
-        [RequireComponent(typeof(SampleSimpleAuthProtocolServerSide))]
+        [RequireComponent(typeof(SampleAuthChatProtocolServerSide))]
         public class SampleAuthChatServerKeys : MonoBehaviour
         {
             [SerializeField]

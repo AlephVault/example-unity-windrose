@@ -13,7 +13,7 @@ namespace AlephVault.Unity.Meetgard.Auth
         ///   two connections authenticate with the same
         ///   account.
         /// </summary>
-        public enum MultipleSessionsManagementMode
+        public enum AccountAlreadyLoggedManagementMode
         {
             /// <summary>
             /// Kill the currently existing session(s).

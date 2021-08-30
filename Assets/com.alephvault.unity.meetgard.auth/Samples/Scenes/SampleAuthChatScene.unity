@@ -123,6 +123,128 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &156981780
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 156981781}
+  - component: {fileID: 156981786}
+  - component: {fileID: 156981785}
+  - component: {fileID: 156981784}
+  - component: {fileID: 156981783}
+  - component: {fileID: 156981782}
+  m_Layer: 0
+  m_Name: Server
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &156981781
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 156981780}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 3.0101743, y: 1.1534679, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &156981782
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 156981780}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c5d8d62abc94054686bdd7ae634aff1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  startKey: 122
+  stopKey: 120
+--- !u!114 &156981783
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 156981780}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0eb6f0b7545f4634b805f70d70c52c7f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &156981784
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 156981780}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 747bea42f8c8db940ab2f717f5da9075, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  loginTimeout: 5
+  accounts:
+    m_keys:
+    - Pedro
+    - Pablo
+    - Juan
+    - Goku
+    m_values:
+    - Username: Pedro
+      Password: Pedro1
+    - Username: Pablo
+      Password: Pablo1
+    - Username: Juan
+      Password: Juan1
+    - Username: Goku
+      Password: Goku1
+  MultipleSessionsManagementMode: 1
+--- !u!114 &156981785
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 156981780}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99cb9b2dcd6ec7746a4d458a8222c8fd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Version:
+    Major: 0
+    Minor: 0
+    Revision: 0
+    ReleaseType: 0
+  timeout: 3
+--- !u!114 &156981786
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 156981780}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f0682d44bc112641b456e3c1acf1859, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  idleSleepTime: 0.01
+  maxMessageSize: 1024
 --- !u!1 &615886820
 GameObject:
   m_ObjectHideFlags: 0

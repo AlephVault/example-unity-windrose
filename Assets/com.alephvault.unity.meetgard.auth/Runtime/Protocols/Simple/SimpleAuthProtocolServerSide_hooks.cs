@@ -73,11 +73,11 @@ namespace AlephVault.Unity.Meetgard.Auth
                     {
                         switch(IfAccountAlreadyLoggedIn())
                         {
-                            case MultipleSessionsManagementMode.Reject:
+                            case AccountAlreadyLoggedManagementMode.Reject:
                                 await SendAccountAlreadyInUse(clientId);
                                 server.Close(clientId);
                                 return;
-                            case MultipleSessionsManagementMode.Ghost:
+                            case AccountAlreadyLoggedManagementMode.Ghost:
                                 await DoKick(accountId, new Kicked().WithGhostedReason());
                                 accountData = await FindAccount(accountId);
                                 if (accountData.Equals(default(AccountDataType)))
@@ -175,7 +175,7 @@ namespace AlephVault.Unity.Meetgard.Auth
                 ///   account is already logged in another connection.
                 /// </summary>
                 /// <returns>The operation mode when the session is already logged in</returns>
-                protected abstract MultipleSessionsManagementMode IfAccountAlreadyLoggedIn();
+                protected abstract AccountAlreadyLoggedManagementMode IfAccountAlreadyLoggedIn();
 
                 /// <summary>
                 ///   Starts the session for a connection id with the given account

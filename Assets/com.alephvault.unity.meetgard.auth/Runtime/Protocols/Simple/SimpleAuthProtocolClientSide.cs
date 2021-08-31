@@ -1,6 +1,6 @@
 using AlephVault.Unity.Binary;
 using AlephVault.Unity.Meetgard.Auth.Types;
-using AlephVault.Unity.Meetgard.Client;
+using AlephVault.Unity.Meetgard.Authoring.Behaviours.Client;
 using System;
 using System.Collections;
 using System.Collections.Generic;

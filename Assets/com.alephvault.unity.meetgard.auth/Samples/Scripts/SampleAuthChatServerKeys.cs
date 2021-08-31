@@ -1,6 +1,6 @@
 using AlephVault.Unity.Meetgard.Auth.Protocols.Simple;
 using AlephVault.Unity.Meetgard.Samples.Chat;
-using AlephVault.Unity.Meetgard.Server;
+using AlephVault.Unity.Meetgard.Authoring.Behaviours.Server;
 using AlephVault.Unity.Meetgard.Types;
 using System;
 using System.Collections;

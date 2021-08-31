@@ -1,4 +1,4 @@
-using AlephVault.Unity.Meetgard.Client;
+using AlephVault.Unity.Meetgard.Authoring.Behaviours.Client;
 using UnityEngine;
 
 namespace AlephVault.Unity.Meetgard.Auth

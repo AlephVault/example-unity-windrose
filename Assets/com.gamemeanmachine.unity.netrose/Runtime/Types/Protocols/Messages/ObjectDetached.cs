@@ -8,18 +8,20 @@ namespace GameMeanMachine.Unity.NetRose
 
             /// <summary>
             ///   This message tells the client that an object
-            ///   cancelled its current movement.
+            ///   is being detached from its map, inside a
+            ///   scope the client is watching.
             /// </summary>
-            public class ObjectMovementCancelled : ISerializable
+            public class ObjectDetached : ISerializable
             {
                 /// <summary>
-                ///   The server-side index of the scope the involved
-                ///   object belongs to.
+                ///   The server-side index of the scope the client
+                ///   is added to, and the object belongs to.
                 /// </summary>
                 public uint ScopeInstanceIndex;
 
                 /// <summary>
-                ///   The server-side index of the involved object.
+                ///   The server-side index of the object being
+                ///   despawned.
                 /// </summary>
                 public uint ObjectInstanceIndex;
 

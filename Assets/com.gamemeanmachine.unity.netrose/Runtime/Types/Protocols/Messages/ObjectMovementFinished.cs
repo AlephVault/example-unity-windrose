@@ -5,7 +5,6 @@ namespace GameMeanMachine.Unity.NetRose
         namespace Protocols
         {
             using AlephVault.Unity.Binary;
-            using GameMeanMachine.Unity.WindRose.Types;
 
             /// <summary>
             ///   This message tells the client that an object

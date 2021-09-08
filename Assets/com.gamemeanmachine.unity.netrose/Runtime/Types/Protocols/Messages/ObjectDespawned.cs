@@ -14,8 +14,9 @@ namespace GameMeanMachine.Unity.NetRose
             public class ObjectDespawned : ISerializable
             {
                 /// <summary>
-                ///   The server-side index of the scope the client
-                ///   belongs to.
+                ///   The server-side index of the scope the
+                ///   client is connected to, and the object
+                ///   belonged to.
                 /// </summary>
                 public uint ScopeInstanceIndex;
 

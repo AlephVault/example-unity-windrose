@@ -8,9 +8,10 @@ namespace GameMeanMachine.Unity.NetRose
 
             /// <summary>
             ///   This message tells the client that an object
-            ///   is being changed the state.
+            ///   was attached to a map, inside a scope the
+            ///   client is watching.
             /// </summary>
-            public class ObjectStateChanged : ISerializable
+            public class ObjectAttached : ISerializable
             {
                 /// <summary>
                 ///   The server-side index of the scope the involved
@@ -24,15 +25,27 @@ namespace GameMeanMachine.Unity.NetRose
                 public uint ObjectInstanceIndex;
 
                 /// <summary>
-                ///   The new state.
+                ///   The index of the map, inside the scope, the
+                ///   object was attached to.
                 /// </summary>
-                public string State;
+                public byte MapIndex;
+
+                /// <summary>
+                ///   The target x-position.
+                /// </summary>
+                public ushort TargetX;
+
+                /// <summary>
+                ///   The target y-position.
+                /// </summary>
+                public ushort TargetY;
 
                 public void Serialize(Serializer serializer)
                 {
                     serializer.Serialize(ref ScopeInstanceIndex);
                     serializer.Serialize(ref ObjectInstanceIndex);
-                    serializer.Serialize(ref State);
+                    serializer.Serialize(ref TargetX);
+                    serializer.Serialize(ref TargetY);
                 }
             }
         }

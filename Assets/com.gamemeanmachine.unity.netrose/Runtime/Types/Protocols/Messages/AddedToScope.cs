@@ -8,7 +8,7 @@ namespace GameMeanMachine.Unity.NetRose
 
             /// <summary>
             ///   This message is sent to the client to tell that it was
-            ///   added to a specific NEW scope. The client is NOT already
+            ///   added to a specific new scope. The client is NOT already
             ///   added to this scope (given by its instance index). Both
             ///   the prefab and the server-side index of this new scope
             ///   are given in this message, so the client can load it
@@ -18,7 +18,8 @@ namespace GameMeanMachine.Unity.NetRose
             {
                 /// <summary>
                 ///   The index of the prefab of the scope the client
-                ///   was added to. This scope must be instantiated.
+                ///   was added to. This scope must be instantiated
+                ///   in the client, but already exists in the server.
                 /// </summary>
                 public uint ScopePrefabIndex;
 

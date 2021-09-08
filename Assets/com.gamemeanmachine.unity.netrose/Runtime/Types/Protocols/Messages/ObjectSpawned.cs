@@ -11,11 +11,11 @@ namespace GameMeanMachine.Unity.NetRose
             ///   is being spawned in a scope the client belongs
             ///   to (i.e. is connected right now).
             /// </summary>
-            public class ObjectSpawned<T> : ISerializable where T : ISerializable
+            public class ObjectSpawned<T> : ISerializable where T : ISerializable, new()
             {
                 /// <summary>
                 ///   The server-side index of the scope the client
-                ///   was added to.
+                ///   is connected to, and the object belongs to.
                 /// </summary>
                 public uint ScopeInstanceIndex;
 
@@ -41,6 +41,7 @@ namespace GameMeanMachine.Unity.NetRose
                     serializer.Serialize(ref ScopeInstanceIndex);
                     serializer.Serialize(ref ObjectPrefabIndex);
                     serializer.Serialize(ref ObjectInstanceIndex);
+                    Data = Data ?? new T();
                     Data.Serialize(serializer);
                 }
             }

@@ -18,10 +18,10 @@ public class SampleMagicDropper : MonoBehaviour {
     private KeyCode key;
 
     private Throttler throttler;
-    private int minX;
-    private int maxX;
-    private int minY;
-    private int maxY;
+    private ushort minX;
+    private ushort maxX;
+    private ushort minY;
+    private ushort maxY;
 
     void Awake()
     {
@@ -31,12 +31,12 @@ public class SampleMagicDropper : MonoBehaviour {
     void Start()
     {
         dropLayer = GetComponent<DropLayer>();
-        uint mapMidX = dropLayer.Map.Width / 2;
-        uint mapMidY = dropLayer.Map.Height / 2;
-        minX = (int)mapMidX - 2;
-        maxX = (int)mapMidX + 2;
-        minY = (int)mapMidY - 2;
-        maxY = (int)mapMidY + 2;
+        ushort mapMidX = (ushort)(dropLayer.Map.Width / 2);
+        ushort mapMidY = (ushort)(dropLayer.Map.Height / 2);
+        minX = (ushort)(mapMidX - 2);
+        maxX = (ushort)(mapMidX + 2);
+        minY = (ushort)(mapMidY - 2);
+        maxY = (ushort)(mapMidY + 2);
     }
 
     void Update () {

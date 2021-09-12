@@ -7,25 +7,27 @@ namespace GameMeanMachine.Unity.NetRose
             using AlephVault.Unity.Binary;
 
             /// <summary>
-            ///   This message is sent to the client to tell that it was
-            ///   added to a specific new scope. The client is NOT already
-            ///   added to this scope (given by its instance index). Both
-            ///   the prefab and the server-side index of this new scope
-            ///   are given in this message, so the client can load it
-            ///   and/or dispose it appropriately.
+            ///   <para>
+            ///     This message is sent to the client to tell that it was
+            ///     added to a specific new scope.
+            ///   </para>
+            ///   <para>
+            ///     From the server perspective, the client is NOT already
+            ///     added to this scope (given by its instance index), but
+            ///     the client side might have a cached copy to make use
+            ///     of instead of re-creating a new environment.
+            ///   </para>
             /// </summary>
             public class AddedToScope : ISerializable
             {
                 /// <summary>
-                ///   The index of the prefab of the scope the client
-                ///   was added to. This scope must be instantiated
-                ///   in the client, but already exists in the server.
+                ///   The prefab index. It must be a valid index (at least
+                ///   before receiving this message) of the Scope prefab.
                 /// </summary>
                 public uint ScopePrefabIndex;
 
                 /// <summary>
-                ///   The server-side index of the scope the client
-                ///   was added to.
+                ///   The server side index/ID of the Scope.
                 /// </summary>
                 public uint ScopeInstanceIndex;
 

@@ -5,13 +5,14 @@ namespace GameMeanMachine.Unity.NetRose
         namespace Protocols
         {
             using AlephVault.Unity.Binary;
-            using GameMeanMachine.Unity.WindRose.Types;
 
             /// <summary>
-            ///   This message tells the client that an object
-            ///   started moving.
+            ///   <para>
+            ///     This message tells the client that an object
+            ///     teleported inside the same map.
+            ///   </para>
             /// </summary>
-            public class ObjectMovementStarted : ISerializable
+            public class ObjectTeleported : ISerializable
             {
                 /// <summary>
                 ///   The server-side index of the scope the involved
@@ -25,27 +26,21 @@ namespace GameMeanMachine.Unity.NetRose
                 public uint ObjectInstanceIndex;
 
                 /// <summary>
-                ///   The start x-position.
+                ///   The target x-position.
                 /// </summary>
-                public ushort StartX;
+                public ushort TargetX;
 
                 /// <summary>
-                ///   The start y-position.
+                ///   The target y-position.
                 /// </summary>
-                public ushort StartY;
-
-                /// <summary>
-                ///   The direction of the started movement.
-                /// </summary>
-                public Direction Direction;
+                public ushort TargetY;
 
                 public void Serialize(Serializer serializer)
                 {
                     serializer.Serialize(ref ScopeInstanceIndex);
                     serializer.Serialize(ref ObjectInstanceIndex);
-                    serializer.Serialize(ref StartX);
-                    serializer.Serialize(ref StartY);
-                    serializer.Serialize(ref Direction);
+                    serializer.Serialize(ref TargetX);
+                    serializer.Serialize(ref TargetY);
                 }
             }
         }

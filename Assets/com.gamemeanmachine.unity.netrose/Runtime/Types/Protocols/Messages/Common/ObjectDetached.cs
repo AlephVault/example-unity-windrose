@@ -7,10 +7,20 @@ namespace GameMeanMachine.Unity.NetRose
             using AlephVault.Unity.Binary;
 
             /// <summary>
-            ///   This message tells the client that an object
-            ///   cancelled its current movement.
+            ///   <para>
+            ///     This message tells the client that an object
+            ///     is being detached from its map, inside a
+            ///     scope the client is watching.
+            ///   </para>
+            ///   <para>
+            ///     It is only received from already connected
+            ///     clients and only from existing objects, since
+            ///     the first synchronization of an object will
+            ///     have the current map information already in
+            ///     the message, if attached.
+            ///   </para>
             /// </summary>
-            public class ObjectMovementCancelled : ISerializable
+            public class ObjectDetached : ISerializable
             {
                 /// <summary>
                 ///   The server-side index of the scope the involved

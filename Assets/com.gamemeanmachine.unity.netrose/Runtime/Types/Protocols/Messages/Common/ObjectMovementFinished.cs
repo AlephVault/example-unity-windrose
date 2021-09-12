@@ -7,10 +7,12 @@ namespace GameMeanMachine.Unity.NetRose
             using AlephVault.Unity.Binary;
 
             /// <summary>
-            ///   This message tells the client that an object
-            ///   teleported inside the map.
+            ///   <para>
+            ///     This message tells the client that an object
+            ///     completed moving.
+            ///   </para>
             /// </summary>
-            public class ObjectTeleported : ISerializable
+            public class ObjectMovementFinished : ISerializable
             {
                 /// <summary>
                 ///   The server-side index of the scope the involved
@@ -24,21 +26,21 @@ namespace GameMeanMachine.Unity.NetRose
                 public uint ObjectInstanceIndex;
 
                 /// <summary>
-                ///   The target x-position.
+                ///   The end x-position.
                 /// </summary>
-                public ushort TargetX;
+                public ushort EndX;
 
                 /// <summary>
-                ///   The target y-position.
+                ///   The end y-position.
                 /// </summary>
-                public ushort TargetY;
+                public ushort EndY;
 
                 public void Serialize(Serializer serializer)
                 {
                     serializer.Serialize(ref ScopeInstanceIndex);
                     serializer.Serialize(ref ObjectInstanceIndex);
-                    serializer.Serialize(ref TargetX);
-                    serializer.Serialize(ref TargetY);
+                    serializer.Serialize(ref EndX);
+                    serializer.Serialize(ref EndY);
                 }
             }
         }

@@ -5,12 +5,15 @@ namespace GameMeanMachine.Unity.NetRose
         namespace Protocols
         {
             using AlephVault.Unity.Binary;
+            using GameMeanMachine.Unity.WindRose.Types;
 
             /// <summary>
-            ///   This message tells the client that an object
-            ///   completed moving.
+            ///   <para>
+            ///     This message tells the client that an object
+            ///     started moving.
+            ///   </para>
             /// </summary>
-            public class ObjectMovementFinished : ISerializable
+            public class ObjectMovementStarted : ISerializable
             {
                 /// <summary>
                 ///   The server-side index of the scope the involved
@@ -24,21 +27,27 @@ namespace GameMeanMachine.Unity.NetRose
                 public uint ObjectInstanceIndex;
 
                 /// <summary>
-                ///   The end x-position.
+                ///   The start x-position.
                 /// </summary>
-                public ushort EndX;
+                public ushort StartX;
 
                 /// <summary>
-                ///   The end y-position.
+                ///   The start y-position.
                 /// </summary>
-                public ushort EndY;
+                public ushort StartY;
+
+                /// <summary>
+                ///   The direction of the started movement.
+                /// </summary>
+                public Direction Direction;
 
                 public void Serialize(Serializer serializer)
                 {
                     serializer.Serialize(ref ScopeInstanceIndex);
                     serializer.Serialize(ref ObjectInstanceIndex);
-                    serializer.Serialize(ref EndX);
-                    serializer.Serialize(ref EndY);
+                    serializer.Serialize(ref StartX);
+                    serializer.Serialize(ref StartY);
+                    serializer.Serialize(ref Direction);
                 }
             }
         }

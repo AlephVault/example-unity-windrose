@@ -7,8 +7,10 @@ namespace GameMeanMachine.Unity.NetRose
             using AlephVault.Unity.Binary;
 
             /// <summary>
-            ///   This message tells the client that an object
-            ///   is being changed the speed.
+            ///   <para>
+            ///     This message tells the client that an object
+            ///     is being changed the speed.
+            ///   </para>
             /// </summary>
             public class ObjectSpeedChanged : ISerializable
             {

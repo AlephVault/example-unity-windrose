@@ -5,31 +5,37 @@ namespace GameMeanMachine.Unity.NetRose
         namespace Protocols
         {
             using AlephVault.Unity.Binary;
+            using GameMeanMachine.Unity.WindRose.Types;
 
             /// <summary>
-            ///   This message tells the client that an object
-            ///   is being despawned from a scope the client
-            ///   belongs to (i.e. is connected right now).
+            ///   <para>
+            ///     This message tells the client that an object
+            ///     is being changed the orientation.
+            ///   </para>
             /// </summary>
-            public class ObjectDespawned : ISerializable
+            public class ObjectOrientationChanged : ISerializable
             {
                 /// <summary>
-                ///   The server-side index of the scope the
-                ///   client is connected to, and the object
-                ///   belonged to.
+                ///   The server-side index of the scope the involved
+                ///   object belongs to.
                 /// </summary>
                 public uint ScopeInstanceIndex;
 
                 /// <summary>
-                ///   The server-side index of the object being
-                ///   despawned.
+                ///   The server-side index of the involved object.
                 /// </summary>
                 public uint ObjectInstanceIndex;
+
+                /// <summary>
+                ///   The new orientation.
+                /// </summary>
+                public Direction Orientation;
 
                 public void Serialize(Serializer serializer)
                 {
                     serializer.Serialize(ref ScopeInstanceIndex);
                     serializer.Serialize(ref ObjectInstanceIndex);
+                    serializer.Serialize(ref Orientation);
                 }
             }
         }

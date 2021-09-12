@@ -8,15 +8,28 @@ namespace GameMeanMachine.Unity.NetRose
             using GameMeanMachine.Unity.WindRose.Types;
 
             /// <summary>
-            ///   This message tells the client about a new/existing
-            ///   object in a scope they belong to. The new object
-            ///   will synchronize: scope index, object's prefab
-            ///   index, object's index, object's data, and whether
-            ///   the object is attached to a map, and which map
-            ///   and position, if true. Also, orientation and
-            ///   speed are synchronized.
+            ///   <para>
+            ///     This message tells the client about a new object
+            ///     being spawned in a scope the client belongs to.
+            ///     This stands only for the main object data (i.e.
+            ///     the "public" data that each client receives).
+            ///     Additional "watches" will be added later (e.g.
+            ///     health/status and inventory) in other messages.
+            ///   </para>
+            ///   <para>
+            ///     There are two moments this message may be got
+            ///     for an object: Either the client was already
+            ///     added to this object's scope, and this object
+            ///     was just instantiated in the server side (and
+            ///     then reflected in the client side) or the object
+            ///     already existed in the scope and the client is
+            ///     just added to the scope and receiving the full
+            ///     update (i.e. the first synchronization) of the
+            ///     object, which already exists.
+            ///   </para>
             /// </summary>
-            public class ExistingObject<T> : ISerializable where T : ISerializable, new()
+            /// <typeparam name="T">The type of the main model's data</typeparam>
+            public class ObjectSpawned<T> : ISerializable where T : ISerializable, new()
             {
                 /// <summary>
                 ///   The server-side index of the scope the client

@@ -146,7 +146,7 @@ namespace AlephVault.Unity.Meetgard.Auth
                     {
                         if (SessionExists(clientId))
                         {
-                            await SendForbidden(clientId);
+                            await handler(proto, clientId);
                         }
                         else
                         {

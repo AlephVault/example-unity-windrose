@@ -17,10 +17,10 @@ namespace GameMeanMachine.Unity.NetRose
     public static class NetRoseSetup
     {
         // The registered primary models' sync type and properties.
-        private static Dictionary<Type, Tuple<Type, List<Type>>> mapObjectPrimaryModels = new Dictionary<Type, Tuple<Type, List<Type>>>();
+        private static Dictionary<Type, Tuple<Type, Dictionary<string, Type>>> mapObjectPrimaryModels = new Dictionary<Type, Tuple<Type, Dictionary<string, Type>>>();
 
         // The registered watched models' sync type and properties.
-        private static Dictionary<Type, Tuple<Type, List<Type>>> mapObjectWatchedModels = new Dictionary<Type, Tuple<Type, List<Type>>>();
+        private static Dictionary<Type, Tuple<Type, Dictionary<string, Type>>> mapObjectWatchedModels = new Dictionary<Type, Tuple<Type, Dictionary<string, Type>>>();
 
         /// <summary>
         ///   Registers a <see cref="MapObjectPrimaryModel{T}"/>
@@ -36,7 +36,7 @@ namespace GameMeanMachine.Unity.NetRose
         {
             if (!mapObjectPrimaryModels.ContainsKey(typeof(ModelClass)))
             {
-                mapObjectPrimaryModels.Add(typeof(ModelClass), new Tuple<Type, List<Type>>(typeof(ModelType), new List<Type>()));
+                mapObjectPrimaryModels.Add(typeof(ModelClass), new Tuple<Type, Dictionary<string, Type>>(typeof(ModelType), new Dictionary<string, Type>()));
                 return true;
             }
             return false;
@@ -56,7 +56,7 @@ namespace GameMeanMachine.Unity.NetRose
         {
             if (!mapObjectPrimaryModels.ContainsKey(typeof(ModelClass)))
             {
-                mapObjectPrimaryModels.Add(typeof(ModelClass), new Tuple<Type, List<Type>>(typeof(ModelType), new List<Type>()));
+                mapObjectPrimaryModels.Add(typeof(ModelClass), new Tuple<Type, Dictionary<string, Type>>(typeof(ModelType), new Dictionary<string, Type>()));
                 return true;
             }
             return false;
@@ -70,15 +70,19 @@ namespace GameMeanMachine.Unity.NetRose
         /// </summary>
         /// <typeparam name="ModelClass">The model class to register a property for</typeparam>
         /// <typeparam name="PropertyType">The type of the property to register</typeparam>
-        /// <returns>The in-model registered property's index</returns>
-        public static int RegisterMapObjectPrimaryModelProperty<ModelClass, PropertyType>()
+        /// <param name="propertyName">The name of the property</param>
+        /// <returns>Whether the property was just registered (returns false if it was already registered)</returns>
+        public static bool RegisterMapObjectPrimaryModelProperty<ModelClass, PropertyType>(string propertyName)
             where PropertyType : ISerializable, new()
         {
             if (mapObjectPrimaryModels.TryGetValue(typeof(ModelClass), out var entry))
             {
-                int index = entry.Item2.Count;
-                entry.Item2.Add(typeof(PropertyType));
-                return index;
+                if (!entry.Item2.ContainsKey(propertyName))
+                {
+                    entry.Item2.Add(propertyName, typeof(PropertyType));
+                    return true;
+                }
+                return false;
             }
             else
             {
@@ -94,15 +98,19 @@ namespace GameMeanMachine.Unity.NetRose
         /// </summary>
         /// <typeparam name="ModelClass">The model class to register a property for</typeparam>
         /// <typeparam name="PropertyType">The type of the property to register</typeparam>
-        /// <returns>The in-model registered property's index</returns>
-        public static int RegisterMapObjectWatchedModelProperty<ModelClass, PropertyType>()
+        /// <param name="propertyName">The name of the property</param>
+        /// <returns>Whether the property was just registered (returns false if it was already registered)</returns>
+        public static bool RegisterMapObjectWatchedModelProperty<ModelClass, PropertyType>(string propertyName)
             where PropertyType : ISerializable, new()
         {
             if (mapObjectWatchedModels.TryGetValue(typeof(ModelClass), out var entry))
             {
-                int index = entry.Item2.Count;
-                entry.Item2.Add(typeof(PropertyType));
-                return index;
+                if (!entry.Item2.ContainsKey(propertyName))
+                {
+                    entry.Item2.Add(propertyName, typeof(PropertyType));
+                    return true;
+                }
+                return false;
             }
             else
             {
@@ -124,15 +132,14 @@ namespace GameMeanMachine.Unity.NetRose
         /// <typeparam name="ModelClass">The registered model class to act upon</typeparam>
         /// <param name="modelClassCallback">A callback to act upon the sync type</param>
         /// <param name="modelPropertyCallback">A callback to act upon each registered property</param>
-        public static void WithMapObjectPrimaryModelType<ModelClass>(Action<Type> modelClassCallback, Action<int, Type> modelPropertyCallback)
+        public static void WithMapObjectPrimaryModelType<ModelClass>(Action<Type> modelClassCallback, Action<string, Type> modelPropertyCallback)
         {
             if (mapObjectPrimaryModels.TryGetValue(typeof(ModelClass), out var entry))
             {
                 modelClassCallback?.Invoke(entry.Item1);
-                int count = entry.Item2.Count;
-                for(int i = 0; i < count; i++)
+                foreach(KeyValuePair<string, Type> pair in entry.Item2)
                 {
-                    modelPropertyCallback?.Invoke(i, entry.Item2[i]);
+                    modelPropertyCallback?.Invoke(pair.Key, pair.Value);
                 }
             }
             else
@@ -155,15 +162,14 @@ namespace GameMeanMachine.Unity.NetRose
         /// <typeparam name="ModelClass">The registered model class to act upon</typeparam>
         /// <param name="modelClassCallback">A callback to act upon the sync type</param>
         /// <param name="modelPropertyCallback">A callback to act upon each registered property</param>
-        public static void WithMapObjectWatchedModelType<ModelClass>(Action<Type> modelClassCallback, Action<int, Type> modelPropertyCallback)
+        public static void WithMapObjectWatchedModelType<ModelClass>(Action<Type> modelClassCallback, Action<string, Type> modelPropertyCallback)
         {
             if (mapObjectWatchedModels.TryGetValue(typeof(ModelClass), out var entry))
             {
                 modelClassCallback?.Invoke(entry.Item1);
-                int count = entry.Item2.Count;
-                for (int i = 0; i < count; i++)
+                foreach (KeyValuePair<string, Type> pair in entry.Item2)
                 {
-                    modelPropertyCallback?.Invoke(i, entry.Item2[i]);
+                    modelPropertyCallback?.Invoke(pair.Key, pair.Value);
                 }
             }
             else

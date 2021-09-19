@@ -9,21 +9,14 @@ namespace GameMeanMachine.Unity.NetRose
             /// <summary>
             ///   <para>
             ///     This message tells the client that, for certain
-            ///     object, it started watching it in particular
-            ///     context, received an initial synchronization of
-            ///     its data, and will start receiving more updates
-            ///     from it until it is despawned or the client stops
-            ///     watching the object in that context.
-            ///   </para>
-            ///   <para>
-            ///     Typically, "owned" objects will start being
-            ///     watched in all of the available contexts, while
-            ///     non-owned objects will eventually start being
-            ///     watched and then unwatched appropriately on need.
+            ///     object, its whole data has been told to refresh.
+            ///     This data may be related to a primary model or
+            ///     a watched one (provided it is already watching
+            ///     that object, in that particular watched model).
             ///   </para>
             /// </summary>
-            /// <typeparam name="T">The type of the watched model's data</typeparam>
-            public class ObjectWatched<T> : ISerializable where T : ISerializable, new()
+            /// <typeparam name="T">The type of the primary/watched model's data</typeparam>
+            public class ObjectRefresh<T> : ISerializable where T : ISerializable, new()
             {
                 /// <summary>
                 ///   The server-side index of the scope the client

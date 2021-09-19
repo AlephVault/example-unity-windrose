@@ -1,5 +1,5 @@
 using AlephVault.Unity.Meetgard.Protocols;
-using GameMeanMachine.Unity.NetRose.Authoring.Models;
+using GameMeanMachine.Unity.NetRose.Authoring.Behaviours.Models.Entities.Objects;
 using System;
 
 
@@ -17,6 +17,14 @@ namespace GameMeanMachine.Unity.NetRose
             /// </summary>
             public abstract class NetRoseProtocolDefinition : ProtocolDefinition
             {
+                // Defines a Refresh message for a model class and a model type.
+                private void DefineRefeshServerMesasge<ModelClass>(Type modelType)
+                {
+                    Type genericObjectRefresh = typeof(ObjectRefresh<>);
+                    Type concreteObjectRefresh = genericObjectRefresh.MakeGenericType(modelType);
+                    DefineServerMessage($"Refresh:{typeof(ModelClass).FullName}", concreteObjectRefresh);
+                }
+
                 /// <summary>
                 ///   Defines all the messages for a given registered
                 ///   <see cref="MapObjectPrimaryModel{T}"/> subclass.
@@ -24,13 +32,14 @@ namespace GameMeanMachine.Unity.NetRose
                 ///   method for every model being interested in.
                 /// </summary>
                 /// <typeparam name="ModelClass">The registered model class to prepare their messages</typeparam>
-                protected void DefineSpawnedModel<ModelClass>()
+                protected void DefinePrimaryModel<ModelClass>()
                 {
                     NetRoseSetup.WithMapObjectWatchedModelType<ModelClass>((modelType) =>
                     {
                         Type genericObjectSpawned = typeof(ObjectSpawned<>);
                         Type concreteObjectSpawned = genericObjectSpawned.MakeGenericType(modelType);
                         DefineServerMessage($"Spawned:{typeof(ModelClass).FullName}", concreteObjectSpawned);
+                        DefineRefeshServerMesasge<ModelClass>(modelType);
                     }, (property, propertyType) =>
                     {
                         Type genericObjectWatched = typeof(ObjectUpdated<>);
@@ -53,6 +62,7 @@ namespace GameMeanMachine.Unity.NetRose
                         Type genericObjectWatched = typeof(ObjectWatched<>);
                         Type concreteObjectWatched = genericObjectWatched.MakeGenericType(modelType);
                         DefineServerMessage($"Watched:{typeof(ModelClass).FullName}", concreteObjectWatched);
+                        DefineRefeshServerMesasge<ModelClass>(modelType);
                     }, (property, propertyType) =>
                     {
                         Type genericObjectWatched = typeof(ObjectUpdated<>);
@@ -63,9 +73,9 @@ namespace GameMeanMachine.Unity.NetRose
 
                 /// <summary>
                 ///   Override this method with several calls to
-                ///   <see cref="DefineSpawnedModel{ModelClass}"/>.
+                ///   <see cref="DefinePrimaryModel{ModelClass}"/>.
                 /// </summary>
-                protected abstract void DefineSpawnedModels();
+                protected abstract void DefinePrimaryModels();
 
                 /// <summary>
                 ///   Override this method with several calls to
@@ -75,8 +85,8 @@ namespace GameMeanMachine.Unity.NetRose
 
                 /// <summary>
                 ///   Defines all the basic NetRose messages, which involve:
-                ///   - All the needed Spawned messages (by the user in <see cref="DefineSpawnedModels"/>).
-                ///   - All the needed Watched messages (by the user in <see cref="DefineSpawnedModels"/> and <see cref="DefineWatchedModels"/>).
+                ///   - All the needed Spawned messages (by the user in <see cref="DefinePrimaryModels"/>).
+                ///   - All the needed Watched messages (by the user in <see cref="DefinePrimaryModels"/> and <see cref="DefineWatchedModels"/>).
                 ///   - All the needed Updated messages (by the user in <see cref="DefineWatchedModels"/>).
                 ///   - Scope added/removed messages.
                 ///   - Object attached/detached messages.
@@ -86,7 +96,7 @@ namespace GameMeanMachine.Unity.NetRose
                 protected override void DefineMessages()
                 {
                     DefineServerMessage<AddedToScope>("Scope:Added");
-                    DefineSpawnedModels();
+                    DefinePrimaryModels();
                     DefineWatchedModels();
                     DefineServerMessage<ObjectAttached>("Object:Attached");
                     DefineServerMessage<ObjectDetached>("Object:Detached");

@@ -1,4 +1,5 @@
 using AlephVault.Unity.Binary;
+using GameMeanMachine.Unity.NetRose.Authoring.Behaviours.Models.Entities.Objects;
 using GameMeanMachine.Unity.NetRose.Authoring.Models;
 using System;
 using System.Collections.Generic;

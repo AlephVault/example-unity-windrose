@@ -41,29 +41,10 @@ namespace GameMeanMachine.Unity.NetRose
                 /// </summary>
                 public uint ObjectInstanceIndex;
 
-                /// <summary>
-                ///   The id/index of the context this object is
-                ///   being unwatched. Objects have a default context
-                ///   (which cannot be "watched"/"unwatched") and
-                ///   can have more contexts to be watched. In the
-                ///   server side, those contexts exist as behaviours,
-                ///   while in the client side, external UI behaviours
-                ///   can be set to watch a limited subset of these
-                ///   objects in certain contexts (e.g. only one of
-                ///   object is watched at the same time, in client
-                ///   side, regarding health/status: the owned one;
-                ///   only two objects at the same time will be watched
-                ///   regarding the inventory: the owned one and an
-                ///   extra one;...). The value in this property is
-                ///   the 0-based index of the behaviour being unwatched.
-                /// </summary>
-                public ushort ContextId;
-
                 public void Serialize(Serializer serializer)
                 {
                     serializer.Serialize(ref ScopeInstanceIndex);
                     serializer.Serialize(ref ObjectInstanceIndex);
-                    serializer.Serialize(ref ContextId);
                 }
             }
         }

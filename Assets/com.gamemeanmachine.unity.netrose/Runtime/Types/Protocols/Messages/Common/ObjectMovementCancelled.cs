@@ -4,31 +4,34 @@ namespace GameMeanMachine.Unity.NetRose
     {
         namespace Protocols
         {
-            using AlephVault.Unity.Binary;
-
-            /// <summary>
-            ///   <para>
-            ///     This message tells the client that an object
-            ///     cancelled its current movement.
-            ///   </para>
-            /// </summary>
-            public class ObjectMovementCancelled : ISerializable
+            namespace Messages
             {
-                /// <summary>
-                ///   The server-side index of the scope the involved
-                ///   object belongs to.
-                /// </summary>
-                public uint ScopeInstanceIndex;
+                using AlephVault.Unity.Binary;
 
                 /// <summary>
-                ///   The server-side index of the involved object.
+                ///   <para>
+                ///     This message tells the client that an object
+                ///     cancelled its current movement.
+                ///   </para>
                 /// </summary>
-                public uint ObjectInstanceIndex;
-
-                public void Serialize(Serializer serializer)
+                public class ObjectMovementCancelled : ISerializable
                 {
-                    serializer.Serialize(ref ScopeInstanceIndex);
-                    serializer.Serialize(ref ObjectInstanceIndex);
+                    /// <summary>
+                    ///   The server-side index of the scope the involved
+                    ///   object belongs to.
+                    /// </summary>
+                    public uint ScopeInstanceIndex;
+
+                    /// <summary>
+                    ///   The server-side index of the involved object.
+                    /// </summary>
+                    public uint ObjectInstanceIndex;
+
+                    public void Serialize(Serializer serializer)
+                    {
+                        serializer.Serialize(ref ScopeInstanceIndex);
+                        serializer.Serialize(ref ObjectInstanceIndex);
+                    }
                 }
             }
         }

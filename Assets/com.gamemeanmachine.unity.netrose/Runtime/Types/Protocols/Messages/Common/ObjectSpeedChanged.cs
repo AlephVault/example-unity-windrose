@@ -4,37 +4,40 @@ namespace GameMeanMachine.Unity.NetRose
     {
         namespace Protocols
         {
-            using AlephVault.Unity.Binary;
-
-            /// <summary>
-            ///   <para>
-            ///     This message tells the client that an object
-            ///     is being changed the speed.
-            ///   </para>
-            /// </summary>
-            public class ObjectSpeedChanged : ISerializable
+            namespace Messages
             {
-                /// <summary>
-                ///   The server-side index of the scope the involved
-                ///   object belongs to.
-                /// </summary>
-                public uint ScopeInstanceIndex;
+                using AlephVault.Unity.Binary;
 
                 /// <summary>
-                ///   The server-side index of the involved object.
+                ///   <para>
+                ///     This message tells the client that an object
+                ///     is being changed the speed.
+                ///   </para>
                 /// </summary>
-                public uint ObjectInstanceIndex;
-
-                /// <summary>
-                ///   The new speed.
-                /// </summary>
-                public uint Speed;
-
-                public void Serialize(Serializer serializer)
+                public class ObjectSpeedChanged : ISerializable
                 {
-                    serializer.Serialize(ref ScopeInstanceIndex);
-                    serializer.Serialize(ref ObjectInstanceIndex);
-                    serializer.Serialize(ref Speed);
+                    /// <summary>
+                    ///   The server-side index of the scope the involved
+                    ///   object belongs to.
+                    /// </summary>
+                    public uint ScopeInstanceIndex;
+
+                    /// <summary>
+                    ///   The server-side index of the involved object.
+                    /// </summary>
+                    public uint ObjectInstanceIndex;
+
+                    /// <summary>
+                    ///   The new speed.
+                    /// </summary>
+                    public uint Speed;
+
+                    public void Serialize(Serializer serializer)
+                    {
+                        serializer.Serialize(ref ScopeInstanceIndex);
+                        serializer.Serialize(ref ObjectInstanceIndex);
+                        serializer.Serialize(ref Speed);
+                    }
                 }
             }
         }

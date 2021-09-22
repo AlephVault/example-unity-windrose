@@ -4,38 +4,41 @@ namespace GameMeanMachine.Unity.NetRose
     {
         namespace Protocols
         {
-            using AlephVault.Unity.Binary;
-            using GameMeanMachine.Unity.WindRose.Types;
-
-            /// <summary>
-            ///   <para>
-            ///     This message tells the client that an object
-            ///     is being changed the orientation.
-            ///   </para>
-            /// </summary>
-            public class ObjectOrientationChanged : ISerializable
+            namespace Messages
             {
-                /// <summary>
-                ///   The server-side index of the scope the involved
-                ///   object belongs to.
-                /// </summary>
-                public uint ScopeInstanceIndex;
+                using AlephVault.Unity.Binary;
+                using GameMeanMachine.Unity.WindRose.Types;
 
                 /// <summary>
-                ///   The server-side index of the involved object.
+                ///   <para>
+                ///     This message tells the client that an object
+                ///     is being changed the orientation.
+                ///   </para>
                 /// </summary>
-                public uint ObjectInstanceIndex;
-
-                /// <summary>
-                ///   The new orientation.
-                /// </summary>
-                public Direction Orientation;
-
-                public void Serialize(Serializer serializer)
+                public class ObjectOrientationChanged : ISerializable
                 {
-                    serializer.Serialize(ref ScopeInstanceIndex);
-                    serializer.Serialize(ref ObjectInstanceIndex);
-                    serializer.Serialize(ref Orientation);
+                    /// <summary>
+                    ///   The server-side index of the scope the involved
+                    ///   object belongs to.
+                    /// </summary>
+                    public uint ScopeInstanceIndex;
+
+                    /// <summary>
+                    ///   The server-side index of the involved object.
+                    /// </summary>
+                    public uint ObjectInstanceIndex;
+
+                    /// <summary>
+                    ///   The new orientation.
+                    /// </summary>
+                    public Direction Orientation;
+
+                    public void Serialize(Serializer serializer)
+                    {
+                        serializer.Serialize(ref ScopeInstanceIndex);
+                        serializer.Serialize(ref ObjectInstanceIndex);
+                        serializer.Serialize(ref Orientation);
+                    }
                 }
             }
         }

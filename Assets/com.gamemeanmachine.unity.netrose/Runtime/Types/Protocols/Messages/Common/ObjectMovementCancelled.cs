@@ -27,10 +27,22 @@ namespace GameMeanMachine.Unity.NetRose
                     /// </summary>
                     public uint ObjectInstanceIndex;
 
+                    /// <summary>
+                    ///   The to-revert x-position.
+                    /// </summary>
+                    public ushort RevertToX;
+
+                    /// <summary>
+                    ///   The to-revert y-position.
+                    /// </summary>
+                    public ushort RevertToY;
+
                     public void Serialize(Serializer serializer)
                     {
                         serializer.Serialize(ref ScopeInstanceIndex);
                         serializer.Serialize(ref ObjectInstanceIndex);
+                        serializer.Serialize(ref RevertToX);
+                        serializer.Serialize(ref RevertToY);
                     }
                 }
             }

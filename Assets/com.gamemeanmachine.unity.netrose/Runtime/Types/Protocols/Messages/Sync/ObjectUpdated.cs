@@ -23,7 +23,7 @@ namespace GameMeanMachine.Unity.NetRose
                 ///     watching the object in a particular context).
                 ///   </para>
                 /// </summary>
-                /// <typeparam name="T">The type of the watched model property's value - matching for the given ContextId</typeparam>
+                /// <typeparam name="T">The type of the watched model property's value</typeparam>
                 public class ObjectUpdated<T> : ISerializable where T : ISerializable, new()
                 {
                     /// <summary>
@@ -39,34 +39,6 @@ namespace GameMeanMachine.Unity.NetRose
                     public uint ObjectInstanceIndex;
 
                     /// <summary>
-                    ///   The id/index of the context this object is
-                    ///   being watched. Objects have a default context
-                    ///   (which cannot be "watched"/"unwatched") and
-                    ///   can have more contexts to be watched. In the
-                    ///   server side, those contexts exist as behaviours,
-                    ///   while in the client side, external UI behaviours
-                    ///   can be set to watch a limited subset of these
-                    ///   objects in certain contexts (e.g. only one of
-                    ///   object is watched at the same time, in client
-                    ///   side, regarding health/status: the owned one;
-                    ///   only two objects at the same time will be watched
-                    ///   regarding the inventory: the owned one and an
-                    ///   extra one;...). The value in this property is
-                    ///   the 0-based index of the behaviour being watched.
-                    ///   This index will refer a watched model having the
-                    ///   particular property indexed in <see cref="PropertyId"/>,
-                    ///   which must be of type T.
-                    /// </summary>
-                    public ushort ContextId;
-
-                    /// <summary>
-                    ///   The id/index of the property being updated, in
-                    ///   the given context by <see cref="ContextId"/>, for
-                    ///   an object having such behaviour and being watched.
-                    /// </summary>
-                    public ushort PropertyId;
-
-                    /// <summary>
                     ///   The object's data.
                     /// </summary>
                     public T Value;
@@ -75,8 +47,6 @@ namespace GameMeanMachine.Unity.NetRose
                     {
                         serializer.Serialize(ref ScopeInstanceIndex);
                         serializer.Serialize(ref ObjectInstanceIndex);
-                        serializer.Serialize(ref ContextId);
-                        serializer.Serialize(ref PropertyId);
                         Value = Value ?? new T();
                         Value.Serialize(serializer);
                     }

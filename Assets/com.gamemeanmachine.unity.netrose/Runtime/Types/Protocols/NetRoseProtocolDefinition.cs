@@ -38,13 +38,13 @@ namespace GameMeanMachine.Unity.NetRose
                     {
                         Type genericObjectSpawned = typeof(Messages.ObjectSpawned<>);
                         Type concreteObjectSpawned = genericObjectSpawned.MakeGenericType(modelType);
-                        DefineServerMessage($"Spawned:{typeof(ModelClass).FullName}", concreteObjectSpawned);
+                        DefineServerMessage($"Object:Spawned:{typeof(ModelClass).FullName}", concreteObjectSpawned);
                         DefineRefeshServerMesasge<ModelClass>(modelType);
                     }, (property, propertyType) =>
                     {
                         Type genericObjectWatched = typeof(Messages.ObjectUpdated<>);
                         Type concreteObjectWatched = genericObjectWatched.MakeGenericType(propertyType);
-                        DefineServerMessage($"Updated:{typeof(ModelClass).FullName}.{property}", concreteObjectWatched);
+                        DefineServerMessage($"Object:Updated:{typeof(ModelClass).FullName}.{property}", concreteObjectWatched);
                     });
                 }
 
@@ -61,13 +61,13 @@ namespace GameMeanMachine.Unity.NetRose
                     {
                         Type genericObjectWatched = typeof(Messages.ObjectWatched<>);
                         Type concreteObjectWatched = genericObjectWatched.MakeGenericType(modelType);
-                        DefineServerMessage($"Watched:{typeof(ModelClass).FullName}", concreteObjectWatched);
+                        DefineServerMessage($"Object:Watched:{typeof(ModelClass).FullName}", concreteObjectWatched);
                         DefineRefeshServerMesasge<ModelClass>(modelType);
                     }, (property, propertyType) =>
                     {
                         Type genericObjectWatched = typeof(Messages.ObjectUpdated<>);
                         Type concreteObjectWatched = genericObjectWatched.MakeGenericType(propertyType);
-                        DefineServerMessage($"Updated:{typeof(ModelClass).FullName}.{property}", concreteObjectWatched);
+                        DefineServerMessage($"Object:Updated:{typeof(ModelClass).FullName}.{property}", concreteObjectWatched);
                     });
                 }
 
@@ -106,8 +106,8 @@ namespace GameMeanMachine.Unity.NetRose
                     DefineServerMessage<Messages.ObjectTeleported>("Object:Teleported");
                     DefineServerMessage<Messages.ObjectSpeedChanged>("Object:Speed:Changed");
                     DefineServerMessage<Messages.ObjectOrientationChanged>("Object:Orientation:Changed");
-                    DefineServerMessage<Messages.ObjectUnwatched>("Unwatched");
-                    DefineServerMessage<Messages.ObjectDespawned>("Despawned");
+                    DefineServerMessage<Messages.ObjectUnwatched>("Object:Unwatched");
+                    DefineServerMessage<Messages.ObjectDespawned>("Object:Despawned");
                     DefineServerMessage<Messages.RemovedFromScope>("Scope:Removed");
                 }
             }

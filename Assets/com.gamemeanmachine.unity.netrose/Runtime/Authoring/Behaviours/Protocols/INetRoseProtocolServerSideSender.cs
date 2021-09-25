@@ -72,7 +72,7 @@ namespace GameMeanMachine.Unity.NetRose
                 /// <returns>A task, since this function is asynchronous</returns>
                 Task BroadcastSpawned<ModelClass, T>(
                     IEnumerable<ulong> connections,
-                    ulong scopeIndex, uint objectPrefabIndex, uint objectIndex,
+                    uint scopeIndex, uint objectPrefabIndex, uint objectIndex,
                     T data, Direction orientation, uint speed,
                     bool attached, byte mapIndex, ushort x, ushort y, Direction? movement
                 ) where ModelClass : MapObjectPrimaryModel<T> where T : ISerializable, new();
@@ -100,7 +100,7 @@ namespace GameMeanMachine.Unity.NetRose
                 /// <returns>A task, since this function is asynchronous</returns>
                 Task SendSpawned<ModelClass, T>(
                     ulong connection,
-                    ulong scopeIndex, uint objectPrefabIndex, uint objectIndex,
+                    uint scopeIndex, uint objectPrefabIndex, uint objectIndex,
                     T data, Direction orientation, uint speed,
                     bool attached, byte mapIndex, ushort x, ushort y, Direction? movement
                 ) where ModelClass : MapObjectPrimaryModel<T> where T : ISerializable, new();
@@ -251,7 +251,7 @@ namespace GameMeanMachine.Unity.NetRose
                 );
 
                 /// <summary>
-                ///   broadcasts an <see cref="ObjectAttached"/> message. Meant to tell when
+                ///   broadcasts an <see cref="ObjectTeleported"/> message. Meant to tell when
                 ///   an object was teleported inside the same map it belonged to.
                 /// </summary>
                 /// <param name="connections">The connection ids to send this message to. Recommended: clone this, to avoid race conditions</param>
@@ -278,7 +278,7 @@ namespace GameMeanMachine.Unity.NetRose
                 );
 
                 /// <summary>
-                ///   Broadcasts an <see cref="ObjectSpeedChanged"/> message. Meant to tell when
+                ///   Broadcasts an <see cref="ObjectOrientationChanged"/> message. Meant to tell when
                 ///   an object's orientation was changed.
                 /// </summary>
                 /// <param name="connections">The connection ids to send this message to. Recommended: clone this, to avoid race conditions</param>

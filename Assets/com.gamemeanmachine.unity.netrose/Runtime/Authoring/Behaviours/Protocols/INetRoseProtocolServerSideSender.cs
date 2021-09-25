@@ -171,7 +171,7 @@ namespace GameMeanMachine.Unity.NetRose
                 ) where ModelClass : MapObjectWatchedModel<T> where T : ISerializable, new();
 
                 /// <summary>
-                ///   Broadcasts an <see cref="ObjectUpdated{T}"/> message. Meant to tell
+                ///   Broadcasts an <see cref="ObjectUpdated{VT}"/> message. Meant to tell
                 ///   when a single property changed in a given primary model.
                 /// </summary>
                 /// <typeparam name="ModelClass">The primary model class behaviour this message is related to</typeparam>
@@ -185,10 +185,10 @@ namespace GameMeanMachine.Unity.NetRose
                 /// <returns>A task, since this function is asynchronous</returns>
                 Task BroadcastPrimaryModelUpdate<ModelClass, MT, VT>(
                     IEnumerable<ulong> connections, uint scopeIndex, uint objectIndex, string property, VT value
-                ) where ModelClass : MapObjectPrimaryModel<MT> where MT : ISerializable, new();
+                ) where ModelClass : MapObjectPrimaryModel<MT> where MT : ISerializable, new() where VT : ISerializable, new();
 
                 /// <summary>
-                ///   Broadcasts an <see cref="ObjectUpdated{T}"/> message. Meant to tell
+                ///   Broadcasts an <see cref="ObjectUpdated{VT}"/> message. Meant to tell
                 ///   when a single property changed in a given watched model, and the
                 ///   property is not strictly "ownership"-related, but many connections
                 ///   may be watching it at the same time.
@@ -204,10 +204,10 @@ namespace GameMeanMachine.Unity.NetRose
                 /// <returns>A task, since this function is asynchronous</returns>
                 Task BroadcastWatchedModelUpdate<ModelClass, MT, VT>(
                     IEnumerable<ulong> connections, uint scopeIndex, uint objectIndex, string property, VT value
-                ) where ModelClass : MapObjectWatchedModel<MT> where MT : ISerializable, new();
+                ) where ModelClass : MapObjectWatchedModel<MT> where MT : ISerializable, new() where VT : ISerializable, new();
 
                 /// <summary>
-                ///   Sends an <see cref="ObjectUpdated{T}"/> message to a single client.
+                ///   Sends an <see cref="ObjectUpdated{VT}"/> message to a single client.
                 ///   Meant to tell when a single property changed in a given watched model,
                 ///   in "ownership"-related properties.
                 /// </summary>

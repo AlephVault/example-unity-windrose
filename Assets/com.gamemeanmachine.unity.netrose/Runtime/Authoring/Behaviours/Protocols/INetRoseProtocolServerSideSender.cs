@@ -222,7 +222,8 @@ namespace GameMeanMachine.Unity.NetRose
                 /// <returns>A task, since this function is asynchronous</returns>
                 Task SendWatchedModelUpdate<ModelClass, MT, VT>(
                     ulong connection, uint scopeIndex, uint objectIndex, string property, VT value
-                ) where ModelClass : MapObjectWatchedModel<MT> where MT : ISerializable, new();
+                ) where ModelClass : MapObjectWatchedModel<MT> where MT : ISerializable, new() where VT : ISerializable, new();
+;
 
                 /// <summary>
                 ///   broadcasts an <see cref="ObjectAttached"/> message. Meant to tell when

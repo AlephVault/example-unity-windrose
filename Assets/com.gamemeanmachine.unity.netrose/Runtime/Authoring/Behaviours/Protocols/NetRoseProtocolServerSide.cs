@@ -47,8 +47,8 @@ namespace GameMeanMachine.Unity.NetRose
                 private Dictionary<Type, object> ObjectRefreshSenders = new Dictionary<Type, object>();
                 private Dictionary<Type, object> ObjectWatchedSenders = new Dictionary<Type, object>();
                 private Dictionary<Type, object> ObjectUnwatchedSenders = new Dictionary<Type, object>();
-                private Dictionary<Type, Dictionary<Type, object>> ObjectUpdatedSenders = new Dictionary<Type, Dictionary<Type, object>>();
-                private Dictionary<Type, Dictionary<Type, object>> ObjectUpdatedBroadcasters = new Dictionary<Type, Dictionary<Type, object>>();
+                private Dictionary<Type, Dictionary<string, object>> ObjectUpdatedSenders = new Dictionary<Type, Dictionary<string, object>>();
+                private Dictionary<Type, Dictionary<string, object>> ObjectUpdatedBroadcasters = new Dictionary<Type, Dictionary<string, object>>();
                 private Func<IEnumerable<ulong>, ObjectDespawned, Dictionary<ulong, Task>> ObjectDespawnedBroadcaster = null;
                 private Func<IEnumerable<ulong>, ObjectAttached, Dictionary<ulong, Task>> ObjectAttachedBroadcaster = null;
                 private Func<IEnumerable<ulong>, ObjectDetached, Dictionary<ulong, Task>> ObjectDetachedBroadcaster = null;
@@ -350,16 +350,16 @@ namespace GameMeanMachine.Unity.NetRose
 
                     if (!ObjectUpdatedBroadcasters.ContainsKey(type))
                     {
-                        ObjectUpdatedBroadcasters[type] = new Dictionary<Type, object>();
+                        ObjectUpdatedBroadcasters[type] = new Dictionary<string, object>();
                     }
 
-                    if (!ObjectUpdatedBroadcasters[type].ContainsKey(vtType))
+                    if (!ObjectUpdatedBroadcasters[type].ContainsKey(property))
                     {
-                        ObjectUpdatedBroadcasters[type][vtType] = MakeBroadcaster<ObjectUpdated<VT>>($"Object:Updated:{type.FullName}.{property}");
+                        ObjectUpdatedBroadcasters[type][property] = MakeBroadcaster<ObjectUpdated<VT>>($"Object:Updated:{type.FullName}.{property}");
                     }
 
                     Func<IEnumerable<ulong>, ObjectUpdated<VT>, Dictionary<ulong, Task>> broadcaster =
-                        (Func<IEnumerable<ulong>, ObjectUpdated<VT>, Dictionary<ulong, Task>>)ObjectUpdatedBroadcasters[type][vtType];
+                        (Func<IEnumerable<ulong>, ObjectUpdated<VT>, Dictionary<ulong, Task>>)ObjectUpdatedBroadcasters[type][property];
                     return UntilBroadcastIsDone(broadcaster.Invoke(connections, new ObjectUpdated<VT>() {
                         ScopeInstanceIndex = scopeIndex,
                         ObjectInstanceIndex = objectIndex,
@@ -419,16 +419,16 @@ namespace GameMeanMachine.Unity.NetRose
 
                     if (!ObjectUpdatedBroadcasters.ContainsKey(type))
                     {
-                        ObjectUpdatedBroadcasters[type] = new Dictionary<Type, object>();
+                        ObjectUpdatedBroadcasters[type] = new Dictionary<string, object>();
                     }
 
-                    if (!ObjectUpdatedBroadcasters[type].ContainsKey(vtType))
+                    if (!ObjectUpdatedBroadcasters[type].ContainsKey(property))
                     {
-                        ObjectUpdatedBroadcasters[type][vtType] = MakeSender<ObjectUpdated<VT>>($"Object:Updated:{type.FullName}.{property}");
+                        ObjectUpdatedBroadcasters[type][property] = MakeSender<ObjectUpdated<VT>>($"Object:Updated:{type.FullName}.{property}");
                     }
 
                     Func<ulong, ObjectUpdated<VT>, Task> sender =
-                        (Func<ulong, ObjectUpdated<VT>, Task>)ObjectUpdatedBroadcasters[type][vtType];
+                        (Func<ulong, ObjectUpdated<VT>, Task>)ObjectUpdatedBroadcasters[type][property];
                     return sender.Invoke(connection, new ObjectUpdated<VT>() {
                         ScopeInstanceIndex = scopeIndex,
                         ObjectInstanceIndex = objectIndex,
@@ -453,6 +453,7 @@ namespace GameMeanMachine.Unity.NetRose
                 public Task SendWatchedModelUpdate<ModelClass, MT, VT>(ulong connection, uint scopeIndex, uint objectIndex, string property, VT value)
                     where ModelClass : MapObjectWatchedModel<MT>
                     where MT : ISerializable, new()
+                    where VT : ISerializable, new()
                 {
                     return SendModelUpdate<ModelClass, VT>(connection, scopeIndex, objectIndex, property, value);
                 }

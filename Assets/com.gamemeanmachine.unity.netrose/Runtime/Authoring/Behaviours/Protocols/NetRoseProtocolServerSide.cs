@@ -68,8 +68,6 @@ namespace GameMeanMachine.Unity.NetRose
                 protected override void Initialize()
                 {
                     base.Initialize();
-                    DefinePrimaryModelServerSides();
-                    DefineWatchedModelServerSides();
                     AddedToScopeSender = MakeSender<AddedToScope>("Scope:Added");
                     RemovedFromScopeSender = MakeSender<RemovedFromScope>("Scope:Removed");
                     // ObjectSpawned<T> messages, as well as ObjectWatched<T>, ObjectUnwatched<T>,
@@ -84,18 +82,6 @@ namespace GameMeanMachine.Unity.NetRose
                     ObjectMovementFinishedBroadcaster = MakeBroadcaster<ObjectMovementFinished>("Object:Movement:Finished");
                     ObjectMovementCancelledBroadcaster = MakeBroadcaster<ObjectMovementCancelled>("Object:Movement:Cancelled");
                 }
-
-                /// <summary>
-                ///   Override this method with several calls to
-                ///   <see cref="DefinePrimaryModelServerSide{ModelClass, ModelType, ModelServerSideClass}"/>.
-                /// </summary>
-                protected abstract void DefinePrimaryModelServerSides();
-
-                /// <summary>
-                ///   Override this method with several calls to
-                ///   <see cref="DefineWatchedModelServerSide{ModelClass, ModelType, ModelServerSideClass}"/>.
-                /// </summary>
-                protected abstract void DefineWatchedModelServerSides();
 
                 /// <summary>
                 ///   Sends an <see cref="AddedToScope"/> message to a single client.

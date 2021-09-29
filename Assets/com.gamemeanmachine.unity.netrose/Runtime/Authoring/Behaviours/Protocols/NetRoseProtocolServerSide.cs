@@ -417,18 +417,18 @@ namespace GameMeanMachine.Unity.NetRose
                     Type type = typeof(T);
                     Type vtType = typeof(VT);
 
-                    if (!ObjectUpdatedBroadcasters.ContainsKey(type))
+                    if (!ObjectUpdatedSenders.ContainsKey(type))
                     {
-                        ObjectUpdatedBroadcasters[type] = new Dictionary<string, object>();
+                        ObjectUpdatedSenders[type] = new Dictionary<string, object>();
                     }
 
-                    if (!ObjectUpdatedBroadcasters[type].ContainsKey(property))
+                    if (!ObjectUpdatedSenders[type].ContainsKey(property))
                     {
-                        ObjectUpdatedBroadcasters[type][property] = MakeSender<ObjectUpdated<VT>>($"Object:Updated:{type.FullName}.{property}");
+                        ObjectUpdatedSenders[type][property] = MakeSender<ObjectUpdated<VT>>($"Object:Updated:{type.FullName}.{property}");
                     }
 
                     Func<ulong, ObjectUpdated<VT>, Task> sender =
-                        (Func<ulong, ObjectUpdated<VT>, Task>)ObjectUpdatedBroadcasters[type][property];
+                        (Func<ulong, ObjectUpdated<VT>, Task>)ObjectUpdatedSenders[type][property];
                     return sender.Invoke(connection, new ObjectUpdated<VT>() {
                         ScopeInstanceIndex = scopeIndex,
                         ObjectInstanceIndex = objectIndex,

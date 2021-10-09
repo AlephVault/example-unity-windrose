@@ -1,8 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-
 namespace AlephVault.Unity.Meetgard.Scopes
 {
     namespace Types

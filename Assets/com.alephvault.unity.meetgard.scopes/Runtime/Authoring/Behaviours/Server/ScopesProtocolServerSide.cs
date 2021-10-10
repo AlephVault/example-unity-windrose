@@ -1,8 +1,9 @@
 ﻿using AlephVault.Unity.Meetgard.Authoring.Behaviours.Server;
 using AlephVault.Unity.Meetgard.Scopes.Types.Protocols;
 using AlephVault.Unity.Meetgard.Scopes.Types.Protocols.Messages;
+using AlephVault.Unity.Support.Authoring.Behaviours;
+using AlephVault.Unity.Support.Utils;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -22,8 +23,12 @@ namespace AlephVault.Unity.Meetgard.Scopes
                 ///   all of the notifications and stuff between this class and other
                 ///   classes in the package, like (scoped) objects.
                 /// </summary>
+                [RequireComponent(typeof(AsyncQueueManager))]
                 public partial class ScopesProtocolServerSide : ProtocolServerSide<ScopesProtocolDefinition>
                 {
+                    // The queue management dependency.
+                    private AsyncQueueManager queueManager;
+
                     /// <summary>
                     ///   List of the prefabs that will be used to instantiate scopes.
                     ///   This list is mapped 1:1 with the scopes they instantiate,
@@ -45,9 +50,19 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     [SerializeField]
                     private ScopeServerSide[] extraScopePrefabs;
 
+                    /// <summary>
+                    ///   The interval to wait between each check for the appropriate
+                    ///   world load status.
+                    /// </summary>
+                    [SerializeField]
+                    private float worldLoadStatusWaitInterval = 0.5f;
+
                     protected override void Initialize()
                     {
+                        queueManager = GetComponent<AsyncQueueManager>();
                         base.Initialize();
+                        worldLoadStatusWaitInterval = Values.Max(0.1f, worldLoadStatusWaitInterval);
+                        WorldLoadStatus = Types.Constants.LoadStatus.Empty;
                         SendWelcome = MakeSender("Welcome");
                         SendMovedToScope = MakeSender<MovedToScope>("MovedToScope");
                         SendObjectSpawned = MakeSender<ObjectSpawned>("ObjectSpawned");
@@ -74,6 +89,12 @@ namespace AlephVault.Unity.Meetgard.Scopes
                         });
                     }
 
+                    public override async Task OnConnected(ulong clientId)
+                    {
+                        await SendWelcome(clientId);
+                        // TODO implement appropriate connect logic for a connection.
+                    }
+
                     /// <summary>
                     ///   Handlers what happens when the client connection is terminated.
                     ///   Typically, this will cleanup any user interaction (i.e. as it
@@ -86,7 +107,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     /// <param name="reason">The disconnection reason</param>
                     public override async Task OnDisconnected(ulong clientId, Exception reason)
                     {
-                        // TODO Implement appropriate close logic for a connection
+                        // TODO Implement appropriate disconnect logic for a connection
                         // TODO that terminated for any reason.
                     }
                 }

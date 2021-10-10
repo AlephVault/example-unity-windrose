@@ -197,6 +197,9 @@ namespace AlephVault.Unity.Meetgard.Scopes
                             // This makes no sense when the world is not loaded.
                             if (WorldLoadStatus != LoadStatus.Ready) return;
 
+                            // TODO send literally all of the connections that
+                            // TODO are still established, if any, to Limbo.
+
                             // Set the initial, in-progress, status.
                             WorldLoadStatus = LoadStatus.Unloading;
 
@@ -216,6 +219,9 @@ namespace AlephVault.Unity.Meetgard.Scopes
                             WorldLoadStatus = LoadStatus.Empty;
                         });
                     }
+
+                    // TODO implement PUBLIC methods to Load/Unload EXTRA
+                    // TODO scopes (i.e. dynamic). In this case, this must
                 }
             }
         }

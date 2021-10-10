@@ -42,7 +42,9 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     ///   default prefabs/scopes. Otherwise, the scope will
                     ///   be a reserved virtual scope (e.g. Limbo) or one
                     ///   of the non-defauly, dynamically spawned, scopes
-                    ///   (spawned from an "extra" prefab).
+                    ///   (spawned from an "extra" prefab). In this latter
+                    ///   case, the scope will have an index greater than
+                    ///   or equal to the amount of default scopes.
                     /// </summary>
                     public uint ScopeIndex;
 

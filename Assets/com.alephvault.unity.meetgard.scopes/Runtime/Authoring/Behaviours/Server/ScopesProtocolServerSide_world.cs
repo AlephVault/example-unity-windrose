@@ -235,6 +235,13 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     {
                         return queueManager.QueueTask<ScopeServerSide>(async () =>
                         {
+                            if (WorldLoadStatus != LoadStatus.Ready)
+                            {
+                                throw new InvalidOperationException(
+                                    "The world is currently not ready to load an extra scope"
+                                );
+                            }
+
                             uint extraScopePrefabIndex;
                             try
                             {

@@ -1,8 +1,8 @@
 ﻿using AlephVault.Unity.Meetgard.Authoring.Behaviours.Server;
+using AlephVault.Unity.Meetgard.Scopes.Types.Constants;
 using AlephVault.Unity.Meetgard.Scopes.Types.Protocols;
 using AlephVault.Unity.Meetgard.Scopes.Types.Protocols.Messages;
 using AlephVault.Unity.Support.Authoring.Behaviours;
-using AlephVault.Unity.Support.Utils;
 using System;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -50,19 +50,25 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     [SerializeField]
                     private ScopeServerSide[] extraScopePrefabs;
 
-                    /// <summary>
-                    ///   The interval to wait between each check for the appropriate
-                    ///   world load status.
-                    /// </summary>
-                    [SerializeField]
-                    private float worldLoadStatusWaitInterval = 0.5f;
-
                     protected override void Initialize()
                     {
+                        // The max ID of a scope is {Scope.MaxScopes - 1}. The minimum ID is 1.
+                        // This means that the maximum amount of default scopes needs to be
+                        // corrected by -1.
+                        if (defaultScopePrefabs.Length > Scope.MaxScopes - 1)
+                        {
+                            // TODO exception.
+                        }
+                        // Aside from the default prefabs, extra prefabs may be registered.
+                        // In this case, the prefab id is given, and the ID of the scope will
+                        // be between {defaultScopePrefabs.Length} and {Scope.MaxScopes - 1}.
+                        if (extraScopePrefabs.Length > Scope.MaxScopePrefabs)
+                        {
+                            // TODO exception.
+                        }
                         queueManager = GetComponent<AsyncQueueManager>();
                         base.Initialize();
-                        worldLoadStatusWaitInterval = Values.Max(0.1f, worldLoadStatusWaitInterval);
-                        WorldLoadStatus = Types.Constants.LoadStatus.Empty;
+                        WorldLoadStatus = LoadStatus.Empty;
                         SendWelcome = MakeSender("Welcome");
                         SendMovedToScope = MakeSender<MovedToScope>("MovedToScope");
                         SendObjectSpawned = MakeSender<ObjectSpawned>("ObjectSpawned");
@@ -89,6 +95,25 @@ namespace AlephVault.Unity.Meetgard.Scopes
                         });
                     }
 
+                    /// <summary>
+                    ///   Handles the server start. This, among other potential things,
+                    ///   starts the whole game world.
+                    /// </summary>
+                    public override async Task OnServerStarted()
+                    {
+                        // TODO Anything else here?
+                        await LoadWorld();
+                        // TODO Anything else here?
+                    }
+
+                    /// <summary>
+                    ///   Handles what happens when the client connection is started.
+                    ///   Typically, this will start and install the connection into
+                    ///   the limbo scope, and prepare it to be ready to interact
+                    ///   with the whole system (e.g. be able to remove it and put
+                    ///   it in another scope, and stuff like that.
+                    /// </summary>
+                    /// <param name="clientId">the connection being started.</param>
                     public override async Task OnConnected(ulong clientId)
                     {
                         await SendWelcome(clientId);
@@ -96,7 +121,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     }
 
                     /// <summary>
-                    ///   Handlers what happens when the client connection is terminated.
+                    ///   Handles what happens when the client connection is terminated.
                     ///   Typically, this will cleanup any user interaction (i.e. as it
                     ///   happens: the connection has been closed). In this case, this
                     ///   connection will be removed from every scope and also will trigger
@@ -109,6 +134,17 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     {
                         // TODO Implement appropriate disconnect logic for a connection
                         // TODO that terminated for any reason.
+                    }
+
+                    /// <summary>
+                    ///   Handles the server stop. This, among other potential things,
+                    ///   stops the whole game world.
+                    /// </summary>
+                    public override async Task OnServerStopped(Exception e)
+                    {
+                        // TODO Anything else here (specially using e)?
+                        await UnloadWorld();
+                        // TODO Anything else here (specially using e)?
                     }
                 }
             }

@@ -131,6 +131,9 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     private Task LoadWorld()
                     {
                         return queueManager.QueueTask(async () => {
+                            // This makes no sense when the world is not unloaded.
+                            if (WorldLoadStatus != LoadStatus.Empty) return;
+
                             // Set the initial, in-progress, status.
                             WorldLoadStatus = LoadStatus.Loading;
 
@@ -191,6 +194,9 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     {
                         return queueManager.QueueTask(async () =>
                         {
+                            // This makes no sense when the world is not loaded.
+                            if (WorldLoadStatus != LoadStatus.Ready) return;
+
                             // Set the initial, in-progress, status.
                             WorldLoadStatus = LoadStatus.Unloading;
 

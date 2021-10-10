@@ -87,11 +87,10 @@ namespace AlephVault.Unity.Meetgard.Scopes
                             {
                                 try
                                 {
-                                    pair.Value.ID = 0;
-                                    pair.Value.Protocol = null;
+                                    await ClearConnectionsFromScope(pair.Value);
                                     await pair.Value.Unload();
                                 }
-                                catch(System.Exception e)
+                                catch (System.Exception e)
                                 {
                                     try
                                     {
@@ -121,6 +120,8 @@ namespace AlephVault.Unity.Meetgard.Scopes
                         foreach(KeyValuePair<uint, ScopeServerSide> pair in instances)
                         {
                             if (pair.Value != null) Destroy(pair.Value);
+                            pair.Value.ID = 0;
+                            pair.Value.Protocol = null;
                             loadedScopesIds.Release(pair.Key);
                         }
                     }
@@ -197,9 +198,6 @@ namespace AlephVault.Unity.Meetgard.Scopes
                             // This makes no sense when the world is not loaded.
                             if (WorldLoadStatus != LoadStatus.Ready) return;
 
-                            // TODO send literally all of the connections that
-                            // TODO are still established, if any, to Limbo.
-
                             // Set the initial, in-progress, status.
                             WorldLoadStatus = LoadStatus.Unloading;
 
@@ -220,8 +218,118 @@ namespace AlephVault.Unity.Meetgard.Scopes
                         });
                     }
 
-                    // TODO implement PUBLIC methods to Load/Unload EXTRA
-                    // TODO scopes (i.e. dynamic). In this case, this must
+                    /// <summary>
+                    ///   Instantiates a scope by specifying its prefab key and initializing it.
+                    ///   The scope will be registered, assigned an ID, and returned. This task
+                    ///   is queued.
+                    /// </summary>
+                    /// <param name="extraScopePrefabKey">
+                    ///   The key of an extra scope prefab to use. As a tip, as the extra
+                    ///   scope prefabs are configurable, let the value for this argument
+                    ///   come from a configurable source (i.e. editor, authoring) and not
+                    ///   a constant or hard-coded value in the codebase
+                    /// </param>
+                    /// <param name="init">A function to initialize the scope to be loaded</param>
+                    /// <returns>The loaded (and registered) scope instance</returns>
+                    public Task<ScopeServerSide> LoadExtraScope(string extraScopePrefabKey, Action<ScopeServerSide> init)
+                    {
+                        return queueManager.QueueTask<ScopeServerSide>(async () =>
+                        {
+                            uint extraScopePrefabIndex;
+                            try
+                            {
+                                extraScopePrefabIndex = extraScopePrefabIndicesByKey[extraScopePrefabKey];
+                            }
+                            catch (KeyNotFoundException)
+                            {
+                                throw new ArgumentException($"Unknown extra scope prefab key: {extraScopePrefabKey}");
+                            }
+
+                            ScopeServerSide instance = Instantiate(extraScopePrefabs[extraScopePrefabIndex], null, true);
+                            await instance.Load();
+                            uint newId = (uint)loadedScopesIds.Next();
+                            instance.ID = newId;
+                            instance.PrefabID = Scope.DefaultPrefab;
+                            instance.Protocol = this;
+                            loadedScopes.Add(newId, instance);
+                            return instance;
+                        });
+                    }
+
+                    // Unloads and perhaps destroys a scope.
+                    private async Task DoUnloadExtraScope(uint scopeID, ScopeServerSide scopeToUnload, bool destroy)
+                    {
+                        await ClearConnectionsFromScope(scopeToUnload);
+                        await scopeToUnload.Unload();
+                        if (scopeToUnload != null && destroy) Destroy(scopeToUnload);
+                        scopeToUnload.ID = 0;
+                        scopeToUnload.PrefabID = 0;
+                        scopeToUnload.Protocol = null;
+                        loadedScopesIds.Release(scopeID);
+                    }
+
+                    /// <summary>
+                    ///   Unloads and perhaps destroys a scope. This task is queued.
+                    /// </summary>
+                    /// <param name="scopeID">The id of the scope to unload</param>
+                    /// <param name="destroy">Whether to also destroy it or not</param>
+                    public Task UnloadExtraScope(uint scopeID, bool destroy = true)
+                    {
+                        return queueManager.QueueTask(async () => {
+                            if (scopeID <= defaultScopePrefabs.Length)
+                            {
+                                throw new ArgumentException(
+                                    $"Cannot delete the scope with ID: {scopeID} since that ID belongs " +
+                                    $"to the set of default scopes"
+                                );
+                            }
+
+                            ScopeServerSide scopeToUnload;
+                            try
+                            {
+                                scopeToUnload = loadedScopes[scopeID];
+                            }
+                            catch (KeyNotFoundException)
+                            {
+                                throw new ArgumentException(
+                                    $"Cannot delete the scope with ID: {scopeID} since that ID belongs " +
+                                    $"to the set of default scopes"
+                                );
+                            }
+
+                            await DoUnloadExtraScope(scopeID, scopeToUnload, destroy);
+                        });
+                    }
+
+                    /// <summary>
+                    ///   Unloads and perhaps destroys a scope. This task is queued.
+                    /// </summary>
+                    /// <param name="scope">The scope instance to unload</param>
+                    /// <param name="destroy">Whether to also destroy it or not</param>
+                    public Task UnloadExtraScope(ScopeServerSide scope, bool destroy = true)
+                    {
+                        return queueManager.QueueTask(async () => {
+                            if (scope == null)
+                            {
+                                throw new ArgumentNullException("scope");
+                            }
+                            else if (scope.Protocol != this)
+                            {
+                                throw new ArgumentException("The given scope does not belong to this server - it cannot be deleted");
+                            }
+
+                            uint scopeID = scope.ID;
+                            if (scopeID <= defaultScopePrefabs.Length)
+                            {
+                                throw new ArgumentException(
+                                    $"Cannot delete the scope, which has ID: {scopeID} since that scope " +
+                                    $"belongs to the set of default scopes"
+                                );
+                            }
+
+                            await DoUnloadExtraScope(scopeID, scope, destroy);
+                        });
+                    }
                 }
             }
         }

@@ -1,4 +1,5 @@
 using AlephVault.Unity.Meetgard.Scopes.Types.Constants;
+using AlephVault.Unity.Support.Authoring.Behaviours;
 using System;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -30,8 +31,21 @@ namespace AlephVault.Unity.Meetgard.Scopes
                 ///     client side implementation of this scope.
                 ///   </para>
                 /// </summary>
-                public class ScopeServerSide : MonoBehaviour
+                [RequireComponent(typeof(AsyncQueueManager))]
+                public partial class ScopeServerSide : MonoBehaviour
                 {
+                    /// <summary>
+                    ///   The key for this scope. Only meaningful if the
+                    ///   scope is to be used as an extra scope prefab.
+                    /// </summary>
+                    [SerializeField]
+                    private string key;
+
+                    /// <summary>
+                    ///   See <see cref="key"/>.
+                    /// </summary>
+                    public string Key => key;
+
                     /// <summary>
                     ///   The ID of the prefab. It will either be a
                     ///   virtual/reserved prefab, a prefab index, or
@@ -59,25 +73,18 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     public ScopesProtocolServerSide Protocol { get; internal set; }
 
                     /// <summary>
-                    ///   Initializes the scope. Typically, this invokes
-                    ///   registered callbacks to work. This method does
-                    ///   not rely on PrefabID, ID, and Protocol values.
+                    ///   Tells whether this scope is ready to manipulate
+                    ///   server side logic (e.g. interacting with the
+                    ///   protocol and messages).
                     /// </summary>
-                    internal async Task Load()
-                    {
-                        // TODO implement.
-                        throw new NotImplementedException();
-                    }
+                    public bool Ready => Protocol != null;
 
-                    /// <summary>
-                    ///   Finalizes the scope. Typically, this invokes
-                    ///   registered callbacks to work. This method does
-                    ///   not rely on PrefabID, ID, and Protocol values.
-                    /// </summary>
-                    internal async Task Unload()
+                    // The underlying queue manager.
+                    private AsyncQueueManager queueManager;
+
+                    private void Awake()
                     {
-                        // TODO implement.
-                        throw new NotImplementedException();
+                        queueManager = GetComponent<AsyncQueueManager>();
                     }
                 }
             }

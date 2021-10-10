@@ -4,6 +4,7 @@ using AlephVault.Unity.Meetgard.Scopes.Types.Protocols;
 using AlephVault.Unity.Meetgard.Scopes.Types.Protocols.Messages;
 using AlephVault.Unity.Support.Authoring.Behaviours;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -34,7 +35,8 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     ///   This list is mapped 1:1 with the scopes they instantiate,
                     ///   being those stored in <see cref="defaultScopes"/>. Clients
                     ///   must register corresponding prefabs in an 1:1 basis on their
-                    ///   sides for things go ok with synchronization.
+                    ///   sides for things go ok with synchronization. The key in these
+                    ///   prefabs will be ignored, if set.
                     /// </summary>
                     [SerializeField]
                     private ScopeServerSide[] defaultScopePrefabs;
@@ -45,10 +47,19 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     ///   for the prefabs listed here may be arbitrarily added and/or
                     ///   removed from the game (with proper dispose mechanics). Clients
                     ///   must register corresponding prefabs in an 1:1 basis on their
-                    ///   sides for things go ok with synchronization.
+                    ///   sides for things go ok with synchronization. It is mandatory
+                    ///   that these scope prefabs have a key setup in them, and that
+                    ///   key to be unique in this list.
                     /// </summary>
                     [SerializeField]
                     private ScopeServerSide[] extraScopePrefabs;
+
+                    /// <summary>
+                    ///   A dictionary key => index of the extra scope prefabs, so games
+                    ///   can reference the extra maps by keys appropriately, which in
+                    ///   turn maps against an index (this index is 0-based).
+                    /// </summary>
+                    private Dictionary<string, uint> extraScopePrefabIndicesByKey = new Dictionary<string, uint>();
 
                     protected override void Initialize()
                     {
@@ -57,14 +68,24 @@ namespace AlephVault.Unity.Meetgard.Scopes
                         // corrected by -1.
                         if (defaultScopePrefabs.Length > Scope.MaxScopes - 1)
                         {
-                            // TODO exception.
+                            throw new ArgumentException("The size of the Default Scope Prefabs array is too big");
                         }
                         // Aside from the default prefabs, extra prefabs may be registered.
                         // In this case, the prefab id is given, and the ID of the scope will
                         // be between {defaultScopePrefabs.Length} and {Scope.MaxScopes - 1}.
+                        // Once validated, this key=>id mapping will be registered.
                         if (extraScopePrefabs.Length > Scope.MaxScopePrefabs)
                         {
-                            // TODO exception.
+                            throw new ArgumentException("The size of the Extra Scope Prefabs array is too big");
+                        }
+                        else
+                        {
+                            uint index = 0;
+                            foreach (ScopeServerSide scope in extraScopePrefabs)
+                            {
+                                extraScopePrefabIndicesByKey.Add(scope.Key, index);
+                                index++;
+                            }
                         }
                         queueManager = GetComponent<AsyncQueueManager>();
                         base.Initialize();

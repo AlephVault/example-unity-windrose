@@ -166,6 +166,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                         {
                             if (scopeForConnection.TryGetValue(clientId, out uint scopeId))
                             {
+                                scopeForConnection.Remove(clientId);
                                 await (OnGoodBye?.InvokeAsync(clientId, scopeId) ?? Task.CompletedTask);
                             };
                         });

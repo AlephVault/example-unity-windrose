@@ -79,12 +79,40 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     /// </summary>
                     public bool Ready => Protocol != null;
 
+                    /// <summary>
+                    ///   Triggered when the scope is told to load.
+                    /// </summary>
+                    public event Func<Task> OnLoad = null;
+
+                    /// <summary>
+                    ///   Triggered when a connection joined this scope.
+                    /// </summary>
+                    public event Func<ulong, Task> OnJoining = null;
+
+                    /// <summary>
+                    ///   Triggered when a connection, so far in this scope,
+                    ///   leaves the scope.
+                    /// </summary>
+                    public event Func<ulong, Task> OnLeaving = null;
+
+                    /// <summary>
+                    ///   Triggered when a connection, so far in this scope,
+                    ///   disconnects from the game.
+                    /// </summary>
+                    public event Func<ulong, Task> OnGoodBye = null;
+
+                    /// <summary>
+                    ///   Triggered when the scope is told to unload.
+                    /// </summary>
+                    public event Func<Task> OnUnload = null;
+
                     // The underlying queue manager.
                     private AsyncQueueManager queueManager;
 
                     private void Awake()
                     {
                         queueManager = GetComponent<AsyncQueueManager>();
+                        OnJoining += SyncExistingObjectsTo;
                     }
                 }
             }

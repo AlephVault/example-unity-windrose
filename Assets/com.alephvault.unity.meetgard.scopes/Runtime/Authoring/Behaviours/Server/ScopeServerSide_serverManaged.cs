@@ -27,7 +27,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     /// <summary>
                     ///   Initializes the scope. Typically, this invokes
                     ///   registered callbacks to work. This method does
-                    ///   not rely on PrefabID, ID, and Protocol values.
+                    ///   not rely on PrefabId, ID, and Protocol values.
                     /// </summary>
                     internal async Task Load()
                     {

@@ -67,8 +67,8 @@ namespace AlephVault.Unity.Meetgard.Scopes
                             ScopeServerSide instance = Instantiate(scopePrefab, null, true);
                             await instance.Load();
                             uint newId = (uint)loadedScopesIds.Next();
-                            instance.ID = newId;
-                            instance.PrefabID = Scope.DefaultPrefab;
+                            instance.Id = newId;
+                            instance.PrefabId = Scope.DefaultPrefab;
                             instance.Protocol = this;
                             loadedScopes.Add(newId, instance);
                             index++;
@@ -120,7 +120,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                         foreach(KeyValuePair<uint, ScopeServerSide> pair in instances)
                         {
                             if (pair.Value != null) Destroy(pair.Value);
-                            pair.Value.ID = 0;
+                            pair.Value.Id = 0;
                             pair.Value.Protocol = null;
                             loadedScopesIds.Release(pair.Key);
                         }
@@ -255,8 +255,8 @@ namespace AlephVault.Unity.Meetgard.Scopes
                             ScopeServerSide instance = Instantiate(extraScopePrefabs[extraScopePrefabIndex], null, true);
                             await instance.Load();
                             uint newId = (uint)loadedScopesIds.Next();
-                            instance.ID = newId;
-                            instance.PrefabID = Scope.DefaultPrefab;
+                            instance.Id = newId;
+                            instance.PrefabId = Scope.DefaultPrefab;
                             instance.Protocol = this;
                             loadedScopes.Add(newId, instance);
                             return instance;
@@ -264,29 +264,29 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     }
 
                     // Unloads and perhaps destroys a scope.
-                    private async Task DoUnloadExtraScope(uint scopeID, ScopeServerSide scopeToUnload, bool destroy)
+                    private async Task DoUnloadExtraScope(uint scopeId, ScopeServerSide scopeToUnload, bool destroy)
                     {
                         await ClearConnectionsFromScope(scopeToUnload);
                         await scopeToUnload.Unload();
                         if (scopeToUnload != null && destroy) Destroy(scopeToUnload);
-                        scopeToUnload.ID = 0;
-                        scopeToUnload.PrefabID = 0;
+                        scopeToUnload.Id = 0;
+                        scopeToUnload.PrefabId = 0;
                         scopeToUnload.Protocol = null;
-                        loadedScopesIds.Release(scopeID);
+                        loadedScopesIds.Release(scopeId);
                     }
 
                     /// <summary>
                     ///   Unloads and perhaps destroys a scope. This task is queued.
                     /// </summary>
-                    /// <param name="scopeID">The id of the scope to unload</param>
+                    /// <param name="scopeId">The id of the scope to unload</param>
                     /// <param name="destroy">Whether to also destroy it or not</param>
-                    public Task UnloadExtraScope(uint scopeID, bool destroy = true)
+                    public Task UnloadExtraScope(uint scopeId, bool destroy = true)
                     {
                         return queueManager.QueueTask(async () => {
-                            if (scopeID <= defaultScopePrefabs.Length)
+                            if (scopeId <= defaultScopePrefabs.Length)
                             {
                                 throw new ArgumentException(
-                                    $"Cannot delete the scope with ID: {scopeID} since that ID belongs " +
+                                    $"Cannot delete the scope with ID: {scopeId} since that ID belongs " +
                                     $"to the set of default scopes"
                                 );
                             }
@@ -294,17 +294,17 @@ namespace AlephVault.Unity.Meetgard.Scopes
                             ScopeServerSide scopeToUnload;
                             try
                             {
-                                scopeToUnload = loadedScopes[scopeID];
+                                scopeToUnload = loadedScopes[scopeId];
                             }
                             catch (KeyNotFoundException)
                             {
                                 throw new ArgumentException(
-                                    $"Cannot delete the scope with ID: {scopeID} since that ID belongs " +
+                                    $"Cannot delete the scope with ID: {scopeId} since that ID belongs " +
                                     $"to the set of default scopes"
                                 );
                             }
 
-                            await DoUnloadExtraScope(scopeID, scopeToUnload, destroy);
+                            await DoUnloadExtraScope(scopeId, scopeToUnload, destroy);
                         });
                     }
 
@@ -325,16 +325,16 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                 throw new ArgumentException("The given scope does not belong to this server - it cannot be deleted");
                             }
 
-                            uint scopeID = scope.ID;
-                            if (scopeID <= defaultScopePrefabs.Length)
+                            uint scopeId = scope.Id;
+                            if (scopeId <= defaultScopePrefabs.Length)
                             {
                                 throw new ArgumentException(
-                                    $"Cannot delete the scope, which has ID: {scopeID} since that scope " +
+                                    $"Cannot delete the scope, which has ID: {scopeId} since that scope " +
                                     $"belongs to the set of default scopes"
                                 );
                             }
 
-                            await DoUnloadExtraScope(scopeID, scope, destroy);
+                            await DoUnloadExtraScope(scopeId, scope, destroy);
                         });
                     }
                 }

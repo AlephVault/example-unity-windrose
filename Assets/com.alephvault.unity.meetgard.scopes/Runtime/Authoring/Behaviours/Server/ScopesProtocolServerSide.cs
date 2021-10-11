@@ -3,6 +3,7 @@ using AlephVault.Unity.Meetgard.Scopes.Types.Constants;
 using AlephVault.Unity.Meetgard.Scopes.Types.Protocols;
 using AlephVault.Unity.Meetgard.Scopes.Types.Protocols.Messages;
 using AlephVault.Unity.Support.Authoring.Behaviours;
+using AlephVault.Unity.Support.Utils;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -66,7 +67,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                         // The max ID of a scope is {Scope.MaxScopes - 1}. The minimum ID is 1.
                         // This means that the maximum amount of default scopes needs to be
                         // corrected by -1.
-                        if (defaultScopePrefabs.Length > Scope.MaxScopes - 1)
+                        if (defaultScopePrefabs.LongLength > Scope.MaxScopes - 1)
                         {
                             throw new ArgumentException("The size of the Default Scope Prefabs array is too big");
                         }
@@ -74,7 +75,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                         // In this case, the prefab id is given, and the ID of the scope will
                         // be between {defaultScopePrefabs.Length} and {Scope.MaxScopes - 1}.
                         // Once validated, this key=>id mapping will be registered.
-                        if (extraScopePrefabs.Length > Scope.MaxScopePrefabs)
+                        if (extraScopePrefabs.LongLength > Scope.MaxScopePrefabs)
                         {
                             throw new ArgumentException("The size of the Extra Scope Prefabs array is too big");
                         }
@@ -88,7 +89,13 @@ namespace AlephVault.Unity.Meetgard.Scopes
                             }
                         }
                         queueManager = GetComponent<AsyncQueueManager>();
+                        // Setting up the default events (except for OnWelcome).
+                        OnJoiningScope += DefaultOnJoiningScope;
+                        OnLeavingScope += DefaultOnLeavingScope;
+                        OnGoodBye += DefaultOnGoodBye;
+                        // Setting up the handlers for client messages.
                         base.Initialize();
+                        // Setting up the initial world status and the senders.
                         WorldLoadStatus = LoadStatus.Empty;
                         SendWelcome = MakeSender("Welcome");
                         SendMovedToScope = MakeSender<MovedToScope>("MovedToScope");
@@ -122,9 +129,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     /// </summary>
                     public override async Task OnServerStarted()
                     {
-                        // TODO Anything else here?
                         await LoadWorld();
-                        // TODO Anything else here?
                     }
 
                     /// <summary>
@@ -137,8 +142,12 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     /// <param name="clientId">the connection being started.</param>
                     public override async Task OnConnected(ulong clientId)
                     {
-                        await SendWelcome(clientId);
-                        // TODO implement appropriate connect logic for a connection.
+                        await queueManager.QueueAction(async () =>
+                        {
+                            scopeForConnection[clientId] = Scope.Limbo;
+                            await SendWelcome(clientId);
+                            await (OnWelcome?.InvokeAsync(clientId) ?? Task.CompletedTask);
+                        });
                     }
 
                     /// <summary>
@@ -153,8 +162,13 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     /// <param name="reason">The disconnection reason</param>
                     public override async Task OnDisconnected(ulong clientId, Exception reason)
                     {
-                        // TODO Implement appropriate disconnect logic for a connection
-                        // TODO that terminated for any reason.
+                        await queueManager.QueueAction(async () =>
+                        {
+                            if (scopeForConnection.TryGetValue(clientId, out uint scopeId))
+                            {
+                                await (OnGoodBye?.InvokeAsync(clientId, scopeId) ?? Task.CompletedTask);
+                            };
+                        });
                     }
 
                     /// <summary>
@@ -163,9 +177,12 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     /// </summary>
                     public override async Task OnServerStopped(Exception e)
                     {
-                        // TODO Anything else here (specially using e)?
                         await UnloadWorld();
-                        // TODO Anything else here (specially using e)?
+                        // At this point, the whole world is unloaded and all of the
+                        // connections are being sent to Limbo. As long as they remain
+                        // established, they will be kicked one by one gracefully and
+                        // the OnDisconnection will be triggered for them (although
+                        // the OnGoodBye event will make them depart from Limbo).
                     }
                 }
             }

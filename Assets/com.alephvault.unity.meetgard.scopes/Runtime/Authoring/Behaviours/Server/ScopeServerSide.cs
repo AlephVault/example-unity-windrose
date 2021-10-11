@@ -54,17 +54,17 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     ///   to the "extra prefabs", and not the "default"
                     ///   ones, of the underlying server.
                     /// </summary>
-                    public uint PrefabID { get; internal set; }
+                    public uint PrefabId { get; internal set; }
 
                     /// <summary>
                     ///   The ID of this scope. It is always >= 1.
-                    ///   If <see cref="PrefabID"/> is equal to the
+                    ///   If <see cref="PrefabId"/> is equal to the
                     ///   <see cref="Scope.DefaultPrefab"/> constant,
                     ///   then the actual prefab id will equal to this
                     ///   value minus 1 (and the corresponding prefab
                     ///   list will be different).
                     /// </summary>
-                    public uint ID { get; internal set; }
+                    public uint Id { get; internal set; }
 
                     /// <summary>
                     ///   The protocol server side this scope was created

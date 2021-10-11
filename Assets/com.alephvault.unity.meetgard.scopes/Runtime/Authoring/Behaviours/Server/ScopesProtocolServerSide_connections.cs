@@ -78,13 +78,36 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     // Default implementation for the OnLeavingScope event.
                     private async Task DefaultOnLeavingScope(ulong connectionId, uint scopeId)
                     {
-                        // TODO
+                        // There is no notification to send here.
+                        switch(scopeId)
+                        {
+                            case Scope.Limbo:
+                            case Scope.Maintenance:
+                                break;
+                            default:
+                                if (loadedScopes.TryGetValue(scopeId, out ScopeServerSide scope))
+                                {
+                                    await scope.TriggerOnLeaving(connectionId);
+                                };
+                                break;
+                        }
                     }
 
                     // Default implementation for the OnJoiningScope event.
                     private async Task DefaultOnJoiningScope(ulong connectionId, uint scopeId)
                     {
-                        // TODO
+                        // There is no notification to send here.
+                        switch (scopeId)
+                        {
+                            case Scope.Limbo:
+                            case Scope.Maintenance:
+                                break;
+                            default:
+                                if (loadedScopes.TryGetValue(scopeId, out ScopeServerSide scope)) {
+                                    await scope.TriggerOnJoining(connectionId);
+                                };
+                                break;
+                        }
                     }
 
                     // Default implementation for the OnGoodBye event.
@@ -92,7 +115,19 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     // depart silently in that case.
                     private async Task DefaultOnGoodBye(ulong connectionId, uint scopeId)
                     {
-                        // TODO
+                        // There is no notification to send here.
+                        switch (scopeId)
+                        {
+                            case Scope.Limbo:
+                            case Scope.Maintenance:
+                                break;
+                            default:
+                                if (loadedScopes.TryGetValue(scopeId, out ScopeServerSide scope))
+                                {
+                                    await scope.TriggerOnGoodBye(connectionId);
+                                };
+                                break;
+                        }
                     }
 
                     /// <summary>

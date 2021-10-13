@@ -30,6 +30,13 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     public uint ScopeIndex;
 
                     /// <summary>
+                    ///   The index of the prefav this object is being spawned
+                    ///   with (client and server must match the index in an
+                    ///   appropriate way).
+                    /// </summary>
+                    public uint ObjectPrefabIndex;
+
+                    /// <summary>
                     ///   The effective index of the object being spawned
                     ///   in the current scope.
                     /// </summary>
@@ -48,6 +55,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     public void Serialize(Serializer serializer)
                     {
                         serializer.Serialize(ref ScopeIndex);
+                        serializer.Serialize(ref ObjectPrefabIndex);
                         serializer.Serialize(ref ObjectIndex);
                         serializer.Serialize(ref Data);
                     }

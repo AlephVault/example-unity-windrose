@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "com.alephvault.unity.binary": {
-      "version": "file:C:/Users/luism/Projects/unity-binary",
+      "version": "file:../../unity-binary",
       "depth": 0,
       "source": "local",
       "dependencies": {
@@ -9,13 +9,13 @@
       }
     },
     "com.alephvault.unity.camjam": {
-      "version": "file:C:/Users/luism/Projects/unity-camjam",
+      "version": "file:../../unity-camjam",
       "depth": 0,
       "source": "local",
       "dependencies": {}
     },
     "com.alephvault.unity.layout": {
-      "version": "file:C:/Users/luism/Projects/unity-layout",
+      "version": "file:../../unity-layout",
       "depth": 0,
       "source": "local",
       "dependencies": {
@@ -23,7 +23,7 @@
       }
     },
     "com.alephvault.unity.meetgard": {
-      "version": "file:C:/Users/luism/Projects/unity-meetgard",
+      "version": "file:../../unity-meetgard",
       "depth": 0,
       "source": "local",
       "dependencies": {
@@ -33,7 +33,7 @@
       }
     },
     "com.alephvault.unity.menuactions": {
-      "version": "file:C:/Users/luism/Projects/unity-menu-actions",
+      "version": "file:../../unity-menu-actions",
       "depth": 0,
       "source": "local",
       "dependencies": {
@@ -41,7 +41,7 @@
       }
     },
     "com.alephvault.unity.scenes": {
-      "version": "file:C:/Users/luism/Projects/unity-scenes",
+      "version": "file:../../unity-scenes",
       "depth": 0,
       "source": "local",
       "dependencies": {
@@ -50,19 +50,19 @@
       }
     },
     "com.alephvault.unity.soundaround": {
-      "version": "file:C:/Users/luism/Projects/unity-soundaround",
+      "version": "file:../../unity-soundaround",
       "depth": 0,
       "source": "local",
       "dependencies": {}
     },
     "com.alephvault.unity.support": {
-      "version": "file:C:/Users/luism/Projects/unity-support",
+      "version": "file:../../unity-support",
       "depth": 0,
       "source": "local",
       "dependencies": {}
     },
     "com.alephvault.unity.support.generic": {
-      "version": "file:C:/Users/luism/Projects/unity-support-generic",
+      "version": "file:../../unity-support-generic",
       "depth": 0,
       "source": "local",
       "dependencies": {
@@ -70,7 +70,7 @@
       }
     },
     "com.gamemeanmachine.unity.backpack": {
-      "version": "file:C:/Users/luism/Projects/unity-backpack",
+      "version": "file:../../unity-backpack",
       "depth": 0,
       "source": "local",
       "dependencies": {
@@ -80,7 +80,7 @@
       }
     },
     "com.gamemeanmachine.unity.gabtab": {
-      "version": "file:C:/Users/luism/Projects/unity-gabtab",
+      "version": "file:../../unity-gabtab",
       "depth": 0,
       "source": "local",
       "dependencies": {
@@ -91,7 +91,7 @@
       }
     },
     "com.gamemeanmachine.unity.windrose": {
-      "version": "file:C:/Users/luism/Projects/unity-windrose",
+      "version": "file:../../unity-windrose",
       "depth": 0,
       "source": "local",
       "dependencies": {
@@ -101,7 +101,7 @@
       }
     },
     "com.gamemeanmachine.unity.windrose-backpack": {
-      "version": "file:C:/Users/luism/Projects/unity-windrose-backpack-plugin",
+      "version": "file:../../unity-windrose-backpack-plugin",
       "depth": 0,
       "source": "local",
       "dependencies": {
@@ -114,7 +114,7 @@
       }
     },
     "com.gamemeanmachine.unity.windrose-gabtab": {
-      "version": "file:C:/Users/luism/Projects/unity-windrose-gabtab-plugin",
+      "version": "file:../../unity-windrose-gabtab-plugin",
       "depth": 0,
       "source": "local",
       "dependencies": {

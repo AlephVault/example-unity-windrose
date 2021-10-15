@@ -37,6 +37,23 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     public uint PrefabId { get; internal set; }
 
                     /// <summary>
+                    ///   An optional key to be used. This is only meaningful
+                    ///   if the object this key is assigned to, is actually a
+                    ///   prefab object inside a specific server. When this
+                    ///   value is set (in constrast to null or ""), it will be
+                    ///   added to an internal dictionary of prefabs by their
+                    ///   keys, and thus be available to be instantiated via
+                    ///   a method taking its key instead of its index.
+                    /// </summary>
+                    [SerializeField]
+                    private string prefabKey;
+
+                    /// <summary>
+                    ///   See <see cref="prefabKey"/>.
+                    /// </summary>
+                    public string PrefabKey => prefabKey;
+
+                    /// <summary>
                     ///   The protocol this object is associated to. Typically,
                     ///   this means that an object is created in that particular
                     ///   server and with a particular prefab therein. This

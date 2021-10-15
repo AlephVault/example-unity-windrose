@@ -23,7 +23,9 @@ namespace AlephVault.Unity.Meetgard.Scopes
                 ///   It manages the scopes that has to load, the loaded scopes, the
                 ///   current connections and methods to synchronize objects and manage
                 ///   all of the notifications and stuff between this class and other
-                ///   classes in the package, like (scoped) objects.
+                ///   classes in the package, like (scoped) objects. It also loads
+                ///   the objects that are related to the scopes and the current game.
+                ///   Those are client-server synchronized objects.
                 /// </summary>
                 [RequireComponent(typeof(AsyncQueueManager))]
                 public partial class ScopesProtocolServerSide : ProtocolServerSide<ScopesProtocolDefinition>
@@ -56,6 +58,13 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     private ScopeServerSide[] extraScopePrefabs;
 
                     /// <summary>
+                    ///   List of prefabs that will be used dynamically to instantiate
+                    ///   objects. Spawnable objects are created using these prefabs.
+                    /// </summary>
+                    [SerializeField]
+                    private ObjectServerSide[] objectPrefabs;
+
+                    /// <summary>
                     ///   A dictionary key => index of the extra scope prefabs, so games
                     ///   can reference the extra maps by keys appropriately, which in
                     ///   turn maps against an index (this index is 0-based).
@@ -64,6 +73,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
 
                     protected override void Initialize()
                     {
+                        uint index;
                         // The max ID of a scope is {Scope.MaxScopes - 1}. The minimum ID is 1.
                         // This means that the maximum amount of default scopes needs to be
                         // corrected by -1.
@@ -79,15 +89,36 @@ namespace AlephVault.Unity.Meetgard.Scopes
                         {
                             throw new ArgumentException("The size of the Extra Scope Prefabs array is too big");
                         }
-                        else
+                        index = 0;
+                        foreach (ScopeServerSide scope in extraScopePrefabs)
                         {
-                            uint index = 0;
-                            foreach (ScopeServerSide scope in extraScopePrefabs)
+                            extraScopePrefabIndicesByKey.Add(scope.Key, index);
+                            index++;
+                        }
+                        // The object prefabs lookup must also be initialized as well.
+                        // Although this is weird, we allow no objects to be used.
+                        // Additionally, we allow registering prefabs by their keys,
+                        // when they have one.
+                        indexByObjectPrefab = new Dictionary<ObjectServerSide, uint>();
+                        index = 0;
+                        foreach(ObjectServerSide prefab in objectPrefabs)
+                        {
+                            indexByObjectPrefab.Add(prefab, index);
+                            index++;
+                            if (prefab.PrefabKey != null)
                             {
-                                extraScopePrefabIndicesByKey.Add(scope.Key, index);
-                                index++;
+                                string key = prefab.PrefabKey.Trim();
+                                if (key.Length == 0)
+                                {
+                                    if (prefabByKey.ContainsKey(key))
+                                    {
+                                        throw new ArgumentException("There are duplicate keys among the registered prefabs' ones");
+                                    }
+                                    prefabByKey.Add(key, prefab);
+                                }
                             }
                         }
+                        // Then, the events and server-side objects are initialized.
                         queueManager = GetComponent<AsyncQueueManager>();
                         // Setting up the default events (except for OnWelcome).
                         OnJoiningScope += DefaultOnJoiningScope;

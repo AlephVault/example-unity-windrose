@@ -25,19 +25,19 @@ namespace AlephVault.Unity.Meetgard.Scopes
 
                     // A sender for the ObjectSpawned message.
                     // Use case: when a new connection arrives, for each object.
-                    private Func<ulong, ObjectSpawned, Task> SendObjectSpawned;
+                    internal Func<ulong, ObjectSpawned, Task> SendObjectSpawned;
 
                     // A broadcaster for the ObjectSpawned message.
                     // Use case: when a new object spawns, for each connection.
-                    private Func<IEnumerable<ulong>, ObjectSpawned, Dictionary<ulong, Task>> BroadcastObjectSpawned;
+                    internal Func<IEnumerable<ulong>, ObjectSpawned, Dictionary<ulong, Task>> BroadcastObjectSpawned;
 
                     // A broadcaster for the ObjectRefreshed message.
                     // Use case: when a new connection requests refresh, for each object.
-                    private Func<ulong, ObjectRefreshed, Task> SendObjectRefreshed;
+                    internal Func<ulong, ObjectRefreshed, Task> SendObjectRefreshed;
 
                     // A broadcaster for the ObjectDespawned message.
                     // Use case: when an object despawns, for each connection.
-                    private Func<IEnumerable<ulong>, ObjectDespawned, Dictionary<ulong, Task>> BroadcastObjectDespawned;
+                    internal Func<IEnumerable<ulong>, ObjectDespawned, Dictionary<ulong, Task>> BroadcastObjectDespawned;
 
                     // A sender for the FocusChanged message.
                     private Func<ulong, FocusChanged, Task> SendFocusChanged;

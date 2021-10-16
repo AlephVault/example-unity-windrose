@@ -1,6 +1,8 @@
+using AlephVault.Unity.Binary;
 using AlephVault.Unity.Meetgard.Scopes.Types.Constants;
 using AlephVault.Unity.Support.Authoring.Behaviours;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -22,7 +24,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                 ///   created into that server but spawned into no particular
                 ///   server side scope.
                 /// </summary>
-                public class ObjectServerSide : MonoBehaviour
+                public abstract class ObjectServerSide : MonoBehaviour
                 {
                     // These two fields are set by the protocol.
 
@@ -84,6 +86,19 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     ///   when spawning this object (and also populating this field).
                     /// </summary>
                     public ScopeServerSide Scope { get; internal set; }
+
+                    /// <summary>
+                    ///   Returns the data of this object to synchronize for the
+                    ///   connections. Each set of connection might receive a custom
+                    ///   data set for this object. Warning: Both client and server
+                    ///   must agree in the data type and it must be the same in
+                    ///   all of the entries, save for certain entries which can be
+                    ///   "censored" to null or empty (the data type itself must
+                    ///   tolerate this).
+                    /// </summary>
+                    /// <param name="connections">The whole connections in the scope</param>
+                    /// <returns>A list of pairs (connections, data), so each set of connections can potentially receive different sets of data</returns>
+                    public abstract List<Tuple<HashSet<ulong>, ISerializable>> FullData(HashSet<ulong> connections);
                 }
             }
         }

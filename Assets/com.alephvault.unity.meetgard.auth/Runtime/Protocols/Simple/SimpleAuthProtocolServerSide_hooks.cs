@@ -78,7 +78,7 @@ namespace AlephVault.Unity.Meetgard.Auth
                                 // Reject the new, if already logged in.
                                 if (sessionByAccountId.ContainsKey(accountId))
                                 {
-                                    await SendAccountAlreadyInUse(clientId);
+                                    await UntilSendIsDone(SendAccountAlreadyInUse(clientId));
                                     server.Close(clientId);
                                     return;
                                 }
@@ -104,7 +104,7 @@ namespace AlephVault.Unity.Meetgard.Auth
                             await OnSessionError(clientId, SessionStage.AccountLoad, e);
                         }
                         catch { /* Diaper pattern - intentional */ }
-                        await SendKicked(clientId, new Kicked().WithAccountLoadErrorReason());
+                        await UntilSendIsDone(SendKicked(clientId, new Kicked().WithAccountLoadErrorReason()));
                         server.Close(clientId);
                         return;
                     }
@@ -126,7 +126,7 @@ namespace AlephVault.Unity.Meetgard.Auth
                             await OnSessionError(clientId, SessionStage.Initialization, e);
                         }
                         catch { /* Diaper pattern - intentional */ }
-                        await SendKicked(clientId, new Kicked().WithSessionInitializationErrorReason());
+                        await UntilSendIsDone(SendKicked(clientId, new Kicked().WithSessionInitializationErrorReason()));
                         server.Close(clientId);
                     }
                 }
@@ -158,7 +158,11 @@ namespace AlephVault.Unity.Meetgard.Auth
                         catch { /* Diaper pattern - intentional */ }
                     }
                     RemoveSession(clientId);
-                    server.Close(clientId);
+                    try
+                    {
+                        server.Close(clientId);
+                    }
+                    catch (Exception) {}
                 }
 
                 /// <summary>

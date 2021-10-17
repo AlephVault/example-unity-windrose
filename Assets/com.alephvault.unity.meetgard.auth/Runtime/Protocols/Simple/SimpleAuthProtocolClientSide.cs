@@ -195,7 +195,7 @@ namespace AlephVault.Unity.Meetgard.Auth
                 /// </summary>
                 public async Task Logout()
                 {
-                    await SendLogout();
+                    await UntilSendIsDone(SendLogout());
                     client.Close();
                 }
             }

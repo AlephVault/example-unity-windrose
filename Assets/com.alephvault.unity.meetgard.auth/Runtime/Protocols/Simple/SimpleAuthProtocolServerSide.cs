@@ -90,7 +90,7 @@ namespace AlephVault.Unity.Meetgard.Auth
                     {
                         await Exclusive(async () =>
                         {
-                            await SendLoggedOut(clientId);
+                            await UntilSendIsDone(SendLoggedOut(clientId));
                             await OnLoggedOut(clientId, default(Kicked));
                         });
                     }));
@@ -111,7 +111,7 @@ namespace AlephVault.Unity.Meetgard.Auth
                 public override async Task OnConnected(ulong clientId)
                 {
                     AddPendingLogin(clientId);
-                    await SendWelcome(clientId);
+                    await UntilSendIsDone(SendWelcome(clientId));
                 }
 
                 /// <summary>
@@ -150,7 +150,7 @@ namespace AlephVault.Unity.Meetgard.Auth
                     {
                         foreach (Session session in sessions.ToArray())
                         {
-                            await SendKicked(session.Item1, reason);
+                            await UntilSendIsDone(SendKicked(session.Item1, reason));
                             await OnLoggedOut(session.Item1, reason);
                         }
                     }

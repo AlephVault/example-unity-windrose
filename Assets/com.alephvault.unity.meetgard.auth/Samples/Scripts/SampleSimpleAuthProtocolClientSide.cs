@@ -52,7 +52,7 @@ namespace AlephVault.Unity.Meetgard.Auth
             private async Task AuthProtocol_OnWelcome()
             {
                 Debug.Log($"SSAPClient({Username}) :: welcome");
-                await SendSampleLogin(new UserPass() { Username = Username, Password = Password });
+                await UntilSendIsDone(SendSampleLogin(new UserPass() { Username = Username, Password = Password }));
             }
 
             private async Task AuthProtocol_OnTimeout()

@@ -146,6 +146,22 @@ namespace AlephVault.Unity.Meetgard.Scopes
                         TrackCurrentScopeHierarchy();
                     }
 
+                    // When the object is enabled, it must track itself to find the scope
+                    // it belongs to.
+                    private void OnEnable()
+                    {
+                        TrackCurrentScopeHierarchy();
+                    }
+
+                    // When the object is disabled, it must remove from the scope.
+                    private void OnDisable()
+                    {
+                        queueManager.QueueTask(async () =>
+                        {
+                            if (Scope != null) await Scope.RemoveObject(this);
+                        });
+                    }
+
                     // When a parent changes, this object must retrack itself to find
                     // the scope it belongs to.
                     private void OnTransformParentChanged()

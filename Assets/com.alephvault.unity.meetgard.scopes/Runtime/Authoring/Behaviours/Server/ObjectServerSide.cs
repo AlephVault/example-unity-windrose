@@ -24,6 +24,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                 ///   created into that server but spawned into no particular
                 ///   server side scope.
                 /// </summary>
+                [RequireComponent(typeof(AsyncQueueManager))]
                 public abstract class ObjectServerSide : MonoBehaviour
                 {
                     // These two fields are set by the protocol.
@@ -129,6 +130,42 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     /// <param name="context">The refresh context</param>
                     /// <returns>The data to send to that connection, or null when no need</returns>
                     public abstract ISerializable RefreshData(ulong connection, string context);
+
+                    // The underlying queue manager.
+                    AsyncQueueManager queueManager;
+
+                    private void Awake()
+                    {
+                        queueManager = GetComponent<AsyncQueueManager>();
+                    }
+
+                    // When the object starts, it must track itself to find the scope
+                    // it belongs to.
+                    private void Start()
+                    {
+                        TrackCurrentScopeHierarchy();
+                    }
+
+                    // When a parent changes, this object must retrack itself to find
+                    // the scope it belongs to.
+                    private void OnTransformParentChanged()
+                    {
+                        TrackCurrentScopeHierarchy();
+                    }
+
+                    // This method tracks which one is the current scope and auto-adds
+                    // itself to it, if any. For this to work, the current scope must
+                    // be instantiated properly (i.e. within a working server) and
+                    // any future scope must as well.
+                    private void TrackCurrentScopeHierarchy()
+                    {
+                        ScopeServerSide newScope = GetComponentInParent<ScopeServerSide>();
+                        if (newScope != Scope) queueManager.QueueTask(async () =>
+                        {
+                            if (Scope != null) await Scope.RemoveObject(this);
+                            if (newScope != null) await Scope.AddObject(this);
+                        });
+                    }
                 }
             }
         }

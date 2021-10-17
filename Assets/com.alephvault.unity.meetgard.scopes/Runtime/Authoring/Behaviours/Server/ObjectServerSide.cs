@@ -91,14 +91,26 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     ///   Returns the data of this object to synchronize for the
                     ///   connections. Each set of connection might receive a custom
                     ///   data set for this object. Warning: Both client and server
-                    ///   must agree in the data type and it must be the same in
-                    ///   all of the entries, save for certain entries which can be
+                    ///   must agree on the data type and it must be the same in
+                    ///   all of the entries, save for certain fields which can be
                     ///   "censored" to null or empty (the data type itself must
                     ///   tolerate this).
                     /// </summary>
-                    /// <param name="connections">The whole connections in the scope</param>
+                    /// <param name="connections">The whole connections in a scope</param>
                     /// <returns>A list of pairs (connections, data), so each set of connections can potentially receive different sets of data</returns>
                     public abstract List<Tuple<HashSet<ulong>, ISerializable>> FullData(HashSet<ulong> connections);
+
+                    /// <summary>
+                    ///   Returns the data of this object to synchronize for the
+                    ///   connection. Warning: Both client and server must agree on
+                    ///   the data type and it must be the same in all the possible
+                    ///   cases this function might return, save for the fact that
+                    ///   some fields in the result might become "censored" to null
+                    ///   or empty.
+                    /// </summary>
+                    /// <param name="connection">A connection in a scope</param>
+                    /// <returns>The data to send to that connection</returns>
+                    public abstract ISerializable FullData(ulong connection);
                 }
             }
         }

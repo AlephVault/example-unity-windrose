@@ -68,7 +68,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                             scopeForConnection[connection] = Scope.Limbo;
                             try
                             {
-                                await SendMovedToScope(connection, message);
+                                await UntilSendIsDone(SendMovedToScope(connection, message));
                             }
                             catch { /* Diaper-ignore */ }
                         }
@@ -175,11 +175,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                             if (force || currentScopeId != newScope)
                             {
                                 await (OnLeavingScope?.InvokeAsync(connectionId, currentScopeId) ?? Task.CompletedTask);
-                                await SendMovedToScope(connectionId, new MovedToScope()
-                                {
-                                    PrefabIndex = scopePrefabId,
-                                    ScopeIndex = currentScopeId
-                                });
+                                await UntilSendIsDone(SendMovedToScope(connectionId, new MovedToScope() { PrefabIndex = scopePrefabId, ScopeIndex = currentScopeId }));
                                 await (OnJoiningScope?.InvokeAsync(connectionId, currentScopeId) ?? Task.CompletedTask);
                             }
                         });

@@ -189,7 +189,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                         await queueManager.QueueAction(async () =>
                         {
                             scopeForConnection[clientId] = Scope.Limbo;
-                            await SendWelcome(clientId);
+                            await UntilSendIsDone(SendWelcome(clientId));
                             await (OnWelcome?.InvokeAsync(clientId) ?? Task.CompletedTask);
                         });
                     }

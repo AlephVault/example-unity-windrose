@@ -111,6 +111,24 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     /// <param name="connection">A connection in a scope</param>
                     /// <returns>The data to send to that connection</returns>
                     public abstract ISerializable FullData(ulong connection);
+
+                    /// <summary>
+                    ///   Returns the data of this object to synchronize for the
+                    ///   connection, given a certain context. Typically it will,
+                    ///   like in <see cref="FullData(ulong)"/> method, return the
+                    ///   full object data, but only when the given context is one
+                    ///   that matters for the object itslf. Otherwise, it returns
+                    ///   null (meaning: given the current context, there is nothing
+                    ///   to refresh). Warning: Both client and server must agree on
+                    ///   the data type and it must be the same in all the possible
+                    ///   cases this function might return, save for the fact that
+                    ///   some fields in the result might become "censored" to null
+                    ///   or empty. 
+                    /// </summary>
+                    /// <param name="connection">A connection in a scope</param>
+                    /// <param name="context">The refresh context</param>
+                    /// <returns>The data to send to that connection, or null when no need</returns>
+                    public abstract ISerializable RefreshData(ulong connection, string context);
                 }
             }
         }

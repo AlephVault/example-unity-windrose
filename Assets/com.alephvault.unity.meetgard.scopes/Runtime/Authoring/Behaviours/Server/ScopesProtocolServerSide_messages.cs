@@ -1,4 +1,5 @@
-﻿using AlephVault.Unity.Meetgard.Authoring.Behaviours.Server;
+﻿using AlephVault.Unity.Binary;
+using AlephVault.Unity.Meetgard.Authoring.Behaviours.Server;
 using AlephVault.Unity.Meetgard.Scopes.Types.Protocols;
 using AlephVault.Unity.Meetgard.Scopes.Types.Protocols.Messages;
 using System;
@@ -25,7 +26,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
 
                     // A sender for the ObjectSpawned message.
                     // Use case: when a new connection arrives, for each object.
-                    internal Func<ulong, ObjectSpawned, Task> SendObjectSpawned;
+                    private Func<ulong, ObjectSpawned, Task> SendObjectSpawned;
 
                     // A broadcaster for the ObjectSpawned message.
                     // Use case: when a new object spawns, for each connection.
@@ -33,7 +34,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
 
                     // A broadcaster for the ObjectRefreshed message.
                     // Use case: when a new connection requests refresh, for each object.
-                    internal Func<ulong, ObjectRefreshed, Task> SendObjectRefreshed;
+                    private Func<ulong, ObjectRefreshed, Task> SendObjectRefreshed;
 
                     // A broadcaster for the ObjectDespawned message.
                     // Use case: when an object despawns, for each connection.
@@ -44,6 +45,20 @@ namespace AlephVault.Unity.Meetgard.Scopes
 
                     // A sender for the FocusReleased message.
                     private Func<ulong, FocusReleased, Task> SendFocusReleased;
+
+                    // These functions are somewhat auxiliar and build on top of the
+                    // message senders and broadcasters, when needed. In particular,
+                    // these stand to object synchronization.
+
+                    internal byte[] AllocateFullDataMessageBytes()
+                    {
+                        // The socket message size will be low-clamped to 512.
+                        // This makes safe to subtract 16 to this size, with
+                        // those 4*4 bytes being the upper bound of four 4-byte
+                        // numbers: scope id, object prefab id, object id, and
+                        // overall message size.
+                        return new byte[MaxSocketMessageSize - 16];
+                    }
                 }
             }
         }

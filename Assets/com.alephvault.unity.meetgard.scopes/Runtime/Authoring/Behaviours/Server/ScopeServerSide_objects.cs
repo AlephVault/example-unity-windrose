@@ -179,6 +179,38 @@ namespace AlephVault.Unity.Meetgard.Scopes
                         });
                     }
 
+                    /// <summary>
+                    ///   <para>
+                    ///     For a given connection, it refreshes all of its objects,
+                    ///     considering a given refresh context. Typically, this
+                    ///     method should be needed few times... not per connection
+                    ///     but per underlying profile. This operation is heave and,
+                    ///     like the initial sync, it may consume some degree of
+                    ///     network resources.
+                    ///   </para>
+                    /// </summary>
+                    /// <param name="connection">The connection that needs a refresh</param>
+                    /// <param name="context">The refresh context</param>
+                    public async Task RefreshExistingObjectsTo(ulong connection, string context)
+                    {
+                        foreach (ObjectServerSide obj in objects.Values)
+                        {
+                            ISerializable refreshData = obj.RefreshData(connection, context);
+                            if (refreshData != null)
+                            {
+                                // Lazy-allocate the array.
+                                if (fullObjectData == null) fullObjectData = Protocol.AllocateFullDataMessageBytes();
+                                // Serialize the object into the array.
+                                refreshData.Serialize(new Serializer(new Writer(new Binary.Buffer(fullObjectData))));
+                                await Tasks.UntilDone(Protocol.SendObjectRefreshed(connection, new ObjectRefreshed() {
+                                    ObjectIndex = obj.Id,
+                                    ScopeIndex = Id,
+                                    Data = fullObjectData
+                                }));
+                            }
+                        }
+                    }
+
                     // Synchronizes all the existing objects to the connection.
                     // This synchronization is initial, and will be part of a
                     // bigger queued task.

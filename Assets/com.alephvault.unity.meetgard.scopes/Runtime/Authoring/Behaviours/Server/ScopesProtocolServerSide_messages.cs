@@ -26,7 +26,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
 
                     // A sender for the ObjectSpawned message.
                     // Use case: when a new connection arrives, for each object.
-                    private Func<ulong, ObjectSpawned, Task> SendObjectSpawned;
+                    internal Func<ulong, ObjectSpawned, Task> SendObjectSpawned;
 
                     // A broadcaster for the ObjectSpawned message.
                     // Use case: when a new object spawns, for each connection.

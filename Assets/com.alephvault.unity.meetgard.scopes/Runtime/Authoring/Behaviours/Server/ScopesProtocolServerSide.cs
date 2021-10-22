@@ -20,7 +20,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
             {
                 /// <summary>
                 ///   The server side implementation of the scopes-managing protocol.
-                ///   It manages the scopes that has to load, the loaded scopes, the
+                ///   It manages the scopes that has to load, the extra scopes, the
                 ///   current connections and methods to synchronize objects and manage
                 ///   all of the notifications and stuff between this class and other
                 ///   classes in the package, like (scoped) objects. It also loads

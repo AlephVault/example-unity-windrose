@@ -11,10 +11,9 @@ namespace AlephVault.Unity.Meetgard.Scopes
             {
                 /// <summary>
                 ///   A message telling an object in the current scope
-                ///   is being despawned. Any focus must be terminated
-                ///   in both client and server. Any additional current
-                ///   interaction must be terminated as well. In client
-                ///   side, the object must be destroyed.
+                ///   is being despawned. Any additional current interaction
+                ///   must be terminated as well. In client side, the object
+                ///   must be destroyed.
                 /// </summary>
                 public class ObjectDespawned : ISerializable
                 {

@@ -12,13 +12,8 @@ namespace AlephVault.Unity.Meetgard.Scopes
                 /// <summary>
                 ///   A message telling the connection was added to
                 ///   a certain scope. This is only for the connection
-                ///   and not for any object. Typically, this message
-                ///   is received *before* receiving a focus message
-                ///   (i.e. <see cref="FocusChanged"/>), located in the
-                ///   new scope, or before going to a virtual/reserved
-                ///   scope, like Limbo or Maintenance. The client
-                ///   will dispose all of the previous scope objects
-                ///   automatically.
+                ///   and not for any object. The client will dispose
+                ///   all of the previous scope objects automatically.
                 /// </summary>
                 public class MovedToScope : ISerializable
                 {

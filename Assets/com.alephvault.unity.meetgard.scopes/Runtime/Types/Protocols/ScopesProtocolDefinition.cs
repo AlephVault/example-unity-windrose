@@ -60,8 +60,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                      *   Only ONE scope will a connection belong to
                      *   at the same time. However, a connection may
                      *   "own" many objects at the same time (this is
-                     *   as per-game logic) in different scopes, and
-                     *   change its focus.
+                     *   as per-game logic) in different scopes.
                      * 
                      * Spawned(scope, prefab, object, data): In the
                      *   current scope (whose id is sent as well for
@@ -88,24 +87,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                      *   The client must reflect the changes in the
                      *   new data, onto the existing object, without
                      *   creating/destroying it.
-                     * 
-                     * FocusChanged(scopeIndex, objectIndex): The
-                     *   object given by its index, and in the given
-                     *   scope, must be focused in the client (this
-                     *   may involve a mechanism to ensure the camera
-                     *   follows the object). The scope index is
-                     *   given for validity, and the object index
-                     *   might not exist at that time (since this
-                     *   message may be received on spawn), but the
-                     *   client must ensure it will wait until the
-                     *   object is spawned and start focusing on it,
-                     *   or wait until another FocusChanged or even
-                     *   FocusReleased message is received.
-                     * 
-                     * FocusReleased(scopeIndex): Any object currently
-                     *   being focused on, must be unfocused. The scope
-                     *   index is given for validity.
-                     * 
+                     *                      * 
                      * Despawned(scope, object): In the current scope
                      *   (whose id is sent as well for redundancy),
                      *   and for a given object which belongs to that
@@ -114,17 +96,11 @@ namespace AlephVault.Unity.Meetgard.Scopes
                      *   means it was destroyed or it belongs now to
                      *   a different scope (i.e. was moved out of the
                      *   current scope). The client side must locally
-                     *   destroy the object. If the object was being
-                     *   focused, no object will be focused on so far
-                     *   until the server sends another Focusing
-                     *   message. However, updates from the same scope
-                     *   will still be received until the server expels
-                     *   the connection from the current scope. Also,
-                     *   if the object had another type of interaction,
-                     *   both the server and the client must end those
-                     *   types of interactions as well (e.g. observing
-                     *   extra data, or owner-specific data, from the
-                     *   object).
+                     *   destroy the object. Also, if the object had
+                     *   another type of interaction, both the server
+                     *   and the client must end those types of
+                     *   interactions as well (e.g. observing extra
+                     *   data, or owner-specific data, from the object).
                      * 
                      * Other messages are game-specific and will not
                      * be specified here, even when they are related
@@ -146,8 +122,6 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     DefineServerMessage<MovedToScope>("MovedToScope");
                     DefineServerMessage<ObjectSpawned>("ObjectSpawned");
                     DefineServerMessage<ObjectRefreshed>("ObjectRefreshed");
-                    DefineServerMessage<FocusChanged>("FocusChanged");
-                    DefineServerMessage<FocusReleased>("FocusReleased");
                     DefineServerMessage<ObjectDespawned>("ObjectDespawned");
                     DefineClientMessage<Nothing>("LocalError");
                 }

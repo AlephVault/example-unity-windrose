@@ -37,7 +37,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                 Debug.LogError(
                                     $"An error of type {e.GetType().FullName} has occurred in scope server side's OnLoad event. " +
                                     $"If the exceptions are not properly handled, the game state might be inconsistent. " +
-                                    $"The exception details are: {e}"
+                                    $"The exception details are: {e.Message}"
                                 );
                             }) ?? Task.CompletedTask);
                         });
@@ -57,7 +57,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                 Debug.LogError(
                                     $"An error of type {e.GetType().FullName} has occurred in scope server side's OnUnload event. " +
                                     $"If the exceptions are not properly handled, the game state might be inconsistent. " +
-                                    $"The exception details are: {e}"
+                                    $"The exception details are: {e.Message}"
                                 );
                             }) ?? Task.CompletedTask);
                         });
@@ -78,7 +78,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                 Debug.LogError(
                                     $"An error of type {e.GetType().FullName} has occurred in scope server side's OnJoining event. " +
                                     $"If the exceptions are not properly handled, the game state might be inconsistent. " +
-                                    $"The exception details are: {e}"
+                                    $"The exception details are: {e.Message}"
                                 );
                             }) ?? Task.CompletedTask);
                         });
@@ -96,7 +96,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                 Debug.LogError(
                                     $"An error of type {e.GetType().FullName} has occurred in scope server side's OnLeaving event. " +
                                     $"If the exceptions are not properly handled, the game state might be inconsistent. " +
-                                    $"The exception details are: {e}"
+                                    $"The exception details are: {e.Message}"
                                 );
                             }) ?? Task.CompletedTask);
                         });
@@ -114,7 +114,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                 Debug.LogError(
                                     $"An error of type {e.GetType().FullName} has occurred in scope server side's OnGoodBye event. " +
                                     $"If the exceptions are not properly handled, the game state might be inconsistent. " +
-                                    $"The exception details are: {e}"
+                                    $"The exception details are: {e.Message}"
                                 );
                             }) ?? Task.CompletedTask);
                         });

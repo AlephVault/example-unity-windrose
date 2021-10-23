@@ -4,7 +4,6 @@ using AlephVault.Unity.Meetgard.Scopes.Types.Constants;
 using AlephVault.Unity.Meetgard.Scopes.Types.Protocols;
 using AlephVault.Unity.Meetgard.Scopes.Types.Protocols.Messages;
 using AlephVault.Unity.Support.Authoring.Behaviours;
-using AlephVault.Unity.Support.Utils;
 using System;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -66,6 +65,10 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     // The currently loaded scope.
                     private ScopeClientSide currentScope;
 
+                    // The currently loaded scope id. Specially useful for when the
+                    // current scope is a special one.
+                    private uint currentScopeId = 0;
+
                     // A sender for the LocalError message.
                     private Func<Task> SendLocalError;
 
@@ -111,6 +114,12 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     /// </summary>
                     public event Action<ObjectClientSide> OnDespawned;
 
+                    /// <summary>
+                    ///   An event for when a local error occurs. Previously, the
+                    ///   LocaError message was sent and the connection was closed.
+                    /// </summary>
+                    public event Action<string> OnLocalError;
+
                     protected override void Initialize()
                     {
                         queueManager = GetComponent<AsyncQueueManager>();
@@ -125,8 +134,9 @@ namespace AlephVault.Unity.Meetgard.Scopes
                             // handler will be waited for, but not the returned
                             // handler).
                             var _ = queueManager.QueueTask(async () => {
-                                // TODO: Should this function be async instead?
                                 ClearCurrentScope();
+                                currentScopeId = Scope.Limbo;
+
                                 OnWelcome?.Invoke();
                             });
                         });
@@ -136,20 +146,23 @@ namespace AlephVault.Unity.Meetgard.Scopes
                             // handler will be waited for, but not the returned
                             // handler).
                             var _ = queueManager.QueueTask(async () => {
-                                // TODO: Should this function be async instead?
                                 ClearCurrentScope();
-                                // TODO: Should this function be async instead?
-                                LoadNewScope(message.ScopeIndex, message.PrefabIndex);
+                                try
+                                {
+                                    LoadNewScope(message.ScopeIndex, message.PrefabIndex);
+                                    currentScopeId = message.ScopeIndex;
+                                }
+                                catch(Exception e)
+                                {
+                                    Debug.LogError($"Exception of type {e.GetType().FullName} while loading a new scope: {e.Message}");
+                                    await LocalError("ScopeLoadError");
+                                    return;
+                                }
+
                                 OnMovedToScope?.Invoke(currentScope);
                             });
                         });
                         AddIncomingMessageHandler<ObjectSpawned>("ObjectSpawned", async (proto, message) => {
-                            // On receiving the ObjectSpawned message. The connection
-                            // will belong to an actual scope in this case (not Limbo
-                            // or a special scope), either default or extra, and in
-                            // that scope an object is being spawned. The spawn must
-                            // be repeated here, in the client side.
-                            //
                             // The action must be queued in the queueManager.
                             // HOWEVER it will NOT be waited for (the queued
                             // handler will be waited for, but not the returned
@@ -164,21 +177,29 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                     // of scopes (e.g. it is Limbo, or Maintenance).
                                     //
                                     // This all will be treated as a local error instead.
+                                    Debug.LogError($"Scope mismatch. Current scope is {currentScopeId} and message scope is {message.ScopeIndex}");
+                                    await LocalError("ScopeMismatch");
+                                    return;
                                 }
 
                                 // TODO: Should this function by async instead?
-                                ObjectClientSide spawned = Spawn(message.ObjectIndex, message.ObjectPrefabIndex, message.Data);
+                                ObjectClientSide spawned;
+                                try
+                                {
+                                    spawned = Spawn(message.ObjectIndex, message.ObjectPrefabIndex, message.Data);
+                                }
+                                catch(Exception e)
+                                {
+                                    Debug.LogError($"Exception of type {e.GetType().FullName} while spawning an object: {e.Message}");
+                                    await LocalError("SpawnError");
+                                    return;
+                                }
+
                                 // This event occurs after the per-object spawned event.
                                 OnSpawned?.Invoke(spawned);
                             });
                         });
                         AddIncomingMessageHandler<ObjectRefreshed>("ObjectRefreshed", async (proto, message) => {
-                            // On receiving the ObjectRefreshed message. The connection
-                            // will belong to an actual scope in this case (not Limbo
-                            // or a special scope), either default or extra, and in
-                            // that scope an object is being refreshed. The refresh
-                            // must be repeated here, in the client side.
-                            //
                             // The action must be queued in the queueManager.
                             // HOWEVER it will NOT be waited for (the queued
                             // handler will be waited for, but not the returned
@@ -186,28 +207,34 @@ namespace AlephVault.Unity.Meetgard.Scopes
                             var _ = queueManager.QueueTask(async () => {
                                 if (currentScope == null || currentScope.Id != message.ScopeIndex || currentScope.Id >= Scope.MaxScopes)
                                 {
-                                    // TODO.
                                     // This is an error: Either the current scope is null,
                                     // unmatched against the incoming scope index, or the
                                     // incoming scope index being above the maximum amount
                                     // of scopes (e.g. it is Limbo, or Maintenance).
                                     //
                                     // This all will be treated as a local error instead.
+                                    Debug.LogError($"Scope mismatch. Current scope is {currentScopeId} and message scope is {message.ScopeIndex}");
+                                    await LocalError("ScopeMismatch");
+                                    return;
                                 }
 
-                                // TODO: Should this function be async instead?
-                                Tuple<ObjectClientSide, ISerializable> result = Refresh(message.ObjectIndex, message.Data);
+                                Tuple<ObjectClientSide, ISerializable> result;
+                                try
+                                {
+                                    result = Refresh(message.ObjectIndex, message.Data);
+                                }
+                                catch(Exception e)
+                                {
+                                    Debug.LogError($"Exception of type {e.GetType().FullName} while refreshing an object: {e.Message}");
+                                    await LocalError("RefreshError");
+                                    return;
+                                }
+
                                 // This event occurs after the per-object refreshed event.
                                 OnRefreshed?.Invoke(result.Item1, result.Item2);
                             });
                         });
                         AddIncomingMessageHandler<ObjectDespawned>("ObjectDespawned", async (proto, message) => {
-                            // On receving the ObjectDespawned message. The connection
-                            // will belong to an actual scope in this case (not Limbo
-                            // or a special scope), either default or extra, and in
-                            // that scope an object is being despawned. The despawn
-                            // must be repeated here, in the client side.
-                            //
                             // The action must be queued in the queueManager.
                             // HOWEVER it will NOT be waited for (the queued
                             // handler will be waited for, but not the returned
@@ -215,17 +242,29 @@ namespace AlephVault.Unity.Meetgard.Scopes
                             var _ = queueManager.QueueTask(async () => {
                                 if (currentScope == null || currentScope.Id != message.ScopeIndex || currentScope.Id >= Scope.MaxScopes)
                                 {
-                                    // TODO.
                                     // This is an error: Either the current scope is null,
                                     // unmatched against the incoming scope index, or the
                                     // incoming scope index being above the maximum amount
                                     // of scopes (e.g. it is Limbo, or Maintenance).
                                     //
                                     // This all will be treated as a local error instead.
+                                    Debug.LogError($"Scope mismatch. Current scope is {currentScopeId} and message scope is {message.ScopeIndex}");
+                                    await LocalError("ScopeMismatch");
+                                    return;
                                 }
 
-                                // TODO: Should this function be async instead?
-                                ObjectClientSide despawned = Despawn(message.ObjectIndex);
+                                ObjectClientSide despawned;
+                                try
+                                {
+                                    despawned = Despawn(message.ObjectIndex);
+                                }
+                                catch(Exception e)
+                                {
+                                    Debug.LogError($"Exception of type {e.GetType().FullName} while despawning an object: {e.Message}");
+                                    await LocalError("DespawnError");
+                                    return;
+                                }
+
                                 // This event occurs after the per-object despawned event.
                                 OnDespawned?.Invoke(despawned);
                             });
@@ -271,6 +310,14 @@ namespace AlephVault.Unity.Meetgard.Scopes
                         // TODO implement (check, despawn, trigger event, return the object).
                         // TODO allow defining a strategy for despawning (e.g. direct or pooling).
                         return null;
+                    }
+
+                    // Raises a local error and closes the connection.
+                    private async Task LocalError(string context)
+                    {
+                        await SendLocalError();
+                        client.Close();
+                        OnLocalError?.Invoke(context);
                     }
                 }
             }

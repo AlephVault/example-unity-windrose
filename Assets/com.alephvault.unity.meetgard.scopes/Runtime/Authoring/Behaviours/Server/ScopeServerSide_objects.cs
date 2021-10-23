@@ -136,7 +136,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                             // In the end, trigger the event for the object.
                             // TODO: implement a default handler, which goes
                             // TODO: for this behaviour.
-                            await OnSpawned?.InvokeAsync(target);
+                            await (OnSpawned?.InvokeAsync(target) ?? Task.CompletedTask);
                         });
                     }
 
@@ -175,7 +175,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                             // In the end, trigger the event for the object.
                             // TODO: implement a default handler, which goes
                             // TODO: for this behaviour.
-                            await OnDespawned?.InvokeAsync(target);
+                            await (OnDespawned?.InvokeAsync(target) ?? Task.CompletedTask);
                         });
                     }
 

@@ -40,12 +40,6 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     // Use case: when an object despawns, for each connection.
                     internal Func<IEnumerable<ulong>, ObjectDespawned, Dictionary<ulong, Task>> BroadcastObjectDespawned;
 
-                    // A sender for the FocusChanged message.
-                    private Func<ulong, FocusChanged, Task> SendFocusChanged;
-
-                    // A sender for the FocusReleased message.
-                    private Func<ulong, FocusReleased, Task> SendFocusReleased;
-
                     // These functions are somewhat auxiliar and build on top of the
                     // message senders and broadcasters, when needed. In particular,
                     // these stand to object synchronization.

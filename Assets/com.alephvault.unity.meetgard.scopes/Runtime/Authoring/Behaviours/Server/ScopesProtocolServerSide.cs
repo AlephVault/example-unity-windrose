@@ -145,8 +145,6 @@ namespace AlephVault.Unity.Meetgard.Scopes
                         BroadcastObjectSpawned = MakeBroadcaster<ObjectSpawned>("ObjectSpawned");
                         BroadcastObjectDespawned = MakeBroadcaster<ObjectDespawned>("ObjectDespawned");
                         SendObjectRefreshed = MakeSender<ObjectRefreshed>("ObjectRefreshed");
-                        SendFocusChanged = MakeSender<FocusChanged>("FocusChanged");
-                        SendFocusReleased = MakeSender<FocusReleased>("FocusReleased");
                     }
 
                     /// <summary>

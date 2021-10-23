@@ -33,7 +33,13 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     internal async Task Load()
                     {
                         await queueManager.QueueTask(async () => {
-                            await (OnLoad?.InvokeAsync() ?? Task.CompletedTask);
+                            await (OnLoad?.InvokeAsync(async (e) => {
+                                Debug.LogError(
+                                    $"An error of type {e.GetType().FullName} has occurred in scope server side's OnLoad event. " +
+                                    $"If the exceptions are not properly handled, the game state might be inconsistent. " +
+                                    $"The exception details are: {e}"
+                                );
+                            }) ?? Task.CompletedTask);
                         });
                     }
 
@@ -47,7 +53,13 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     internal async Task Unload()
                     {
                         await queueManager.QueueTask(async () => {
-                            await (OnUnload?.InvokeAsync() ?? Task.CompletedTask);
+                            await (OnUnload?.InvokeAsync(async (e) => {
+                                Debug.LogError(
+                                    $"An error of type {e.GetType().FullName} has occurred in scope server side's OnUnload event. " +
+                                    $"If the exceptions are not properly handled, the game state might be inconsistent. " +
+                                    $"The exception details are: {e}"
+                                );
+                            }) ?? Task.CompletedTask);
                         });
                     }
 
@@ -62,7 +74,13 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     internal async Task TriggerOnJoining(ulong connectionId)
                     {
                         await queueManager.QueueTask(async () => {
-                            await (OnJoining?.InvokeAsync(connectionId) ?? Task.CompletedTask);
+                            await (OnJoining?.InvokeAsync(connectionId, async (e) => {
+                                Debug.LogError(
+                                    $"An error of type {e.GetType().FullName} has occurred in scope server side's OnJoining event. " +
+                                    $"If the exceptions are not properly handled, the game state might be inconsistent. " +
+                                    $"The exception details are: {e}"
+                                );
+                            }) ?? Task.CompletedTask);
                         });
                     }
 
@@ -74,7 +92,13 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     internal async Task TriggerOnLeaving(ulong connectionId)
                     {
                         await queueManager.QueueTask(async () => {
-                            await (OnLeaving?.InvokeAsync(connectionId) ?? Task.CompletedTask);
+                            await (OnLeaving?.InvokeAsync(connectionId, async (e) => {
+                                Debug.LogError(
+                                    $"An error of type {e.GetType().FullName} has occurred in scope server side's OnLeaving event. " +
+                                    $"If the exceptions are not properly handled, the game state might be inconsistent. " +
+                                    $"The exception details are: {e}"
+                                );
+                            }) ?? Task.CompletedTask);
                         });
                     }
 
@@ -86,7 +110,13 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     internal async Task TriggerOnGoodBye(ulong connectionId)
                     {
                         await queueManager.QueueTask(async () => {
-                            await (OnGoodBye?.InvokeAsync(connectionId) ?? Task.CompletedTask);
+                            await (OnGoodBye?.InvokeAsync(connectionId, async (e) => {
+                                Debug.LogError(
+                                    $"An error of type {e.GetType().FullName} has occurred in scope server side's OnGoodBye event. " +
+                                    $"If the exceptions are not properly handled, the game state might be inconsistent. " +
+                                    $"The exception details are: {e}"
+                                );
+                            }) ?? Task.CompletedTask);
                         });
                     }
                 }

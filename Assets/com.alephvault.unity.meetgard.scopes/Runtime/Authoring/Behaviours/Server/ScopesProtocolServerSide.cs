@@ -186,7 +186,13 @@ namespace AlephVault.Unity.Meetgard.Scopes
                         {
                             scopeForConnection[clientId] = Scope.Limbo;
                             await UntilSendIsDone(SendWelcome(clientId));
-                            await (OnWelcome?.InvokeAsync(clientId) ?? Task.CompletedTask);
+                            await (OnWelcome?.InvokeAsync(clientId, async (e) => {
+                                Debug.LogError(
+                                    $"An error of type {e.GetType().FullName} has occurred in server side's OnWelcome event. " +
+                                    $"If the exceptions are not properly handled, the game state might be inconsistent. " +
+                                    $"The exception details are: {e}"
+                                );
+                            }) ?? Task.CompletedTask);
                         });
                     }
 
@@ -207,7 +213,13 @@ namespace AlephVault.Unity.Meetgard.Scopes
                             if (scopeForConnection.TryGetValue(clientId, out uint scopeId))
                             {
                                 scopeForConnection.Remove(clientId);
-                                await (OnGoodBye?.InvokeAsync(clientId, scopeId) ?? Task.CompletedTask);
+                                await (OnGoodBye?.InvokeAsync(clientId, scopeId, async (e) => {
+                                    Debug.LogError(
+                                        $"An error of type {e.GetType().FullName} has occurred in server side's OnGoodBye event. " +
+                                        $"If the exceptions are not properly handled, the game state might be inconsistent. " +
+                                        $"The exception details are: {e}"
+                                    );
+                                }) ?? Task.CompletedTask);
                             };
                         });
                     }

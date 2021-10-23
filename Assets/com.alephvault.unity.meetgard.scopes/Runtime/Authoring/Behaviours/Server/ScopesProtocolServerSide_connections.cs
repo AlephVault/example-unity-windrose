@@ -6,6 +6,7 @@ using AlephVault.Unity.Support.Utils;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace AlephVault.Unity.Meetgard.Scopes
 {
@@ -174,9 +175,21 @@ namespace AlephVault.Unity.Meetgard.Scopes
 
                             if (force || currentScopeId != newScope)
                             {
-                                await (OnLeavingScope?.InvokeAsync(connectionId, currentScopeId) ?? Task.CompletedTask);
+                                await (OnLeavingScope?.InvokeAsync(connectionId, currentScopeId, async (e) => {
+                                    Debug.LogError(
+                                        $"An error of type {e.GetType().FullName} has occurred in server side's OnLeavingScope event. " +
+                                        $"If the exceptions are not properly handled, the game state might be inconsistent. " +
+                                        $"The exception details are: {e}"
+                                    );
+                                }) ?? Task.CompletedTask);
                                 await UntilSendIsDone(SendMovedToScope(connectionId, new MovedToScope() { PrefabIndex = scopePrefabId, ScopeIndex = currentScopeId }));
-                                await (OnJoiningScope?.InvokeAsync(connectionId, currentScopeId) ?? Task.CompletedTask);
+                                await (OnJoiningScope?.InvokeAsync(connectionId, currentScopeId, async (e) => {
+                                    Debug.LogError(
+                                        $"An error of type {e.GetType().FullName} has occurred in server side's OnJoiningScope event. " +
+                                        $"If the exceptions are not properly handled, the game state might be inconsistent. " +
+                                        $"The exception details are: {e}"
+                                    );
+                                }) ?? Task.CompletedTask);
                             }
                         });
                     }

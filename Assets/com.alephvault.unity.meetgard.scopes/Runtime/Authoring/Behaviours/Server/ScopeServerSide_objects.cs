@@ -136,7 +136,13 @@ namespace AlephVault.Unity.Meetgard.Scopes
                             // In the end, trigger the event for the object.
                             // TODO: implement a default handler, which goes
                             // TODO: for this behaviour.
-                            await (OnSpawned?.InvokeAsync(target) ?? Task.CompletedTask);
+                            await (OnSpawned?.InvokeAsync(target, async (e) => {
+                                Debug.LogError(
+                                    $"An error of type {e.GetType().FullName} has occurred in scope server side's OnSpawned event. " +
+                                    $"If the exceptions are not properly handled, the game state might be inconsistent. " +
+                                    $"The exception details are: {e}"
+                                );
+                            }) ?? Task.CompletedTask);
                         });
                     }
 
@@ -175,7 +181,13 @@ namespace AlephVault.Unity.Meetgard.Scopes
                             // In the end, trigger the event for the object.
                             // TODO: implement a default handler, which goes
                             // TODO: for this behaviour.
-                            await (OnDespawned?.InvokeAsync(target) ?? Task.CompletedTask);
+                            await (OnDespawned?.InvokeAsync(target, async (e) => {
+                                Debug.LogError(
+                                    $"An error of type {e.GetType().FullName} has occurred in scope server side's OnDespawned event. " +
+                                    $"If the exceptions are not properly handled, the game state might be inconsistent. " +
+                                    $"The exception details are: {e}"
+                                );
+                            }) ?? Task.CompletedTask);
                         });
                     }
 

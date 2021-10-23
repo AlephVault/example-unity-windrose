@@ -162,7 +162,8 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     ///   spawned.
                     /// </summary>
                     /// <param name="data">The data to perform the refresh with. It might be partially censored</param>
-                    public void Refresh(byte[] data)
+                    /// <returns>The de-serialized model</returns>
+                    public ISerializable Refresh(byte[] data)
                     {
                         if (!gameObject)
                         {
@@ -174,7 +175,9 @@ namespace AlephVault.Unity.Meetgard.Scopes
                             throw new InvalidOperationException("This object is not spawned");
                         }
 
-                        OnRefreshed?.Invoke(ReadRefreshData(data));
+                        ISerializable model = ReadRefreshData(data);
+                        OnRefreshed?.Invoke(model);
+                        return model;
                     }
 
                     /// <summary>

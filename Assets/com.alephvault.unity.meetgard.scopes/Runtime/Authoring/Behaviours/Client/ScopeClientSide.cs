@@ -30,6 +30,12 @@ namespace AlephVault.Unity.Meetgard.Scopes
                 /// </summary>
                 public class ScopeClientSide : MonoBehaviour
                 {
+                    /// <summary>
+                    ///   The id of the current scope. Given by the server.
+                    /// </summary>
+                    public uint Id { get; private set; }
+
+                    // TODO implement EVERYTHING here.
                 }
             }
         }

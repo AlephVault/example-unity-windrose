@@ -5,6 +5,7 @@ using AlephVault.Unity.Meetgard.Scopes.Types.Protocols;
 using AlephVault.Unity.Meetgard.Scopes.Types.Protocols.Messages;
 using AlephVault.Unity.Support.Authoring.Behaviours;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -64,6 +65,9 @@ namespace AlephVault.Unity.Meetgard.Scopes
 
                     // The currently loaded scope.
                     private ScopeClientSide currentScope;
+
+                    // The currently loaded objects.
+                    private Dictionary<uint, ObjectClientSide> currentObjects = new Dictionary<uint, ObjectClientSide>();
 
                     // The currently loaded scope id. Specially useful for when the
                     // current scope is a special one.
@@ -182,7 +186,6 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                     return;
                                 }
 
-                                // TODO: Should this function by async instead?
                                 ObjectClientSide spawned;
                                 try
                                 {
@@ -288,28 +291,55 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     // Spawns a new object.
                     private ObjectClientSide Spawn(uint objectId, uint objectPrefabId, byte[] data)
                     {
-                        // TODO: Should this function be async instead?
-                        // TODO implement (instantiate, spawn, register, trigger event).
-                        // TODO allow defining a strategy for spawning (e.g. direct or pooling).
-                        return null;
+                        if (currentObjects.ContainsKey(objectId))
+                        {
+                            throw new InvalidOperationException($"The object id: {objectId} is already in use");
+                        }
+                        else
+                        {
+                            ObjectClientSide instance;
+                            // TODO Allow defining a strategy for spawning (e.g. direct or pooling),
+                            // TODO instead of just instantiating the object.
+                            instance = Instantiate(objectPrefabs[objectPrefabId]);
+                            currentObjects.Add(objectId, instance);
+                            instance.Spawn(currentScope, objectId, data);
+                            return instance;
+                        }
                     }
 
                     // Refreshes an object. Returns both the refreshed object and the
                     // data used for refresh.
                     private Tuple<ObjectClientSide, ISerializable> Refresh(uint objectId, byte[] data)
                     {
-                        // TODO: Should this function be async instead?
-                        // TODO implement (check, refresh, trigger event, return the object).
-                        return null;
+                        if (!currentObjects.TryGetValue(objectId, out ObjectClientSide instance))
+                        {
+                            throw new InvalidOperationException($"The object id: {objectId} is not in use");
+                        }
+                        else
+                        {
+                            ISerializable model = instance.Refresh(data);
+                            return new Tuple<ObjectClientSide, ISerializable>(instance, model);
+                        }
                     }
 
                     // Despawns an object. Returns the already despawned object.
                     private ObjectClientSide Despawn(uint objectId)
                     {
-                        // TODO: Should this function be async instead?
-                        // TODO implement (check, despawn, trigger event, return the object).
-                        // TODO allow defining a strategy for despawning (e.g. direct or pooling).
-                        return null;
+                        if (!currentObjects.TryGetValue(objectId, out ObjectClientSide instance))
+                        {
+                            throw new InvalidOperationException($"The object id: {objectId} is not in use");
+                        }
+                        else
+                        {
+                            instance.Despawn();
+                            currentObjects.Remove(objectId);
+                            // TODO Allow defining a strategy for spawning (e.g. direct or pooling),
+                            // TODO instead of just instantiating the object.
+                            Destroy(instance);
+                            // The instance is already unspawned by this point. Depending on the
+                            // strategy to use, this may imply the instance is destroyed..
+                            return instance;
+                        }
                     }
 
                     /// <summary>

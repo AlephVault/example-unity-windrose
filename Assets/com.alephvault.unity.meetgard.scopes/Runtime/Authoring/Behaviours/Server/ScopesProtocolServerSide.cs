@@ -137,8 +137,6 @@ namespace AlephVault.Unity.Meetgard.Scopes
                         OnJoiningScope += DefaultOnJoiningScope;
                         OnLeavingScope += DefaultOnLeavingScope;
                         OnGoodBye += DefaultOnGoodBye;
-                        // Setting up the handlers for client messages.
-                        base.Initialize();
                         // Setting up the initial world status and the senders.
                         WorldLoadStatus = LoadStatus.Empty;
                         SendWelcome = MakeSender("Welcome");

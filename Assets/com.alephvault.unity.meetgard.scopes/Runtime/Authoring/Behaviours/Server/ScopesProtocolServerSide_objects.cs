@@ -1,11 +1,7 @@
 ﻿using AlephVault.Unity.Meetgard.Authoring.Behaviours.Server;
-using AlephVault.Unity.Meetgard.Scopes.Types.Constants;
 using AlephVault.Unity.Meetgard.Scopes.Types.Protocols;
-using AlephVault.Unity.Support.Types;
-using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using UnityEngine;
+using System;
 
 
 namespace AlephVault.Unity.Meetgard.Scopes
@@ -50,10 +46,8 @@ namespace AlephVault.Unity.Meetgard.Scopes
                             throw new ArgumentOutOfRangeException("prefabId");
                         }
 
-                        ObjectServerSide instance = Instantiate(objectPrefabs[prefabId]);
-                        instance.PrefabId = prefabId;
-                        instance.Protocol = this;
-                        return instance;
+                        // Now the object is to be instantiated and returned.
+                        return InstantiateAndFill(objectPrefabs[prefabId], prefabId);
                     }
 
                     /// <summary>
@@ -79,19 +73,20 @@ namespace AlephVault.Unity.Meetgard.Scopes
                         }
 
                         ObjectServerSide prefab;
+                        uint prefabId;
                         try
                         {
                             prefab = prefabByKey[key];
+                            // It is safe now - the prefab will exist and have an index.
+                            prefabId = indexByObjectPrefab[prefab];
                         }
                         catch (KeyNotFoundException)
                         {
                             throw new ArgumentException("Unknown prefab key: " + key);
                         }
-                        // It is safe now - the prefab will exist and have an index.
-                        uint prefabId = indexByObjectPrefab[prefab];
-                        prefab.PrefabId = prefabId;
-                        prefab.Protocol = this;
-                        return prefab;
+
+                        // Now the object is to be instantiated and returned.
+                        return InstantiateAndFill(objectPrefabs[prefabId], prefabId);
                     }
 
                     /// <summary>
@@ -116,17 +111,27 @@ namespace AlephVault.Unity.Meetgard.Scopes
                             throw new ArgumentNullException("prefab");
                         }
 
+                        uint prefabId;
                         try
                         {
-                            uint prefabId = indexByObjectPrefab[prefab];
-                            prefab.PrefabId = prefabId;
-                            prefab.Protocol = this;
-                            return prefab;
+                            prefabId = indexByObjectPrefab[prefab];
                         }
                         catch (KeyNotFoundException)
                         {
                             throw new ArgumentException("Unknown prefab: " + prefab.name);
                         }
+
+                        // Now the object is to be instantiated and returned.
+                        return InstantiateAndFill(objectPrefabs[prefabId], prefabId);
+                    }
+
+                    // Instantiates and populates the object's id fields.
+                    private ObjectServerSide InstantiateAndFill(ObjectServerSide prefab, uint prefabId)
+                    {
+                        ObjectServerSide instance = Instantiate(prefab);
+                        instance.PrefabId = prefabId;
+                        instance.Protocol = this;
+                        return instance;
                     }
                 }
             }

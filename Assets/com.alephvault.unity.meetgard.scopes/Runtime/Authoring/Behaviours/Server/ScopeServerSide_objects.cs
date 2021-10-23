@@ -116,6 +116,9 @@ namespace AlephVault.Unity.Meetgard.Scopes
                             // Null/Destroyed objects cannot be added.
                             if (target == null) throw new ArgumentNullException("target");
 
+                            // Objects in a different protocol cannot be added.
+                            if (target.Protocol != Protocol) throw new ArgumentException("The target to add was not created with the same protocol instance");
+
                             // Ignore if the scope is the same - the object is already
                             // added to this scope.
                             if (target.Scope == this) return;

@@ -312,8 +312,14 @@ namespace AlephVault.Unity.Meetgard.Scopes
                         return null;
                     }
 
-                    // Raises a local error and closes the connection.
-                    private async Task LocalError(string context)
+                    /// <summary>
+                    ///   Raises a local error and closes the connection.
+                    /// </summary>
+                    /// <param name="context">
+                    ///   The context to raise the error.
+                    ///   Only useful locally, for the <see cref="OnLocalError"/> event
+                    /// </param>
+                    public async Task LocalError(string context)
                     {
                         await SendLocalError();
                         client.Close();

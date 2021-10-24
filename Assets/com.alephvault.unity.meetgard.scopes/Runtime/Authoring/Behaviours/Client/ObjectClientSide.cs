@@ -16,7 +16,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
             namespace Client
             {
                 /// <summary>
-                ///   The server side implementation of an object. This is
+                ///   The client side implementation of an object. This is
                 ///   an exact mirror of what happens in the server side.
                 ///   It has features to refresh itself when something is
                 ///   happens in the server, and has event to notify when

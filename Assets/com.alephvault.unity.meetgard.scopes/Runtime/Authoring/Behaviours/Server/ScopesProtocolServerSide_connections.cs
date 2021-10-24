@@ -88,8 +88,8 @@ namespace AlephVault.Unity.Meetgard.Scopes
                             default:
                                 if (loadedScopes.TryGetValue(scopeId, out ScopeServerSide scope))
                                 {
-                                    await scope.TriggerOnLeaving(connectionId);
                                     scope.connections.Remove(connectionId);
+                                    await scope.TriggerOnLeaving(connectionId);
                                 };
                                 break;
                         }
@@ -128,6 +128,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                             default:
                                 if (loadedScopes.TryGetValue(scopeId, out ScopeServerSide scope))
                                 {
+                                    scope.connections.Remove(connectionId);
                                     await scope.TriggerOnGoodBye(connectionId);
                                 };
                                 break;

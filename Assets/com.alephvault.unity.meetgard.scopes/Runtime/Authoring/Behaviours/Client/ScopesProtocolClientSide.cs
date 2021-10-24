@@ -277,15 +277,46 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     // Clears the current scope, destroying everything.
                     private void ClearCurrentScope()
                     {
-                        // TODO: Should this function be async instead?
-                        // TODO implement.
+                        if (currentScope)
+                        {
+                            foreach(ObjectClientSide instance in currentObjects.Values)
+                            {
+                                instance.Despawn();
+                                // TODO Allow defining a strategy for spawning (e.g. direct or pooling),
+                                // TODO instead of just instantiating the object.
+                                Destroy(instance);
+                            }
+                            currentObjects.Clear();
+                            currentScope.Unload();
+                            Destroy(currentScope);
+                            currentScope = null;
+                        }
                     }
 
                     // Initializes a new scope.
                     private void LoadNewScope(uint scopeId, uint scopePrefabId)
                     {
-                        // TODO: Should this function be async instead?
-                        // TODO implement.
+                        if (scopeId < Scope.MaxScopes)
+                        {
+                            ScopeClientSide prefab;
+                            if (scopePrefabId == Scope.DefaultPrefab)
+                            {
+                                prefab = defaultScopePrefabs[scopeId - 1];
+                            }
+                            else
+                            {
+                                prefab = extraScopePrefabs[scopePrefabId];
+                            }
+                            ScopeClientSide instance = Instantiate(prefab);
+                            instance.Id = scopeId;
+                            currentScope = instance;
+                            currentScopeId = scopeId;
+                            instance.Load();
+                        }
+                        else
+                        {
+                            currentScopeId = scopeId;
+                        }
                     }
 
                     // Spawns a new object.

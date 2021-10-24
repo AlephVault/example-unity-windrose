@@ -89,6 +89,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                 if (loadedScopes.TryGetValue(scopeId, out ScopeServerSide scope))
                                 {
                                     await scope.TriggerOnLeaving(connectionId);
+                                    scope.connections.Remove(connectionId);
                                 };
                                 break;
                         }
@@ -105,6 +106,8 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                 break;
                             default:
                                 if (loadedScopes.TryGetValue(scopeId, out ScopeServerSide scope)) {
+                                    scope.connections.Add(connectionId);
+                                    await UntilSendIsDone(SendMovedToScope(connectionId, new MovedToScope() { PrefabIndex = scopePrefabId, ScopeIndex = currentScopeId }));
                                     await scope.TriggerOnJoining(connectionId);
                                 };
                                 break;
@@ -182,7 +185,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                         $"The exception details are: {e.Message}"
                                     );
                                 }) ?? Task.CompletedTask);
-                                await UntilSendIsDone(SendMovedToScope(connectionId, new MovedToScope() { PrefabIndex = scopePrefabId, ScopeIndex = currentScopeId }));
+                                scopeForConnection[connectionId] = newScope;
                                 await (OnJoiningScope?.InvokeAsync(connectionId, currentScopeId, async (e) => {
                                     Debug.LogError(
                                         $"An error of type {e.GetType().FullName} has occurred in server side's OnJoiningScope event. " +

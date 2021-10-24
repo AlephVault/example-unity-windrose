@@ -107,7 +107,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                             default:
                                 if (loadedScopes.TryGetValue(scopeId, out ScopeServerSide scope)) {
                                     scope.connections.Add(connectionId);
-                                    await UntilSendIsDone(SendMovedToScope(connectionId, new MovedToScope() { PrefabIndex = scopePrefabId, ScopeIndex = currentScopeId }));
+                                    await UntilSendIsDone(SendMovedToScope(connectionId, new MovedToScope() { PrefabIndex = scope.PrefabId, ScopeIndex = scopeId }));
                                     await scope.TriggerOnJoining(connectionId);
                                 };
                                 break;

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 
@@ -33,9 +34,37 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     /// <summary>
                     ///   The id of the current scope. Given by the server.
                     /// </summary>
-                    public uint Id { get; private set; }
+                    public uint Id { get; internal set; }
 
-                    // TODO implement EVERYTHING here.
+                    /// <summary>
+                    ///   This event is triggered when the client scope is loading.
+                    /// </summary>
+                    public event Action OnLoad;
+
+                    /// <summary>
+                    ///   This event is triggered when the client scope is unloading.
+                    /// </summary>
+                    public event Action OnUnload;
+
+                    /// <summary>
+                    ///   Initializes the scope. Typically, this invokes
+                    ///   registered callbacks (<see cref="OnLoad"/> event)
+                    ///   to work.
+                    /// </summary>
+                    internal void Load()
+                    {
+                        OnLoad?.Invoke();
+                    }
+
+                    /// <summary>
+                    ///   Finalizes the scope. Typically, this invokes
+                    ///   registered callbacks (<see cref="OnLoad"/>
+                    ///   event) to work.
+                    /// </summary>
+                    internal void Unload()
+                    {
+                        OnUnload?.Invoke();
+                    }
                 }
             }
         }

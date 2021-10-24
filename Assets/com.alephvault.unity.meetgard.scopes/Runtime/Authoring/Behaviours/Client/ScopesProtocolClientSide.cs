@@ -4,6 +4,7 @@ using AlephVault.Unity.Meetgard.Scopes.Types.Constants;
 using AlephVault.Unity.Meetgard.Scopes.Types.Protocols;
 using AlephVault.Unity.Meetgard.Scopes.Types.Protocols.Messages;
 using AlephVault.Unity.Support.Authoring.Behaviours;
+using AlephVault.Unity.Support.Generic.Vendor.IUnified.Authoring.Types;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -37,6 +38,13 @@ namespace AlephVault.Unity.Meetgard.Scopes
                 [RequireComponent(typeof(AsyncQueueManager))]
                 public partial class ScopesProtocolClientSide : ProtocolClientSide<ScopesProtocolDefinition>
                 {
+                    /// <summary>
+                    ///   A container for a UnityObject implementing the interface:
+                    ///   <see cref="IObjectClientSideInstanceManager"/>.
+                    /// </summary>
+                    [Serializable]
+                    public class IObjectClientSideInstanceManagerContainer : IUnifiedContainer<IObjectClientSideInstanceManager> {}
+
                     // The queue management dependency.
                     private AsyncQueueManager queueManager;
 
@@ -124,6 +132,12 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     /// </summary>
                     public event Action<string> OnLocalError;
 
+                    /// <summary>
+                    ///   The local instance manager, if any.
+                    /// </summary>
+                    [SerializeField]
+                    public IObjectClientSideInstanceManagerContainer InstanceManager;
+
                     protected override void Initialize()
                     {
                         queueManager = GetComponent<AsyncQueueManager>();
@@ -174,7 +188,6 @@ namespace AlephVault.Unity.Meetgard.Scopes
                             var _ = queueManager.QueueTask(async () => {
                                 if (currentScope == null || currentScope.Id != message.ScopeIndex || currentScope.Id >= Scope.MaxScopes)
                                 {
-                                    // TODO.
                                     // This is an error: Either the current scope is null,
                                     // unmatched against the incoming scope index, or the
                                     // incoming scope index being above the maximum amount
@@ -328,10 +341,8 @@ namespace AlephVault.Unity.Meetgard.Scopes
                         }
                         else
                         {
-                            ObjectClientSide instance;
-                            // TODO Allow defining a strategy for spawning (e.g. direct or pooling),
-                            // TODO instead of just instantiating the object.
-                            instance = Instantiate(objectPrefabs[objectPrefabId]);
+                            // Get a new instance, register it and spawn it.
+                            ObjectClientSide instance = InstanceManager.Result != null ? InstanceManager.Result.Get(objectPrefabs[objectPrefabId]) : Instantiate(objectPrefabs[objectPrefabId]);
                             currentObjects.Add(objectId, instance);
                             instance.Spawn(currentScope, objectId, data);
                             return instance;
@@ -362,11 +373,14 @@ namespace AlephVault.Unity.Meetgard.Scopes
                         }
                         else
                         {
+                            // Despawn the instance, unregister it, and release it.
                             instance.Despawn();
                             currentObjects.Remove(objectId);
-                            // TODO Allow defining a strategy for spawning (e.g. direct or pooling),
-                            // TODO instead of just instantiating the object.
-                            Destroy(instance);
+                            if (InstanceManager.Result != null) {
+                                InstanceManager.Result.Release(instance);
+                            } else {
+                                Destroy(instance);
+                            };
                             // The instance is already unspawned by this point. Depending on the
                             // strategy to use, this may imply the instance is destroyed..
                             return instance;

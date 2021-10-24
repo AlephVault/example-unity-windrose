@@ -19,7 +19,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                 ///   An interfact for instance management (to avoid
                 ///   having a lot instantiations/destructions).
                 /// </summary>
-                public interface ObjectClientSideInstanceManager
+                public interface IObjectClientSideInstanceManager
                 {
                     /// <summary>
                     ///   Gets a new instance. A new one, or a pooled one.

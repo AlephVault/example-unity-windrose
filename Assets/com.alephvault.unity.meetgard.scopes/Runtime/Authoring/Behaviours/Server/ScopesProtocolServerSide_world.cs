@@ -61,7 +61,6 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     {
                         loadedScopes = new Dictionary<uint, ScopeServerSide>();
                         loadedScopesIds = new IdPool(Scope.MaxScopes);
-                        uint index = 0;
                         foreach(ScopeServerSide scopePrefab in defaultScopePrefabs)
                         {
                             ScopeServerSide instance = Instantiate(scopePrefab, null, true);
@@ -71,7 +70,6 @@ namespace AlephVault.Unity.Meetgard.Scopes
                             instance.PrefabId = Scope.DefaultPrefab;
                             instance.Protocol = this;
                             loadedScopes.Add(newId, instance);
-                            index++;
                         }
                     }
 
@@ -233,7 +231,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     /// <returns>The loaded (and registered) scope instance</returns>
                     public Task<ScopeServerSide> LoadExtraScope(string extraScopePrefabKey, Action<ScopeServerSide> init)
                     {
-                        return queueManager.QueueTask<ScopeServerSide>(async () =>
+                        return queueManager.QueueTask(async () =>
                         {
                             if (WorldLoadStatus != LoadStatus.Ready)
                             {
@@ -256,7 +254,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                             await instance.Load();
                             uint newId = (uint)loadedScopesIds.Next();
                             instance.Id = newId;
-                            instance.PrefabId = Scope.DefaultPrefab;
+                            instance.PrefabId = extraScopePrefabIndex;
                             instance.Protocol = this;
                             loadedScopes.Add(newId, instance);
                             return instance;

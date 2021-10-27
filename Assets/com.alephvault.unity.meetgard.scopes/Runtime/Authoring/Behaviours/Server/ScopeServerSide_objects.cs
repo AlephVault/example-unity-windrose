@@ -226,6 +226,15 @@ namespace AlephVault.Unity.Meetgard.Scopes
                         }
                     }
 
+                    /// <summary>
+                    ///   Returns an iterator of all the objects in the scope.
+                    /// </summary>
+                    /// <returns>The iterator</returns>
+                    public IEnumerable<ObjectServerSide> Objects()
+                    {
+                        return objects.Values;
+                    }
+
                     // Synchronizes all the existing objects to the connection.
                     // This synchronization is initial, and will be part of a
                     // bigger queued task.

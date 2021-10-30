@@ -40,7 +40,7 @@ namespace AlephVault.Unity.Meetgard.Auth
                 ///   Override this method with super-call to
                 ///   instantiate all the needed Send* shortcuts.
                 /// </summary>
-                protected void Start()
+                protected override void Initialize()
                 {
                     SendLogout = MakeSender("Logout");
                     MakeLoginRequestSenders();

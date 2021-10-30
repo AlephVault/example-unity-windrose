@@ -33,7 +33,7 @@ namespace AlephVault.Unity.Meetgard.Auth
                 base.Awake();
             }
 
-            protected void Start()
+            protected override void Initialize()
             {
                 authProtocol.OnSessionStarting += AuthProtocol_OnSessionStarting;
                 authProtocol.OnSessionTerminating += AuthProtocol_OnSessionTerminating;

@@ -56,7 +56,7 @@ namespace AlephVault.Unity.Meetgard.Auth
                 ///   This time, also the timeout coroutine is
                 ///   spawned immediately.
                 /// </summary>
-                protected void Start()
+                protected override void Initialize()
                 {
                     MakeSenders();
                     loginTimeoutCoroutine = StartCoroutine(LoginTimeoutCoroutine());

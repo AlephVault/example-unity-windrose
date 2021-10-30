@@ -38,11 +38,11 @@ public class SampleCharacterSwapping : MonoBehaviour
         }
     }
 
-    private void TrackTarget()
+    private async void TrackTarget()
     {
         if (targets.Length != 0)
         {
-            hud.Focus(targets[currentTarget], delay, true);
+            await hud.Focus(targets[currentTarget], delay, true);
         }
     }
 }

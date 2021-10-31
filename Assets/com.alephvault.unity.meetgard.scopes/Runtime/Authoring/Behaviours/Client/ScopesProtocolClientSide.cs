@@ -35,7 +35,6 @@ namespace AlephVault.Unity.Meetgard.Scopes
                 ///     be destroyed / somehow unloaded).
                 ///   </para>
                 /// </summary>
-                [RequireComponent(typeof(AsyncQueueManager))]
                 public partial class ScopesProtocolClientSide : ProtocolClientSide<ScopesProtocolDefinition>
                 {
                     /// <summary>
@@ -44,9 +43,6 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     /// </summary>
                     [Serializable]
                     public class IObjectClientSideInstanceManagerContainer : IUnifiedContainer<IObjectClientSideInstanceManager> {}
-
-                    // The queue management dependency.
-                    private AsyncQueueManager queueManager;
 
                     /// <summary>
                     ///   This is the list of scopes that will be paid attention to
@@ -140,7 +136,6 @@ namespace AlephVault.Unity.Meetgard.Scopes
 
                     protected override void Initialize()
                     {
-                        queueManager = GetComponent<AsyncQueueManager>();
                         SendLocalError = MakeSender("LocalError");
                     }
 
@@ -151,139 +146,129 @@ namespace AlephVault.Unity.Meetgard.Scopes
                             // HOWEVER it will NOT be waited for (the queued
                             // handler will be waited for, but not the returned
                             // handler).
-                            var _ = queueManager.QueueTask(async () => {
-                                ClearCurrentScope();
-                                currentScopeId = Scope.Limbo;
+                            ClearCurrentScope();
+                            currentScopeId = Scope.Limbo;
 
-                                OnWelcome?.Invoke();
-                            });
+                            OnWelcome?.Invoke();
                         });
                         AddIncomingMessageHandler<MovedToScope>("MovedToScope", async (proto, message) => {
                             // The action must be queued in the queueManager.
                             // HOWEVER it will NOT be waited for (the queued
                             // handler will be waited for, but not the returned
                             // handler).
-                            var _ = queueManager.QueueTask(async () => {
-                                ClearCurrentScope();
-                                try
-                                {
-                                    LoadNewScope(message.ScopeIndex, message.PrefabIndex);
-                                    currentScopeId = message.ScopeIndex;
-                                }
-                                catch(Exception e)
-                                {
-                                    Debug.LogError($"Exception of type {e.GetType().FullName} while loading a new scope: {e.Message}");
-                                    await LocalError("ScopeLoadError");
-                                    return;
-                                }
+                            ClearCurrentScope();
+                            try
+                            {
+                                LoadNewScope(message.ScopeIndex, message.PrefabIndex);
+                                currentScopeId = message.ScopeIndex;
+                            }
+                            catch (Exception e)
+                            {
+                                Debug.LogError($"Exception of type {e.GetType().FullName} while loading a new scope: {e.Message}");
+                                await LocalError("ScopeLoadError");
+                                return;
+                            }
 
-                                OnMovedToScope?.Invoke(currentScope);
-                            });
+                            OnMovedToScope?.Invoke(currentScope);
                         });
                         AddIncomingMessageHandler<ObjectSpawned>("ObjectSpawned", async (proto, message) => {
                             // The action must be queued in the queueManager.
                             // HOWEVER it will NOT be waited for (the queued
                             // handler will be waited for, but not the returned
                             // handler).
-                            var _ = queueManager.QueueTask(async () => {
-                                if (currentScope == null || currentScope.Id != message.ScopeIndex || currentScope.Id >= Scope.MaxScopes)
-                                {
-                                    // This is an error: Either the current scope is null,
-                                    // unmatched against the incoming scope index, or the
-                                    // incoming scope index being above the maximum amount
-                                    // of scopes (e.g. it is Limbo, or Maintenance).
-                                    //
-                                    // This all will be treated as a local error instead.
-                                    Debug.LogError($"Scope mismatch. Current scope is {currentScopeId} and message scope is {message.ScopeIndex}");
-                                    await LocalError("ScopeMismatch");
-                                    return;
-                                }
+                            if (currentScope == null || currentScope.Id != message.ScopeIndex || currentScope.Id >= Scope.MaxScopes)
+                            {
+                                // This is an error: Either the current scope is null,
+                                // unmatched against the incoming scope index, or the
+                                // incoming scope index being above the maximum amount
+                                // of scopes (e.g. it is Limbo, or Maintenance).
+                                //
+                                // This all will be treated as a local error instead.
+                                Debug.LogError($"Scope mismatch. Current scope is {currentScopeId} and message scope is {message.ScopeIndex}");
+                                await LocalError("ScopeMismatch");
+                                return;
+                            }
 
-                                ObjectClientSide spawned;
-                                try
-                                {
-                                    spawned = Spawn(message.ObjectIndex, message.ObjectPrefabIndex, message.Data);
-                                }
-                                catch(Exception e)
-                                {
-                                    Debug.LogError($"Exception of type {e.GetType().FullName} while spawning an object: {e.Message}");
-                                    await LocalError("SpawnError");
-                                    return;
-                                }
+                            ObjectClientSide spawned;
+                            try
+                            {
+                                spawned = Spawn(message.ObjectIndex, message.ObjectPrefabIndex, message.Data);
+                            }
+                            catch (Exception e)
+                            {
+                                Debug.LogError($"Exception of type {e.GetType().FullName} while spawning an object: {e.Message}");
+                                await LocalError("SpawnError");
+                                return;
+                            }
 
-                                // This event occurs after the per-object spawned event.
-                                OnSpawned?.Invoke(spawned);
-                            });
+                            // This event occurs after the per-object spawned event.
+                            OnSpawned?.Invoke(spawned);
                         });
                         AddIncomingMessageHandler<ObjectRefreshed>("ObjectRefreshed", async (proto, message) => {
                             // The action must be queued in the queueManager.
                             // HOWEVER it will NOT be waited for (the queued
                             // handler will be waited for, but not the returned
                             // handler).
-                            var _ = queueManager.QueueTask(async () => {
-                                if (currentScope == null || currentScope.Id != message.ScopeIndex || currentScope.Id >= Scope.MaxScopes)
-                                {
-                                    // This is an error: Either the current scope is null,
-                                    // unmatched against the incoming scope index, or the
-                                    // incoming scope index being above the maximum amount
-                                    // of scopes (e.g. it is Limbo, or Maintenance).
-                                    //
-                                    // This all will be treated as a local error instead.
-                                    Debug.LogError($"Scope mismatch. Current scope is {currentScopeId} and message scope is {message.ScopeIndex}");
-                                    await LocalError("ScopeMismatch");
-                                    return;
-                                }
+                            if (currentScope == null || currentScope.Id != message.ScopeIndex || currentScope.Id >= Scope.MaxScopes)
+                            {
+                                // This is an error: Either the current scope is null,
+                                // unmatched against the incoming scope index, or the
+                                // incoming scope index being above the maximum amount
+                                // of scopes (e.g. it is Limbo, or Maintenance).
+                                //
+                                // This all will be treated as a local error instead.
+                                Debug.LogError($"Scope mismatch. Current scope is {currentScopeId} and message scope is {message.ScopeIndex}");
+                                await LocalError("ScopeMismatch");
+                                return;
+                            }
 
-                                Tuple<ObjectClientSide, ISerializable> result;
-                                try
-                                {
-                                    result = Refresh(message.ObjectIndex, message.Data);
-                                }
-                                catch(Exception e)
-                                {
-                                    Debug.LogError($"Exception of type {e.GetType().FullName} while refreshing an object: {e.Message}");
-                                    await LocalError("RefreshError");
-                                    return;
-                                }
+                            Tuple<ObjectClientSide, ISerializable> result;
+                            try
+                            {
+                                result = Refresh(message.ObjectIndex, message.Data);
+                            }
+                            catch (Exception e)
+                            {
+                                Debug.LogError($"Exception of type {e.GetType().FullName} while refreshing an object: {e.Message}");
+                                await LocalError("RefreshError");
+                                return;
+                            }
 
-                                // This event occurs after the per-object refreshed event.
-                                OnRefreshed?.Invoke(result.Item1, result.Item2);
-                            });
+                            // This event occurs after the per-object refreshed event.
+                            OnRefreshed?.Invoke(result.Item1, result.Item2);
                         });
                         AddIncomingMessageHandler<ObjectDespawned>("ObjectDespawned", async (proto, message) => {
                             // The action must be queued in the queueManager.
                             // HOWEVER it will NOT be waited for (the queued
                             // handler will be waited for, but not the returned
                             // handler).
-                            var _ = queueManager.QueueTask(async () => {
-                                if (currentScope == null || currentScope.Id != message.ScopeIndex || currentScope.Id >= Scope.MaxScopes)
-                                {
-                                    // This is an error: Either the current scope is null,
-                                    // unmatched against the incoming scope index, or the
-                                    // incoming scope index being above the maximum amount
-                                    // of scopes (e.g. it is Limbo, or Maintenance).
-                                    //
-                                    // This all will be treated as a local error instead.
-                                    Debug.LogError($"Scope mismatch. Current scope is {currentScopeId} and message scope is {message.ScopeIndex}");
-                                    await LocalError("ScopeMismatch");
-                                    return;
-                                }
+                            if (currentScope == null || currentScope.Id != message.ScopeIndex || currentScope.Id >= Scope.MaxScopes)
+                            {
+                                // This is an error: Either the current scope is null,
+                                // unmatched against the incoming scope index, or the
+                                // incoming scope index being above the maximum amount
+                                // of scopes (e.g. it is Limbo, or Maintenance).
+                                //
+                                // This all will be treated as a local error instead.
+                                Debug.LogError($"Scope mismatch. Current scope is {currentScopeId} and message scope is {message.ScopeIndex}");
+                                await LocalError("ScopeMismatch");
+                                return;
+                            }
 
-                                ObjectClientSide despawned;
-                                try
-                                {
-                                    despawned = Despawn(message.ObjectIndex);
-                                }
-                                catch(Exception e)
-                                {
-                                    Debug.LogError($"Exception of type {e.GetType().FullName} while despawning an object: {e.Message}");
-                                    await LocalError("DespawnError");
-                                    return;
-                                }
+                            ObjectClientSide despawned;
+                            try
+                            {
+                                despawned = Despawn(message.ObjectIndex);
+                            }
+                            catch (Exception e)
+                            {
+                                Debug.LogError($"Exception of type {e.GetType().FullName} while despawning an object: {e.Message}");
+                                await LocalError("DespawnError");
+                                return;
+                            }
 
-                                // This event occurs after the per-object despawned event.
-                                OnDespawned?.Invoke(despawned);
-                            });
+                            // This event occurs after the per-object despawned event.
+                            OnDespawned?.Invoke(despawned);
                         });
                     }
 

@@ -31,7 +31,6 @@ namespace AlephVault.Unity.Meetgard.Scopes
                 ///     client side implementation of this scope.
                 ///   </para>
                 /// </summary>
-                [RequireComponent(typeof(AsyncQueueManager))]
                 public partial class ScopeServerSide : MonoBehaviour
                 {
                     /// <summary>
@@ -106,12 +105,8 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     /// </summary>
                     public event Func<Task> OnUnload = null;
 
-                    // The underlying queue manager.
-                    private AsyncQueueManager queueManager;
-
                     private void Awake()
                     {
-                        queueManager = GetComponent<AsyncQueueManager>();
                         OnJoining += SyncExistingObjectsTo;
                     }
                 }

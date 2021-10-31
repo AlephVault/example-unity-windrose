@@ -124,96 +124,90 @@ namespace AlephVault.Unity.Meetgard.Scopes
                         }
                     }
 
-                    // Queues the whole world loading function. This task will
-                    // try to load the world and ensure it becomes "ready". If
-                    // any error occurs on world load, then
-                    private Task LoadWorld()
+                    // This task will try to load the world and ensure it
+                    // becomes "ready". If any error occurs on world load,
+                    // then everything is reverted and the server is closed.
+                    private async Task LoadWorld()
                     {
-                        return queueManager.QueueTask(async () => {
-                            // This makes no sense when the world is not unloaded.
-                            if (WorldLoadStatus != LoadStatus.Empty) return;
+                        // This makes no sense when the world is not unloaded.
+                        if (WorldLoadStatus != LoadStatus.Empty) return;
 
-                            // Set the initial, in-progress, status.
-                            WorldLoadStatus = LoadStatus.Loading;
+                        // Set the initial, in-progress, status.
+                        WorldLoadStatus = LoadStatus.Loading;
 
-                            try
-                            {
-                                // Do the whole load.
-                                await LoadDefaultScopes();
-
-                                // Set the final, success, status.
-                                WorldLoadStatus = LoadStatus.Ready;
-                            }
-                            catch (System.Exception e)
-                            {
-                                // Set a temporary error status.
-                                WorldLoadStatus = LoadStatus.LoadError;
-
-                                // Diaper-log any load exception.
-                                try
-                                {
-                                    OnLoadError?.Invoke(e);
-                                }
-                                catch
-                                {
-                                    Debug.LogError(
-                                        "An exception has been triggered while handling a previous exception " +
-                                        "in OnLoadError while trying to load the world. This should not occur. " +
-                                        "Ensure any exception that may occur inside an OnLoadError handler is " +
-                                        "properly handled inside that handler, instead of letting it bubble"
-                                    );
-                                }
-
-                                // Destroy the scopes. There is no Unload
-                                // needed, since no change occurred in the
-                                // scope per se (or: there is no sense for
-                                // any change to be accounted for, since
-                                // the game hasn't yet started).
-                                DestroyInstantiatedScopes();
-
-                                // Set the final, reset, status.
-                                WorldLoadStatus = LoadStatus.Empty;
-
-                                // And finally, close the server.
-                                if (server.IsListening) server.StopServer();
-                            }
-                        });
-                    }
-
-                    // Queues the whole world unloading function. This task will
-                    // try to unload the world and ensure it becomes "empty". The
-                    // unload errors will be each caught separately and logged
-                    // separately as well, but the process will ultimately finish
-                    // and the world will become "empty". It is recommended that
-                    // no unload brings any error, since unloading will also mean
-                    // data backup / store and related stuff. By the end, the world
-                    // will become empty, and both default and extra scopes will
-                    // be both unloaded and destroyed.
-                    private Task UnloadWorld()
-                    {
-                        return queueManager.QueueTask(async () =>
+                        try
                         {
-                            // This makes no sense when the world is not loaded.
-                            if (WorldLoadStatus != LoadStatus.Ready) return;
-
-                            // Set the initial, in-progress, status.
-                            WorldLoadStatus = LoadStatus.Unloading;
-
-                            // Unload all of the scopes. Any exception
-                            // will be handled and/or diapered separately.
-                            await UnloadScopes();
-
-                            // Destroy the already unloaded scopes. In the
-                            // worst case, the lack of backup will restore
-                            // the scope state to a previous state, with
-                            // some elements not so fully synchronized and,
-                            // if well managed by the per-game logic, that
-                            // will not affect the overall game experience.
-                            DestroyInstantiatedScopes();
+                            // Do the whole load.
+                            await LoadDefaultScopes();
 
                             // Set the final, success, status.
+                            WorldLoadStatus = LoadStatus.Ready;
+                        }
+                        catch (System.Exception e)
+                        {
+                            // Set a temporary error status.
+                            WorldLoadStatus = LoadStatus.LoadError;
+
+                            // Diaper-log any load exception.
+                            try
+                            {
+                                OnLoadError?.Invoke(e);
+                            }
+                            catch
+                            {
+                                Debug.LogError(
+                                    "An exception has been triggered while handling a previous exception " +
+                                    "in OnLoadError while trying to load the world. This should not occur. " +
+                                    "Ensure any exception that may occur inside an OnLoadError handler is " +
+                                    "properly handled inside that handler, instead of letting it bubble"
+                                );
+                            }
+
+                            // Destroy the scopes. There is no Unload
+                            // needed, since no change occurred in the
+                            // scope per se (or: there is no sense for
+                            // any change to be accounted for, since
+                            // the game hasn't yet started).
+                            DestroyInstantiatedScopes();
+
+                            // Set the final, reset, status.
                             WorldLoadStatus = LoadStatus.Empty;
-                        });
+
+                            // And finally, close the server.
+                            if (server.IsListening) server.StopServer();
+                        }
+                    }
+
+                    // This task will try to unload the world and ensure it
+                    // becomes "empty". The unload errors will be each caught
+                    // separately and logged separately as well, but the process
+                    // will ultimately finish and the world will become "empty".
+                    // It is recommended that no unload brings any error, since
+                    // unloading will also mean data backup / store and related
+                    // stuff. By the end, the world will become empty, and both
+                    // default and extra scopes will be both unloaded and destroyed.
+                    private async Task UnloadWorld()
+                    {
+                        // This makes no sense when the world is not loaded.
+                        if (WorldLoadStatus != LoadStatus.Ready) return;
+
+                        // Set the initial, in-progress, status.
+                        WorldLoadStatus = LoadStatus.Unloading;
+
+                        // Unload all of the scopes. Any exception
+                        // will be handled and/or diapered separately.
+                        await UnloadScopes();
+
+                        // Destroy the already unloaded scopes. In the
+                        // worst case, the lack of backup will restore
+                        // the scope state to a previous state, with
+                        // some elements not so fully synchronized and,
+                        // if well managed by the per-game logic, that
+                        // will not affect the overall game experience.
+                        DestroyInstantiatedScopes();
+
+                        // Set the final, success, status.
+                        WorldLoadStatus = LoadStatus.Empty;
                     }
 
                     /// <summary>
@@ -229,9 +223,9 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     /// </param>
                     /// <param name="init">A function to initialize the scope to be loaded</param>
                     /// <returns>The loaded (and registered) scope instance</returns>
-                    public Task<ScopeServerSide> LoadExtraScope(string extraScopePrefabKey, Action<ScopeServerSide> init)
+                    public Task<ScopeServerSide> LoadExtraScope(string extraScopePrefabKey)
                     {
-                        return queueManager.QueueTask(async () =>
+                        return QueueManager.QueueTask(async () =>
                         {
                             if (WorldLoadStatus != LoadStatus.Ready)
                             {
@@ -280,7 +274,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     /// <param name="destroy">Whether to also destroy it or not</param>
                     public Task UnloadExtraScope(uint scopeId, bool destroy = true)
                     {
-                        return queueManager.QueueTask(async () => {
+                        return QueueManager.QueueTask(async () => {
                             if (scopeId <= defaultScopePrefabs.Length)
                             {
                                 throw new ArgumentException(
@@ -313,7 +307,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     /// <param name="destroy">Whether to also destroy it or not</param>
                     public Task UnloadExtraScope(ScopeServerSide scope, bool destroy = true)
                     {
-                        return queueManager.QueueTask(async () => {
+                        return QueueManager.QueueTask(async () => {
                             if (scope == null)
                             {
                                 throw new ArgumentNullException("scope");

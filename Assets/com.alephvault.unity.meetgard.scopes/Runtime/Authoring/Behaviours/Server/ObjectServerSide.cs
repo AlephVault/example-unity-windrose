@@ -24,7 +24,6 @@ namespace AlephVault.Unity.Meetgard.Scopes
                 ///   created into that server but spawned into no particular
                 ///   server side scope.
                 /// </summary>
-                [RequireComponent(typeof(AsyncQueueManager))]
                 public abstract class ObjectServerSide : MonoBehaviour
                 {
                     // These two fields are set by the protocol.
@@ -131,14 +130,6 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     /// <returns>The data to send to that connection, or null when no need</returns>
                     public abstract ISerializable RefreshData(ulong connection, string context);
 
-                    // The underlying queue manager.
-                    AsyncQueueManager queueManager;
-
-                    private void Awake()
-                    {
-                        queueManager = GetComponent<AsyncQueueManager>();
-                    }
-
                     // When the object starts, it must track itself to find the scope
                     // it belongs to.
                     private void Start()
@@ -156,10 +147,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     // When the object is disabled, it must remove from the scope.
                     private void OnDisable()
                     {
-                        queueManager.QueueTask(async () =>
-                        {
-                            if (Scope != null) await Scope.RemoveObject(this);
-                        });
+                        if (Scope != null) Scope.RemoveObject(this);
                     }
 
                     // When a parent changes, this object must retrack itself to find
@@ -176,11 +164,8 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     private void TrackCurrentScopeHierarchy()
                     {
                         ScopeServerSide newScope = GetComponentInParent<ScopeServerSide>();
-                        if (newScope != Scope) queueManager.QueueTask(async () =>
-                        {
-                            if (Scope != null) await Scope.RemoveObject(this);
-                            if (newScope != null) await Scope.AddObject(this);
-                        });
+                        if (Scope != null) Scope.RemoveObject(this);
+                        if (newScope != null) Scope.AddObject(this);
                     }
                 }
             }

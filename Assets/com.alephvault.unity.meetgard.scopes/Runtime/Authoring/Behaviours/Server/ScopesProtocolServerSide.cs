@@ -27,12 +27,8 @@ namespace AlephVault.Unity.Meetgard.Scopes
                 ///   the objects that are related to the scopes and the current game.
                 ///   Those are client-server synchronized objects.
                 /// </summary>
-                [RequireComponent(typeof(AsyncQueueManager))]
                 public partial class ScopesProtocolServerSide : ProtocolServerSide<ScopesProtocolDefinition>
                 {
-                    // The queue management dependency.
-                    private AsyncQueueManager queueManager;
-
                     /// <summary>
                     ///   List of the prefabs that will be used to instantiate scopes.
                     ///   This list is mapped 1:1 with the scopes they instantiate,
@@ -114,7 +110,8 @@ namespace AlephVault.Unity.Meetgard.Scopes
                         // when they have one.
                         indexByObjectPrefab = new Dictionary<ObjectServerSide, uint>();
                         index = 0;
-                        foreach(ObjectServerSide prefab in objectPrefabs)
+                        prefabByKey = new Dictionary<string, ObjectServerSide>();
+                        foreach (ObjectServerSide prefab in objectPrefabs)
                         {
                             indexByObjectPrefab.Add(prefab, index);
                             index++;
@@ -131,8 +128,6 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                 }
                             }
                         }
-                        // Then, the events and server-side objects are initialized.
-                        queueManager = GetComponent<AsyncQueueManager>();
                         // Setting up the default events (except for OnWelcome).
                         OnJoiningScope += DefaultOnJoiningScope;
                         OnLeavingScope += DefaultOnLeavingScope;
@@ -182,18 +177,15 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     /// <param name="clientId">the connection being started.</param>
                     public override async Task OnConnected(ulong clientId)
                     {
-                        await queueManager.QueueAction(async () =>
-                        {
-                            scopeForConnection[clientId] = Scope.Limbo;
-                            await UntilSendIsDone(SendWelcome(clientId));
-                            await (OnWelcome?.InvokeAsync(clientId, async (e) => {
-                                Debug.LogError(
-                                    $"An error of type {e.GetType().FullName} has occurred in server side's OnWelcome event. " +
-                                    $"If the exceptions are not properly handled, the game state might be inconsistent. " +
-                                    $"The exception details are: {e.Message}"
-                                );
-                            }) ?? Task.CompletedTask);
-                        });
+                        scopeForConnection[clientId] = Scope.Limbo;
+                        await UntilSendIsDone(SendWelcome(clientId));
+                        await (OnWelcome?.InvokeAsync(clientId, async (e) => {
+                            Debug.LogError(
+                                $"An error of type {e.GetType().FullName} has occurred in server side's OnWelcome event. " +
+                                $"If the exceptions are not properly handled, the game state might be inconsistent. " +
+                                $"The exception details are: {e.Message}"
+                            );
+                        }) ?? Task.CompletedTask);
                     }
 
                     /// <summary>
@@ -208,20 +200,17 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     /// <param name="reason">The disconnection reason</param>
                     public override async Task OnDisconnected(ulong clientId, Exception reason)
                     {
-                        await queueManager.QueueAction(async () =>
+                        if (scopeForConnection.TryGetValue(clientId, out uint scopeId))
                         {
-                            if (scopeForConnection.TryGetValue(clientId, out uint scopeId))
-                            {
-                                scopeForConnection.Remove(clientId);
-                                await (OnGoodBye?.InvokeAsync(clientId, scopeId, async (e) => {
-                                    Debug.LogError(
-                                        $"An error of type {e.GetType().FullName} has occurred in server side's OnGoodBye event. " +
-                                        $"If the exceptions are not properly handled, the game state might be inconsistent. " +
-                                        $"The exception details are: {e.Message}"
-                                    );
-                                }) ?? Task.CompletedTask);
-                            };
-                        });
+                            scopeForConnection.Remove(clientId);
+                            await (OnGoodBye?.InvokeAsync(clientId, scopeId, async (e) => {
+                                Debug.LogError(
+                                    $"An error of type {e.GetType().FullName} has occurred in server side's OnGoodBye event. " +
+                                    $"If the exceptions are not properly handled, the game state might be inconsistent. " +
+                                    $"The exception details are: {e.Message}"
+                                );
+                            }) ?? Task.CompletedTask);
+                        };
                     }
 
                     /// <summary>

@@ -64,12 +64,12 @@ namespace AlephVault.Unity.Meetgard.Scopes
                         foreach(ScopeServerSide scopePrefab in defaultScopePrefabs)
                         {
                             ScopeServerSide instance = Instantiate(scopePrefab, null, true);
-                            await instance.Load();
                             uint newId = (uint)loadedScopesIds.Next();
                             instance.Id = newId;
                             instance.PrefabId = Scope.DefaultPrefab;
                             instance.Protocol = this;
                             loadedScopes.Add(newId, instance);
+                            await instance.Load();
                         }
                     }
 
@@ -117,7 +117,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                         loadedScopes = null;
                         foreach(KeyValuePair<uint, ScopeServerSide> pair in instances)
                         {
-                            if (pair.Value != null) Destroy(pair.Value);
+                            if (pair.Value != null) Destroy(pair.Value.gameObject);
                             pair.Value.Id = 0;
                             pair.Value.Protocol = null;
                             loadedScopesIds.Release(pair.Key);
@@ -260,7 +260,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     {
                         await ClearConnectionsFromScope(scopeToUnload);
                         await scopeToUnload.Unload();
-                        if (scopeToUnload != null && destroy) Destroy(scopeToUnload);
+                        if (scopeToUnload != null && destroy) Destroy(scopeToUnload.gameObject);
                         scopeToUnload.Id = 0;
                         scopeToUnload.PrefabId = 0;
                         scopeToUnload.Protocol = null;

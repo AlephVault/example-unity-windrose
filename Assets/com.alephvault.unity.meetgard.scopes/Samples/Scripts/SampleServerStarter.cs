@@ -28,12 +28,16 @@ namespace AlephVault.Unity.Meetgard.Scopes
             {
                 if (Input.GetKeyDown(startKey) && !server.IsRunning && !server.IsListening)
                 {
+                    Debug.Log("Sample Server::Starting...");
                     server.StartServer(9999);
+                    Debug.Log("Sample Server::Started.");
                 }
 
                 if (Input.GetKeyDown(stopKey) && server.IsRunning && server.IsListening)
                 {
+                    Debug.Log("Sample Server::Stopping...");
                     server.StopServer();
+                    Debug.Log("Sample Server::Stopped.");
                 }
             }
         }

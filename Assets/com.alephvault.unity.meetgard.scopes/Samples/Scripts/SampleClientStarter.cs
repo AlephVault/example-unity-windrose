@@ -39,22 +39,30 @@ namespace AlephVault.Unity.Meetgard.Scopes
             {
                 if (Input.GetKeyDown(startKey) && !client.IsRunning && !client.IsConnected)
                 {
+                    Debug.Log("Client::Connecting...");
                     client.Connect("localhost", 9999);
+                    Debug.Log("Client::Connected.");
                 }
 
                 if (client.IsRunning && client.IsConnected)
                 {
                     if (Input.GetKeyDown(stopKey))
                     {
+                        Debug.Log("Client::Disconnecting...");
                         client.Close();
+                        Debug.Log("Client::Disconnected.");
                     }
                     else if (Input.GetKeyDown(gotoLimboKey))
                     {
+                        Debug.Log("Client::Requiring Limbo...");
                         protocol.DoSendGoToLimbo();
+                        Debug.Log("Client::Limbo required.");
                     }
                     else if (Input.GetKeyDown(gotoExtraKey))
                     {
+                        Debug.Log("Client::Requiring Extra...");
                         protocol.DoSendGoToExtra();
+                        Debug.Log("Client::Extra required.");
                     }
                     else
                     {
@@ -62,7 +70,9 @@ namespace AlephVault.Unity.Meetgard.Scopes
                         {
                             if (Input.GetKeyDown(gotoDefaultKeys[index]))
                             {
+                                Debug.Log($"Client::Requiring Default {index + 1}...");
                                 protocol.DoSendGoToDefault(index + 1);
+                                Debug.Log($"Client::Default {index + 1} required.");
                                 break;
                             }
                         }

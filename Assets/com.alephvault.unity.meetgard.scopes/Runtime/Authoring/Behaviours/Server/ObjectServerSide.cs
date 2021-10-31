@@ -165,7 +165,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     {
                         ScopeServerSide newScope = GetComponentInParent<ScopeServerSide>();
                         if (Scope != null) Scope.RemoveObject(this);
-                        if (newScope != null) Scope.AddObject(this);
+                        if (newScope != null) newScope.AddObject(this);
                     }
                 }
             }

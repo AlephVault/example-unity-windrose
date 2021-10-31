@@ -2,9 +2,13 @@ using AlephVault.Unity.Meetgard.Scopes.Authoring.Behaviours.Server;
 using AlephVault.Unity.Support.Authoring.Behaviours;
 using AlephVault.Unity.Support.Generic.Types.Sampling;
 using AlephVault.Unity.Support.Types.Sampling;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 using UnityEngine;
 
 
@@ -15,7 +19,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
         [RequireComponent(typeof(ScopeServerSide))]
         public class SampleDefaultScopeServerSide : MonoBehaviour
         {
-            ScopeServerSide scope;
+            private ScopeServerSide scope;
 
             private float refreshRate;
             private float currentRefresh = 0;
@@ -24,10 +28,6 @@ namespace AlephVault.Unity.Meetgard.Scopes
             private void Awake()
             {
                 scope = GetComponent<ScopeServerSide>();
-            }
-
-            private void Start()
-            {
                 scope.OnLoad += Scope_OnLoad;
                 scope.OnUnload += Scope_OnUnload;
             }
@@ -54,7 +54,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                         if (obj is SampleObjectServerSide sobj)
                         {
                             sobj.Color = new Random<Color32>(new Color32[] { Color.white, Color.red, Color.green, Color.blue }).Get();
-                            sobj.Position = new RandomBox3(new Vector3(-4, -4, -4), new Vector3(-4, -4, -4)).Get();
+                            sobj.Position = new RandomBox3(new Vector3(-4, -4, -4), new Vector3(4, 4, 4)).Get();
                         }
                     }
                 });

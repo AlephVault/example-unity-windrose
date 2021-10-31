@@ -24,10 +24,6 @@ namespace AlephVault.Unity.Meetgard.Scopes
             private void Awake()
             {
                 scope = GetComponent<ScopeServerSide>();
-            }
-
-            private void Start()
-            {
                 scope.OnLoad += Scope_OnLoad;
                 scope.OnUnload += Scope_OnUnload;
                 scope.OnLeaving += Scope_OnLeaving;
@@ -55,7 +51,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                         if (obj is SampleObjectServerSide sobj)
                         {
                             sobj.Color = new Random<Color32>(new Color32[] { Color.white, Color.red, Color.green, Color.blue }).Get();
-                            sobj.Position = new RandomBox3(new Vector3(-4, -4, -4), new Vector3(-4, -4, -4)).Get();
+                            sobj.Position = new RandomBox3(new Vector3(-4, -4, -4), new Vector3(4, 4, 4)).Get();
                         }
                     }
                 });
@@ -82,7 +78,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                 refreshRate = 1f;
                 SampleObjectServerSide obj = protocol.InstantiateHere(0) as SampleObjectServerSide;
                 obj.Color = new Random<Color32>(new Color32[] { Color.white, Color.red, Color.green, Color.blue }).Get();
-                obj.Position = new RandomBox3(new Vector3(-4, -4, -4), new Vector3(-4, -4, -4)).Get();
+                obj.Position = new RandomBox3(new Vector3(-4, -4, -4), new Vector3(4, 4, 4)).Get();
                 await scope.AddObject(obj);
                 loaded = true;
             }

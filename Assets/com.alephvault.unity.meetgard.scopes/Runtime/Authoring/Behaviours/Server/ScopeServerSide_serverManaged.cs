@@ -1,5 +1,6 @@
 using AlephVault.Unity.Support.Utils;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -98,6 +99,15 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                 $"The exception details are: {e.Message}"
                             );
                         }) ?? Task.CompletedTask);
+                    }
+
+                    /// <summary>
+                    ///   Returns an iterator of all the connections in the scope.
+                    /// </summary>
+                    /// <returns>The iterator</returns>
+                    public IEnumerable<ulong> Connections()
+                    {
+                        foreach (ulong connection in connections) yield return connection;
                     }
                 }
             }

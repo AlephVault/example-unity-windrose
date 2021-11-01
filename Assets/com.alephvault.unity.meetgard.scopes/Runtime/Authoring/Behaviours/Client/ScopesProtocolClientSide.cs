@@ -142,158 +142,171 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     protected override void SetIncomingMessageHandlers()
                     {
                         AddIncomingMessageHandler("Welcome", async (proto) => {
-                            Debug.Log("ScopesPCS::Handler:Welcome::Begin");
-                            Debug.Log("ScopesPCS::Handler:Welcome::--Clearing any current scope");
-                            // The action must be queued in the queueManager.
-                            // HOWEVER it will NOT be waited for (the queued
-                            // handler will be waited for, but not the returned
-                            // handler).
-                            await RunInMainThread(ClearCurrentScope);
-                            Debug.Log("ScopesPCS::Handler:Welcome::--Setting Limbo as current scope");
-                            currentScopeId = Scope.Limbo;
-                            Debug.Log("ScopesPCS::Handler:Welcome::--Triggering OnWelcome event");
-                            OnWelcome?.Invoke();
-                            Debug.Log("ScopesPCS::Handler:Welcome::End");
+                            await RunInMainThread(async () =>
+                            {
+                                Debug.Log("ScopesPCS::Handler:Welcome::Begin");
+                                Debug.Log("ScopesPCS::Handler:Welcome::--Clearing any current scope");
+                                // The action must be queued in the queueManager.
+                                // HOWEVER it will NOT be waited for (the queued
+                                // handler will be waited for, but not the returned
+                                // handler).
+                                ClearCurrentScope();
+                                Debug.Log("ScopesPCS::Handler:Welcome::--Setting Limbo as current scope");
+                                currentScopeId = Scope.Limbo;
+                                Debug.Log("ScopesPCS::Handler:Welcome::--Triggering OnWelcome event");
+                                OnWelcome?.Invoke();
+                                Debug.Log("ScopesPCS::Handler:Welcome::End");
+                            });
                         });
                         AddIncomingMessageHandler<MovedToScope>("MovedToScope", async (proto, message) => {
-                            Debug.Log("ScopesPCS::Handler:MovedToScope::Begin");
-                            Debug.Log("ScopesPCS::Handler:MovedToScope::--Clearing any current scope");
-                            // The action must be queued in the queueManager.
-                            // HOWEVER it will NOT be waited for (the queued
-                            // handler will be waited for, but not the returned
-                            // handler).
-                            Task clearTask = RunInMainThread(ClearCurrentScope);
-                            Task loadTask = RunInMainThread(() => LoadNewScope(message.ScopeIndex, message.PrefabIndex));
-                            await clearTask;
-                            try
+                            await RunInMainThread(async () =>
                             {
-                                Debug.Log("ScopesPCS::Handler:MovedToScope::--Loading a new scope");
-                                await loadTask;
-                                currentScopeId = message.ScopeIndex;
-                            }
-                            catch (Exception e)
-                            {
-                                Debug.LogError($"Exception of type {e.GetType().FullName} while loading a new scope: {e.Message}");
-                                await LocalError("ScopeLoadError");
-                                return;
-                            }
-                            Debug.Log("ScopesPCS::Handler:MovedToScope::--Triggering OnMovedToScope event");
-                            OnMovedToScope?.Invoke(currentScope);
-                            Debug.Log("ScopesPCS::Handler:MovedToScope::--End");
+                                Debug.Log("ScopesPCS::Handler:MovedToScope::Begin");
+                                Debug.Log("ScopesPCS::Handler:MovedToScope::--Clearing any current scope");
+                                // The action must be queued in the queueManager.
+                                // HOWEVER it will NOT be waited for (the queued
+                                // handler will be waited for, but not the returned
+                                // handler).
+                                ClearCurrentScope();
+                                try
+                                {
+                                    Debug.Log("ScopesPCS::Handler:MovedToScope::--Loading a new scope");
+                                    LoadNewScope(message.ScopeIndex, message.PrefabIndex);
+                                    currentScopeId = message.ScopeIndex;
+                                }
+                                catch (Exception e)
+                                {
+                                    Debug.LogError($"Exception of type {e.GetType().FullName} while loading a new scope: {e.Message}");
+                                    await LocalError("ScopeLoadError");
+                                    return;
+                                }
+                                Debug.Log("ScopesPCS::Handler:MovedToScope::--Triggering OnMovedToScope event");
+                                OnMovedToScope?.Invoke(currentScope);
+                                Debug.Log("ScopesPCS::Handler:MovedToScope::--End");
+                            });
                         });
                         AddIncomingMessageHandler<ObjectSpawned>("ObjectSpawned", async (proto, message) => {
-                            Debug.Log("ScopesPCS::Handler:ObjectSpawned::Begin");
-                            Debug.Log("ScopesPCS::Handler:ObjectSpawned::--Checking");
-                            // The action must be queued in the queueManager.
-                            // HOWEVER it will NOT be waited for (the queued
-                            // handler will be waited for, but not the returned
-                            // handler).
-                            if (currentScope == null || currentScope.Id != message.ScopeIndex || currentScope.Id >= Scope.MaxScopes)
+                            await RunInMainThread(async () =>
                             {
-                                // This is an error: Either the current scope is null,
-                                // unmatched against the incoming scope index, or the
-                                // incoming scope index being above the maximum amount
-                                // of scopes (e.g. it is Limbo, or Maintenance).
-                                //
-                                // This all will be treated as a local error instead.
-                                Debug.LogError($"Scope mismatch. Current scope is {currentScopeId} and message scope is {message.ScopeIndex}");
-                                await LocalError("ScopeMismatch");
-                                return;
-                            }
+                                Debug.Log("ScopesPCS::Handler:ObjectSpawned::Begin");
+                                Debug.Log("ScopesPCS::Handler:ObjectSpawned::--Checking");
+                                // The action must be queued in the queueManager.
+                                // HOWEVER it will NOT be waited for (the queued
+                                // handler will be waited for, but not the returned
+                                // handler).
+                                if (currentScope == null || currentScope.Id != message.ScopeIndex || currentScope.Id >= Scope.MaxScopes)
+                                {
+                                    // This is an error: Either the current scope is null,
+                                    // unmatched against the incoming scope index, or the
+                                    // incoming scope index being above the maximum amount
+                                    // of scopes (e.g. it is Limbo, or Maintenance).
+                                    //
+                                    // This all will be treated as a local error instead.
+                                    Debug.LogError($"Scope mismatch. Current scope is {currentScopeId} and message scope is {message.ScopeIndex}");
+                                    await LocalError("ScopeMismatch");
+                                    return;
+                                }
 
-                            ObjectClientSide spawned;
-                            try
-                            {
-                                Debug.Log("ScopesPCS::Handler:ObjectSpawned::--Spawning the object");
-                                spawned = await RunInMainThread(async () => Spawn(message.ObjectIndex, message.ObjectPrefabIndex, message.Data));
-                            }
-                            catch (Exception e)
-                            {
-                                Debug.LogError($"Exception of type {e.GetType().FullName} while spawning an object: {e.Message}");
-                                await LocalError("SpawnError");
-                                return;
-                            }
+                                ObjectClientSide spawned;
+                                try
+                                {
+                                    Debug.Log("ScopesPCS::Handler:ObjectSpawned::--Spawning the object");
+                                    spawned = Spawn(message.ObjectIndex, message.ObjectPrefabIndex, message.Data);
+                                }
+                                catch (Exception e)
+                                {
+                                    Debug.LogError($"Exception of type {e.GetType().FullName} while spawning an object: {e.Message}");
+                                    await LocalError("SpawnError");
+                                    return;
+                                }
 
-                            // This event occurs after the per-object spawned event.
-                            Debug.Log("ScopesPCS::Handler:ObjectSpawned::--Triggering OnSpawned event");
-                            OnSpawned?.Invoke(spawned);
-                            Debug.Log("ScopesPCS::Handler:ObjectSpawned::--End");
+                                // This event occurs after the per-object spawned event.
+                                Debug.Log("ScopesPCS::Handler:ObjectSpawned::--Triggering OnSpawned event");
+                                OnSpawned?.Invoke(spawned);
+                                Debug.Log("ScopesPCS::Handler:ObjectSpawned::--End");
+                            });
                         });
                         AddIncomingMessageHandler<ObjectRefreshed>("ObjectRefreshed", async (proto, message) => {
-                            Debug.Log("ScopesPCS::Handler:ObjectRefreshed::Begin");
-                            Debug.Log("ScopesPCS::Handler:ObjectRefreshed::--Checking");
-                            // The action must be queued in the queueManager.
-                            // HOWEVER it will NOT be waited for (the queued
-                            // handler will be waited for, but not the returned
-                            // handler).
-                            if (currentScope == null || currentScope.Id != message.ScopeIndex || currentScope.Id >= Scope.MaxScopes)
+                            await RunInMainThread(async () =>
                             {
-                                // This is an error: Either the current scope is null,
-                                // unmatched against the incoming scope index, or the
-                                // incoming scope index being above the maximum amount
-                                // of scopes (e.g. it is Limbo, or Maintenance).
-                                //
-                                // This all will be treated as a local error instead.
-                                Debug.LogError($"Scope mismatch. Current scope is {currentScopeId} and message scope is {message.ScopeIndex}");
-                                await LocalError("ScopeMismatch");
-                                return;
-                            }
+                                Debug.Log("ScopesPCS::Handler:ObjectRefreshed::Begin");
+                                Debug.Log("ScopesPCS::Handler:ObjectRefreshed::--Checking");
+                                // The action must be queued in the queueManager.
+                                // HOWEVER it will NOT be waited for (the queued
+                                // handler will be waited for, but not the returned
+                                // handler).
+                                if (currentScope == null || currentScope.Id != message.ScopeIndex || currentScope.Id >= Scope.MaxScopes)
+                                {
+                                    // This is an error: Either the current scope is null,
+                                    // unmatched against the incoming scope index, or the
+                                    // incoming scope index being above the maximum amount
+                                    // of scopes (e.g. it is Limbo, or Maintenance).
+                                    //
+                                    // This all will be treated as a local error instead.
+                                    Debug.LogError($"Scope mismatch. Current scope is {currentScopeId} and message scope is {message.ScopeIndex}");
+                                    await LocalError("ScopeMismatch");
+                                    return;
+                                }
 
-                            Tuple<ObjectClientSide, ISerializable> result;
-                            try
-                            {
-                                Debug.Log("ScopesPCS::Handler:ObjectRefreshed::--Refreshing the object");
-                                result = await RunInMainThread(async () => Refresh(message.ObjectIndex, message.Data));
-                            }
-                            catch (Exception e)
-                            {
-                                Debug.LogError($"Exception of type {e.GetType().FullName} while refreshing an object: {e.Message}");
-                                await LocalError("RefreshError");
-                                return;
-                            }
+                                Tuple<ObjectClientSide, ISerializable> result;
+                                try
+                                {
+                                    Debug.Log("ScopesPCS::Handler:ObjectRefreshed::--Refreshing the object");
+                                    result = Refresh(message.ObjectIndex, message.Data);
+                                }
+                                catch (Exception e)
+                                {
+                                    Debug.LogError($"Exception of type {e.GetType().FullName} while refreshing an object: {e.Message}");
+                                    await LocalError("RefreshError");
+                                    return;
+                                }
 
-                            // This event occurs after the per-object refreshed event.
-                            Debug.Log("ScopesPCS::Handler:ObjectRefreshed::--Triggering OnRefreshed event");
-                            OnRefreshed?.Invoke(result.Item1, result.Item2);
-                            Debug.Log("ScopesPCS::Handler:ObjectRefreshed::End");
+                                // This event occurs after the per-object refreshed event.
+                                Debug.Log("ScopesPCS::Handler:ObjectRefreshed::--Triggering OnRefreshed event");
+                                OnRefreshed?.Invoke(result.Item1, result.Item2);
+                                Debug.Log("ScopesPCS::Handler:ObjectRefreshed::End");
+                            });
                         });
                         AddIncomingMessageHandler<ObjectDespawned>("ObjectDespawned", async (proto, message) => {
-                            Debug.Log("ScopesPCS::Handler:ObjectDespawned::Begin");
-                            Debug.Log("ScopesPCS::Handler:ObjectDespawned::--Checking");
-                            // The action must be queued in the queueManager.
-                            // HOWEVER it will NOT be waited for (the queued
-                            // handler will be waited for, but not the returned
-                            // handler).
-                            if (currentScope == null || currentScope.Id != message.ScopeIndex || currentScope.Id >= Scope.MaxScopes)
+                            await RunInMainThread(async () =>
                             {
-                                // This is an error: Either the current scope is null,
-                                // unmatched against the incoming scope index, or the
-                                // incoming scope index being above the maximum amount
-                                // of scopes (e.g. it is Limbo, or Maintenance).
-                                //
-                                // This all will be treated as a local error instead.
-                                Debug.LogError($"Scope mismatch. Current scope is {currentScopeId} and message scope is {message.ScopeIndex}");
-                                await LocalError("ScopeMismatch");
-                                return;
-                            }
+                                Debug.Log("ScopesPCS::Handler:ObjectDespawned::Begin");
+                                Debug.Log("ScopesPCS::Handler:ObjectDespawned::--Checking");
+                                // The action must be queued in the queueManager.
+                                // HOWEVER it will NOT be waited for (the queued
+                                // handler will be waited for, but not the returned
+                                // handler).
+                                if (currentScope == null || currentScope.Id != message.ScopeIndex || currentScope.Id >= Scope.MaxScopes)
+                                {
+                                    // This is an error: Either the current scope is null,
+                                    // unmatched against the incoming scope index, or the
+                                    // incoming scope index being above the maximum amount
+                                    // of scopes (e.g. it is Limbo, or Maintenance).
+                                    //
+                                    // This all will be treated as a local error instead.
+                                    Debug.LogError($"Scope mismatch. Current scope is {currentScopeId} and message scope is {message.ScopeIndex}");
+                                    await LocalError("ScopeMismatch");
+                                    return;
+                                }
 
-                            ObjectClientSide despawned;
-                            try
-                            {
-                                Debug.Log("ScopesPCS::Handler:ObjectDespawned::--Despawning the object");
-                                despawned = await RunInMainThread(async () => Despawn(message.ObjectIndex));
-                            }
-                            catch (Exception e)
-                            {
-                                Debug.LogError($"Exception of type {e.GetType().FullName} while despawning an object: {e.Message}");
-                                await LocalError("DespawnError");
-                                return;
-                            }
+                                ObjectClientSide despawned;
+                                try
+                                {
+                                    Debug.Log("ScopesPCS::Handler:ObjectDespawned::--Despawning the object");
+                                    despawned = Despawn(message.ObjectIndex);
+                                }
+                                catch (Exception e)
+                                {
+                                    Debug.LogError($"Exception of type {e.GetType().FullName} while despawning an object: {e.Message}");
+                                    await LocalError("DespawnError");
+                                    return;
+                                }
 
-                            // This event occurs after the per-object despawned event.
-                            Debug.Log("ScopesPCS::Handler:ObjectDespawned::--Invoking OnDespawned event");
-                            OnDespawned?.Invoke(despawned);
-                            Debug.Log("ScopesPCS::Handler:ObjectDespawned::End");
+                                // This event occurs after the per-object despawned event.
+                                Debug.Log("ScopesPCS::Handler:ObjectDespawned::--Invoking OnDespawned event");
+                                OnDespawned?.Invoke(despawned);
+                                Debug.Log("ScopesPCS::Handler:ObjectDespawned::End");
+                            });
                         });
                     }
 

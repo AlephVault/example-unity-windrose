@@ -142,24 +142,33 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     protected override void SetIncomingMessageHandlers()
                     {
                         AddIncomingMessageHandler("Welcome", async (proto) => {
+                            Debug.Log("ScopesPCS::Handler:Welcome::Begin");
+                            Debug.Log("ScopesPCS::Handler:Welcome::--Clearing any current scope");
                             // The action must be queued in the queueManager.
                             // HOWEVER it will NOT be waited for (the queued
                             // handler will be waited for, but not the returned
                             // handler).
-                            ClearCurrentScope();
+                            await RunInMainThread(ClearCurrentScope);
+                            Debug.Log("ScopesPCS::Handler:Welcome::--Setting Limbo as current scope");
                             currentScopeId = Scope.Limbo;
-
+                            Debug.Log("ScopesPCS::Handler:Welcome::--Triggering OnWelcome event");
                             OnWelcome?.Invoke();
+                            Debug.Log("ScopesPCS::Handler:Welcome::End");
                         });
                         AddIncomingMessageHandler<MovedToScope>("MovedToScope", async (proto, message) => {
+                            Debug.Log("ScopesPCS::Handler:MovedToScope::Begin");
+                            Debug.Log("ScopesPCS::Handler:MovedToScope::--Clearing any current scope");
                             // The action must be queued in the queueManager.
                             // HOWEVER it will NOT be waited for (the queued
                             // handler will be waited for, but not the returned
                             // handler).
-                            ClearCurrentScope();
+                            Task clearTask = RunInMainThread(ClearCurrentScope);
+                            Task loadTask = RunInMainThread(() => LoadNewScope(message.ScopeIndex, message.PrefabIndex));
+                            await clearTask;
                             try
                             {
-                                LoadNewScope(message.ScopeIndex, message.PrefabIndex);
+                                Debug.Log("ScopesPCS::Handler:MovedToScope::--Loading a new scope");
+                                await loadTask;
                                 currentScopeId = message.ScopeIndex;
                             }
                             catch (Exception e)
@@ -168,10 +177,13 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                 await LocalError("ScopeLoadError");
                                 return;
                             }
-
+                            Debug.Log("ScopesPCS::Handler:MovedToScope::--Triggering OnMovedToScope event");
                             OnMovedToScope?.Invoke(currentScope);
+                            Debug.Log("ScopesPCS::Handler:MovedToScope::--End");
                         });
                         AddIncomingMessageHandler<ObjectSpawned>("ObjectSpawned", async (proto, message) => {
+                            Debug.Log("ScopesPCS::Handler:ObjectSpawned::Begin");
+                            Debug.Log("ScopesPCS::Handler:ObjectSpawned::--Checking");
                             // The action must be queued in the queueManager.
                             // HOWEVER it will NOT be waited for (the queued
                             // handler will be waited for, but not the returned
@@ -192,7 +204,8 @@ namespace AlephVault.Unity.Meetgard.Scopes
                             ObjectClientSide spawned;
                             try
                             {
-                                spawned = Spawn(message.ObjectIndex, message.ObjectPrefabIndex, message.Data);
+                                Debug.Log("ScopesPCS::Handler:ObjectSpawned::--Spawning the object");
+                                spawned = await RunInMainThread(async () => Spawn(message.ObjectIndex, message.ObjectPrefabIndex, message.Data));
                             }
                             catch (Exception e)
                             {
@@ -202,9 +215,13 @@ namespace AlephVault.Unity.Meetgard.Scopes
                             }
 
                             // This event occurs after the per-object spawned event.
+                            Debug.Log("ScopesPCS::Handler:ObjectSpawned::--Triggering OnSpawned event");
                             OnSpawned?.Invoke(spawned);
+                            Debug.Log("ScopesPCS::Handler:ObjectSpawned::--End");
                         });
                         AddIncomingMessageHandler<ObjectRefreshed>("ObjectRefreshed", async (proto, message) => {
+                            Debug.Log("ScopesPCS::Handler:ObjectRefreshed::Begin");
+                            Debug.Log("ScopesPCS::Handler:ObjectRefreshed::--Checking");
                             // The action must be queued in the queueManager.
                             // HOWEVER it will NOT be waited for (the queued
                             // handler will be waited for, but not the returned
@@ -225,7 +242,8 @@ namespace AlephVault.Unity.Meetgard.Scopes
                             Tuple<ObjectClientSide, ISerializable> result;
                             try
                             {
-                                result = Refresh(message.ObjectIndex, message.Data);
+                                Debug.Log("ScopesPCS::Handler:ObjectRefreshed::--Refreshing the object");
+                                result = await RunInMainThread(async () => Refresh(message.ObjectIndex, message.Data));
                             }
                             catch (Exception e)
                             {
@@ -235,9 +253,13 @@ namespace AlephVault.Unity.Meetgard.Scopes
                             }
 
                             // This event occurs after the per-object refreshed event.
+                            Debug.Log("ScopesPCS::Handler:ObjectRefreshed::--Triggering OnRefreshed event");
                             OnRefreshed?.Invoke(result.Item1, result.Item2);
+                            Debug.Log("ScopesPCS::Handler:ObjectRefreshed::End");
                         });
                         AddIncomingMessageHandler<ObjectDespawned>("ObjectDespawned", async (proto, message) => {
+                            Debug.Log("ScopesPCS::Handler:ObjectDespawned::Begin");
+                            Debug.Log("ScopesPCS::Handler:ObjectDespawned::--Checking");
                             // The action must be queued in the queueManager.
                             // HOWEVER it will NOT be waited for (the queued
                             // handler will be waited for, but not the returned
@@ -258,7 +280,8 @@ namespace AlephVault.Unity.Meetgard.Scopes
                             ObjectClientSide despawned;
                             try
                             {
-                                despawned = Despawn(message.ObjectIndex);
+                                Debug.Log("ScopesPCS::Handler:ObjectDespawned::--Despawning the object");
+                                despawned = await RunInMainThread(async () => Despawn(message.ObjectIndex));
                             }
                             catch (Exception e)
                             {
@@ -268,7 +291,9 @@ namespace AlephVault.Unity.Meetgard.Scopes
                             }
 
                             // This event occurs after the per-object despawned event.
+                            Debug.Log("ScopesPCS::Handler:ObjectDespawned::--Invoking OnDespawned event");
                             OnDespawned?.Invoke(despawned);
+                            Debug.Log("ScopesPCS::Handler:ObjectDespawned::End");
                         });
                     }
 

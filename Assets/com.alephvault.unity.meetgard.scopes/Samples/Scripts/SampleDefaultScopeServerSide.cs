@@ -55,6 +55,10 @@ namespace AlephVault.Unity.Meetgard.Scopes
                         sobj.Position = new RandomBox3(new Vector3(-4, -4, -4), new Vector3(4, 4, 4)).Get();
                     }
                 }
+                foreach(ulong connection in scope.Connections())
+                {
+                    scope.Protocol.RunInMainThread(() => scope.RefreshExistingObjectsTo(connection, ""));
+                }
             }
 
             private async Task Scope_OnLoad()

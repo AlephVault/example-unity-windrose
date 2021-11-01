@@ -166,7 +166,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     {
                         Debug.Log("ScopesPSS::OnServerStarted::Begin");
                         Debug.Log("ScopesPSS::OnServerStarted::--Loading World");
-                        await LoadWorld();
+                        await RunInMainThread(LoadWorld);
                         Debug.Log("ScopesPSS::OnServerStarted::End");
                     }
 
@@ -233,7 +233,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     {
                         Debug.Log("ScopesPSS::OnServerStopped::Begin");
                         Debug.Log("ScopesPSS::OnServerStopped::--Unoading World");
-                        await UnloadWorld();
+                        await RunInMainThread(UnloadWorld);
                         // At this point, the whole world is unloaded and all of the
                         // connections are being sent to Limbo. As long as they remain
                         // established, they will be kicked one by one gracefully and

@@ -240,6 +240,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     // bigger queued task.
                     private async Task SyncExistingObjectsTo(ulong connection)
                     {
+                        Debug.Log($"ScopeServerSide::SyncExistingObjectsTo({connection})::Begin");
                         foreach(ObjectServerSide obj in objects.Values)
                         {
                             // Lazy-allocate the array.
@@ -254,6 +255,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                 Data = fullObjectData
                             }));
                         }
+                        Debug.Log($"ScopeServerSide::SyncExistingObjectsTo({connection})::End");
                     }
                 }
             }

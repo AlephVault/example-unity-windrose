@@ -245,12 +245,12 @@ namespace AlephVault.Unity.Meetgard.Scopes
                             }
 
                             ScopeServerSide instance = Instantiate(extraScopePrefabs[extraScopePrefabIndex], null, true);
-                            await instance.Load();
                             uint newId = (uint)loadedScopesIds.Next();
                             instance.Id = newId;
                             instance.PrefabId = extraScopePrefabIndex;
                             instance.Protocol = this;
                             loadedScopes.Add(newId, instance);
+                            await instance.Load();
                             return instance;
                         });
                     }

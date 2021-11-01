@@ -74,7 +74,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     SampleObjectServerSide obj = protocol.InstantiateHere(0) as SampleObjectServerSide;
                     obj.Color = pair.Value.Color;
                     obj.Position = pair.Value.Position;
-                    await scope.AddObject(obj);
+                    scope.AddObject(obj);
                 }
                 loaded = true;
             }

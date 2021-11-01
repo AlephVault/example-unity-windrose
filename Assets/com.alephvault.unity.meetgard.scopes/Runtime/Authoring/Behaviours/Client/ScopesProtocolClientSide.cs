@@ -320,11 +320,11 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                 instance.Despawn();
                                 // TODO Allow defining a strategy for spawning (e.g. direct or pooling),
                                 // TODO instead of just instantiating the object.
-                                Destroy(instance);
+                                Destroy(instance.gameObject);
                             }
                             currentObjects.Clear();
                             currentScope.Unload();
-                            Destroy(currentScope);
+                            Destroy(currentScope.gameObject);
                             currentScope = null;
                         }
                     }
@@ -402,7 +402,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                             if (InstanceManager.Result != null) {
                                 InstanceManager.Result.Release(instance);
                             } else {
-                                Destroy(instance);
+                                Destroy(instance.gameObject);
                             };
                             // The instance is already unspawned by this point. Depending on the
                             // strategy to use, this may imply the instance is destroyed..

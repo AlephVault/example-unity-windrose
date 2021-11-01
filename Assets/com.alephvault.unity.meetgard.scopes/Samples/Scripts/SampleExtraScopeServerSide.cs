@@ -72,16 +72,21 @@ namespace AlephVault.Unity.Meetgard.Scopes
             private async Task Scope_OnLoad()
             {
                 // Typically, the dev will make async calls here.
-                Debug.Log("ServerSideScope::OnLoad");
+                Debug.Log("SampleExtraSSS::OnLoad::Begin");
                 // Take the protocol and make a default spawn.
+                Debug.Log("SampleExtraSSS::OnLoad::--Getting current protocol");
                 ScopesProtocolServerSide protocol = scope.Protocol;
                 // Instantiate the object.
+                Debug.Log($"SampleExtraSSS::OnLoad::--Giving refresh rate and creating one object (Protocol: {protocol})");
                 refreshRate = 1f;
                 SampleObjectServerSide obj = protocol.InstantiateHere(0) as SampleObjectServerSide;
+                Debug.Log("SampleExtraSSS::OnLoad::--Populating new object");
                 obj.Color = new Random<Color32>(new Color32[] { Color.white, Color.red, Color.green, Color.blue }).Get();
                 obj.Position = new RandomBox3(new Vector3(-4, -4, -4), new Vector3(4, 4, 4)).Get();
+                Debug.Log("SampleExtraSSS::OnLoad::--Adding new object to scope (main Thread)");
                 var _ = scope.AddObject(obj);
                 loaded = true;
+                Debug.Log("SampleExtraSSS::OnLoad::End");
             }
 
             private async Task Scope_OnUnload()

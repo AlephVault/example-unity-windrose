@@ -512,7 +512,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   startKey: 97
   stopKey: 115
-  gotoDefaultKeys: 6700000068000000690000006a000000
+  gotoDefaultKeys: 67000000680000006a0000006b000000
   gotoLimboKey: 100
   gotoExtraKey: 102
 --- !u!114 &1104512183

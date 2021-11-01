@@ -26,17 +26,23 @@ namespace AlephVault.Unity.Meetgard.Scopes
 
             public async void DoSendGoToLimbo()
             {
+                Debug.Log("Sample Protocol Client Side::[Async] Requiring Limbo...");
                 await SendGoToLimbo();
+                Debug.Log("Sample Protocol Client Side::[Async] Limbo required.");
             }
 
             public async void DoSendGoToExtra()
             {
+                Debug.Log("Sample Protocol Client Side::[Async] Requiring Extra...");
                 await SendGoToExtra();
+                Debug.Log("Sample Protocol Client Side::[Async] Extra required.");
             }
 
             public async void DoSendGoToDefault(uint index)
             {
+                Debug.Log($"Sample Protocol Client Side::[Async] Requiring Default {index}...");
                 await SendGoToDefault((UInt)index);
+                Debug.Log($"Sample Protocol Client Side::[Async] Default {index} required.");
             }
 
             protected override void SetIncomingMessageHandlers()

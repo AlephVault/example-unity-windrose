@@ -36,7 +36,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     if (currentRefresh >= refreshRate)
                     {
                         currentRefresh -= refreshRate;
-                        DoRefresh();
+                        GetComponent<AsyncQueueManager>().QueueAction(DoRefresh);
                     }
                     currentRefresh += Time.deltaTime;
                 }
@@ -44,17 +44,14 @@ namespace AlephVault.Unity.Meetgard.Scopes
 
             private void DoRefresh()
             {
-                GetComponent<AsyncQueueManager>().QueueAction(() =>
+                foreach (ObjectServerSide obj in scope.Objects())
                 {
-                    foreach(ObjectServerSide obj in scope.Objects())
+                    if (obj is SampleObjectServerSide sobj)
                     {
-                        if (obj is SampleObjectServerSide sobj)
-                        {
-                            sobj.Color = new Random<Color32>(new Color32[] { Color.white, Color.red, Color.green, Color.blue }).Get();
-                            sobj.Position = new RandomBox3(new Vector3(-4, -4, -4), new Vector3(4, 4, 4)).Get();
-                        }
+                        sobj.Color = new Random<Color32>(new Color32[] { Color.white, Color.red, Color.green, Color.blue }).Get();
+                        sobj.Position = new RandomBox3(new Vector3(-4, -4, -4), new Vector3(4, 4, 4)).Get();
                     }
-                });
+                }
             }
 
             private async Task Scope_OnLeaving(ulong arg)
@@ -79,7 +76,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                 SampleObjectServerSide obj = protocol.InstantiateHere(0) as SampleObjectServerSide;
                 obj.Color = new Random<Color32>(new Color32[] { Color.white, Color.red, Color.green, Color.blue }).Get();
                 obj.Position = new RandomBox3(new Vector3(-4, -4, -4), new Vector3(4, 4, 4)).Get();
-                await scope.AddObject(obj);
+                var _ = scope.AddObject(obj);
                 loaded = true;
             }
 

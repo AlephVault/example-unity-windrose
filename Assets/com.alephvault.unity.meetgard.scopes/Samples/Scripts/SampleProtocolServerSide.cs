@@ -27,19 +27,25 @@ namespace AlephVault.Unity.Meetgard.Scopes
             protected override void SetIncomingMessageHandlers()
             {
                 AddIncomingMessageHandler("GoTo:Extra", async (proto, connectionId) => {
+                    Debug.Log("Sample Protocol Server Side::Attending GoTo:Extra...");
                     ScopeServerSide sss = await scopesProtocol.LoadExtraScope("sample-extra");
-                    await scopesProtocol.SendTo(connectionId, sss.Id);
+                    var _ = scopesProtocol.SendTo(connectionId, sss.Id);
                     await SendOK(connectionId);
+                    Debug.Log("Sample Protocol Server Side::GoTo:Extra attended.");
                 });
 
                 AddIncomingMessageHandler("GoTo:Limbo", async (proto, connectionId) => {
-                    await scopesProtocol.SendToLimbo(connectionId);
+                    Debug.Log("Sample Protocol Server Side::Attending GoTo:Limbo...");
+                    var _ = scopesProtocol.SendToLimbo(connectionId);
                     await SendOK(connectionId);
+                    Debug.Log("Sample Protocol Server Side::GoTo:Limbo attended.");
                 });
 
                 AddIncomingMessageHandler<UInt>("GoTo:Default", async (proto, connectionId, message) => {
-                    await scopesProtocol.SendTo(connectionId, message);
+                    Debug.Log($"Sample Protocol Server Side::Attending GoTo:Default {(uint)message}...");
+                    var _ = scopesProtocol.SendTo(connectionId, message);
                     await SendOK(connectionId);
+                    Debug.Log($"Sample Protocol Server Side::GoTo:Default {(uint)message} attended.");
                 });
             }
         }

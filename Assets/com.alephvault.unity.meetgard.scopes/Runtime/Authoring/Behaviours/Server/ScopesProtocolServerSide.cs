@@ -178,7 +178,10 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     public override async Task OnConnected(ulong clientId)
                     {
                         scopeForConnection[clientId] = Scope.Limbo;
+                        Debug.Log("Scopes ProtocolServerSide::Processing OnConnected...");
+                        Debug.Log("Scopes ProtocolServerSide::Greeting...");
                         await UntilSendIsDone(SendWelcome(clientId));
+                        Debug.Log($"Scopes ProtocolServerSide::Invoking OnWelcome ({(OnWelcome == null ? 0 : OnWelcome.GetInvocationList().Length)} events)...");
                         await (OnWelcome?.InvokeAsync(clientId, async (e) => {
                             Debug.LogError(
                                 $"An error of type {e.GetType().FullName} has occurred in server side's OnWelcome event. " +
@@ -186,6 +189,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                 $"The exception details are: {e.Message}"
                             );
                         }) ?? Task.CompletedTask);
+                        Debug.Log("Scopes ProtocolServerSide::OnConnected processed.");
                     }
 
                     /// <summary>

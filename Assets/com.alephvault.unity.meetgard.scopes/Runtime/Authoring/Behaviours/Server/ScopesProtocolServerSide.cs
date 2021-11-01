@@ -232,7 +232,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     public override async Task OnServerStopped(Exception e)
                     {
                         Debug.Log("ScopesPSS::OnServerStopped::Begin");
-                        Debug.Log("ScopesPSS::OnServerStopped::--Unoading World");
+                        Debug.Log("ScopesPSS::OnServerStopped::--Unloading World");
                         await RunInMainThread(UnloadWorld);
                         // At this point, the whole world is unloaded and all of the
                         // connections are being sent to Limbo. As long as they remain

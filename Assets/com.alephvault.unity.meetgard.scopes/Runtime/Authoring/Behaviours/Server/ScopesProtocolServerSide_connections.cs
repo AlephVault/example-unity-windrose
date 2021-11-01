@@ -145,7 +145,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     /// <param name="force">Whether to execute the logic, even if the scope is the same</param>
                     public Task SendTo(ulong connectionId, uint newScope, bool force = false)
                     {
-                        return QueueManager.Queue(async () => {
+                        return RunInMainThread(async () => {
                             uint scopePrefabId;
                             try
                             {

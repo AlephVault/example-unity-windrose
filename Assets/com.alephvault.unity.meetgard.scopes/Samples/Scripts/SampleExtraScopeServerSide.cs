@@ -36,7 +36,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     if (currentRefresh >= refreshRate)
                     {
                         currentRefresh -= refreshRate;
-                        GetComponent<AsyncQueueManager>().Queue(DoRefresh);
+                        scope.Protocol.RunInMainThread(DoRefresh);
                     }
                     currentRefresh += Time.deltaTime;
                 }

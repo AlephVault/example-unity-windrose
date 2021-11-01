@@ -180,11 +180,11 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     /// <param name="clientId">the connection being started.</param>
                     public override async Task OnConnected(ulong clientId)
                     {
+                        Debug.Log($"ScopesPSS::OnConnected({clientId})::Begin");
                         scopeForConnection[clientId] = Scope.Limbo;
-                        Debug.Log("Scopes ProtocolServerSide::Processing OnConnected...");
-                        Debug.Log("Scopes ProtocolServerSide::Greeting...");
+                        Debug.Log($"ScopesPSS::OnConnected({clientId})::--Greeting");
                         await UntilSendIsDone(SendWelcome(clientId));
-                        Debug.Log($"Scopes ProtocolServerSide::Invoking OnWelcome ({(OnWelcome == null ? 0 : OnWelcome.GetInvocationList().Length)} events)...");
+                        Debug.Log($"ScopesPSS::OnConnected({clientId})::--Invoking OnWelcome");
                         await (OnWelcome?.InvokeAsync(clientId, async (e) => {
                             Debug.LogError(
                                 $"An error of type {e.GetType().FullName} has occurred in server side's OnWelcome event. " +
@@ -192,7 +192,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                 $"The exception details are: {e.Message}"
                             );
                         }) ?? Task.CompletedTask);
-                        Debug.Log("Scopes ProtocolServerSide::OnConnected processed.");
+                        Debug.Log($"ScopesPSS::OnConnected({clientId})::End");
                     }
 
                     /// <summary>
@@ -207,9 +207,13 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     /// <param name="reason">The disconnection reason</param>
                     public override async Task OnDisconnected(ulong clientId, Exception reason)
                     {
+                        Debug.Log($"ScopesPSS::OnDisconnected({clientId})::Begin");
+                        Debug.Log($"ScopesPSS::OnDisconnected({clientId})::--Checking client");
                         if (scopeForConnection.TryGetValue(clientId, out uint scopeId))
                         {
+                            Debug.Log($"ScopesPSS::OnDisconnected({clientId})::--Found client in scope: {scopeId} - Clearing");
                             scopeForConnection.Remove(clientId);
+                            Debug.Log($"ScopesPSS::OnDisconnected({clientId})::--And also triggering OnGoodBye event");
                             await (OnGoodBye?.InvokeAsync(clientId, scopeId, async (e) => {
                                 Debug.LogError(
                                     $"An error of type {e.GetType().FullName} has occurred in server side's OnGoodBye event. " +
@@ -218,6 +222,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                 );
                             }) ?? Task.CompletedTask);
                         };
+                        Debug.Log($"ScopesPSS::OnDisconnected({clientId})::End");
                     }
 
                     /// <summary>

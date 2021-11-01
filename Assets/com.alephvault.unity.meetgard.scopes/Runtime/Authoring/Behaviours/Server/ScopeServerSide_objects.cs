@@ -111,7 +111,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     /// <param name="obj">The object to add</param>
                     public Task AddObject(ObjectServerSide target)
                     {
-                        return Protocol.QueueManager.QueueTask(async () =>
+                        return Protocol.QueueManager.Queue(async () =>
                         {
                             // Null/Destroyed objects cannot be added.
                             if (target == null) throw new ArgumentNullException("target");
@@ -163,7 +163,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     /// <param name="obj">The object to remove</param>
                     public Task RemoveObject(ObjectServerSide target)
                     {
-                        return Protocol.QueueManager.QueueTask(async () =>
+                        return Protocol.QueueManager.Queue(async () =>
                         {
                             // Null objects cannot be removed.
                             if (ReferenceEquals(target, null)) throw new ArgumentNullException("target");

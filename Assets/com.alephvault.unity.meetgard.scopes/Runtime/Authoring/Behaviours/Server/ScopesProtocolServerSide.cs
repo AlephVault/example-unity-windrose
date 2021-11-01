@@ -164,7 +164,10 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     /// </summary>
                     public override async Task OnServerStarted()
                     {
+                        Debug.Log("ScopesPSS::OnServerStarted::Begin");
+                        Debug.Log("ScopesPSS::OnServerStarted::--Loading World");
                         await LoadWorld();
+                        Debug.Log("ScopesPSS::OnServerStarted::End");
                     }
 
                     /// <summary>
@@ -223,12 +226,15 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     /// </summary>
                     public override async Task OnServerStopped(Exception e)
                     {
+                        Debug.Log("ScopesPSS::OnServerStopped::Begin");
+                        Debug.Log("ScopesPSS::OnServerStopped::--Unoading World");
                         await UnloadWorld();
                         // At this point, the whole world is unloaded and all of the
                         // connections are being sent to Limbo. As long as they remain
                         // established, they will be kicked one by one gracefully and
                         // the OnDisconnection will be triggered for them (although
                         // the OnGoodBye event will make them depart from Limbo).
+                        Debug.Log("ScopesPSS::OnServerStopped::End");
                     }
                 }
             }

@@ -225,7 +225,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     /// <returns>The loaded (and registered) scope instance</returns>
                     public Task<ScopeServerSide> LoadExtraScope(string extraScopePrefabKey)
                     {
-                        return QueueManager.QueueTask(async () =>
+                        return QueueManager.Queue(async () =>
                         {
                             if (WorldLoadStatus != LoadStatus.Ready)
                             {
@@ -274,7 +274,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     /// <param name="destroy">Whether to also destroy it or not</param>
                     public Task UnloadExtraScope(uint scopeId, bool destroy = true)
                     {
-                        return QueueManager.QueueTask(async () => {
+                        return QueueManager.Queue(async () => {
                             if (scopeId <= defaultScopePrefabs.Length)
                             {
                                 throw new ArgumentException(
@@ -307,7 +307,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     /// <param name="destroy">Whether to also destroy it or not</param>
                     public Task UnloadExtraScope(ScopeServerSide scope, bool destroy = true)
                     {
-                        return QueueManager.QueueTask(async () => {
+                        return QueueManager.Queue(async () => {
                             if (scope == null)
                             {
                                 throw new ArgumentNullException("scope");

@@ -91,9 +91,9 @@ namespace AlephVault.Unity.Meetgard.Scopes
 
             private async Task Scope_OnUnload()
             {
+                Debug.Log("SampleExtraSSS::OnLoad::Begin");
                 loaded = false;
-                // Typically, the dev will make async calls here.
-                Debug.Log("ServerSideScopeScope::OnUnload");
+                Debug.Log("SampleExtraSSS::OnLoad::End");
                 // Nothing else to do here.
             }
 

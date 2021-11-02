@@ -227,6 +227,8 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     {
                         return RunInMainThread(async () =>
                         {
+                            Debug.Log("ScopesPSS::LoadExtraScope::Begin");
+                            Debug.Log("ScopesPSS::LoadExtraScope::--Checking world satatus");
                             if (WorldLoadStatus != LoadStatus.Ready)
                             {
                                 throw new InvalidOperationException(
@@ -234,6 +236,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                 );
                             }
 
+                            Debug.Log($"ScopesPSS::LoadExtraScope::--Getting appropriate extra prefab ({extraScopePrefabKey})");
                             uint extraScopePrefabIndex;
                             try
                             {
@@ -244,13 +247,17 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                 throw new ArgumentException($"Unknown extra scope prefab key: {extraScopePrefabKey}");
                             }
 
+                            Debug.Log("ScopesPSS::LoadExtraScope::--Instantiating extra scope");
                             ScopeServerSide instance = Instantiate(extraScopePrefabs[extraScopePrefabIndex], null, true);
+                            Debug.Log("ScopesPSS::LoadExtraScope::--Assigning ID to the extra scope");
                             uint newId = (uint)loadedScopesIds.Next();
                             instance.Id = newId;
                             instance.PrefabId = extraScopePrefabIndex;
                             instance.Protocol = this;
                             loadedScopes.Add(newId, instance);
+                            Debug.Log("ScopesPSS::LoadExtraScope::--Loading extra scope");
                             await instance.Load();
+                            Debug.Log("ScopesPSS::LoadExtraScope::End");
                             return instance;
                         });
                     }
@@ -260,11 +267,12 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     {
                         await ClearConnectionsFromScope(scopeToUnload);
                         await scopeToUnload.Unload();
+                        loadedScopes.Remove(scopeId);
+                        loadedScopesIds.Release(scopeId);
                         if (scopeToUnload != null && destroy) Destroy(scopeToUnload.gameObject);
                         scopeToUnload.Id = 0;
                         scopeToUnload.PrefabId = 0;
                         scopeToUnload.Protocol = null;
-                        loadedScopesIds.Release(scopeId);
                     }
 
                     /// <summary>
@@ -275,6 +283,8 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     public Task UnloadExtraScope(uint scopeId, bool destroy = true)
                     {
                         return RunInMainThread(async () => {
+                            Debug.Log("ScopesPSS::UnloadExtraScope::Begin");
+                            Debug.Log("ScopesPSS::UnloadExtraScope::--Checking the id is not a default one");
                             if (scopeId <= defaultScopePrefabs.Length)
                             {
                                 throw new ArgumentException(
@@ -283,6 +293,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                 );
                             }
 
+                            Debug.Log("ScopesPSS::UnloadExtraScope::--Getting scope id to unload");
                             ScopeServerSide scopeToUnload;
                             try
                             {
@@ -296,7 +307,9 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                 );
                             }
 
+                            Debug.Log("ScopesPSS::UnloadExtraScope::--Performing unload");
                             await DoUnloadExtraScope(scopeId, scopeToUnload, destroy);
+                            Debug.Log("ScopesPSS::UnloadExtraScope::End");
                         });
                     }
 
@@ -308,6 +321,8 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     public Task UnloadExtraScope(ScopeServerSide scope, bool destroy = true)
                     {
                         return RunInMainThread(async () => {
+                            Debug.Log("ScopesPSS::UnloadExtraScope::Begin");
+                            Debug.Log("ScopesPSS::UnloadExtraScope::--Checking scope instance");
                             if (scope == null)
                             {
                                 throw new ArgumentNullException("scope");
@@ -317,6 +332,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                 throw new ArgumentException("The given scope does not belong to this server - it cannot be deleted");
                             }
 
+                            Debug.Log("ScopesPSS::UnloadExtraScope::--Checking the id is not a default one");
                             uint scopeId = scope.Id;
                             if (scopeId <= defaultScopePrefabs.Length)
                             {
@@ -326,7 +342,9 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                 );
                             }
 
+                            Debug.Log("ScopesPSS::UnloadExtraScope::--Performing unload");
                             await DoUnloadExtraScope(scopeId, scope, destroy);
+                            Debug.Log("ScopesPSS::UnloadExtraScope::End");
                         });
                     }
                 }

@@ -141,8 +141,8 @@ namespace AlephVault.Unity.Meetgard.Scopes
 
                     protected override void SetIncomingMessageHandlers()
                     {
-                        AddIncomingMessageHandler("Welcome", async (proto) => {
-                            await RunInMainThread(async () =>
+                        AddIncomingMessageHandler("Welcome", (proto) => {
+                            return RunInMainThread(async () =>
                             {
                                 Debug.Log("ScopesPCS::Handler:Welcome::Begin");
                                 Debug.Log("ScopesPCS::Handler:Welcome::--Clearing any current scope");
@@ -158,8 +158,8 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                 Debug.Log("ScopesPCS::Handler:Welcome::End");
                             });
                         });
-                        AddIncomingMessageHandler<MovedToScope>("MovedToScope", async (proto, message) => {
-                            await RunInMainThread(async () =>
+                        AddIncomingMessageHandler<MovedToScope>("MovedToScope", (proto, message) => {
+                            return RunInMainThread(async () =>
                             {
                                 Debug.Log("ScopesPCS::Handler:MovedToScope::Begin");
                                 Debug.Log("ScopesPCS::Handler:MovedToScope::--Clearing any current scope");
@@ -185,8 +185,8 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                 Debug.Log("ScopesPCS::Handler:MovedToScope::--End");
                             });
                         });
-                        AddIncomingMessageHandler<ObjectSpawned>("ObjectSpawned", async (proto, message) => {
-                            await RunInMainThread(async () =>
+                        AddIncomingMessageHandler<ObjectSpawned>("ObjectSpawned", (proto, message) => {
+                            return RunInMainThread(async () =>
                             {
                                 Debug.Log("ScopesPCS::Handler:ObjectSpawned::Begin");
                                 Debug.Log("ScopesPCS::Handler:ObjectSpawned::--Checking");
@@ -226,8 +226,8 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                 Debug.Log("ScopesPCS::Handler:ObjectSpawned::--End");
                             });
                         });
-                        AddIncomingMessageHandler<ObjectRefreshed>("ObjectRefreshed", async (proto, message) => {
-                            await RunInMainThread(async () =>
+                        AddIncomingMessageHandler<ObjectRefreshed>("ObjectRefreshed", (proto, message) => {
+                            return RunInMainThread(async () =>
                             {
                                 Debug.Log("ScopesPCS::Handler:ObjectRefreshed::Begin");
                                 Debug.Log("ScopesPCS::Handler:ObjectRefreshed::--Checking");
@@ -267,8 +267,8 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                 Debug.Log("ScopesPCS::Handler:ObjectRefreshed::End");
                             });
                         });
-                        AddIncomingMessageHandler<ObjectDespawned>("ObjectDespawned", async (proto, message) => {
-                            await RunInMainThread(async () =>
+                        AddIncomingMessageHandler<ObjectDespawned>("ObjectDespawned", (proto, message) => {
+                            return RunInMainThread(async () =>
                             {
                                 Debug.Log("ScopesPCS::Handler:ObjectDespawned::Begin");
                                 Debug.Log("ScopesPCS::Handler:ObjectDespawned::--Checking");

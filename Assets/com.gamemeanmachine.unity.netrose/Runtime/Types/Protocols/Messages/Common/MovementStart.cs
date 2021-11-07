@@ -20,7 +20,7 @@ namespace GameMeanMachine.Unity.NetRose
                     /// <summary>
                     ///   The initial position of the movement.
                     /// </summary>
-                    Position Position;
+                    public Position Position;
 
                     /// <summary>
                     ///   The direction of the started movement.

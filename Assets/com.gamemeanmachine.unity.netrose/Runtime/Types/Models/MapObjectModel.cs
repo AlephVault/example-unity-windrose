@@ -20,12 +20,12 @@ namespace GameMeanMachine.Unity.NetRose
                 ///   The current map status. It is null if the object
                 ///   is not attached to a map.
                 /// </summary>
-                Status Status;
+                public Status Status;
 
                 /// <summary>
                 ///   The current object data.
                 /// </summary>
-                ModelData Data;
+                public ModelData Data;
 
                 public void Serialize(Serializer serializer)
                 {

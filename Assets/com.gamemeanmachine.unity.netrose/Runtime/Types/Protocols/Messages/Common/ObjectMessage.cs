@@ -19,7 +19,7 @@ namespace GameMeanMachine.Unity.NetRose
                     /// <summary>
                     ///   The scope the object belongs to.
                     /// </summary>
-                    uint ScopeId;
+                    public uint ScopeId;
 
                     /// <summary>
                     ///   The object id.

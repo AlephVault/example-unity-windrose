@@ -15,7 +15,7 @@ namespace GameMeanMachine.Unity.NetRose
         namespace Behaviours
         {
             /// <summary>
-            ///   A NetRose protocol is tightly related to a <see cref="ScopesProtocolServerSide"/>.
+            ///   A NetRose protocol is tightly related to a <see cref="ScopesProtocolClientSide"/>.
             ///   In this sense, this protocol sends nothing to the server (save for a local error,
             ///   which is the same case of the scopes protocol), but receives updates from the
             ///   server which reflects, now, in a windrose-aware way.

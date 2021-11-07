@@ -1,5 +1,4 @@
 ﻿using AlephVault.Unity.Binary;
-using AlephVault.Unity.Support.Generic.Types;
 
 
 namespace GameMeanMachine.Unity.NetRose

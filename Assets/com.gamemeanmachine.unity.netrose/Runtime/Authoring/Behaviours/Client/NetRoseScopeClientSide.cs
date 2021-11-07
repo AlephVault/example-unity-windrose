@@ -33,9 +33,6 @@ namespace GameMeanMachine.Unity.NetRose
                 ///   The scope client side id.
                 /// </summary>
                 public uint Id { get { return ScopeClientSide.Id; } }
-
-                // TODO when the protocol is created, implement a protocol method like this:
-                // TODO ScopeClientSide.Protocol?.GetComponent<NetRoseProtocolClientSide>()
             }
         }
     }

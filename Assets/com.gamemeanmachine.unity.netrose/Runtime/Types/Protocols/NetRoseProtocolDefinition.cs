@@ -17,7 +17,7 @@ namespace GameMeanMachine.Unity.NetRose
             ///   This is an abstract class for the NetRose protocol and involved
             ///   subclasses. It defines the standard NetRose messages.
             /// </summary>
-            public abstract class NetRoseProtocolDefinition : ProtocolDefinition
+            public class NetRoseProtocolDefinition : ProtocolDefinition
             {
                 protected override void DefineMessages()
                 {

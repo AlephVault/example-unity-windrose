@@ -1,6 +1,7 @@
 using AlephVault.Unity.Binary;
 using AlephVault.Unity.Meetgard.Scopes.Types.Constants;
 using AlephVault.Unity.Support.Authoring.Behaviours;
+using AlephVault.Unity.Support.Utils;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -179,6 +180,18 @@ namespace AlephVault.Unity.Meetgard.Scopes
                         ScopeServerSide newScope = GetComponentInParent<ScopeServerSide>();
                         if (Scope != null) Scope.RemoveObject(this);
                         if (newScope != null) newScope.AddObject(this);
+                    }
+
+                    // Triggers the OnSpawned event.
+                    internal Task TriggerOnSpawned()
+                    {
+                        return OnSpawned?.InvokeAsync();
+                    }
+
+                    // Triggers the OnDespawned event.
+                    internal Task TriggerOnDespawned()
+                    {
+                        return OnDespawned?.InvokeAsync();
                     }
                 }
             }

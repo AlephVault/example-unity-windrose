@@ -185,13 +185,25 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     // Triggers the OnSpawned event.
                     internal Task TriggerOnSpawned()
                     {
-                        return OnSpawned?.InvokeAsync();
+                        return OnSpawned?.InvokeAsync(async (e) => {
+                            Debug.LogError(
+                                $"An error of type {e.GetType().FullName} has occurred in object server side's OnSpawned event. " +
+                                $"If the exceptions are not properly handled, the game state might be inconsistent. " +
+                                $"The exception details are: {e.Message}"
+                            );
+                        });
                     }
 
                     // Triggers the OnDespawned event.
                     internal Task TriggerOnDespawned()
                     {
-                        return OnDespawned?.InvokeAsync();
+                        return OnDespawned?.InvokeAsync(async (e) => {
+                            Debug.LogError(
+                                $"An error of type {e.GetType().FullName} has occurred in object server side's OnDespawned event. " +
+                                $"If the exceptions are not properly handled, the game state might be inconsistent. " +
+                                $"The exception details are: {e.Message}"
+                            );
+                        });
                     }
                 }
             }

@@ -88,6 +88,19 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     public ScopeServerSide Scope { get; internal set; }
 
                     /// <summary>
+                    ///   Triggered when the object is spawned inside the
+                    ///   current scope.
+                    /// </summary>
+                    public event Func<Task> OnSpawned = null;
+
+                    /// <summary>
+                    ///   Triggered when the object is despawned from the
+                    ///   last scope. By this point, the object will not
+                    ///   have any sort of scope association information.
+                    /// </summary>
+                    public event Func<Task> OnDespawned = null;
+
+                    /// <summary>
                     ///   Returns the data of this object to synchronize for the
                     ///   connections. Each set of connection might receive a custom
                     ///   data set for this object. Warning: Both client and server

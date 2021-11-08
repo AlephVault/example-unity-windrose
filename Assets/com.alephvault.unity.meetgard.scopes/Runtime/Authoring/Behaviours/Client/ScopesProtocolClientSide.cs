@@ -201,18 +201,9 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                 // HOWEVER it will NOT be waited for (the queued
                                 // handler will be waited for, but not the returned
                                 // handler).
-                                if (CurrentScope == null || CurrentScope.Id != message.ScopeIndex || CurrentScope.Id >= Scope.MaxScopes)
-                                {
-                                    // This is an error: Either the current scope is null,
-                                    // unmatched against the incoming scope index, or the
-                                    // incoming scope index being above the maximum amount
-                                    // of scopes (e.g. it is Limbo, or Maintenance).
-                                    //
-                                    // This all will be treated as a local error instead.
-                                    Debug.LogError($"Scope mismatch. Current scope is {CurrentScopeId} and message scope is {message.ScopeIndex}");
-                                    await LocalError("ScopeMismatch");
-                                    return;
-                                }
+
+                                // It is to be checked: The current scope is a good one, object-holding and matching.
+                                if (!(await CheckCurrentScope(message.ScopeIndex))) return;
 
                                 ObjectClientSide spawned;
                                 try
@@ -242,18 +233,9 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                 // HOWEVER it will NOT be waited for (the queued
                                 // handler will be waited for, but not the returned
                                 // handler).
-                                if (CurrentScope == null || CurrentScope.Id != message.ScopeIndex || CurrentScope.Id >= Scope.MaxScopes)
-                                {
-                                    // This is an error: Either the current scope is null,
-                                    // unmatched against the incoming scope index, or the
-                                    // incoming scope index being above the maximum amount
-                                    // of scopes (e.g. it is Limbo, or Maintenance).
-                                    //
-                                    // This all will be treated as a local error instead.
-                                    Debug.LogError($"Scope mismatch. Current scope is {CurrentScopeId} and message scope is {message.ScopeIndex}");
-                                    await LocalError("ScopeMismatch");
-                                    return;
-                                }
+
+                                // It is to be checked: The current scope is a good one, object-holding and matching.
+                                if (!(await CheckCurrentScope(message.ScopeIndex))) return;
 
                                 Tuple<ObjectClientSide, ISerializable> result;
                                 try
@@ -283,18 +265,9 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                 // HOWEVER it will NOT be waited for (the queued
                                 // handler will be waited for, but not the returned
                                 // handler).
-                                if (CurrentScope == null || CurrentScope.Id != message.ScopeIndex || CurrentScope.Id >= Scope.MaxScopes)
-                                {
-                                    // This is an error: Either the current scope is null,
-                                    // unmatched against the incoming scope index, or the
-                                    // incoming scope index being above the maximum amount
-                                    // of scopes (e.g. it is Limbo, or Maintenance).
-                                    //
-                                    // This all will be treated as a local error instead.
-                                    Debug.LogError($"Scope mismatch. Current scope is {CurrentScopeId} and message scope is {message.ScopeIndex}");
-                                    await LocalError("ScopeMismatch");
-                                    return;
-                                }
+ 
+                                // It is to be checked: The current scope is a good one, object-holding and matching.
+                                if (!(await CheckCurrentScope(message.ScopeIndex))) return;
 
                                 ObjectClientSide despawned;
                                 try
@@ -315,6 +288,23 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                 Debug.Log("ScopesPCS::Handler:ObjectDespawned::End");
                             });
                         });
+                    }
+
+                    private async Task<bool> CheckCurrentScope(uint scopeIndex)
+                    {
+                        if (CurrentScope == null || CurrentScope.Id != scopeIndex || CurrentScope.Id >= Scope.MaxScopes)
+                        {
+                            // This is an error: Either the current scope is null,
+                            // unmatched against the incoming scope index, or the
+                            // incoming scope index being above the maximum amount
+                            // of scopes (e.g. it is Limbo, or Maintenance).
+                            //
+                            // This all will be treated as a local error instead.
+                            Debug.LogError($"Scope mismatch. Current scope is {CurrentScopeId} and message scope is {scopeIndex}");
+                            await LocalError("ScopeMismatch");
+                            return false;
+                        }
+                        return true;
                     }
 
                     // Clears the current scope, destroying everything.

@@ -137,8 +137,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                             await NotifyObjectSpawnedToEveryone(target);
 
                             // In the end, trigger the event for the object.
-                            // TODO: implement a default handler, which goes
-                            // TODO: for this behaviour.
+                            await (target.TriggerOnSpawned() ?? Task.CompletedTask);
                             await (OnSpawned?.InvokeAsync(target, async (e) => {
                                 Debug.LogError(
                                     $"An error of type {e.GetType().FullName} has occurred in scope server side's OnSpawned event. " +
@@ -182,8 +181,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                             UnregisterObject(target);
 
                             // In the end, trigger the event for the object.
-                            // TODO: implement a default handler, which goes
-                            // TODO: for this behaviour.
+                            await (target.TriggerOnDespawned() ?? Task.CompletedTask);
                             await (OnDespawned?.InvokeAsync(target, async (e) => {
                                 Debug.LogError(
                                     $"An error of type {e.GetType().FullName} has occurred in scope server side's OnDespawned event. " +

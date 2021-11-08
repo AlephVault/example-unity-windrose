@@ -221,7 +221,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                 // handler).
 
                                 // It is to be checked: The current scope is a good one, object-holding and matching.
-                                if (!(await CheckCurrentScope(message.ScopeIndex))) return;
+                                if (!await RequireIsCurrentScopeAndHoldsObjects(message.ScopeIndex)) return;
 
                                 ObjectClientSide spawned;
                                 try
@@ -253,7 +253,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                 // handler).
 
                                 // It is to be checked: The current scope is a good one, object-holding and matching.
-                                if (!(await CheckCurrentScope(message.ScopeIndex))) return;
+                                if (!await RequireIsCurrentScopeAndHoldsObjects(message.ScopeIndex)) return;
 
                                 Tuple<ObjectClientSide, ISerializable> result;
                                 try
@@ -285,7 +285,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                 // handler).
  
                                 // It is to be checked: The current scope is a good one, object-holding and matching.
-                                if (!(await CheckCurrentScope(message.ScopeIndex))) return;
+                                if (!await RequireIsCurrentScopeAndHoldsObjects(message.ScopeIndex)) return;
 
                                 ObjectClientSide despawned;
                                 try
@@ -308,10 +308,14 @@ namespace AlephVault.Unity.Meetgard.Scopes
                         });
                     }
 
-                    // Checks the current scope to be a valid object-holding scope.
-                    // If not, either the server is misconfigured or the client lost
-                    // synchronization, and must close.
-                    private async Task<bool> CheckCurrentScope(uint scopeIndex)
+                    /// <summary>
+                    ///   Checks the current scope to be a valid object-holding scope.
+                    ///   If not, either the server is misconfigured or the client lost
+                    ///   synchronization, and must close.
+                    /// </summary>
+                    /// <param name="scopeIndex">The scope id to check</param>
+                    /// <returns>Whether the current scope is the given one, and the given one holds objects</returns>
+                    public async Task<bool> RequireIsCurrentScopeAndHoldsObjects(uint scopeIndex)
                     {
                         if (CurrentScope.Id >= Scope.MaxScopes)
                         {

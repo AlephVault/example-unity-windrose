@@ -203,7 +203,7 @@ namespace GameMeanMachine.Unity.NetRose
                 /// <param name="connections">The connections to send this message to</param>
                 /// <param name="scopeId">The id of the scope the object belongs to</param>
                 /// <param name="objectId">The id of the object</param>
-                /// <param name="speed">The new object orientation</param>
+                /// <param name="orientation">The new object orientation</param>
                 internal Task BroadcastObjectOrientationChanged(IEnumerable<ulong> connections, uint scopeId, uint objectId, Direction orientation)
                 {
                     return UntilBroadcastIsDone(ObjectOrientationChangedBroadcaster(connections, new ObjectMessage<Enum<Direction>>()

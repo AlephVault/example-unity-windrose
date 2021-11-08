@@ -11,6 +11,11 @@ namespace GameMeanMachine.Unity.NetRose
         {
             namespace Client
             {
+                /// <summary>
+                ///   The scope client side of a netrose scope knows how
+                ///   to reach the related client scope and also all the
+                ///   involved WindRose maps.
+                /// </summary>
                 [RequireComponent(typeof(ScopeClientSide))]
                 [RequireComponent(typeof(Scope))]
                 public class NetRoseScopeClientSide : MonoBehaviour

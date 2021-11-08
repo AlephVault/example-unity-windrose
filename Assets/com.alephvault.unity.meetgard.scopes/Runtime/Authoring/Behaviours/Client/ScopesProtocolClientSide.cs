@@ -141,6 +141,24 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     [SerializeField]
                     public IObjectClientSideInstanceManagerContainer InstanceManager;
 
+                    /// <summary>
+                    ///   An enumerator of the currently spawned objects in the current scope.
+                    /// </summary>
+                    public IEnumerable<ObjectClientSide> Objects()
+                    {
+                        return currentObjects.Values;
+                    }
+
+                    /// <summary>
+                    ///   Gets an object among the current ones in the current scope by its id.
+                    /// </summary>
+                    /// <param name="id">The id of the object to retrieve</param>
+                    /// <returns>The object by its id, or null if absent</returns>
+                    public ObjectClientSide GetObject(uint id)
+                    {
+                        return currentObjects.TryGetValue(id, out ObjectClientSide value) ? value : null;
+                    }
+
                     protected override void Initialize()
                     {
                         SendLocalError = MakeSender("LocalError");

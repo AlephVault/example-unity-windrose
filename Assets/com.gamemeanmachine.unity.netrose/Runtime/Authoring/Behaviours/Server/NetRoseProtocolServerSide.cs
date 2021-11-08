@@ -19,199 +19,202 @@ namespace GameMeanMachine.Unity.NetRose
     {
         namespace Behaviours
         {
-            /// <summary>
-            ///   A NetRose protocol is tightly related to a <see cref="ScopesProtocolServerSide"/>.
-            ///   In this sense, this protocol gets nothing to the client (save for a local error,
-            ///   which is actually handled by the scopes protocol), but sends updates from the
-            ///   client which reflects, now, in a windrose-aware way.
-            /// </summary>
-            [RequireComponent(typeof(ScopesProtocolServerSide))]
-            public class NetRoseProtocolServerSide : ProtocolServerSide<NetRoseProtocolDefinition>
+            namespace Server
             {
                 /// <summary>
-                ///   The related <see cref="ScopesProtocolServerSide"/>.
+                ///   A NetRose protocol is tightly related to a <see cref="ScopesProtocolServerSide"/>.
+                ///   In this sense, this protocol gets nothing to the client (save for a local error,
+                ///   which is actually handled by the scopes protocol), but sends updates from the
+                ///   client which reflects, now, in a windrose-aware way.
                 /// </summary>
-                public ScopesProtocolServerSide ScopesProtocolServerSide { get; private set; }
-
-                private Func<IEnumerable<ulong>, ObjectMessage<Attachment>, Dictionary<ulong, Task>> ObjectAttachedBroadcaster;
-                private Func<IEnumerable<ulong>, ObjectMessage<Nothing>, Dictionary<ulong, Task>> ObjectDetachedBroadcaster;
-                private Func<IEnumerable<ulong>, ObjectMessage<MovementStart>, Dictionary<ulong, Task>> ObjectMovementStartedBroadcaster;
-                private Func<IEnumerable<ulong>, ObjectMessage<Position>, Dictionary<ulong, Task>> ObjectMovementCancelledBroadcaster;
-                private Func<IEnumerable<ulong>, ObjectMessage<Position>, Dictionary<ulong, Task>> ObjectMovementFinishedBroadcaster;
-                private Func<IEnumerable<ulong>, ObjectMessage<Position>, Dictionary<ulong, Task>> ObjectTeleportedBroadcaster;
-                private Func<IEnumerable<ulong>, ObjectMessage<UInt>, Dictionary<ulong, Task>> ObjectSpeedChangedBroadcaster;
-                private Func<IEnumerable<ulong>, ObjectMessage<Enum<Direction>>, Dictionary<ulong, Task>> ObjectOrientationChangedBroadcaster;
-
-                /// <summary>
-                ///   An after-awake setup.
-                /// </summary>
-                protected override void Setup()
+                [RequireComponent(typeof(ScopesProtocolServerSide))]
+                public class NetRoseProtocolServerSide : ProtocolServerSide<NetRoseProtocolDefinition>
                 {
-                    ScopesProtocolServerSide = GetComponent<ScopesProtocolServerSide>();
-                }
+                    /// <summary>
+                    ///   The related <see cref="ScopesProtocolServerSide"/>.
+                    /// </summary>
+                    public ScopesProtocolServerSide ScopesProtocolServerSide { get; private set; }
 
-                protected override void Initialize()
-                {
-                    ObjectAttachedBroadcaster = MakeBroadcaster<ObjectMessage<Attachment>>("Object:Attached");
-                    ObjectDetachedBroadcaster = MakeBroadcaster<ObjectMessage<Nothing>>("Object:Detached");
-                    ObjectMovementStartedBroadcaster = MakeBroadcaster<ObjectMessage<MovementStart>>("Object:Movement:Started");
-                    ObjectMovementCancelledBroadcaster = MakeBroadcaster<ObjectMessage<Position>>("Object:Movement:Cancelled");
-                    ObjectMovementFinishedBroadcaster = MakeBroadcaster<ObjectMessage<Position>>("Object:Movement:Finished");
-                    ObjectTeleportedBroadcaster = MakeBroadcaster<ObjectMessage<Position>>("Object:Teleported");
-                    ObjectSpeedChangedBroadcaster = MakeBroadcaster<ObjectMessage<UInt>>("Object:Speed:Changed");
-                    ObjectOrientationChangedBroadcaster = MakeBroadcaster<ObjectMessage<Enum<Direction>>>("Object:Orientation:Changed");
-                }
+                    private Func<IEnumerable<ulong>, ObjectMessage<Attachment>, Dictionary<ulong, Task>> ObjectAttachedBroadcaster;
+                    private Func<IEnumerable<ulong>, ObjectMessage<Nothing>, Dictionary<ulong, Task>> ObjectDetachedBroadcaster;
+                    private Func<IEnumerable<ulong>, ObjectMessage<MovementStart>, Dictionary<ulong, Task>> ObjectMovementStartedBroadcaster;
+                    private Func<IEnumerable<ulong>, ObjectMessage<Position>, Dictionary<ulong, Task>> ObjectMovementCancelledBroadcaster;
+                    private Func<IEnumerable<ulong>, ObjectMessage<Position>, Dictionary<ulong, Task>> ObjectMovementFinishedBroadcaster;
+                    private Func<IEnumerable<ulong>, ObjectMessage<Position>, Dictionary<ulong, Task>> ObjectTeleportedBroadcaster;
+                    private Func<IEnumerable<ulong>, ObjectMessage<UInt>, Dictionary<ulong, Task>> ObjectSpeedChangedBroadcaster;
+                    private Func<IEnumerable<ulong>, ObjectMessage<Enum<Direction>>, Dictionary<ulong, Task>> ObjectOrientationChangedBroadcaster;
 
-                // From now, a lot of internal functions are to be dispatched.
-
-                /// <summary>
-                ///   Broadcasts a "object attached" message. This message is triggered when
-                ///   an object is added to a map in certain scope.
-                /// </summary>
-                /// <param name="connections">The connections to send this message to</param>
-                /// <param name="scopeId">The id of the scope the object belongs to</param>
-                /// <param name="objectId">The id of the object</param>
-                /// <param name="mapIndex">The index of the map, inside the scope, this object is being added to</param>
-                /// <param name="x">The x position of the object in the new map</param>
-                /// <param name="y">The y position of the object in the new map</param>
-                internal Task BroadcastObjectAttached(IEnumerable<ulong> connections, uint scopeId, uint objectId, uint mapIndex, ushort x, ushort y)
-                {
-                    return UntilBroadcastIsDone(ObjectAttachedBroadcaster(connections, new ObjectMessage<Attachment>()
+                    /// <summary>
+                    ///   An after-awake setup.
+                    /// </summary>
+                    protected override void Setup()
                     {
-                        ScopeId = scopeId,
-                        ObjectId = objectId,
-                        Content = new Attachment() { MapIndex = mapIndex, Position = new Position() { X = x, Y = y } }
-                    }));
-                }
+                        ScopesProtocolServerSide = GetComponent<ScopesProtocolServerSide>();
+                    }
 
-                /// <summary>
-                ///   Broadcasts a "object attached" message. This message is triggered when
-                ///   an object is added to a map in certain scope.
-                /// </summary>
-                /// <param name="connections">The connections to send this message to</param>
-                /// <param name="scopeId">The id of the scope the object belongs to</param>
-                /// <param name="objectId">The id of the object</param>
-                internal Task BroadcastObjectDetached(IEnumerable<ulong> connections, uint scopeId, uint objectId)
-                {
-                    return UntilBroadcastIsDone(ObjectDetachedBroadcaster(connections, new ObjectMessage<Nothing>()
+                    protected override void Initialize()
                     {
-                        ScopeId = scopeId,
-                        ObjectId = objectId,
-                        Content = new Nothing()
-                    }));
-                }
+                        ObjectAttachedBroadcaster = MakeBroadcaster<ObjectMessage<Attachment>>("Object:Attached");
+                        ObjectDetachedBroadcaster = MakeBroadcaster<ObjectMessage<Nothing>>("Object:Detached");
+                        ObjectMovementStartedBroadcaster = MakeBroadcaster<ObjectMessage<MovementStart>>("Object:Movement:Started");
+                        ObjectMovementCancelledBroadcaster = MakeBroadcaster<ObjectMessage<Position>>("Object:Movement:Cancelled");
+                        ObjectMovementFinishedBroadcaster = MakeBroadcaster<ObjectMessage<Position>>("Object:Movement:Finished");
+                        ObjectTeleportedBroadcaster = MakeBroadcaster<ObjectMessage<Position>>("Object:Teleported");
+                        ObjectSpeedChangedBroadcaster = MakeBroadcaster<ObjectMessage<UInt>>("Object:Speed:Changed");
+                        ObjectOrientationChangedBroadcaster = MakeBroadcaster<ObjectMessage<Enum<Direction>>>("Object:Orientation:Changed");
+                    }
 
-                /// <summary>
-                ///   Broadcasts a "object movement started" message. This message is triggered when
-                ///   an object started moving inside a map in certain scope.
-                /// </summary>
-                /// <param name="connections">The connections to send this message to</param>
-                /// <param name="scopeId">The id of the scope the object belongs to</param>
-                /// <param name="objectId">The id of the object</param>
-                /// <param name="x">The starting x position of the object when starting movement</param>
-                /// <param name="y">The starting y position of the object when starting movement</param>
-                /// <param name="direction">The direction of the object when starting movement</param>
-                internal Task BroadcastObjectMovementStarted(IEnumerable<ulong> connections, uint scopeId, uint objectId, ushort x, ushort y, Direction direction)
-                {
-                    return UntilBroadcastIsDone(ObjectMovementStartedBroadcaster(connections, new ObjectMessage<MovementStart>()
-                    {
-                        ScopeId = scopeId,
-                        ObjectId = objectId,
-                        Content = new MovementStart() { Position = new Position() { X = x, Y = y}, Direction = direction }
-                    }));
-                }
+                    // From now, a lot of internal functions are to be dispatched.
 
-                /// <summary>
-                ///   Broadcasts a "object movement cancelled" message. This message is triggered when
-                ///   an object cancelled moving inside a map in certain scope.
-                /// </summary>
-                /// <param name="connections">The connections to send this message to</param>
-                /// <param name="scopeId">The id of the scope the object belongs to</param>
-                /// <param name="objectId">The id of the object</param>
-                /// <param name="x">The to-revert x position of the object when cancelling movement</param>
-                /// <param name="y">The to-revert y position of the object when cancelling movement</param>
-                internal Task BroadcastObjectMovementCancelled(IEnumerable<ulong> connections, uint scopeId, uint objectId, ushort x, ushort y)
-                {
-                    return UntilBroadcastIsDone(ObjectMovementCancelledBroadcaster(connections, new ObjectMessage<Position>()
+                    /// <summary>
+                    ///   Broadcasts a "object attached" message. This message is triggered when
+                    ///   an object is added to a map in certain scope.
+                    /// </summary>
+                    /// <param name="connections">The connections to send this message to</param>
+                    /// <param name="scopeId">The id of the scope the object belongs to</param>
+                    /// <param name="objectId">The id of the object</param>
+                    /// <param name="mapIndex">The index of the map, inside the scope, this object is being added to</param>
+                    /// <param name="x">The x position of the object in the new map</param>
+                    /// <param name="y">The y position of the object in the new map</param>
+                    internal Task BroadcastObjectAttached(IEnumerable<ulong> connections, uint scopeId, uint objectId, uint mapIndex, ushort x, ushort y)
                     {
-                        ScopeId = scopeId,
-                        ObjectId = objectId,
-                        Content = new Position() { X = x, Y = y }
-                    }));
-                }
+                        return UntilBroadcastIsDone(ObjectAttachedBroadcaster(connections, new ObjectMessage<Attachment>()
+                        {
+                            ScopeId = scopeId,
+                            ObjectId = objectId,
+                            Content = new Attachment() { MapIndex = mapIndex, Position = new Position() { X = x, Y = y } }
+                        }));
+                    }
 
-                /// <summary>
-                ///   Broadcasts a "object movement finished" message. This message is triggered when
-                ///   an object finished moving inside a map in certain scope.
-                /// </summary>
-                /// <param name="connections">The connections to send this message to</param>
-                /// <param name="scopeId">The id of the scope the object belongs to</param>
-                /// <param name="objectId">The id of the object</param>
-                /// <param name="x">The end x position of the object when finishing movement</param>
-                /// <param name="y">The end y position of the object when finishing movement</param>
-                internal Task BroadcastObjectMovementFinished(IEnumerable<ulong> connections, uint scopeId, uint objectId, ushort x, ushort y)
-                {
-                    return UntilBroadcastIsDone(ObjectMovementFinishedBroadcaster(connections, new ObjectMessage<Position>()
+                    /// <summary>
+                    ///   Broadcasts a "object attached" message. This message is triggered when
+                    ///   an object is added to a map in certain scope.
+                    /// </summary>
+                    /// <param name="connections">The connections to send this message to</param>
+                    /// <param name="scopeId">The id of the scope the object belongs to</param>
+                    /// <param name="objectId">The id of the object</param>
+                    internal Task BroadcastObjectDetached(IEnumerable<ulong> connections, uint scopeId, uint objectId)
                     {
-                        ScopeId = scopeId,
-                        ObjectId = objectId,
-                        Content = new Position() { X = x, Y = y }
-                    }));
-                }
+                        return UntilBroadcastIsDone(ObjectDetachedBroadcaster(connections, new ObjectMessage<Nothing>()
+                        {
+                            ScopeId = scopeId,
+                            ObjectId = objectId,
+                            Content = new Nothing()
+                        }));
+                    }
 
-                /// <summary>
-                ///   Broadcasts a "object movement teleported" message. This message is triggered when
-                ///   an object teleported inside a map in certain scope.
-                /// </summary>
-                /// <param name="connections">The connections to send this message to</param>
-                /// <param name="scopeId">The id of the scope the object belongs to</param>
-                /// <param name="objectId">The id of the object</param>
-                /// <param name="x">The end x position of the object when teleporting</param>
-                /// <param name="y">The end y position of the object when teleporting</param>
-                internal Task BroadcastObjectTeleported(IEnumerable<ulong> connections, uint scopeId, uint objectId, ushort x, ushort y)
-                {
-                    return UntilBroadcastIsDone(ObjectTeleportedBroadcaster(connections, new ObjectMessage<Position>()
+                    /// <summary>
+                    ///   Broadcasts a "object movement started" message. This message is triggered when
+                    ///   an object started moving inside a map in certain scope.
+                    /// </summary>
+                    /// <param name="connections">The connections to send this message to</param>
+                    /// <param name="scopeId">The id of the scope the object belongs to</param>
+                    /// <param name="objectId">The id of the object</param>
+                    /// <param name="x">The starting x position of the object when starting movement</param>
+                    /// <param name="y">The starting y position of the object when starting movement</param>
+                    /// <param name="direction">The direction of the object when starting movement</param>
+                    internal Task BroadcastObjectMovementStarted(IEnumerable<ulong> connections, uint scopeId, uint objectId, ushort x, ushort y, Direction direction)
                     {
-                        ScopeId = scopeId,
-                        ObjectId = objectId,
-                        Content = new Position() { X = x, Y = y }
-                    }));
-                }
+                        return UntilBroadcastIsDone(ObjectMovementStartedBroadcaster(connections, new ObjectMessage<MovementStart>()
+                        {
+                            ScopeId = scopeId,
+                            ObjectId = objectId,
+                            Content = new MovementStart() { Position = new Position() { X = x, Y = y }, Direction = direction }
+                        }));
+                    }
 
-                /// <summary>
-                ///   Broadcasts a "object speed changed" message. This message is triggered when
-                ///   an object changed its speed inside a map in certain scope.
-                /// </summary>
-                /// <param name="connections">The connections to send this message to</param>
-                /// <param name="scopeId">The id of the scope the object belongs to</param>
-                /// <param name="objectId">The id of the object</param>
-                /// <param name="speed">The new object speed</param>
-                internal Task BroadcastObjectSpeedChanged(IEnumerable<ulong> connections, uint scopeId, uint objectId, uint speed)
-                {
-                    return UntilBroadcastIsDone(ObjectSpeedChangedBroadcaster(connections, new ObjectMessage<UInt>()
+                    /// <summary>
+                    ///   Broadcasts a "object movement cancelled" message. This message is triggered when
+                    ///   an object cancelled moving inside a map in certain scope.
+                    /// </summary>
+                    /// <param name="connections">The connections to send this message to</param>
+                    /// <param name="scopeId">The id of the scope the object belongs to</param>
+                    /// <param name="objectId">The id of the object</param>
+                    /// <param name="x">The to-revert x position of the object when cancelling movement</param>
+                    /// <param name="y">The to-revert y position of the object when cancelling movement</param>
+                    internal Task BroadcastObjectMovementCancelled(IEnumerable<ulong> connections, uint scopeId, uint objectId, ushort x, ushort y)
                     {
-                        ScopeId = scopeId,
-                        ObjectId = objectId,
-                        Content = (UInt)speed
-                    }));
-                }
+                        return UntilBroadcastIsDone(ObjectMovementCancelledBroadcaster(connections, new ObjectMessage<Position>()
+                        {
+                            ScopeId = scopeId,
+                            ObjectId = objectId,
+                            Content = new Position() { X = x, Y = y }
+                        }));
+                    }
 
-                /// <summary>
-                ///   Broadcasts a "object orientation changed" message. This message is triggered when
-                ///   an object changed its orientation inside a map in certain scope.
-                /// </summary>
-                /// <param name="connections">The connections to send this message to</param>
-                /// <param name="scopeId">The id of the scope the object belongs to</param>
-                /// <param name="objectId">The id of the object</param>
-                /// <param name="orientation">The new object orientation</param>
-                internal Task BroadcastObjectOrientationChanged(IEnumerable<ulong> connections, uint scopeId, uint objectId, Direction orientation)
-                {
-                    return UntilBroadcastIsDone(ObjectOrientationChangedBroadcaster(connections, new ObjectMessage<Enum<Direction>>()
+                    /// <summary>
+                    ///   Broadcasts a "object movement finished" message. This message is triggered when
+                    ///   an object finished moving inside a map in certain scope.
+                    /// </summary>
+                    /// <param name="connections">The connections to send this message to</param>
+                    /// <param name="scopeId">The id of the scope the object belongs to</param>
+                    /// <param name="objectId">The id of the object</param>
+                    /// <param name="x">The end x position of the object when finishing movement</param>
+                    /// <param name="y">The end y position of the object when finishing movement</param>
+                    internal Task BroadcastObjectMovementFinished(IEnumerable<ulong> connections, uint scopeId, uint objectId, ushort x, ushort y)
                     {
-                        ScopeId = scopeId,
-                        ObjectId = objectId,
-                        Content = (Enum<Direction>)orientation
-                    }));
+                        return UntilBroadcastIsDone(ObjectMovementFinishedBroadcaster(connections, new ObjectMessage<Position>()
+                        {
+                            ScopeId = scopeId,
+                            ObjectId = objectId,
+                            Content = new Position() { X = x, Y = y }
+                        }));
+                    }
+
+                    /// <summary>
+                    ///   Broadcasts a "object movement teleported" message. This message is triggered when
+                    ///   an object teleported inside a map in certain scope.
+                    /// </summary>
+                    /// <param name="connections">The connections to send this message to</param>
+                    /// <param name="scopeId">The id of the scope the object belongs to</param>
+                    /// <param name="objectId">The id of the object</param>
+                    /// <param name="x">The end x position of the object when teleporting</param>
+                    /// <param name="y">The end y position of the object when teleporting</param>
+                    internal Task BroadcastObjectTeleported(IEnumerable<ulong> connections, uint scopeId, uint objectId, ushort x, ushort y)
+                    {
+                        return UntilBroadcastIsDone(ObjectTeleportedBroadcaster(connections, new ObjectMessage<Position>()
+                        {
+                            ScopeId = scopeId,
+                            ObjectId = objectId,
+                            Content = new Position() { X = x, Y = y }
+                        }));
+                    }
+
+                    /// <summary>
+                    ///   Broadcasts a "object speed changed" message. This message is triggered when
+                    ///   an object changed its speed inside a map in certain scope.
+                    /// </summary>
+                    /// <param name="connections">The connections to send this message to</param>
+                    /// <param name="scopeId">The id of the scope the object belongs to</param>
+                    /// <param name="objectId">The id of the object</param>
+                    /// <param name="speed">The new object speed</param>
+                    internal Task BroadcastObjectSpeedChanged(IEnumerable<ulong> connections, uint scopeId, uint objectId, uint speed)
+                    {
+                        return UntilBroadcastIsDone(ObjectSpeedChangedBroadcaster(connections, new ObjectMessage<UInt>()
+                        {
+                            ScopeId = scopeId,
+                            ObjectId = objectId,
+                            Content = (UInt)speed
+                        }));
+                    }
+
+                    /// <summary>
+                    ///   Broadcasts a "object orientation changed" message. This message is triggered when
+                    ///   an object changed its orientation inside a map in certain scope.
+                    /// </summary>
+                    /// <param name="connections">The connections to send this message to</param>
+                    /// <param name="scopeId">The id of the scope the object belongs to</param>
+                    /// <param name="objectId">The id of the object</param>
+                    /// <param name="orientation">The new object orientation</param>
+                    internal Task BroadcastObjectOrientationChanged(IEnumerable<ulong> connections, uint scopeId, uint objectId, Direction orientation)
+                    {
+                        return UntilBroadcastIsDone(ObjectOrientationChangedBroadcaster(connections, new ObjectMessage<Enum<Direction>>()
+                        {
+                            ScopeId = scopeId,
+                            ObjectId = objectId,
+                            Content = (Enum<Direction>)orientation
+                        }));
+                    }
                 }
             }
         }

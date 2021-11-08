@@ -9,30 +9,33 @@ namespace GameMeanMachine.Unity.NetRose
     {
         namespace Behaviours
         {
-            [RequireComponent(typeof(ScopeClientSide))]
-            [RequireComponent(typeof(Scope))]
-            public class NetRoseScopeClientSide : MonoBehaviour
+            namespace Client
             {
-                /// <summary>
-                ///   The related client server side.
-                /// </summary>
-                public ScopeClientSide ScopeClientSide { get; private set; }
-
-                /// <summary>
-                ///   The related world scope (to get the maps).
-                /// </summary>
-                public Scope Maps { get; private set; }
-
-                private void Awake()
+                [RequireComponent(typeof(ScopeClientSide))]
+                [RequireComponent(typeof(Scope))]
+                public class NetRoseScopeClientSide : MonoBehaviour
                 {
-                    ScopeClientSide = GetComponent<ScopeClientSide>();
-                    Maps = GetComponent<Scope>();
-                }
+                    /// <summary>
+                    ///   The related client server side.
+                    /// </summary>
+                    public ScopeClientSide ScopeClientSide { get; private set; }
 
-                /// <summary>
-                ///   The scope client side id.
-                /// </summary>
-                public uint Id { get { return ScopeClientSide.Id; } }
+                    /// <summary>
+                    ///   The related world scope (to get the maps).
+                    /// </summary>
+                    public Scope Maps { get; private set; }
+
+                    private void Awake()
+                    {
+                        ScopeClientSide = GetComponent<ScopeClientSide>();
+                        Maps = GetComponent<Scope>();
+                    }
+
+                    /// <summary>
+                    ///   The scope client side id.
+                    /// </summary>
+                    public uint Id { get { return ScopeClientSide.Id; } }
+                }
             }
         }
     }

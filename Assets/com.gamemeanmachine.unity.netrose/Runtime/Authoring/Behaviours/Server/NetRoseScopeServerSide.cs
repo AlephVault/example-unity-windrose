@@ -14,6 +14,13 @@ namespace GameMeanMachine.Unity.NetRose
         {
             namespace Server
             {
+                /// <summary>
+                ///   The scope server side of a netrose scope knows how
+                ///   to reach the related client scope and also all the
+                ///   involved WindRose maps and connections. It also
+                ///   provides means to forward all the NetRose related
+                ///   messages from objects to the protocol.
+                /// </summary>
                 [RequireComponent(typeof(ScopeServerSide))]
                 [RequireComponent(typeof(Scope))]
                 public class NetRoseScopeServerSide : MonoBehaviour

@@ -6,6 +6,8 @@ using GameMeanMachine.Unity.NetRose.Types.Models;
 using GameMeanMachine.Unity.NetRose.Types.Protocols;
 using GameMeanMachine.Unity.NetRose.Types.Protocols.Messages;
 using GameMeanMachine.Unity.WindRose.Types;
+using System;
+using System.Threading.Tasks;
 using UnityEngine;
 
 
@@ -42,78 +44,113 @@ namespace GameMeanMachine.Unity.NetRose
                     protected override void SetIncomingMessageHandlers()
                     {
                         AddIncomingMessageHandler<ObjectMessage<Attachment>>("Object:Attached", (proto, message) => {
-                            return RunInMainThread(() => OnAttached(message.ScopeId, message.ObjectId, message.Content));
+                            return RunInMainThreadValidatingScopeAndObject(
+                                message.ScopeId, message.ObjectId, (obj) => OnAttached(obj, message.Content)
+                            );
                         });
                         AddIncomingMessageHandler<ObjectMessage<Nothing>>("Object:Detached", (proto, message) => {
-                            return RunInMainThread(() => OnDetached(message.ScopeId, message.ObjectId));
+                            return RunInMainThreadValidatingScopeAndObject(
+                                message.ScopeId, message.ObjectId, (obj) => OnDetached(obj)
+                            );
                         });
                         AddIncomingMessageHandler<ObjectMessage<MovementStart>>("Object:Movement:Started", (proto, message) => {
-                            return RunInMainThread(() => OnMovementStarted(message.ScopeId, message.ObjectId, message.Content));
+                            return RunInMainThreadValidatingScopeAndObject(
+                                message.ScopeId, message.ObjectId, (obj) => OnMovementStarted(obj, message.Content)
+                            );
                         });
                         AddIncomingMessageHandler<ObjectMessage<Position>>("Object:Movement:Cancelled", (proto, message) => {
-                            return RunInMainThread(() => OnMovementCancelled(message.ScopeId, message.ObjectId, message.Content));
+                            return RunInMainThreadValidatingScopeAndObject(
+                                message.ScopeId, message.ObjectId, (obj) => OnMovementCancelled(obj, message.Content)
+                            );
                         });
                         AddIncomingMessageHandler<ObjectMessage<Position>>("Object:Movement:Finished", (proto, message) => {
-                            return RunInMainThread(() => OnMovementFinished(message.ScopeId, message.ObjectId, message.Content));
+                            return RunInMainThreadValidatingScopeAndObject(
+                                message.ScopeId, message.ObjectId, (obj) => OnMovementFinished(obj, message.Content)
+                            );
                         });
                         AddIncomingMessageHandler<ObjectMessage<Position>>("Object:Teleported", (proto, message) => {
-                            return RunInMainThread(() => OnTeleported(message.ScopeId, message.ObjectId, message.Content));
+                            return RunInMainThreadValidatingScopeAndObject(
+                                message.ScopeId, message.ObjectId, (obj) => OnTeleported(obj, message.Content)
+                            );
                         });
                         AddIncomingMessageHandler<ObjectMessage<UInt>>("Object:Speed:Changed", (proto, message) => {
-                            return RunInMainThread(() => OnSpeedChanged(message.ScopeId, message.ObjectId, message.Content));
+                            return RunInMainThreadValidatingScopeAndObject(
+                                message.ScopeId, message.ObjectId, (obj) => OnSpeedChanged(obj, message.Content)
+                            );
                         });
                         AddIncomingMessageHandler<ObjectMessage<Enum<Direction>>>("Object:Orientation:Changed", (proto, message) => {
-                            return RunInMainThread(() => {
-                                OnOrientationChanged(message.ScopeId, message.ObjectId, message.Content);
-                            });
+                            return RunInMainThreadValidatingScopeAndObject(
+                                message.ScopeId, message.ObjectId, (obj) => OnOrientationChanged(obj, message.Content)
+                            );
                         });
                     }
 
-                    private NetRoseMapObjectClientSide ValidateScopeAndObject(uint scopeId, uint objectId)
+                    // Queues an action in the main thread that checks the current pair
+                    // scopeId / objectId for validity and executes a particular action,
+                    // or raises a LocaError if invalid.
+                    private Task RunInMainThreadValidatingScopeAndObject(uint scopeId, uint objectId, Action<NetRoseMapObjectClientSide> callback)
                     {
-                        if (scopeId != ScopesProtocolClientSide.CurrentScope.Id)
+                        return RunInMainThread(async () =>
                         {
-                            // throw local error.
-                        }
-                        return null;
+                            if (!await ScopesProtocolClientSide.RequireIsCurrentScopeAndHoldsObjects(scopeId))
+                            {
+                                return;
+                            }
+
+                            ObjectClientSide obj = ScopesProtocolClientSide.GetObject(objectId);
+                            if (obj == null)
+                            {
+                                await ScopesProtocolClientSide.LocalError("UnknownObject");
+                                return;
+                            }
+
+                            NetRoseMapObjectClientSide netRoseObj = obj.GetComponent<NetRoseMapObjectClientSide>();
+                            if (netRoseObj == null)
+                            {
+                                await ScopesProtocolClientSide.LocalError("ObjectIsNotNetRose");
+                                return;
+                            }
+
+                            callback(netRoseObj);
+                        });
                     }
 
-                    private void OnAttached(uint scopeId, uint objectId, Attachment attachment)
+                    private void OnAttached(NetRoseMapObjectClientSide obj, Attachment attachment)
                     {
                         // TODO implement.
                     }
 
-                    private void OnDetached(uint scopeId, uint objectId)
+                    private void OnDetached(NetRoseMapObjectClientSide obj)
                     {
                         // TODO implement.
                     }
 
-                    private void OnMovementStarted(uint scopeId, uint objectId, MovementStart movementStart)
+                    private void OnMovementStarted(NetRoseMapObjectClientSide obj, MovementStart movementStart)
                     {
                         // TODO implement.
                     }
 
-                    private void OnMovementCancelled(uint scopeId, uint objectId, Position position)
+                    private void OnMovementCancelled(NetRoseMapObjectClientSide obj, Position position)
                     {
                         // TODO implement.
                     }
 
-                    private void OnMovementFinished(uint scopeId, uint objectId, Position position)
+                    private void OnMovementFinished(NetRoseMapObjectClientSide obj, Position position)
                     {
                         // TODO implement.
                     }
 
-                    private void OnTeleported(uint scopeId, uint objectId, Position position)
+                    private void OnTeleported(NetRoseMapObjectClientSide obj, Position position)
                     {
                         // TODO implement.
                     }
 
-                    private void OnSpeedChanged(uint scopeId, uint objectId, uint speed)
+                    private void OnSpeedChanged(NetRoseMapObjectClientSide obj, uint speed)
                     {
                         // TODO implement.
                     }
 
-                    private void OnOrientationChanged(uint scopeId, uint objectId, Direction orientation)
+                    private void OnOrientationChanged(NetRoseMapObjectClientSide obj, Direction orientation)
                     {
                         // TODO implement.
                     }

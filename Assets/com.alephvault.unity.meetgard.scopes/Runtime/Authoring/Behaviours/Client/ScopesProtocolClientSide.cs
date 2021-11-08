@@ -290,20 +290,32 @@ namespace AlephVault.Unity.Meetgard.Scopes
                         });
                     }
 
+                    // Checks the current scope to be a valid object-holding scope.
+                    // If not, either the server is misconfigured or the client lost
+                    // synchronization, and must close.
                     private async Task<bool> CheckCurrentScope(uint scopeIndex)
                     {
-                        if (CurrentScope == null || CurrentScope.Id != scopeIndex || CurrentScope.Id >= Scope.MaxScopes)
+                        if (CurrentScope.Id >= Scope.MaxScopes)
+                        {
+                            // This is an error: The scope id is aboce the maximum
+                            // scopes that can be related to scope objects and thus
+                            // reflect object states.
+                            Debug.LogError($"Invalid scope. Current scope, as the server told, is {CurrentScopeId} which is not an object-holding scope");
+                            await LocalError("InvalidServerScope");
+                            return false;
+                        }
+
+                        if (CurrentScope == null || CurrentScope.Id != scopeIndex)
                         {
                             // This is an error: Either the current scope is null,
-                            // unmatched against the incoming scope index, or the
-                            // incoming scope index being above the maximum amount
-                            // of scopes (e.g. it is Limbo, or Maintenance).
+                            // or unmatched against the incoming scope index.
                             //
                             // This all will be treated as a local error instead.
                             Debug.LogError($"Scope mismatch. Current scope is {CurrentScopeId} and message scope is {scopeIndex}");
                             await LocalError("ScopeMismatch");
                             return false;
                         }
+
                         return true;
                     }
 

@@ -67,15 +67,22 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     [SerializeField]
                     private ObjectClientSide[] objectPrefabs;
 
-                    // The currently loaded scope.
-                    private ScopeClientSide currentScope;
+                    /// <summary>
+                    ///   The currently loaded scope object. Only applicable
+                    ///   for the default and extra scopes, and not for the
+                    ///   special ones.
+                    /// </summary>
+                    public ScopeClientSide CurrentScope { get; private set; }
 
                     // The currently loaded objects.
                     private Dictionary<uint, ObjectClientSide> currentObjects = new Dictionary<uint, ObjectClientSide>();
 
-                    // The currently loaded scope id. Specially useful for when the
-                    // current scope is a special one.
-                    private uint currentScopeId = 0;
+                    /// <summary>
+                    ///   The currently loaded scope id. This is particularly
+                    ///   useful for special scopes, where no scope object
+                    ///   actually exists.
+                    /// </summary>
+                    public uint CurrentScopeId { get; private set; }
 
                     // A sender for the LocalError message.
                     private Func<Task> SendLocalError;
@@ -152,7 +159,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                 // handler).
                                 ClearCurrentScope();
                                 Debug.Log("ScopesPCS::Handler:Welcome::--Setting Limbo as current scope");
-                                currentScopeId = Scope.Limbo;
+                                CurrentScopeId = Scope.Limbo;
                                 Debug.Log("ScopesPCS::Handler:Welcome::--Triggering OnWelcome event");
                                 OnWelcome?.Invoke();
                                 Debug.Log("ScopesPCS::Handler:Welcome::End");
@@ -172,7 +179,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                 {
                                     Debug.Log("ScopesPCS::Handler:MovedToScope::--Loading a new scope");
                                     LoadNewScope(message.ScopeIndex, message.PrefabIndex);
-                                    currentScopeId = message.ScopeIndex;
+                                    CurrentScopeId = message.ScopeIndex;
                                 }
                                 catch (Exception e)
                                 {
@@ -181,7 +188,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                     return;
                                 }
                                 Debug.Log("ScopesPCS::Handler:MovedToScope::--Triggering OnMovedToScope event");
-                                OnMovedToScope?.Invoke(currentScope);
+                                OnMovedToScope?.Invoke(CurrentScope);
                                 Debug.Log("ScopesPCS::Handler:MovedToScope::--End");
                             });
                         });
@@ -194,7 +201,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                 // HOWEVER it will NOT be waited for (the queued
                                 // handler will be waited for, but not the returned
                                 // handler).
-                                if (currentScope == null || currentScope.Id != message.ScopeIndex || currentScope.Id >= Scope.MaxScopes)
+                                if (CurrentScope == null || CurrentScope.Id != message.ScopeIndex || CurrentScope.Id >= Scope.MaxScopes)
                                 {
                                     // This is an error: Either the current scope is null,
                                     // unmatched against the incoming scope index, or the
@@ -202,7 +209,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                     // of scopes (e.g. it is Limbo, or Maintenance).
                                     //
                                     // This all will be treated as a local error instead.
-                                    Debug.LogError($"Scope mismatch. Current scope is {currentScopeId} and message scope is {message.ScopeIndex}");
+                                    Debug.LogError($"Scope mismatch. Current scope is {CurrentScopeId} and message scope is {message.ScopeIndex}");
                                     await LocalError("ScopeMismatch");
                                     return;
                                 }
@@ -235,7 +242,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                 // HOWEVER it will NOT be waited for (the queued
                                 // handler will be waited for, but not the returned
                                 // handler).
-                                if (currentScope == null || currentScope.Id != message.ScopeIndex || currentScope.Id >= Scope.MaxScopes)
+                                if (CurrentScope == null || CurrentScope.Id != message.ScopeIndex || CurrentScope.Id >= Scope.MaxScopes)
                                 {
                                     // This is an error: Either the current scope is null,
                                     // unmatched against the incoming scope index, or the
@@ -243,7 +250,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                     // of scopes (e.g. it is Limbo, or Maintenance).
                                     //
                                     // This all will be treated as a local error instead.
-                                    Debug.LogError($"Scope mismatch. Current scope is {currentScopeId} and message scope is {message.ScopeIndex}");
+                                    Debug.LogError($"Scope mismatch. Current scope is {CurrentScopeId} and message scope is {message.ScopeIndex}");
                                     await LocalError("ScopeMismatch");
                                     return;
                                 }
@@ -276,7 +283,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                 // HOWEVER it will NOT be waited for (the queued
                                 // handler will be waited for, but not the returned
                                 // handler).
-                                if (currentScope == null || currentScope.Id != message.ScopeIndex || currentScope.Id >= Scope.MaxScopes)
+                                if (CurrentScope == null || CurrentScope.Id != message.ScopeIndex || CurrentScope.Id >= Scope.MaxScopes)
                                 {
                                     // This is an error: Either the current scope is null,
                                     // unmatched against the incoming scope index, or the
@@ -284,7 +291,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                     // of scopes (e.g. it is Limbo, or Maintenance).
                                     //
                                     // This all will be treated as a local error instead.
-                                    Debug.LogError($"Scope mismatch. Current scope is {currentScopeId} and message scope is {message.ScopeIndex}");
+                                    Debug.LogError($"Scope mismatch. Current scope is {CurrentScopeId} and message scope is {message.ScopeIndex}");
                                     await LocalError("ScopeMismatch");
                                     return;
                                 }
@@ -313,7 +320,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     // Clears the current scope, destroying everything.
                     private void ClearCurrentScope()
                     {
-                        if (currentScope)
+                        if (CurrentScope)
                         {
                             foreach(ObjectClientSide instance in currentObjects.Values)
                             {
@@ -323,9 +330,9 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                 Destroy(instance.gameObject);
                             }
                             currentObjects.Clear();
-                            currentScope.Unload();
-                            Destroy(currentScope.gameObject);
-                            currentScope = null;
+                            CurrentScope.Unload();
+                            Destroy(CurrentScope.gameObject);
+                            CurrentScope = null;
                         }
                     }
 
@@ -345,13 +352,13 @@ namespace AlephVault.Unity.Meetgard.Scopes
                             }
                             ScopeClientSide instance = Instantiate(prefab);
                             instance.Id = scopeId;
-                            currentScope = instance;
-                            currentScopeId = scopeId;
+                            CurrentScope = instance;
+                            CurrentScopeId = scopeId;
                             instance.Load();
                         }
                         else
                         {
-                            currentScopeId = scopeId;
+                            CurrentScopeId = scopeId;
                         }
                     }
 
@@ -367,7 +374,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                             // Get a new instance, register it and spawn it.
                             ObjectClientSide instance = InstanceManager.Result != null ? InstanceManager.Result.Get(objectPrefabs[objectPrefabId]) : Instantiate(objectPrefabs[objectPrefabId]);
                             currentObjects.Add(objectId, instance);
-                            instance.Spawn(currentScope, objectId, data);
+                            instance.Spawn(CurrentScope, objectId, data);
                             return instance;
                         }
                     }

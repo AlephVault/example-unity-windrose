@@ -20,7 +20,9 @@ namespace GameMeanMachine.Unity.NetRose
                     // Speed Change, and Orientation Change.
                     private abstract class QueuedCommand
                     {
-                        public abstract void Execute(bool accelerate);
+                        public MapObject MapObject;
+
+                        public abstract bool Execute(bool accelerate);
                     }
 
                     // A Movement Start queued command.
@@ -30,7 +32,7 @@ namespace GameMeanMachine.Unity.NetRose
                         public ushort StartY;
                         public Direction Direction;
 
-                        public override void Execute(bool accelerate)
+                        public override bool Execute(bool accelerate)
                         {
                             // TODO implement.
                             throw new System.NotImplementedException();
@@ -43,7 +45,7 @@ namespace GameMeanMachine.Unity.NetRose
                         public ushort RevertX;
                         public ushort RevertY;
 
-                        public override void Execute(bool accelerate)
+                        public override bool Execute(bool accelerate)
                         {
                             // TODO implement.
                             throw new System.NotImplementedException();
@@ -56,7 +58,7 @@ namespace GameMeanMachine.Unity.NetRose
                         public ushort EndX;
                         public ushort EndY;
 
-                        public override void Execute(bool accelerate)
+                        public override bool Execute(bool accelerate)
                         {
                             // TODO implement.
                             throw new System.NotImplementedException();
@@ -68,10 +70,13 @@ namespace GameMeanMachine.Unity.NetRose
                     {
                         public uint Speed;
 
-                        public override void Execute(bool accelerate)
+                        public override bool Execute(bool accelerate)
                         {
-                            // TODO implement.
-                            throw new System.NotImplementedException();
+                            // Just set the speed.
+                            MapObject.Speed = Speed;
+                            // Return true: to tell that the queue must
+                            // execute immediately.
+                            return true;
                         }
                     }
 
@@ -80,15 +85,30 @@ namespace GameMeanMachine.Unity.NetRose
                     {
                         public Direction Orientation;
 
-                        public override void Execute(bool accelerate)
+                        public override bool Execute(bool accelerate)
                         {
-                            // TODO implement.
-                            throw new System.NotImplementedException();
+                            // Just set the orientation.
+                            MapObject.Orientation = Orientation;
+                            // Return true: to tell that the queue must
+                            // execute immediately.
+                            return true;
                         }
                     }
 
                     // Clears the queue.
                     private void ClearQueue()
+                    {
+                        // TODO implement.
+                    }
+
+                    // Runs the next element in the queue.
+                    private void RunQueue()
+                    {
+                        // TODO implement.
+                    }
+
+                    // Queues an element into the queue.
+                    private void QueueElement(QueuedCommand command)
                     {
                         // TODO implement.
                     }

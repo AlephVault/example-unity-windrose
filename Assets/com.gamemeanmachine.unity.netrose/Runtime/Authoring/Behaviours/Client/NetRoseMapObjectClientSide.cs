@@ -1,7 +1,6 @@
 ﻿using AlephVault.Unity.Meetgard.Scopes.Authoring.Behaviours.Client;
-using GameMeanMachine.Unity.NetRose.Types.Models;
-using GameMeanMachine.Unity.NetRose.Types.Protocols.Messages;
 using GameMeanMachine.Unity.WindRose.Authoring.Behaviours.Entities.Objects;
+using GameMeanMachine.Unity.WindRose.Authoring.Behaviours.World;
 using GameMeanMachine.Unity.WindRose.Types;
 using UnityEngine;
 
@@ -22,7 +21,7 @@ namespace GameMeanMachine.Unity.NetRose
                 /// </summary>
                 [RequireComponent(typeof(ObjectClientSide))]
                 [RequireComponent(typeof(MapObject))]
-                public class NetRoseMapObjectClientSide : MonoBehaviour
+                public partial class NetRoseMapObjectClientSide : MonoBehaviour
                 {
                     /// <summary>
                     ///   The related object client side.
@@ -72,8 +71,12 @@ namespace GameMeanMachine.Unity.NetRose
                         // TODO implement.
                     }
 
+                    //
+                    // From this point, all the network-related events start.
+                    //
+
                     // Processes an attachment event.
-                    internal void OnAttached(Attachment attachment)
+                    internal void OnAttached(Map map, ushort x, ushort y)
                     {
                         // TODO implement.
                     }
@@ -85,25 +88,25 @@ namespace GameMeanMachine.Unity.NetRose
                     }
 
                     // Processes a movement start event.
-                    internal void OnMovementStarted(MovementStart movementStart)
+                    internal void OnMovementStarted(ushort x, ushort y, Direction direction)
                     {
                         // TODO implement.
                     }
 
                     // Processes a movement cancel event.
-                    internal void OnMovementCancelled(Position position)
+                    internal void OnMovementCancelled(ushort x, ushort y)
                     {
                         // TODO implement.
                     }
 
                     // Processes a movement finish event.
-                    internal void OnMovementFinished(Position position)
+                    internal void OnMovementFinished(ushort x, ushort y)
                     {
                         // TODO implement.
                     }
 
                     // Processes a teleport event.
-                    internal void OnTeleported(Position position)
+                    internal void OnTeleported(ushort x, ushort y)
                     {
                         // TODO implement.
                     }

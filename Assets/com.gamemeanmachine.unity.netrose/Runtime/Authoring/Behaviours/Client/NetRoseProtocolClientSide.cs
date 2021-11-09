@@ -5,8 +5,10 @@ using AlephVault.Unity.Meetgard.Types;
 using GameMeanMachine.Unity.NetRose.Types.Models;
 using GameMeanMachine.Unity.NetRose.Types.Protocols;
 using GameMeanMachine.Unity.NetRose.Types.Protocols.Messages;
+using GameMeanMachine.Unity.WindRose.Authoring.Behaviours.World;
 using GameMeanMachine.Unity.WindRose.Types;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -34,6 +36,20 @@ namespace GameMeanMachine.Unity.NetRose
                     public ScopesProtocolClientSide ScopesProtocolClientSide { get; private set; }
 
                     /// <summary>
+                    ///   The current NetRose scope. It is null if the current
+                    ///   scope object is null, or it is not a NetRoseScopeClientSide
+                    ///   (attached) object.
+                    /// </summary>
+                    public NetRoseScopeClientSide CurrentNetRoseScope { get; private set; }
+
+                    /// <summary>
+                    ///   The current map set (i.e. the current WindRose scope).
+                    ///   It is null if the current scope is null, or it is not
+                    ///   a WindRose's Scope (attached) object.
+                    /// </summary>
+                    public Scope CurrentMaps { get; private set; }
+
+                    /// <summary>
                     ///   The lag tolerance for the object. It is the maximum
                     ///   number of delayed steps in the objects queue. If more
                     ///   than this number of steps/movement in the per-object
@@ -55,61 +71,127 @@ namespace GameMeanMachine.Unity.NetRose
                     {
                         lagTolerance = Math.Max(lagTolerance, (ushort)5);
                         ScopesProtocolClientSide = GetComponent<ScopesProtocolClientSide>();
+                        ScopesProtocolClientSide.OnMovedToScope += OnMovedToScope;
+                    }
+
+                    private void OnDestroy()
+                    {
+                        ScopesProtocolClientSide.OnMovedToScope -= OnMovedToScope;
+                    }
+
+                    private void OnMovedToScope(ScopeClientSide obj)
+                    {
+                        CurrentNetRoseScope = ScopesProtocolClientSide.CurrentScope == null ? null : ScopesProtocolClientSide.GetComponent<NetRoseScopeClientSide>();
                     }
 
                     protected override void SetIncomingMessageHandlers()
                     {
                         AddIncomingMessageHandler<ObjectMessage<Attachment>>("Object:Attached", (proto, message) => {
                             return RunInMainThreadValidatingScopeAndObject(
-                                message.ScopeId, message.ObjectId, (obj) => obj.OnAttached(message.Content)
+                                message.ScopeId, message.ObjectId, async (obj) => {
+                                    Map map;
+                                    try
+                                    {
+                                        map = CurrentNetRoseScope.Maps[(int)message.Content.MapIndex];
+                                    }
+                                    catch (KeyNotFoundException)
+                                    {
+                                        await ScopesProtocolClientSide.LocalError("UnknownMap");
+                                        return;
+                                    }
+
+                                    ushort x = message.Content.Position.X;
+                                    ushort y = message.Content.Position.Y;
+
+                                    if (!await CheckIsValidMapPosition(map, x, y)) return;
+
+                                    obj.OnAttached(map, x, y);
+                                }
                             );
                         });
                         AddIncomingMessageHandler<ObjectMessage<Nothing>>("Object:Detached", (proto, message) => {
                             return RunInMainThreadValidatingScopeAndObject(
-                                message.ScopeId, message.ObjectId, (obj) => obj.OnDetached()
+                                message.ScopeId, message.ObjectId, async (obj) => {
+                                    obj.OnDetached();
+                                }
                             );
                         });
                         AddIncomingMessageHandler<ObjectMessage<MovementStart>>("Object:Movement:Started", (proto, message) => {
                             return RunInMainThreadValidatingScopeAndObject(
-                                message.ScopeId, message.ObjectId, (obj) => obj.OnMovementStarted(message.Content)
+                                message.ScopeId, message.ObjectId, async (obj) => {
+                                    ushort x = message.Content.Position.X;
+                                    ushort y = message.Content.Position.Y;
+
+                                    if (!await CheckInValidMapPosition(obj, x, y)) return;
+
+                                    obj.OnMovementStarted(x, y, message.Content.Direction);
+                                }
                             );
                         });
                         AddIncomingMessageHandler<ObjectMessage<Position>>("Object:Movement:Cancelled", (proto, message) => {
                             return RunInMainThreadValidatingScopeAndObject(
-                                message.ScopeId, message.ObjectId, (obj) => obj.OnMovementCancelled(message.Content)
+                                message.ScopeId, message.ObjectId, async (obj) => {
+                                    ushort x = message.Content.X;
+                                    ushort y = message.Content.Y;
+
+                                    if (!await CheckInValidMapPosition(obj, x, y)) return;
+
+                                    obj.OnMovementCancelled(x, y);
+                                }
                             );
                         });
                         AddIncomingMessageHandler<ObjectMessage<Position>>("Object:Movement:Finished", (proto, message) => {
                             return RunInMainThreadValidatingScopeAndObject(
-                                message.ScopeId, message.ObjectId, (obj) => obj.OnMovementFinished(message.Content)
+                                message.ScopeId, message.ObjectId, async (obj) => {
+                                    ushort x = message.Content.X;
+                                    ushort y = message.Content.Y;
+
+                                    if (!await CheckInValidMapPosition(obj, x, y)) return;
+
+                                    obj.OnMovementFinished(x, y);
+                                }
                             );
                         });
                         AddIncomingMessageHandler<ObjectMessage<Position>>("Object:Teleported", (proto, message) => {
                             return RunInMainThreadValidatingScopeAndObject(
-                                message.ScopeId, message.ObjectId, (obj) => obj.OnTeleported(message.Content)
+                                message.ScopeId, message.ObjectId, async (obj) => {
+                                    ushort x = message.Content.X;
+                                    ushort y = message.Content.Y;
+
+                                    if (!await CheckInValidMapPosition(obj, x, y)) return;
+
+                                    obj.OnTeleported(x, y);
+                                }
                             );
                         });
                         AddIncomingMessageHandler<ObjectMessage<UInt>>("Object:Speed:Changed", (proto, message) => {
                             return RunInMainThreadValidatingScopeAndObject(
-                                message.ScopeId, message.ObjectId, (obj) => obj.OnSpeedChanged(message.Content)
+                                message.ScopeId, message.ObjectId, async (obj) => obj.OnSpeedChanged(message.Content)
                             );
                         });
                         AddIncomingMessageHandler<ObjectMessage<Enum<Direction>>>("Object:Orientation:Changed", (proto, message) => {
                             return RunInMainThreadValidatingScopeAndObject(
-                                message.ScopeId, message.ObjectId, (obj) => obj.OnOrientationChanged(message.Content)
+                                message.ScopeId, message.ObjectId, async (obj) => obj.OnOrientationChanged(message.Content)
                             );
                         });
                     }
 
                     // Queues an action in the main thread that checks the current pair
                     // scopeId / objectId for validity and executes a particular action,
-                    // or raises a LocaError if invalid.
-                    private Task RunInMainThreadValidatingScopeAndObject(uint scopeId, uint objectId, Action<NetRoseMapObjectClientSide> callback)
+                    // or raises a LocaError if invalid. It also raises a LocalError if
+                    // the current scope is not a NetRose scope.
+                    private Task RunInMainThreadValidatingScopeAndObject(uint scopeId, uint objectId, Func<NetRoseMapObjectClientSide, Task> callback)
                     {
                         return RunInMainThread(async () =>
                         {
                             if (!await ScopesProtocolClientSide.RequireIsCurrentScopeAndHoldsObjects(scopeId))
                             {
+                                return;
+                            }
+
+                            if (CurrentNetRoseScope == null)
+                            {
+                                await ScopesProtocolClientSide.LocalError("ScopeIsNotNetRose");
                                 return;
                             }
 
@@ -127,8 +209,33 @@ namespace GameMeanMachine.Unity.NetRose
                                 return;
                             }
 
-                            callback(netRoseObj);
+                            await callback(netRoseObj);
                         });
+                    }
+
+                    // Checks the position to be valid in the map.
+                    private async Task<bool> CheckIsValidMapPosition(Map map, ushort x, ushort y)
+                    {
+                        if (map.Width <= x || map.Height <= y)
+                        {
+                            await ScopesProtocolClientSide.LocalError("ObjectPositionOutOfBounds");
+                            return false;
+                        }
+
+                        return true;
+                    }
+
+                    // Checks the object to be in a valid map position.
+                    private async Task<bool> CheckInValidMapPosition(NetRoseMapObjectClientSide obj, ushort x, ushort y)
+                    {
+                        Map map = obj.MapObject.ParentMap;
+                        if (map == null)
+                        {
+                            await ScopesProtocolClientSide.LocalError("ObjectNotInMap");
+                            return false;
+                        }
+
+                        return await CheckIsValidMapPosition(map, x, y);
                     }
                 }
             }

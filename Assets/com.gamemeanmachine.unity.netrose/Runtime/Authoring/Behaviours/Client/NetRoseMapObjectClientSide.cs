@@ -78,13 +78,17 @@ namespace GameMeanMachine.Unity.NetRose
                     // Processes an attachment event.
                     internal void OnAttached(Map map, ushort x, ushort y)
                     {
-                        // TODO implement.
+                        ClearQueue();
+                        MapObject.CancelMovement();
+                        MapObject.Attach(map, x, y, true);
                     }
 
                     // Processes a detachment event.
                     internal void OnDetached()
                     {
-                        // TODO implement.
+                        ClearQueue();
+                        MapObject.CancelMovement();
+                        MapObject.Detach();
                     }
 
                     // Processes a movement start event.
@@ -108,7 +112,10 @@ namespace GameMeanMachine.Unity.NetRose
                     // Processes a teleport event.
                     internal void OnTeleported(ushort x, ushort y)
                     {
-                        // TODO implement.
+                        ClearQueue();
+                        MapObject.Teleport(x, y);
+                        MapObject.Detach();
+
                     }
 
                     // Processes a speed change event.

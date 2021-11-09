@@ -34,10 +34,26 @@ namespace GameMeanMachine.Unity.NetRose
                     public ScopesProtocolClientSide ScopesProtocolClientSide { get; private set; }
 
                     /// <summary>
+                    ///   The lag tolerance for the object. It is the maximum
+                    ///   number of delayed steps in the objects queue. If more
+                    ///   than this number of steps/movement in the per-object
+                    ///   queue is queued, then the queue is accelerated to run
+                    ///   all of the steps (ultimately causing a bit of bad
+                    ///   experience but recovering from the lag).
+                    /// </summary>
+                    private ushort lagTolerance = 5;
+
+                    /// <summary>
+                    ///   See <see cref="lagTolerance"/>.
+                    /// </summary>
+                    public ushort LagTolerance => lagTolerance;
+
+                    /// <summary>
                     ///   An after-awake setup.
                     /// </summary>
                     protected override void Setup()
                     {
+                        lagTolerance = Math.Max(lagTolerance, (ushort)5);
                         ScopesProtocolClientSide = GetComponent<ScopesProtocolClientSide>();
                     }
 
@@ -45,42 +61,42 @@ namespace GameMeanMachine.Unity.NetRose
                     {
                         AddIncomingMessageHandler<ObjectMessage<Attachment>>("Object:Attached", (proto, message) => {
                             return RunInMainThreadValidatingScopeAndObject(
-                                message.ScopeId, message.ObjectId, (obj) => OnAttached(obj, message.Content)
+                                message.ScopeId, message.ObjectId, (obj) => obj.OnAttached(message.Content)
                             );
                         });
                         AddIncomingMessageHandler<ObjectMessage<Nothing>>("Object:Detached", (proto, message) => {
                             return RunInMainThreadValidatingScopeAndObject(
-                                message.ScopeId, message.ObjectId, (obj) => OnDetached(obj)
+                                message.ScopeId, message.ObjectId, (obj) => obj.OnDetached()
                             );
                         });
                         AddIncomingMessageHandler<ObjectMessage<MovementStart>>("Object:Movement:Started", (proto, message) => {
                             return RunInMainThreadValidatingScopeAndObject(
-                                message.ScopeId, message.ObjectId, (obj) => OnMovementStarted(obj, message.Content)
+                                message.ScopeId, message.ObjectId, (obj) => obj.OnMovementStarted(message.Content)
                             );
                         });
                         AddIncomingMessageHandler<ObjectMessage<Position>>("Object:Movement:Cancelled", (proto, message) => {
                             return RunInMainThreadValidatingScopeAndObject(
-                                message.ScopeId, message.ObjectId, (obj) => OnMovementCancelled(obj, message.Content)
+                                message.ScopeId, message.ObjectId, (obj) => obj.OnMovementCancelled(message.Content)
                             );
                         });
                         AddIncomingMessageHandler<ObjectMessage<Position>>("Object:Movement:Finished", (proto, message) => {
                             return RunInMainThreadValidatingScopeAndObject(
-                                message.ScopeId, message.ObjectId, (obj) => OnMovementFinished(obj, message.Content)
+                                message.ScopeId, message.ObjectId, (obj) => obj.OnMovementFinished(message.Content)
                             );
                         });
                         AddIncomingMessageHandler<ObjectMessage<Position>>("Object:Teleported", (proto, message) => {
                             return RunInMainThreadValidatingScopeAndObject(
-                                message.ScopeId, message.ObjectId, (obj) => OnTeleported(obj, message.Content)
+                                message.ScopeId, message.ObjectId, (obj) => obj.OnTeleported(message.Content)
                             );
                         });
                         AddIncomingMessageHandler<ObjectMessage<UInt>>("Object:Speed:Changed", (proto, message) => {
                             return RunInMainThreadValidatingScopeAndObject(
-                                message.ScopeId, message.ObjectId, (obj) => OnSpeedChanged(obj, message.Content)
+                                message.ScopeId, message.ObjectId, (obj) => obj.OnSpeedChanged(message.Content)
                             );
                         });
                         AddIncomingMessageHandler<ObjectMessage<Enum<Direction>>>("Object:Orientation:Changed", (proto, message) => {
                             return RunInMainThreadValidatingScopeAndObject(
-                                message.ScopeId, message.ObjectId, (obj) => OnOrientationChanged(obj, message.Content)
+                                message.ScopeId, message.ObjectId, (obj) => obj.OnOrientationChanged(message.Content)
                             );
                         });
                     }
@@ -113,46 +129,6 @@ namespace GameMeanMachine.Unity.NetRose
 
                             callback(netRoseObj);
                         });
-                    }
-
-                    private void OnAttached(NetRoseMapObjectClientSide obj, Attachment attachment)
-                    {
-                        // TODO implement.
-                    }
-
-                    private void OnDetached(NetRoseMapObjectClientSide obj)
-                    {
-                        // TODO implement.
-                    }
-
-                    private void OnMovementStarted(NetRoseMapObjectClientSide obj, MovementStart movementStart)
-                    {
-                        // TODO implement.
-                    }
-
-                    private void OnMovementCancelled(NetRoseMapObjectClientSide obj, Position position)
-                    {
-                        // TODO implement.
-                    }
-
-                    private void OnMovementFinished(NetRoseMapObjectClientSide obj, Position position)
-                    {
-                        // TODO implement.
-                    }
-
-                    private void OnTeleported(NetRoseMapObjectClientSide obj, Position position)
-                    {
-                        // TODO implement.
-                    }
-
-                    private void OnSpeedChanged(NetRoseMapObjectClientSide obj, uint speed)
-                    {
-                        // TODO implement.
-                    }
-
-                    private void OnOrientationChanged(NetRoseMapObjectClientSide obj, Direction orientation)
-                    {
-                        // TODO implement.
                     }
                 }
             }

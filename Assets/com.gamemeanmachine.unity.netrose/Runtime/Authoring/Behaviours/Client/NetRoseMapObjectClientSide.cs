@@ -75,7 +75,10 @@ namespace GameMeanMachine.Unity.NetRose
                     // From this point, all the network-related events start.
                     //
 
-                    // Processes an attachment event.
+                    // Processes an attached event. This is immediate:
+                    // Clears the queue (if it is executing, it stops),
+                    // cancels the current movement (if any) and does
+                    // the attachment.
                     internal void OnAttached(Map map, ushort x, ushort y)
                     {
                         ClearQueue();
@@ -83,7 +86,10 @@ namespace GameMeanMachine.Unity.NetRose
                         MapObject.Attach(map, x, y, true);
                     }
 
-                    // Processes a detachment event.
+                    // Processes a detached event. This is immediate:
+                    // Clears the queue (if it is executing, it stops),
+                    // cancels the current movement (if any) and does
+                    // the detachment.
                     internal void OnDetached()
                     {
                         ClearQueue();
@@ -109,25 +115,33 @@ namespace GameMeanMachine.Unity.NetRose
                         // TODO implement.
                     }
 
-                    // Processes a teleport event.
+                    // Processes a teleport event. This is immediate:
+                    // Clears the queue (if it is executing, it stops),
+                    // cancels the current movement (if any) and does
+                    // the teleport.
                     internal void OnTeleported(ushort x, ushort y)
                     {
                         ClearQueue();
+                        MapObject.CancelMovement();
                         MapObject.Teleport(x, y);
-                        MapObject.Detach();
-
                     }
 
-                    // Processes a speed change event.
+                    // Processes a movement speed change event. It queues
+                    // the SpeedChanged command and, if the queue is not
+                    // currently executing, it is now executed.
                     internal void OnSpeedChanged(uint speed)
                     {
-                        // TODO implement.
+                        QueueElement(new SpeedChangeCommand() { MapObject = MapObject, Speed = speed });
+                        RunQueue();
                     }
 
-                    // Processes an orientation change event.
+                    // Processes an orientation change event. It queues the
+                    // OrientationChanged command and, if the queue is not
+                    // currently executing, it is now executed.
                     internal void OnOrientationChanged(Direction orientation)
                     {
-                        // TODO implement.
+                        QueueElement(new OrientationChangeCommand() { MapObject = MapObject, Orientation = orientation });
+                        RunQueue();
                     }
                 }
             }

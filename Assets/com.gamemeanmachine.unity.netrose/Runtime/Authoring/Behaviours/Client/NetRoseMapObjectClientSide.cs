@@ -36,6 +36,9 @@ namespace GameMeanMachine.Unity.NetRose
                     // The lag tolerance, as retrieved from the protocol.
                     private ushort lagTolerance;
 
+                    // Tells whether it is spawned or not.
+                    private bool spawned = false;
+
                     private void Awake()
                     {
                         ObjectClientSide = GetComponent<ObjectClientSide>();
@@ -43,6 +46,7 @@ namespace GameMeanMachine.Unity.NetRose
                         ObjectClientSide.OnDespawned += OnDespawned;
                         MapObject = GetComponent<MapObject>();
                         MapObject.onMovementFinished.AddListener(OnMovementFinished);
+                        MapObject.onMovementCancelled.AddListener(OnMovementCancelled);
                     }
 
                     private void OnDestroy()
@@ -50,25 +54,35 @@ namespace GameMeanMachine.Unity.NetRose
                         ObjectClientSide.OnSpawned -= OnSpawned;
                         ObjectClientSide.OnDespawned -= OnDespawned;
                         MapObject.onMovementFinished.RemoveListener(OnMovementFinished);
+                        MapObject.onMovementCancelled.RemoveListener(OnMovementCancelled);
                     }
 
-                    // On spawn, set the lag tolerance.
+                    // On spawn, set the lag tolerance, and the spawned.
                     private void OnSpawned()
                     {
                         NetRoseProtocolClientSide protocol = ObjectClientSide.Protocol.GetComponent<NetRoseProtocolClientSide>();
                         lagTolerance = protocol != null ? protocol.LagTolerance : (ushort)5;
+                        spawned = true;
                     }
 
-                    // On despawn, clear the lag tolerance.
+                    // On despawn, clear the lag tolerance, the spawned flag, and the queue.
                     private void OnDespawned()
                     {
                         lagTolerance = 0;
+                        spawned = false;
+                        queue.Clear();
                     }
 
-                    // On movement finished, clear the current movement.
+                    // On movement finished, continue executing the queue.
                     private void OnMovementFinished(Direction direction)
                     {
-                        // TODO implement.
+                        if (spawned) RunQueue(false);
+                    }
+
+                    // On movement ccancelled, continue executing the queue.
+                    private void OnMovementCancelled(Direction? direction)
+                    {
+                        if (spawned) RunQueue(false);
                     }
 
                     //
@@ -81,8 +95,8 @@ namespace GameMeanMachine.Unity.NetRose
                     // the attachment.
                     internal void OnAttached(Map map, ushort x, ushort y)
                     {
-                        ClearQueue();
-                        MapObject.CancelMovement();
+                        if (!spawned) return;
+                        queue.Clear();
                         MapObject.Attach(map, x, y, true);
                     }
 
@@ -92,27 +106,9 @@ namespace GameMeanMachine.Unity.NetRose
                     // the detachment.
                     internal void OnDetached()
                     {
-                        ClearQueue();
-                        MapObject.CancelMovement();
+                        if (!spawned) return;
+                        queue.Clear();
                         MapObject.Detach();
-                    }
-
-                    // Processes a movement start event.
-                    internal void OnMovementStarted(ushort x, ushort y, Direction direction)
-                    {
-                        // TODO implement.
-                    }
-
-                    // Processes a movement cancel event.
-                    internal void OnMovementCancelled(ushort x, ushort y)
-                    {
-                        // TODO implement.
-                    }
-
-                    // Processes a movement finish event.
-                    internal void OnMovementFinished(ushort x, ushort y)
-                    {
-                        // TODO implement.
                     }
 
                     // Processes a teleport event. This is immediate:
@@ -121,9 +117,36 @@ namespace GameMeanMachine.Unity.NetRose
                     // the teleport.
                     internal void OnTeleported(ushort x, ushort y)
                     {
-                        ClearQueue();
-                        MapObject.CancelMovement();
+                        if (!spawned) return;
+                        queue.Clear();
                         MapObject.Teleport(x, y);
+                    }
+
+                    // Processes a movement start event. It queues the
+                    // MovementStart command and, if the queue is not
+                    // currently executing, it is now executed.
+                    internal void OnMovementStarted(ushort x, ushort y, Direction direction)
+                    {
+                        if (!spawned) return;
+                        QueueElement(new MovementStartCommand() { StartX = x, StartY = y, Direction = direction });
+                    }
+
+                    // Processes a movement cancel event. It queues the
+                    // MovementCancel command and, if the queue is not
+                    // currently executing, it is now executed.
+                    internal void OnMovementCancelled(ushort x, ushort y)
+                    {
+                        if (!spawned) return;
+                        QueueElement(new MovementCancelCommand() { RevertX = x, RevertY = y });
+                    }
+
+                    // Processes a movement finish event. It queues the
+                    // MovementFinish command and, if the queue is not
+                    // currently executing, it is now executed.
+                    internal void OnMovementFinished(ushort x, ushort y)
+                    {
+                        if (!spawned) return;
+                        QueueElement(new MovementFinishCommand() { EndX = x, EndY = y });
                     }
 
                     // Processes a movement speed change event. It queues
@@ -131,8 +154,8 @@ namespace GameMeanMachine.Unity.NetRose
                     // currently executing, it is now executed.
                     internal void OnSpeedChanged(uint speed)
                     {
-                        QueueElement(new SpeedChangeCommand() { MapObject = MapObject, Speed = speed });
-                        RunQueue();
+                        if (!spawned) return;
+                        QueueElement(new SpeedChangeCommand() { Speed = speed });
                     }
 
                     // Processes an orientation change event. It queues the
@@ -140,8 +163,8 @@ namespace GameMeanMachine.Unity.NetRose
                     // currently executing, it is now executed.
                     internal void OnOrientationChanged(Direction orientation)
                     {
-                        QueueElement(new OrientationChangeCommand() { MapObject = MapObject, Orientation = orientation });
-                        RunQueue();
+                        if (!spawned) return;
+                        QueueElement(new OrientationChangeCommand() { Orientation = orientation });
                     }
                 }
             }

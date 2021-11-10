@@ -1,8 +1,6 @@
-﻿using AlephVault.Unity.Meetgard.Scopes.Authoring.Behaviours.Client;
-using GameMeanMachine.Unity.NetRose.Types.Models;
-using GameMeanMachine.Unity.NetRose.Types.Protocols.Messages;
-using GameMeanMachine.Unity.WindRose.Authoring.Behaviours.Entities.Objects;
+﻿using GameMeanMachine.Unity.WindRose.Authoring.Behaviours.Entities.Objects;
 using GameMeanMachine.Unity.WindRose.Types;
+using System.Collections.Generic;
 using UnityEngine;
 
 
@@ -16,101 +14,191 @@ namespace GameMeanMachine.Unity.NetRose
             {
                 public partial class NetRoseMapObjectClientSide : MonoBehaviour
                 {
-                    // One of the queued commands: Movement Start, Finish, Cancel,
-                    // Speed Change, and Orientation Change.
-                    private abstract class QueuedCommand
+                    /// <summary>
+                    //    One of the queued commands: Movement Start, Finish, Cancel,
+                    //    Speed Change, and Orientation Change.
+                    /// </summary>
+                    private interface QueuedCommand
                     {
-                        public MapObject MapObject;
+                        /// <summary>
+                        ///   Tells whether the command can start immediately or not.
+                        /// </summary>
+                        /// <param name="force">Whether it is running in forced mode or not</param>
+                        /// <returns>Whether it can execute or not</returns>
+                        public abstract bool CanExecute(bool force);
 
-                        public abstract bool Execute(bool accelerate);
+                        /// <summary>
+                        ///   Executes the command on a given <see cref="MapObject"/>.
+                        /// </summary>
+                        /// <param name="obj">The object to execute the command into</param>
+                        public abstract void Execute(MapObject obj);
                     }
 
-                    // A Movement Start queued command.
+                    /// <summary>
+                    ///   A Movement Start queued command.
+                    /// </summary>
                     private class MovementStartCommand : QueuedCommand
                     {
+                        /// <summary>
+                        ///   The start x-position.
+                        /// </summary>
                         public ushort StartX;
+
+                        /// <summary>
+                        ///   The start y-position.
+                        /// </summary>
                         public ushort StartY;
+
+                        /// <summary>
+                        ///   The movement direction.
+                        /// </summary>
                         public Direction Direction;
 
-                        public override bool Execute(bool accelerate)
+                        /// <inheritdoc />
+                        public bool CanExecute(bool force)
                         {
-                            // TODO implement.
-                            throw new System.NotImplementedException();
+                            return force;
+                        }
+
+                        /// <inheritdoc />
+                        public void Execute(MapObject obj)
+                        {
+                            if (obj.X != StartX || obj.Y != StartY) obj.Teleport(StartX, StartY, true);
                         }
                     }
 
-                    // A Movement Cancel queued command.
+                    /// <summary>
+                    ///   A Movement Cancel queued command.
+                    /// </summary>
                     private class MovementCancelCommand : QueuedCommand
                     {
+                        /// <summary>
+                        ///   The x-position to revert on cancel.
+                        /// </summary>
                         public ushort RevertX;
+
+                        /// <summary>
+                        ///   The y-position to revert on cancel.
+                        /// </summary>
                         public ushort RevertY;
 
-                        public override bool Execute(bool accelerate)
+                        /// <inheritdoc />
+                        public bool CanExecute(bool force)
                         {
-                            // TODO implement.
-                            throw new System.NotImplementedException();
+                            return true;
+                        }
+
+                        /// <inheritdoc />
+                        public void Execute(MapObject obj)
+                        {
+                            obj.CancelMovement();
+                            if (obj.X != RevertX || obj.Y != RevertY) obj.Teleport(RevertX, RevertY, true);
                         }
                     }
 
-                    // A Movement Finish queued command.
+                    /// <summary>
+                    ///   A Movement Finish queued command.
+                    /// </summary>
                     private class MovementFinishCommand : QueuedCommand
                     {
+                        /// <summary>
+                        ///   The end x-position.
+                        /// </summary>
                         public ushort EndX;
+
+                        /// <summary>
+                        ///   The end y-position.
+                        /// </summary>
                         public ushort EndY;
 
-                        public override bool Execute(bool accelerate)
+                        /// <inheritdoc />
+                        public bool CanExecute(bool force)
                         {
-                            // TODO implement.
-                            throw new System.NotImplementedException();
+                            return force;
+                        }
+
+                        /// <inheritdoc />
+                        public void Execute(MapObject obj)
+                        {
+                            obj.FinishMovement();
+                            if (obj.X != EndX || obj.Y != EndY) obj.Teleport(EndX, EndY, true);
                         }
                     }
 
-                    // A Speed Change queued command.
+                    /// <summary>
+                    ///   A Speed Change queued command.
+                    /// </summary>
                     private class SpeedChangeCommand : QueuedCommand
                     {
+                        /// <summary>
+                        ///   The new speed.
+                        /// </summary>
                         public uint Speed;
 
-                        public override bool Execute(bool accelerate)
+                        /// <inheritdoc />
+                        public bool CanExecute(bool force)
                         {
-                            // Just set the speed.
-                            MapObject.Speed = Speed;
-                            // Return true: to tell that the queue must
-                            // execute immediately.
                             return true;
+                        }
+
+                        /// <inheritdoc />
+                        public void Execute(MapObject obj)
+                        {
+                            obj.Speed = Speed;
                         }
                     }
 
-                    // An Orientation Change queued command.
+                    /// <summary>
+                    ///   An Orientation Change queued command.
+                    /// </summary>
                     private class OrientationChangeCommand : QueuedCommand
                     {
+                        /// <summary>
+                        ///   The new orientation.
+                        /// </summary>
                         public Direction Orientation;
 
-                        public override bool Execute(bool accelerate)
+                        /// <inheritdoc />
+                        public bool CanExecute(bool force)
                         {
-                            // Just set the orientation.
-                            MapObject.Orientation = Orientation;
-                            // Return true: to tell that the queue must
-                            // execute immediately.
                             return true;
+                        }
+
+                        /// <inheritdoc />
+                        public void Execute(MapObject obj)
+                        {
+                            obj.Orientation = Orientation;
                         }
                     }
 
-                    // Clears the queue.
-                    private void ClearQueue()
-                    {
-                        // TODO implement.
-                    }
+                    // This is the list of the queued commands.
+                    private List<QueuedCommand> queue = new List<QueuedCommand>();
 
-                    // Runs the next element in the queue.
-                    private void RunQueue()
-                    {
-                        // TODO implement.
-                    }
-
-                    // Queues an element into the queue.
+                    // Queues a command in the queue, and runs the queue
+                    // either in regular mode or in accelerated mode,
+                    // depending on whether the queue was not full, or
+                    // was full.
                     private void QueueElement(QueuedCommand command)
                     {
-                        // TODO implement.
+                        bool full = queue.Count >= lagTolerance;
+                        queue.Add(command);
+                        RunQueue(full);
+                    }
+                    
+                    // Runs the queue, all that it can. Either if it is
+                    // free to move, or the whole call is accelerated.
+                    private void RunQueue(bool accelerated)
+                    {
+                        bool freeToMove = !MapObject.IsMoving;
+                        while (queue.Count > 0 && queue[0].CanExecute(freeToMove || accelerated))
+                        {
+                            queue[0].Execute(MapObject);
+                            if (queue[0] is MovementStartCommand)
+                            {
+                                freeToMove = false;
+                            }
+                            queue.RemoveAt(0);
+                        }
                     }
                 }
             }

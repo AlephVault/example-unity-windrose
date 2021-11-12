@@ -1,7 +1,9 @@
-﻿using AlephVault.Unity.Meetgard.Scopes.Authoring.Behaviours.Server;
+﻿using AlephVault.Unity.Binary;
+using AlephVault.Unity.Meetgard.Scopes.Authoring.Behaviours.Server;
 using GameMeanMachine.Unity.WindRose.Authoring.Behaviours.Entities.Objects;
 using GameMeanMachine.Unity.WindRose.Authoring.Behaviours.World;
 using GameMeanMachine.Unity.WindRose.Types;
+using GameMeanMachine.Unity.NetRose.Types.Models;
 using System;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -21,19 +23,15 @@ namespace GameMeanMachine.Unity.NetRose
                 ///   client side by means of the current scope. These ones are also
                 ///   related to a single WindRose map object in a single map.
                 /// </summary>
-                [RequireComponent(typeof(ObjectServerSide))]
                 [RequireComponent(typeof(MapObject))]
-                public class NetRoseMapObjectServerSide : MonoBehaviour
+                public abstract class NetRoseModelServerSide<SpawnData, RefreshData> : ModelServerSide<MapObjectModel<SpawnData>, MapObjectModel<RefreshData>>
+                    where SpawnData : class, ISerializable, new()
+                    where RefreshData : class, ISerializable, new()
                 {
                     /// <summary>
                     ///   The related WindRose MapObject.
                     /// </summary>
                     public MapObject MapObject { get; private set; }
-
-                    /// <summary>
-                    ///   The related Meetgard.Scopes object server side.
-                    /// </summary>
-                    public ObjectServerSide ObjectServerSide { get; private set; }
 
                     /// <summary>
                     ///   The NetRose scope server side this object belongs to.
@@ -44,13 +42,12 @@ namespace GameMeanMachine.Unity.NetRose
                     private void Awake()
                     {
                         MapObject = GetComponent<MapObject>();
-                        ObjectServerSide = GetComponent<ObjectServerSide>();
                     }
 
                     private void Start()
                     {
-                        ObjectServerSide.OnSpawned += ObjectServerSide_OnSpawned;
-                        ObjectServerSide.OnDespawned += ObjectServerSide_OnDespawned;
+                        OnSpawned += ObjectServerSide_OnSpawned;
+                        OnDespawned += ObjectServerSide_OnDespawned;
                         MapObject.onAttached.AddListener(OnAttached);
                         MapObject.onDetached.AddListener(OnDetached);
                         MapObject.onMovementStarted.AddListener(OnMovementStarted);
@@ -63,8 +60,8 @@ namespace GameMeanMachine.Unity.NetRose
 
                     private void OnDestroy()
                     {
-                        ObjectServerSide.OnSpawned -= ObjectServerSide_OnSpawned;
-                        ObjectServerSide.OnDespawned -= ObjectServerSide_OnDespawned;
+                        OnSpawned -= ObjectServerSide_OnSpawned;
+                        OnDespawned -= ObjectServerSide_OnDespawned;
                         MapObject.onAttached.RemoveListener(OnAttached);
                         MapObject.onDetached.RemoveListener(OnDetached);
                         MapObject.onMovementStarted.RemoveListener(OnMovementStarted);
@@ -77,7 +74,7 @@ namespace GameMeanMachine.Unity.NetRose
 
                     private async Task ObjectServerSide_OnSpawned()
                     {
-                        NetRoseScopeServerSide = ObjectServerSide.Scope.GetComponent<NetRoseScopeServerSide>();
+                        NetRoseScopeServerSide = Scope.GetComponent<NetRoseScopeServerSide>();
                     }
 
                     private async Task ObjectServerSide_OnDespawned()
@@ -87,7 +84,7 @@ namespace GameMeanMachine.Unity.NetRose
 
                     private void RunInMainThreadIfSpawned(Func<Task> callback)
                     {
-                        ObjectServerSide.Protocol.RunInMainThread(async () =>
+                        Protocol.RunInMainThread(async () =>
                         {
                             if (NetRoseScopeServerSide != null) await callback();
                         });
@@ -100,8 +97,7 @@ namespace GameMeanMachine.Unity.NetRose
                             // Please note: By this point, we're in the appropriate scope.
                             // This means that the given map belongs to the current scope.
                             return NetRoseScopeServerSide.BroadcastObjectAttached(
-                                ObjectServerSide.Id,
-                                (uint)NetRoseScopeServerSide.Maps.MapsToIDs[map],
+                                Id, (uint)NetRoseScopeServerSide.Maps.MapsToIDs[map],
                                 MapObject.X, MapObject.Y
                             );
                         });
@@ -111,9 +107,7 @@ namespace GameMeanMachine.Unity.NetRose
                     {
                         RunInMainThreadIfSpawned(() =>
                         {
-                            return NetRoseScopeServerSide.BroadcastObjectDetached(
-                                ObjectServerSide.Id
-                            );
+                            return NetRoseScopeServerSide.BroadcastObjectDetached(Id);
                         });
                     }
 
@@ -122,7 +116,7 @@ namespace GameMeanMachine.Unity.NetRose
                         RunInMainThreadIfSpawned(() =>
                         {
                             return NetRoseScopeServerSide.BroadcastObjectMovementStarted(
-                                ObjectServerSide.Id, MapObject.X, MapObject.Y, direction
+                                Id, MapObject.X, MapObject.Y, direction
                             );
                         });
                     }
@@ -132,7 +126,7 @@ namespace GameMeanMachine.Unity.NetRose
                         RunInMainThreadIfSpawned(() =>
                         {
                             return NetRoseScopeServerSide.BroadcastObjectMovementFinished(
-                                ObjectServerSide.Id, MapObject.X, MapObject.Y
+                                Id, MapObject.X, MapObject.Y
                             );
                         });
                     }
@@ -142,7 +136,7 @@ namespace GameMeanMachine.Unity.NetRose
                         RunInMainThreadIfSpawned(() =>
                         {
                             return NetRoseScopeServerSide.BroadcastObjectMovementCancelled(
-                                ObjectServerSide.Id, MapObject.X, MapObject.Y
+                                Id, MapObject.X, MapObject.Y
                             );
                         });
                     }
@@ -151,9 +145,7 @@ namespace GameMeanMachine.Unity.NetRose
                     {
                         RunInMainThreadIfSpawned(() =>
                         {
-                            return NetRoseScopeServerSide.BroadcastObjectTeleported(
-                                ObjectServerSide.Id, x, y
-                            );
+                            return NetRoseScopeServerSide.BroadcastObjectTeleported(Id, x, y);
                         });
                     }
 
@@ -161,9 +153,7 @@ namespace GameMeanMachine.Unity.NetRose
                     {
                         RunInMainThreadIfSpawned(() =>
                         {
-                            return NetRoseScopeServerSide.BroadcastObjectOrientationChanged(
-                                ObjectServerSide.Id, direction
-                            );
+                            return NetRoseScopeServerSide.BroadcastObjectOrientationChanged(Id, direction);
                         });
                     }
 
@@ -171,11 +161,49 @@ namespace GameMeanMachine.Unity.NetRose
                     {
                         RunInMainThreadIfSpawned(() =>
                         {
-                            return NetRoseScopeServerSide.BroadcastObjectSpeedChanged(
-                                ObjectServerSide.Id, speed
-                            );
+                            return NetRoseScopeServerSide.BroadcastObjectSpeedChanged(Id, speed);
                         });
                     }
+
+                    private Status GetCurrentStatus()
+                    {
+                        if (MapObject.ParentMap != null)
+                        {
+                            return new Status() {
+                                Attachment = new Attachment() {
+                                    Position = new Position() {
+                                        X = MapObject.X, Y = MapObject.Y
+                                    },
+                                    MapIndex = (uint)NetRoseScopeServerSide.Maps.MapsToIDs[MapObject.ParentMap]
+                                },
+                                Movement = MapObject.Movement
+                            };
+                        }
+                        else
+                        {
+                            return null;
+                        }
+                    }
+
+                    protected override MapObjectModel<SpawnData> GetFullData(ulong connectionId)
+                    {
+                        return new MapObjectModel<SpawnData>() {
+                            Status = GetCurrentStatus(),
+                            Data = GetInnerFullData(connectionId)
+                        };
+                    }
+
+                    protected abstract SpawnData GetInnerFullData(ulong connectionId);
+
+                    protected override MapObjectModel<RefreshData> GetRefreshData(ulong connectionId, string context)
+                    {
+                        return new MapObjectModel<RefreshData>() {
+                            Status = GetCurrentStatus(),
+                            Data = GetInnerRefreshData(connectionId, context)
+                        };
+                    }
+
+                    protected abstract RefreshData GetInnerRefreshData(ulong connectionId, string context);
                 }
             }
         }

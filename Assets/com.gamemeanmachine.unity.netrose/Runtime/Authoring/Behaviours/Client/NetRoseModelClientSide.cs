@@ -21,9 +21,8 @@ namespace GameMeanMachine.Unity.NetRose
                 ///   for lag balance and recovery. These ones are also related to
                 ///   a single WindRose map object in a single map.
                 /// </summary>
-                [RequireComponent(typeof(ObjectClientSide))]
                 [RequireComponent(typeof(MapObject))]
-                public abstract partial class NetRoseModelClientSide<SpawnData, RefreshData> : AlephVault.Unity.Meetgard.Scopes.Authoring.Behaviours.Client.NetRoseModelClientSide<MapObjectModel<SpawnData>, MapObjectModel<RefreshData>>
+                public abstract partial class NetRoseModelClientSide<SpawnData, RefreshData> : ModelClientSide<MapObjectModel<SpawnData>, MapObjectModel<RefreshData>>
                     where SpawnData : class, ISerializable, new()
                     where RefreshData : class, ISerializable, new()
                 {

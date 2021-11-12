@@ -15,7 +15,7 @@ namespace GameMeanMachine.Unity.NetRose
         {
             namespace Client
             {
-                public abstract partial class NetRoseModelClientSide<SpawnData, RefreshData> : AlephVault.Unity.Meetgard.Scopes.Authoring.Behaviours.Client.NetRoseModelClientSide<MapObjectModel<SpawnData>, MapObjectModel<RefreshData>>
+                public abstract partial class NetRoseModelClientSide<SpawnData, RefreshData> : ModelClientSide<MapObjectModel<SpawnData>, MapObjectModel<RefreshData>>
                     where SpawnData : class, ISerializable, new()
                     where RefreshData : class, ISerializable, new()
                 {

@@ -1,17 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &196884688
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4607933404349582928}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7c6dee580890df64da82e9e6b074eb8b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &196884689
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -25,20 +13,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   prefabKey: teleporter
---- !u!114 &8871809029508639334
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4607933404349582928}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3d3087547ba1977428e6b3cb1288ce86, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ForceOrientation: 1
-  NewOrientation: 0
 --- !u!114 &63996594604825402
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -64,9 +38,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1cbb06a760bbf543ad53298dbf57264, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Target: {fileID: 0}
+  prefabKey: 
   doorName: 
   targetName: 
+--- !u!114 &8871809029508639334
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4607933404349582928}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d3087547ba1977428e6b3cb1288ce86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ForceOrientation: 1
+  NewOrientation: 0
 --- !u!1001 &1751671531151553963
 PrefabInstance:
   m_ObjectHideFlags: 0

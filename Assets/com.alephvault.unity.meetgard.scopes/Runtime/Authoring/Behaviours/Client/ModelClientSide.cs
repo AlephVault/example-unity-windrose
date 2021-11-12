@@ -44,8 +44,8 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     /// <summary>
                     ///   Updates the current object from the input data.
                     /// </summary>
-                    /// <param name="fullData">The refresh data to update the object from</param>
-                    protected abstract void UpdateFrom(RefreshType fullData);
+                    /// <param name="refreshData">The refresh data to update the object from</param>
+                    protected abstract void UpdateFrom(RefreshType refreshData);
                 }
             }
         }

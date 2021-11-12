@@ -24,10 +24,10 @@ namespace AlephVault.Unity.Meetgard.Scopes
                 relatedObject.Position = fullData.Position;
             }
 
-            protected override void UpdateFrom(SampleModel fullData)
+            protected override void UpdateFrom(SampleModel refreshData)
             {
-                relatedObject.Color = fullData.Color;
-                relatedObject.Position = fullData.Position;
+                relatedObject.Color = refreshData.Color;
+                relatedObject.Position = refreshData.Position;
             }
         }
     }

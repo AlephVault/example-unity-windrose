@@ -14,7 +14,7 @@ namespace GameMeanMachine.Unity.NetRose
             ///   current movement, if any. This status only belongs to the
             ///   map and also contains the movement.
             /// </summary>
-            public struct Status : ISerializable
+            public class Status : ISerializable
             {
                 /// <summary>
                 ///   The current attachment.

@@ -34,6 +34,16 @@ namespace GameMeanMachine.Unity.NetRose
                     {
                         if (serializer.Reader.ReadBool())
                         {
+                            Status = new Status();
+                            Status.Serialize(serializer);
+                        }
+                        else
+                        {
+                            Status = null;
+                        }
+
+                        if (serializer.Reader.ReadBool())
+                        {
                             Data = new ModelData();
                             Data.Serialize(serializer);
                         }
@@ -44,6 +54,8 @@ namespace GameMeanMachine.Unity.NetRose
                     }
                     else
                     {
+                        serializer.Writer.WriteBool(Status != null);
+                        Status?.Serialize(serializer);
                         serializer.Writer.WriteBool(Data != null);
                         Data?.Serialize(serializer);
                     }

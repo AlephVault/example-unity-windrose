@@ -1,4 +1,6 @@
-﻿using AlephVault.Unity.Meetgard.Scopes.Authoring.Behaviours.Client;
+﻿using AlephVault.Unity.Binary;
+using AlephVault.Unity.Meetgard.Scopes.Authoring.Behaviours.Client;
+using GameMeanMachine.Unity.NetRose.Types.Models;
 using GameMeanMachine.Unity.WindRose.Authoring.Behaviours.Entities.Objects;
 using GameMeanMachine.Unity.WindRose.Authoring.Behaviours.World;
 using GameMeanMachine.Unity.WindRose.Types;
@@ -21,7 +23,9 @@ namespace GameMeanMachine.Unity.NetRose
                 /// </summary>
                 [RequireComponent(typeof(ObjectClientSide))]
                 [RequireComponent(typeof(MapObject))]
-                public partial class NetRoseMapObjectClientSide : MonoBehaviour
+                public abstract partial class NetRoseModelClientSide<SpawnData, RefreshData> : AlephVault.Unity.Meetgard.Scopes.Authoring.Behaviours.Client.NetRoseModelClientSide<MapObjectModel<SpawnData>, MapObjectModel<RefreshData>>
+                    where SpawnData : class, ISerializable, new()
+                    where RefreshData : class, ISerializable, new()
                 {
                     /// <summary>
                     ///   The related object client side.
@@ -166,6 +170,55 @@ namespace GameMeanMachine.Unity.NetRose
                         if (!spawned) return;
                         QueueElement(new OrientationChangeCommand() { Orientation = orientation });
                     }
+
+                    // Updates the object with the full spawn data (attachment,
+                    // movement and model).
+                    protected override void InflateFrom(MapObjectModel<SpawnData> fullData)
+                    {
+                        if (fullData.Status != null)
+                        {
+                            Attachment attachment = fullData.Status.Attachment;
+                            Map map = Scope.GetComponent<Scope>()[(int)attachment.MapIndex];
+                            MapObject.Attach(map, attachment.Position.X, attachment.Position.Y, true);
+                            Direction? movement = fullData.Status.Movement;
+                            if (movement != null)
+                            {
+                                QueueElement(new MovementStartCommand() { StartX = attachment.Position.X, StartY = attachment.Position.Y, Direction = movement.Value });
+                            }
+                        }
+                        InflateFrom(fullData.Data);
+                    }
+
+                    /// <summary>
+                    ///   Updates the object with the full model data, after processing
+                    ///   wrapping attachment and movement.
+                    /// </summary>
+                    /// <param name="fullData">The full model data to update from</param>
+                    protected abstract void InflateFrom(SpawnData fullData);
+
+                    protected override void UpdateFrom(MapObjectModel<RefreshData> refreshData)
+                    {
+                        if (refreshData.Status != null)
+                        {
+                            Attachment attachment = refreshData.Status.Attachment;
+                            Map map = Scope.GetComponent<Scope>()[(int)attachment.MapIndex];
+                            queue.Clear();
+                            MapObject.Attach(map, attachment.Position.X, attachment.Position.Y, true);
+                            Direction? movement = refreshData.Status.Movement;
+                            if (movement != null)
+                            {                                
+                                QueueElement(new MovementStartCommand() { StartX = attachment.Position.X, StartY = attachment.Position.Y, Direction = movement.Value });
+                            }
+                        }
+                        UpdateFrom(refreshData.Data);
+                    }
+
+                    /// <summary>
+                    ///   Updates the object with the refresh model data, after processing
+                    ///   wrapping attachment and movement.
+                    /// </summary>
+                    /// <param name="refreshData">The refresh model data to update from</param>
+                    protected abstract void UpdateFrom(RefreshData refreshData);
                 }
             }
         }

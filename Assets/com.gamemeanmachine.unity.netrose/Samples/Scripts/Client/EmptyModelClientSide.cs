@@ -8,7 +8,7 @@ namespace GameMeanMachine.Unity.NetRose
     {
         namespace Client
         {
-            public class EmptyModelClientSide : ModelClientSide<Nothing, Nothing>
+            public class EmptyModelClientSide : NetRoseModelClientSide<Nothing, Nothing>
             {
                 protected override void InflateFrom(Nothing fullData) {}
 

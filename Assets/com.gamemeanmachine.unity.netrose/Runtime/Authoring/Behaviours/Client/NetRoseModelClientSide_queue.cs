@@ -1,4 +1,7 @@
-﻿using GameMeanMachine.Unity.WindRose.Authoring.Behaviours.Entities.Objects;
+﻿using AlephVault.Unity.Binary;
+using AlephVault.Unity.Meetgard.Scopes.Authoring.Behaviours.Client;
+using GameMeanMachine.Unity.NetRose.Types.Models;
+using GameMeanMachine.Unity.WindRose.Authoring.Behaviours.Entities.Objects;
 using GameMeanMachine.Unity.WindRose.Types;
 using System.Collections.Generic;
 using UnityEngine;
@@ -12,7 +15,9 @@ namespace GameMeanMachine.Unity.NetRose
         {
             namespace Client
             {
-                public partial class NetRoseMapObjectClientSide : MonoBehaviour
+                public abstract partial class NetRoseModelClientSide<SpawnData, RefreshData> : AlephVault.Unity.Meetgard.Scopes.Authoring.Behaviours.Client.NetRoseModelClientSide<MapObjectModel<SpawnData>, MapObjectModel<RefreshData>>
+                    where SpawnData : class, ISerializable, new()
+                    where RefreshData : class, ISerializable, new()
                 {
                     /// <summary>
                     //    One of the queued commands: Movement Start, Finish, Cancel,

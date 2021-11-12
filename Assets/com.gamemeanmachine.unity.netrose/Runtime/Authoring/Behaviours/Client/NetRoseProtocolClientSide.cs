@@ -180,7 +180,7 @@ namespace GameMeanMachine.Unity.NetRose
                     // scopeId / objectId for validity and executes a particular action,
                     // or raises a LocaError if invalid. It also raises a LocalError if
                     // the current scope is not a NetRose scope.
-                    private Task RunInMainThreadValidatingScopeAndObject(uint scopeId, uint objectId, Func<NetRoseMapObjectClientSide, Task> callback)
+                    private Task RunInMainThreadValidatingScopeAndObject(uint scopeId, uint objectId, Func<INetRoseMapObjectClientSide, Task> callback)
                     {
                         return RunInMainThread(async () =>
                         {
@@ -202,7 +202,7 @@ namespace GameMeanMachine.Unity.NetRose
                                 return;
                             }
 
-                            NetRoseMapObjectClientSide netRoseObj = obj.GetComponent<NetRoseMapObjectClientSide>();
+                            INetRoseMapObjectClientSide netRoseObj = obj.GetComponent<INetRoseMapObjectClientSide>();
                             if (netRoseObj == null)
                             {
                                 await ScopesProtocolClientSide.LocalError("ObjectIsNotNetRose");
@@ -226,7 +226,7 @@ namespace GameMeanMachine.Unity.NetRose
                     }
 
                     // Checks the object to be in a valid map position.
-                    private async Task<bool> CheckInValidMapPosition(NetRoseMapObjectClientSide obj, ushort x, ushort y)
+                    private async Task<bool> CheckInValidMapPosition(INetRoseMapObjectClientSide obj, ushort x, ushort y)
                     {
                         Map map = obj.MapObject.ParentMap;
                         if (map == null)

@@ -110,9 +110,9 @@ namespace AlephVault.Unity.Meetgard.Scopes
                             throw new InvalidOperationException("This object is already spawned");
                         }
 
-                        ReadSpawnData(data);
                         Id = id;
                         Scope = scope;
+                        ReadSpawnData(data);
 
                         if (GetComponentInParent<ScopeClientSide>() != scope)
                         {

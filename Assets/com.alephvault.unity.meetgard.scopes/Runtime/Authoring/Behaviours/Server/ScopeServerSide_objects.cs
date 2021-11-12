@@ -171,7 +171,9 @@ namespace AlephVault.Unity.Meetgard.Scopes
                             if (target.Scope != null) throw new ArgumentException("The target to remove does not belong to this scope");
 
                             // Then we force the object to be not descendant of this object.
-                            if (target.GetComponentInParent<ScopeServerSide>() == this)
+                            // We do this while the object is not destroyed. Otherwise, we
+                            // skip this part.
+                            if (target != null && target.GetComponentInParent<ScopeServerSide>() == this)
                             {
                                 target.transform.SetParent(transform.parent);
                             }

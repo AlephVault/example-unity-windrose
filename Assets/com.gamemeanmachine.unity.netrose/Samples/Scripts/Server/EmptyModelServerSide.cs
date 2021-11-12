@@ -11,7 +11,7 @@ namespace GameMeanMachine.Unity.NetRose
     {
         namespace Server
         {
-            public class EmptyModelServerSide : ModelServerSide<Nothing, Nothing>
+            public class EmptyModelServerSide : NetRoseModelServerSide<Nothing, Nothing>
             {
                 Nothing nothing = new Nothing();
 

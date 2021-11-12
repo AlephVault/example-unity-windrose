@@ -167,8 +167,11 @@ namespace AlephVault.Unity.Meetgard.Scopes
                             // Null objects cannot be removed.
                             if (ReferenceEquals(target, null)) throw new ArgumentNullException("target");
 
+                            // Objects not belonging to any scope will end silently.
+                            if (target.Scope == null) return;
+
                             // Objects not belonging to this scope cannot be removed.
-                            if (target.Scope != null) throw new ArgumentException("The target to remove does not belong to this scope");
+                            if (target.Scope != this) throw new ArgumentException("The target to remove does not belong to this scope");
 
                             // Then we force the object to be not descendant of this object.
                             // We do this while the object is not destroyed. Otherwise, we

@@ -57,7 +57,7 @@ namespace GameMeanMachine.Unity.NetRose
                         var _ = RunInMainThread(() =>
                         {
                             // Which index to take the character from?
-                            int index = (clientId % 2 == 0) ? char1index : char2index;
+                            int index = (clientId % 2 == 1) ? char1index : char2index;
                             // Instantiate it.
                             ObjectServerSide obj = ScopesProtocolServerSide.InstantiateHere((uint)index);
                             // Get the netrose component of it.
@@ -66,13 +66,13 @@ namespace GameMeanMachine.Unity.NetRose
                             ownableObj.ConnectionId = clientId;
                             // Initialize it in no map.
                             ownableObj.MapObject.Initialize();
+                            // Add it to the dictionary.
+                            objects[clientId] = new ObjectOwnage() { LastCommandTime = 0, OwnedObject = obj.GetComponent<INetRoseModelServerSide>() };
                             // Attach it to a map.
                             ownableObj.MapObject.Attach(
                                 ScopesProtocolServerSide.LoadedScopes[4].GetComponent<Scope>()[0],
                                 8, 6, true
                             );
-                            // Add it to the dictionary.
-                            objects[clientId] = new ObjectOwnage() { LastCommandTime = 0, OwnedObject = obj.GetComponent<INetRoseModelServerSide>() };
                         });
                     }
 

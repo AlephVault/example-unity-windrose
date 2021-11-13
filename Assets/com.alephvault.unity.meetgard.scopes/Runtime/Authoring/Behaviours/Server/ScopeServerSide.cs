@@ -43,7 +43,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     /// <summary>
                     ///   See <see cref="key"/>.
                     /// </summary>
-                    public string Key => key;
+                    public string PrefabKey => key;
 
                     /// <summary>
                     ///   The ID of the prefab. It will either be a

@@ -101,7 +101,22 @@ namespace AlephVault.Unity.Meetgard.Scopes
                         index = 0;
                         foreach (ScopeServerSide scope in extraScopePrefabs)
                         {
-                            extraScopePrefabIndicesByKey.Add(scope.Key, index);
+                            if (scope.PrefabKey != "")
+                            {
+                                string key = scope.PrefabKey.Trim();
+                                if (key.Length == 0)
+                                {
+                                    if (extraScopePrefabIndicesByKey.ContainsKey(key))
+                                    {
+                                        throw new ArgumentException("There are duplicate keys among the registered extra scope prefabs' ones");
+                                    }
+                                    extraScopePrefabIndicesByKey.Add(key, index);
+                                }
+                            }
+                            else
+                            {
+                                throw new ArgumentException("There are duplicate keys among the registered extra scope prefabs' ones");
+                            }
                             index++;
                         }
                         // The object prefabs lookup must also be initialized as well.
@@ -115,14 +130,14 @@ namespace AlephVault.Unity.Meetgard.Scopes
                         {
                             indexByObjectPrefab.Add(prefab, index);
                             index++;
-                            if (prefab.PrefabKey != null)
+                            if (prefab.PrefabKey != "")
                             {
                                 string key = prefab.PrefabKey.Trim();
                                 if (key.Length == 0)
                                 {
                                     if (prefabByKey.ContainsKey(key))
                                     {
-                                        throw new ArgumentException("There are duplicate keys among the registered prefabs' ones");
+                                        throw new ArgumentException("There are duplicate keys among the registered object prefabs' ones");
                                     }
                                     prefabByKey.Add(key, prefab);
                                 }

@@ -27,11 +27,6 @@ namespace GameMeanMachine.Unity.NetRose
                     where RefreshData : class, ISerializable, new()
                 {
                     /// <summary>
-                    ///   The related object client side.
-                    /// </summary>
-                    public ObjectClientSide ObjectClientSide { get; private set; }
-
-                    /// <summary>
                     ///   The related WindRose map object.
                     /// </summary>
                     public MapObject MapObject { get; private set; }
@@ -44,9 +39,8 @@ namespace GameMeanMachine.Unity.NetRose
 
                     private void Awake()
                     {
-                        ObjectClientSide = GetComponent<ObjectClientSide>();
-                        ObjectClientSide.OnSpawned += OnSpawned;
-                        ObjectClientSide.OnDespawned += OnDespawned;
+                        OnSpawned += NetRoseModelClientSide_OnSpawned;
+                        OnDespawned += NetRoseModelClientSide_OnDespawned;
                         MapObject = GetComponent<MapObject>();
                         MapObject.onMovementFinished.AddListener(OnMovementFinished);
                         MapObject.onMovementCancelled.AddListener(OnMovementCancelled);
@@ -54,22 +48,22 @@ namespace GameMeanMachine.Unity.NetRose
 
                     private void OnDestroy()
                     {
-                        ObjectClientSide.OnSpawned -= OnSpawned;
-                        ObjectClientSide.OnDespawned -= OnDespawned;
+                        OnSpawned -= NetRoseModelClientSide_OnSpawned;
+                        OnDespawned -= NetRoseModelClientSide_OnDespawned;
                         MapObject.onMovementFinished.RemoveListener(OnMovementFinished);
                         MapObject.onMovementCancelled.RemoveListener(OnMovementCancelled);
                     }
 
                     // On spawn, set the lag tolerance, and the spawned.
-                    private void OnSpawned()
+                    private void NetRoseModelClientSide_OnSpawned()
                     {
-                        NetRoseProtocolClientSide protocol = ObjectClientSide.Protocol.GetComponent<NetRoseProtocolClientSide>();
+                        NetRoseProtocolClientSide protocol = Protocol.GetComponent<NetRoseProtocolClientSide>();
                         lagTolerance = protocol != null ? protocol.LagTolerance : (ushort)5;
                         spawned = true;
                     }
 
                     // On despawn, clear the lag tolerance, the spawned flag, and the queue.
-                    private void OnDespawned()
+                    private void NetRoseModelClientSide_OnDespawned()
                     {
                         lagTolerance = 0;
                         spawned = false;

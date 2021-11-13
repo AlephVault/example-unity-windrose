@@ -21,6 +21,12 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 5040945672013854550, guid: 93fa5bc1413f9484084109ae68013615,
+        type: 3}
+      propertyPath: defaultAnimationRose
+      value: 
+      objectReference: {fileID: 11400000, guid: e9830384d1e30744e90be40d6e9669ce,
+        type: 2}
     - target: {fileID: 5040945672042520056, guid: 93fa5bc1413f9484084109ae68013615,
         type: 3}
       propertyPath: m_RootOrder

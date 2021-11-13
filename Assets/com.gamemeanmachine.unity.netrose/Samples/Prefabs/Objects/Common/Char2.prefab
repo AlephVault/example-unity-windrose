@@ -139,7 +139,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99b8616f1e58a3f4692bd56d9c574dda, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultAnimationRose: {fileID: 11400000, guid: 88398963c3b68104cbc9d50009b785ec,
+  defaultAnimationRose: {fileID: 11400000, guid: e9830384d1e30744e90be40d6e9669ce,
     type: 2}
 --- !u!114 &5040945672013854549
 MonoBehaviour:

@@ -29,15 +29,14 @@ namespace GameMeanMachine.Unity.NetRose
                 [SerializeField]
                 private string targetName;
 
-                private ObjectServerSide ObjectServerSide;
-
-                private void Awake()
+                protected void Start()
                 {
-                    ObjectServerSide.OnSpawned += OnSpawned;
-                    ObjectServerSide.OnDespawned += OnDespawned;
+                    base.Start();
+                    OnSpawned += DoorLinker_OnSpawned;
+                    OnDespawned += DoorLinker_OnDespawned;
                 }
 
-                private async Task OnSpawned()
+                private async Task DoorLinker_OnSpawned()
                 {
                     if (doorName == "")
                     {
@@ -67,7 +66,7 @@ namespace GameMeanMachine.Unity.NetRose
                     doorLinkersByName.Add(doorName, this);
                 }
 
-                private async Task OnDespawned()
+                private async Task DoorLinker_OnDespawned()
                 {
                     doorLinkersByName.Remove(doorName);
                 }

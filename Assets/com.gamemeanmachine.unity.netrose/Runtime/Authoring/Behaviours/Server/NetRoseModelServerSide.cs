@@ -39,16 +39,15 @@ namespace GameMeanMachine.Unity.NetRose
                     /// </summary>
                     public NetRoseScopeServerSide NetRoseScopeServerSide { get; private set; }
 
-                    private void Awake()
+                    protected void Awake()
                     {
                         MapObject = GetComponent<MapObject>();
+                        OnSpawned += ObjectServerSide_OnSpawned;
+                        OnDespawned += ObjectServerSide_OnDespawned;
                     }
 
                     protected void Start()
                     {
-                        base.Start();
-                        OnSpawned += ObjectServerSide_OnSpawned;
-                        OnDespawned += ObjectServerSide_OnDespawned;
                         MapObject.onAttached.AddListener(OnAttached);
                         MapObject.onDetached.AddListener(OnDetached);
                         MapObject.onMovementStarted.AddListener(OnMovementStarted);
@@ -57,6 +56,7 @@ namespace GameMeanMachine.Unity.NetRose
                         MapObject.onTeleported.AddListener(OnTeleported);
                         MapObject.onOrientationChanged.AddListener(OnOrientationChanged);
                         MapObject.onSpeedChanged.AddListener(OnSpeedChanged);
+                        base.Start();
                     }
 
                     protected void OnDestroy()

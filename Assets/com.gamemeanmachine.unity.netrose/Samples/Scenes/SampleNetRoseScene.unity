@@ -139,6 +139,7 @@ GameObject:
   - component: {fileID: 134967935}
   - component: {fileID: 134967942}
   - component: {fileID: 134967941}
+  - component: {fileID: 134967943}
   m_Layer: 0
   m_Name: Client
   m_TagString: Untagged
@@ -271,6 +272,31 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lapse: 1
+--- !u!114 &134967943
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 134967934}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b042cdcbdef062419fb8cf6bc50484a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  modeSwitch: 113
+  mode1StartKey: 97
+  mode1StopKey: 115
+  mode1Left: 276
+  mode1Up: 273
+  mode1Down: 274
+  mode1Right: 275
+  mode2StartKey: 100
+  mode2StopKey: 102
+  mode2Left: 103
+  mode2Up: 104
+  mode2Down: 121
+  mode2Right: 106
 --- !u!1 &582363475
 GameObject:
   m_ObjectHideFlags: 0

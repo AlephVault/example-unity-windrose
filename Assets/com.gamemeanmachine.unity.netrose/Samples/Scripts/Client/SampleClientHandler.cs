@@ -11,7 +11,7 @@ namespace GameMeanMachine.Unity.NetRose
         {
             [RequireComponent(typeof(NetworkClient))]
             [RequireComponent(typeof(ClientMovementProtocolClientSide))]
-            public class SampleClientStarter : MonoBehaviour
+            public class SampleClientHandler : MonoBehaviour
             {
                 [SerializeField]
                 private KeyCode modeSwitch = KeyCode.Q;

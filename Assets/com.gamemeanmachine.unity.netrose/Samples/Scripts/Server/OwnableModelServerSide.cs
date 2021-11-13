@@ -21,14 +21,16 @@ namespace GameMeanMachine.Unity.NetRose
                 private static Ownable Owned = new Ownable() { IsOwned = true };
                 private static Ownable NotOwned = new Ownable() { IsOwned = false };
 
-                protected override void Initialize()
+                protected void Start()
                 {
+                    base.Start();
                     OnSpawned += OwnableModelServerSide_OnSpawned;
                     OnDespawned += OwnableModelServerSide_OnDespawned;
                 }
 
-                protected override void Teardown()
+                protected void OnDestroy()
                 {
+                    base.OnDestroy();
                     OnSpawned -= OwnableModelServerSide_OnSpawned;
                     OnDespawned -= OwnableModelServerSide_OnDespawned;
                 }

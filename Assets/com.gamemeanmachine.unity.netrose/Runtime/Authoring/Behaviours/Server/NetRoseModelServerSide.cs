@@ -44,8 +44,9 @@ namespace GameMeanMachine.Unity.NetRose
                         MapObject = GetComponent<MapObject>();
                     }
 
-                    private void Start()
+                    protected void Start()
                     {
+                        base.Start();
                         OnSpawned += ObjectServerSide_OnSpawned;
                         OnDespawned += ObjectServerSide_OnDespawned;
                         MapObject.onAttached.AddListener(OnAttached);
@@ -56,17 +57,9 @@ namespace GameMeanMachine.Unity.NetRose
                         MapObject.onTeleported.AddListener(OnTeleported);
                         MapObject.onOrientationChanged.AddListener(OnOrientationChanged);
                         MapObject.onSpeedChanged.AddListener(OnSpeedChanged);
-                        Initialize();
                     }
 
-                    /// <summary>
-                    ///   Adds custom setup logic to the object.
-                    /// </summary>
-                    protected virtual void Initialize()
-                    {
-                    }
-
-                    private void OnDestroy()
+                    protected void OnDestroy()
                     {
                         OnSpawned -= ObjectServerSide_OnSpawned;
                         OnDespawned -= ObjectServerSide_OnDespawned;
@@ -78,14 +71,6 @@ namespace GameMeanMachine.Unity.NetRose
                         MapObject.onTeleported.RemoveListener(OnTeleported);
                         MapObject.onOrientationChanged.RemoveListener(OnOrientationChanged);
                         MapObject.onSpeedChanged.RemoveListener(OnSpeedChanged);
-                        Teardown();
-                    }
-
-                    /// <summary>
-                    ///   Adds custom teardown logic to the object.
-                    /// </summary>
-                    protected virtual void Teardown()
-                    {
                     }
 
                     private async Task ObjectServerSide_OnSpawned()

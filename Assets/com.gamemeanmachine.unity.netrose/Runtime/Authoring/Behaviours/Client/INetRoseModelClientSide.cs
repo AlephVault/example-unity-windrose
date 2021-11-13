@@ -22,7 +22,7 @@ namespace GameMeanMachine.Unity.NetRose
                 public interface INetRoseMapObjectClientSide
                 {
                     /// <summary>
-                    ///   The related WindRose map object.
+                    ///   The required WindRose MapObject component.
                     /// </summary>
                     public MapObject MapObject { get; }
 

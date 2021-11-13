@@ -56,6 +56,14 @@ namespace GameMeanMachine.Unity.NetRose
                         MapObject.onTeleported.AddListener(OnTeleported);
                         MapObject.onOrientationChanged.AddListener(OnOrientationChanged);
                         MapObject.onSpeedChanged.AddListener(OnSpeedChanged);
+                        Initialize();
+                    }
+
+                    /// <summary>
+                    ///   Adds custom setup logic to the object.
+                    /// </summary>
+                    protected virtual void Initialize()
+                    {
                     }
 
                     private void OnDestroy()
@@ -70,6 +78,14 @@ namespace GameMeanMachine.Unity.NetRose
                         MapObject.onTeleported.RemoveListener(OnTeleported);
                         MapObject.onOrientationChanged.RemoveListener(OnOrientationChanged);
                         MapObject.onSpeedChanged.RemoveListener(OnSpeedChanged);
+                        Teardown();
+                    }
+
+                    /// <summary>
+                    ///   Adds custom teardown logic to the object.
+                    /// </summary>
+                    protected virtual void Teardown()
+                    {
                     }
 
                     private async Task ObjectServerSide_OnSpawned()

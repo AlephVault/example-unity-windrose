@@ -397,6 +397,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                         {
                             // Get a new instance, register it and spawn it.
                             ObjectClientSide instance = InstanceManager.Result != null ? InstanceManager.Result.Get(objectPrefabs[objectPrefabId]) : Instantiate(objectPrefabs[objectPrefabId]);
+                            instance.Protocol = this;
                             currentObjects.Add(objectId, instance);
                             instance.Spawn(CurrentScope, objectId, data);
                             return instance;

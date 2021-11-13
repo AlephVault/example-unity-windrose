@@ -76,6 +76,7 @@ namespace GameMeanMachine.Unity.NetRose
                     private async Task ObjectServerSide_OnSpawned()
                     {
                         NetRoseScopeServerSide = Scope.GetComponent<NetRoseScopeServerSide>();
+                        UpdateCurrentStatus();
                     }
 
                     private async Task ObjectServerSide_OnDespawned()
@@ -95,6 +96,7 @@ namespace GameMeanMachine.Unity.NetRose
                     {
                         RunInMainThreadIfSpawned(() =>
                         {
+                            UpdateCurrentStatus();
                             // Please note: By this point, we're in the appropriate scope.
                             // This means that the given map belongs to the current scope.
                             return NetRoseScopeServerSide.BroadcastObjectAttached(
@@ -108,6 +110,7 @@ namespace GameMeanMachine.Unity.NetRose
                     {
                         RunInMainThreadIfSpawned(() =>
                         {
+                            UpdateCurrentStatus();
                             return NetRoseScopeServerSide.BroadcastObjectDetached(Id);
                         });
                     }
@@ -116,6 +119,7 @@ namespace GameMeanMachine.Unity.NetRose
                     {
                         RunInMainThreadIfSpawned(() =>
                         {
+                            UpdateCurrentStatus();
                             return NetRoseScopeServerSide.BroadcastObjectMovementStarted(
                                 Id, MapObject.X, MapObject.Y, direction
                             );
@@ -126,6 +130,7 @@ namespace GameMeanMachine.Unity.NetRose
                     {
                         RunInMainThreadIfSpawned(() =>
                         {
+                            UpdateCurrentStatus();
                             return NetRoseScopeServerSide.BroadcastObjectMovementFinished(
                                 Id, MapObject.X, MapObject.Y
                             );
@@ -136,6 +141,7 @@ namespace GameMeanMachine.Unity.NetRose
                     {
                         RunInMainThreadIfSpawned(() =>
                         {
+                            UpdateCurrentStatus();
                             return NetRoseScopeServerSide.BroadcastObjectMovementCancelled(
                                 Id, MapObject.X, MapObject.Y
                             );
@@ -146,6 +152,7 @@ namespace GameMeanMachine.Unity.NetRose
                     {
                         RunInMainThreadIfSpawned(() =>
                         {
+                            UpdateCurrentStatus();
                             return NetRoseScopeServerSide.BroadcastObjectTeleported(Id, x, y);
                         });
                     }
@@ -166,14 +173,20 @@ namespace GameMeanMachine.Unity.NetRose
                         });
                     }
 
-                    private Status GetCurrentStatus()
+                    private Status currentStatus = null;
+
+                    private void UpdateCurrentStatus()
                     {
                         if (MapObject.ParentMap != null)
                         {
-                            return new Status() {
-                                Attachment = new Attachment() {
-                                    Position = new Position() {
-                                        X = MapObject.X, Y = MapObject.Y
+                            currentStatus = new Status()
+                            {
+                                Attachment = new Attachment()
+                                {
+                                    Position = new Position()
+                                    {
+                                        X = MapObject.X,
+                                        Y = MapObject.Y
                                     },
                                     MapIndex = (uint)NetRoseScopeServerSide.Maps.MapsToIDs[MapObject.ParentMap]
                                 },
@@ -182,14 +195,14 @@ namespace GameMeanMachine.Unity.NetRose
                         }
                         else
                         {
-                            return null;
+                            currentStatus = null;
                         }
                     }
 
                     protected override MapObjectModel<SpawnData> GetFullData(ulong connectionId)
                     {
                         return new MapObjectModel<SpawnData>() {
-                            Status = GetCurrentStatus(),
+                            Status = currentStatus,
                             Data = GetInnerFullData(connectionId)
                         };
                     }
@@ -199,7 +212,7 @@ namespace GameMeanMachine.Unity.NetRose
                     protected override MapObjectModel<RefreshData> GetRefreshData(ulong connectionId, string context)
                     {
                         return new MapObjectModel<RefreshData>() {
-                            Status = GetCurrentStatus(),
+                            Status = currentStatus,
                             Data = GetInnerRefreshData(connectionId, context)
                         };
                     }

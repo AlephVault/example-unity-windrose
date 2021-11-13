@@ -54,31 +54,39 @@ namespace GameMeanMachine.Unity.NetRose
 
                     public override async Task OnConnected(ulong clientId)
                     {
-                        // Which index to take the character from?
-                        int index = (clientId % 2 == 0) ? char1index : char2index;
-                        // Instantiate it.
-                        ObjectServerSide obj = ScopesProtocolServerSide.InstantiateHere((uint)index);
-                        // Get the netrose component of it.
-                        OwnableModelServerSide ownableObj = obj.GetComponent<OwnableModelServerSide>();
-                        // Give it the required connection id.
-                        ownableObj.ConnectionId = clientId;
-                        // Attach it to a map.
-                        ownableObj.MapObject.Attach(
-                            ScopesProtocolServerSide.LoadedScopes[4].GetComponent<Scope>()[0],
-                            8, 6, true
-                        );
-                        // Add it to the dictionary.
-                        objects[clientId] = new ObjectOwnage() { LastCommandTime = 0, OwnedObject = obj.GetComponent< INetRoseModelServerSide>() };
+                        var _ = RunInMainThread(() =>
+                        {
+                            // Which index to take the character from?
+                            int index = (clientId % 2 == 0) ? char1index : char2index;
+                            // Instantiate it.
+                            ObjectServerSide obj = ScopesProtocolServerSide.InstantiateHere((uint)index);
+                            // Get the netrose component of it.
+                            OwnableModelServerSide ownableObj = obj.GetComponent<OwnableModelServerSide>();
+                            // Give it the required connection id.
+                            ownableObj.ConnectionId = clientId;
+                            // Initialize it in no map.
+                            ownableObj.MapObject.Initialize();
+                            // Attach it to a map.
+                            ownableObj.MapObject.Attach(
+                                ScopesProtocolServerSide.LoadedScopes[4].GetComponent<Scope>()[0],
+                                8, 6, true
+                            );
+                            // Add it to the dictionary.
+                            objects[clientId] = new ObjectOwnage() { LastCommandTime = 0, OwnedObject = obj.GetComponent<INetRoseModelServerSide>() };
+                        });
                     }
 
                     public override async Task OnDisconnected(ulong clientId, System.Exception reason)
                     {
-                        if (objects.TryGetValue(clientId, out ObjectOwnage ownage))
+                        var _ = RunInMainThread(() =>
                         {
-                            objects.Remove(clientId);
-                            // It will de-spawn and destroy the object.
-                            Destroy(ownage.OwnedObject.MapObject);
-                        }
+                            if (objects.TryGetValue(clientId, out ObjectOwnage ownage))
+                            {
+                                objects.Remove(clientId);
+                                // It will de-spawn and destroy the object.
+                                Destroy(ownage.OwnedObject.MapObject);
+                            }
+                        });
                     }
 
                     private void DoThrottled(ulong connectionId, Action<MapObject> callback)

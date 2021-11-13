@@ -74,7 +74,7 @@ namespace GameMeanMachine.Unity.NetRose
                             // And finally, force the orientation of this teleporter.
                             teleportTarget.ForceOrientation = teleport.ForcesDirection;
                             teleportTarget.NewOrientation = teleport.Direction;
-                            var _ = ScopeServerSide.AddObject(obj);
+                            // var _ = ScopeServerSide.AddObject(obj);
                         }
                         catch (System.Exception e)
                         {

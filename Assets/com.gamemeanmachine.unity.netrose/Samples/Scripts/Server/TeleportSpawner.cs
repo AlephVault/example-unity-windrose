@@ -55,19 +55,31 @@ namespace GameMeanMachine.Unity.NetRose
                 {
                     foreach(TeleportSetting teleport in teleports)
                     {
-                        ObjectServerSide obj = ScopeServerSide.Protocol.InstantiateHere(teleportIndex);
-                        DoorLinker doorLinker = obj.GetComponent<DoorLinker>();
-                        TeleportTarget teleportTarget = obj.GetComponent<TeleportTarget>();
-                        Behaviours.SetObjectFieldValues(doorLinker, new System.Collections.Generic.Dictionary<string, object>()
+                        try
                         {
-                            { "doorName", teleport.TeleportName },
-                            { "targetName", teleport.TeleportTarget }
-                        });
-                        doorLinker.transform.localPosition = new Vector3(teleport.X, teleport.Y, 0);
-                        doorLinker.transform.SetParent(Scope[(int)teleport.MapIdx].transform);
-                        teleportTarget.ForceOrientation = teleport.ForcesDirection;
-                        teleportTarget.NewOrientation = teleport.Direction;
-                        var _ = ScopeServerSide.AddObject(obj);
+                            ObjectServerSide obj = ScopeServerSide.Protocol.InstantiateHere(teleportIndex);
+                            DoorLinker doorLinker = obj.GetComponent<DoorLinker>();
+                            TeleportTarget teleportTarget = obj.GetComponent<TeleportTarget>();
+                            Behaviours.SetObjectFieldValues(doorLinker, new System.Collections.Generic.Dictionary<string, object>()
+                            {
+                                { "doorName", teleport.TeleportName },
+                                { "targetName", teleport.TeleportTarget }
+                            });
+                            // Initialize it, to recognize itself as NOT attached beforehand.
+                            // Otherwise, when attaching it, the initialization would count
+                            // as double attachment.
+                            doorLinker.MapObject.Initialize();
+                            // Then, attach the object.
+                            doorLinker.MapObject.Attach(Scope[(int)teleport.MapIdx], teleport.X, teleport.Y, true);
+                            // And finally, force the orientation of this teleporter.
+                            teleportTarget.ForceOrientation = teleport.ForcesDirection;
+                            teleportTarget.NewOrientation = teleport.Direction;
+                            var _ = ScopeServerSide.AddObject(obj);
+                        }
+                        catch (System.Exception e)
+                        {
+                            Debug.LogException(e);
+                        }
                     }
                 }
             }

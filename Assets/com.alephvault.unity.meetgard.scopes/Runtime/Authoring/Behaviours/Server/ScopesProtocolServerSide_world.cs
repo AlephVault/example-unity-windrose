@@ -4,6 +4,7 @@ using AlephVault.Unity.Meetgard.Scopes.Types.Protocols;
 using AlephVault.Unity.Support.Types;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -29,6 +30,26 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     // The currently loaded scope server sides, mapped against their
                     // assigned id.
                     private Dictionary<uint, ScopeServerSide> loadedScopes = new Dictionary<uint, ScopeServerSide>();
+
+                    // A read-only version to the currently loaded scope server sides,
+                    // mapped against their assigned id.
+                    private ReadOnlyDictionary<uint, ScopeServerSide> readonlyLoadedScopes = null;
+
+                    /// <summary>
+                    ///   Retrieves a read-only dictionary of the loaded scopes.
+                    /// </summary>
+                    /// <returns>A read-only dictionary</returns>
+                    public ReadOnlyDictionary<uint, ScopeServerSide> LoadedScopes
+                    {
+                        get
+                        {
+                            if (readonlyLoadedScopes == null)
+                            {
+                                readonlyLoadedScopes = new ReadOnlyDictionary<uint, ScopeServerSide>(loadedScopes);
+                            }
+                            return readonlyLoadedScopes;
+                        }
+                    }
 
                     // The ids generator for the currently loaded scope server sides.
                     private IdPool loadedScopesIds = new IdPool(Scope.MaxScopes);

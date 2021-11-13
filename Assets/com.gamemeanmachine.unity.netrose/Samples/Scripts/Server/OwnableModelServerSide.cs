@@ -21,11 +21,16 @@ namespace GameMeanMachine.Unity.NetRose
                 private static Ownable Owned = new Ownable() { IsOwned = true };
                 private static Ownable NotOwned = new Ownable() { IsOwned = false };
 
+                protected void Awake()
+                {
+                    base.Awake();
+                    OnSpawned += OwnableModelServerSide_OnSpawned;
+                    OnDespawned += OwnableModelServerSide_OnDespawned;
+                }
+
                 protected void Start()
                 {
                     base.Start();
-                    OnSpawned += OwnableModelServerSide_OnSpawned;
-                    OnDespawned += OwnableModelServerSide_OnDespawned;
                 }
 
                 protected void OnDestroy()
@@ -37,6 +42,7 @@ namespace GameMeanMachine.Unity.NetRose
 
                 private async Task OwnableModelServerSide_OnSpawned()
                 {
+                    Debug.Log($"Spawned for Connection Id: {ConnectionId} at scope: {Scope.Id}");
                     var _ = Protocol.SendTo(ConnectionId, Scope.Id);
                 }
 

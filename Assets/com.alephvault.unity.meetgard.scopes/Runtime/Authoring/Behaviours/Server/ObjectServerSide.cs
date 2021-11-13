@@ -178,8 +178,11 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     private void TrackCurrentScopeHierarchy()
                     {
                         ScopeServerSide newScope = GetComponentInParent<ScopeServerSide>();
-                        if (Scope != null) Scope.RemoveObject(this);
-                        if (newScope != null) newScope.AddObject(this);
+                        if (Scope != newScope)
+                        {
+                            if (Scope != null) Scope.RemoveObject(this);
+                            if (newScope != null) newScope.AddObject(this);
+                        }
                     }
 
                     // Triggers the OnSpawned event.

@@ -24,7 +24,7 @@ namespace GameMeanMachine.Unity.NetRose
                 ///   related to a single WindRose map object in a single map.
                 /// </summary>
                 [RequireComponent(typeof(MapObject))]
-                public abstract class NetRoseModelServerSide<SpawnData, RefreshData> : ModelServerSide<MapObjectModel<SpawnData>, MapObjectModel<RefreshData>>
+                public abstract class NetRoseModelServerSide<SpawnData, RefreshData> : ModelServerSide<MapObjectModel<SpawnData>, MapObjectModel<RefreshData>>, INetRoseModelServerSide
                     where SpawnData : class, ISerializable, new()
                     where RefreshData : class, ISerializable, new()
                 {

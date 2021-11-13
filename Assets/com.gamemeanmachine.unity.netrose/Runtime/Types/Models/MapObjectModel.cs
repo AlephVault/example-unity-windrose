@@ -29,7 +29,6 @@ namespace GameMeanMachine.Unity.NetRose
 
                 public void Serialize(Serializer serializer)
                 {
-                    Status.Serialize(serializer);
                     if (serializer.IsReading)
                     {
                         if (serializer.Reader.ReadBool())

@@ -31,10 +31,10 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     internal async Task Load()
                     {
                         await (OnLoad?.InvokeAsync(async (e) => {
+                            Debug.LogException(e);
                             Debug.LogError(
                                 $"An error of type {e.GetType().FullName} has occurred in scope server side's OnLoad event. " +
-                                $"If the exceptions are not properly handled, the game state might be inconsistent. " +
-                                $"The exception details are: {e.Message}"
+                                $"If the exceptions are not properly handled, the game state might be inconsistent. "
                             );
                         }) ?? Task.CompletedTask);
                     }

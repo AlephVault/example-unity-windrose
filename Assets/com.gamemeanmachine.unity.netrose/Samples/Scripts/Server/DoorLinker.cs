@@ -41,7 +41,6 @@ namespace GameMeanMachine.Unity.NetRose
                 {
                     try
                     {
-                        Debug.Log($"Spawning teleporter with name {doorName} and target {TargetName}");
                         localTeleporter.Target = doorLinkersByName[TargetName].GetComponent<TeleportTarget>();
                     }
                     catch (KeyNotFoundException)
@@ -73,7 +72,6 @@ namespace GameMeanMachine.Unity.NetRose
                         }
                         doorLinkersByName.Remove(doorName);
                         doorName = value;
-                        Debug.Log("Adding " + doorName + " to registry");
                         doorLinkersByName.Add(doorName, this);
                     }
                 }

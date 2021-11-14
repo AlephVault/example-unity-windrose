@@ -309,6 +309,14 @@ namespace AlephVault.Unity.Meetgard.Scopes
                         });
                     }
 
+                    public override async Task OnDisconnected(Exception reason)
+                    {
+                        var _ = RunInMainThread(() =>
+                        {
+                            ClearCurrentScope();
+                        });
+                    }
+
                     /// <summary>
                     ///   Checks the current scope to be a valid object-holding scope.
                     ///   If not, either the server is misconfigured or the client lost

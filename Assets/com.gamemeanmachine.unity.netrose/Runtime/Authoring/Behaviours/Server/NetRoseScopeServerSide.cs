@@ -44,10 +44,6 @@ namespace GameMeanMachine.Unity.NetRose
                     {
                         ScopeServerSide = GetComponent<ScopeServerSide>();
                         Maps = GetComponent<Scope>();
-                    }
-
-                    private void Start()
-                    {
                         ScopeServerSide.OnLoad += ScopeServerSide_OnLoad;
                     }
 
@@ -96,9 +92,11 @@ namespace GameMeanMachine.Unity.NetRose
                     /// <param name="mapIndex">The index of the map, inside the scope, this object is being added to</param>
                     /// <param name="x">The x position of the object in the new map</param>
                     /// <param name="y">The y position of the object in the new map</param>
-                    internal Task BroadcastObjectAttached(uint objectId, uint mapIndex, ushort x, ushort y)
+                    internal async Task BroadcastObjectAttached(uint objectId, uint mapIndex, ushort x, ushort y)
                     {
-                        return NetRoseProtocolServerSide.BroadcastObjectAttached(Connections(), ScopeServerSide.Id, objectId, mapIndex, x, y);
+                        Debug.Log("BroadcastObjectAttached::Start");
+                        await NetRoseProtocolServerSide.BroadcastObjectAttached(Connections(), ScopeServerSide.Id, objectId, mapIndex, x, y);
+                        Debug.Log("BroadcastObjectAttached::End");
                     }
 
                     /// <summary>
@@ -106,9 +104,11 @@ namespace GameMeanMachine.Unity.NetRose
                     ///   an object is added to a map in certain scope.
                     /// </summary>
                     /// <param name="objectId">The id of the object</param>
-                    internal Task BroadcastObjectDetached(uint objectId)
+                    internal async Task BroadcastObjectDetached(uint objectId)
                     {
-                        return NetRoseProtocolServerSide.BroadcastObjectDetached(Connections(), ScopeServerSide.Id, objectId);
+                        Debug.Log("BroadcastObjectDetached::Start");
+                        await NetRoseProtocolServerSide.BroadcastObjectDetached(Connections(), ScopeServerSide.Id, objectId);
+                        Debug.Log("BroadcastObjectDetached::End");
                     }
 
                     /// <summary>
@@ -119,9 +119,21 @@ namespace GameMeanMachine.Unity.NetRose
                     /// <param name="x">The starting x position of the object when starting movement</param>
                     /// <param name="y">The starting y position of the object when starting movement</param>
                     /// <param name="direction">The direction of the object when starting movement</param>
-                    internal Task BroadcastObjectMovementStarted(uint objectId, ushort x, ushort y, Direction direction)
+                    internal async Task BroadcastObjectMovementStarted(uint objectId, ushort x, ushort y, Direction direction)
                     {
-                        return NetRoseProtocolServerSide.BroadcastObjectMovementStarted(Connections(), ScopeServerSide.Id, objectId, x, y, direction);
+                        Debug.Log("BroadcastObjectMovementStarted::Start");
+                        IEnumerable<ulong> connections = null;
+                        try
+                        {
+                            connections = Connections();
+                        }
+                        catch(Exception e)
+                        {
+                            Debug.LogException(e);
+                        }
+                        Debug.Log($"BroadcastObjectMovementStarted::Continue {NetRoseProtocolServerSide}");
+                        await NetRoseProtocolServerSide.BroadcastObjectMovementStarted(connections, ScopeServerSide.Id, objectId, x, y, direction);
+                        Debug.Log("BroadcastObjectMovementStarted::End");
                     }
 
                     /// <summary>
@@ -131,9 +143,11 @@ namespace GameMeanMachine.Unity.NetRose
                     /// <param name="objectId">The id of the object</param>
                     /// <param name="x">The to-revert x position of the object when cancelling movement</param>
                     /// <param name="y">The to-revert y position of the object when cancelling movement</param>
-                    internal Task BroadcastObjectMovementCancelled(uint objectId, ushort x, ushort y)
+                    internal async Task BroadcastObjectMovementCancelled(uint objectId, ushort x, ushort y)
                     {
-                        return NetRoseProtocolServerSide.BroadcastObjectMovementCancelled(Connections(), ScopeServerSide.Id, objectId, x, y);
+                        Debug.Log("BroadcastObjectMovementCancelled::Start");
+                        await NetRoseProtocolServerSide.BroadcastObjectMovementCancelled(Connections(), ScopeServerSide.Id, objectId, x, y);
+                        Debug.Log("BroadcastObjectMovementCancelled::End");
                     }
 
                     /// <summary>
@@ -143,9 +157,11 @@ namespace GameMeanMachine.Unity.NetRose
                     /// <param name="objectId">The id of the object</param>
                     /// <param name="x">The end x position of the object when finishing movement</param>
                     /// <param name="y">The end y position of the object when finishing movement</param>
-                    internal Task BroadcastObjectMovementFinished(uint objectId, ushort x, ushort y)
+                    internal async Task BroadcastObjectMovementFinished(uint objectId, ushort x, ushort y)
                     {
-                        return NetRoseProtocolServerSide.BroadcastObjectMovementFinished(Connections(), ScopeServerSide.Id, objectId, x, y);
+                        Debug.Log("BroadcastObjectMovementFinished::Start");
+                        await NetRoseProtocolServerSide.BroadcastObjectMovementFinished(Connections(), ScopeServerSide.Id, objectId, x, y);
+                        Debug.Log("BroadcastObjectMovementFinished::End");
                     }
 
                     /// <summary>
@@ -155,9 +171,11 @@ namespace GameMeanMachine.Unity.NetRose
                     /// <param name="objectId">The id of the object</param>
                     /// <param name="x">The end x position of the object when teleporting</param>
                     /// <param name="y">The end y position of the object when teleporting</param>
-                    internal Task BroadcastObjectTeleported(uint objectId, ushort x, ushort y)
+                    internal async Task BroadcastObjectTeleported(uint objectId, ushort x, ushort y)
                     {
-                        return NetRoseProtocolServerSide.BroadcastObjectTeleported(Connections(), ScopeServerSide.Id, objectId, x, y);
+                        Debug.Log("BroadcastObjectTeleported::Start");
+                        await NetRoseProtocolServerSide.BroadcastObjectTeleported(Connections(), ScopeServerSide.Id, objectId, x, y);
+                        Debug.Log("BroadcastObjectTeleported::End");
                     }
 
                     /// <summary>
@@ -166,9 +184,11 @@ namespace GameMeanMachine.Unity.NetRose
                     /// </summary>
                     /// <param name="objectId">The id of the object</param>
                     /// <param name="speed">The new object speed</param>
-                    internal Task BroadcastObjectSpeedChanged(uint objectId, uint speed)
+                    internal async Task BroadcastObjectSpeedChanged(uint objectId, uint speed)
                     {
-                        return NetRoseProtocolServerSide.BroadcastObjectSpeedChanged(Connections(), ScopeServerSide.Id, objectId, speed);
+                        Debug.Log("BroadcastObjectSpeedChanged::Start");
+                        await NetRoseProtocolServerSide.BroadcastObjectSpeedChanged(Connections(), ScopeServerSide.Id, objectId, speed);
+                        Debug.Log("BroadcastObjectSpeedChanged::Start");
                     }
 
                     /// <summary>
@@ -177,9 +197,11 @@ namespace GameMeanMachine.Unity.NetRose
                     /// </summary>
                     /// <param name="objectId">The id of the object</param>
                     /// <param name="orientation">The new object orientation</param>
-                    internal Task BroadcastObjectOrientationChanged(uint objectId, Direction orientation)
+                    internal async Task BroadcastObjectOrientationChanged(uint objectId, Direction orientation)
                     {
-                        return NetRoseProtocolServerSide.BroadcastObjectOrientationChanged(Connections(), ScopeServerSide.Id, objectId, orientation);
+                        Debug.Log("BroadcastObjectOrientationChanged::Start");
+                        await NetRoseProtocolServerSide.BroadcastObjectOrientationChanged(Connections(), ScopeServerSide.Id, objectId, orientation);
+                        Debug.Log("BroadcastObjectOrientationChanged::End");
                     }
                 }
             }

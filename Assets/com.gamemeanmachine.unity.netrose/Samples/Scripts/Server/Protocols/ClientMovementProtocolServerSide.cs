@@ -94,9 +94,9 @@ namespace GameMeanMachine.Unity.NetRose
                         ObjectOwnage ownage = objects[connectionId];
                         MapObject obj = ownage.OwnedObject.MapObject;
                         float time = Time.time;
-                        if (ownage.LastCommandTime + obj.Speed * 0.75 <= time)
+                        if (ownage.LastCommandTime + 0.75 / obj.Speed <= time)
                         {
-                            ownage.LastCommandTime += time;
+                            ownage.LastCommandTime = time;
                             callback(obj);
                         }
                     }
@@ -104,27 +104,43 @@ namespace GameMeanMachine.Unity.NetRose
                     protected override void SetIncomingMessageHandlers()
                     {
                         AddIncomingMessageHandler("Move:Down", async (proto, connectionId) => {
-                            DoThrottled(connectionId, (obj) =>
+                            var _ = RunInMainThread(() =>
                             {
-                                obj.StartMovement(Direction.DOWN);
+                                DoThrottled(connectionId, (obj) =>
+                                {
+                                    obj.Orientation = Direction.DOWN;
+                                    obj.StartMovement(Direction.DOWN);
+                                });
                             });
                         });
                         AddIncomingMessageHandler("Move:Left", async (proto, connectionId) => {
-                            DoThrottled(connectionId, (obj) =>
+                            var _ = RunInMainThread(() =>
                             {
-                                obj.StartMovement(Direction.LEFT);
+                                DoThrottled(connectionId, (obj) =>
+                                {
+                                    obj.Orientation = Direction.LEFT;
+                                    obj.StartMovement(Direction.LEFT);
+                                });
                             });
                         });
                         AddIncomingMessageHandler("Move:Right", async (proto, connectionId) => {
-                            DoThrottled(connectionId, (obj) =>
+                            var _ = RunInMainThread(() =>
                             {
-                                obj.StartMovement(Direction.RIGHT);
+                                DoThrottled(connectionId, (obj) =>
+                                {
+                                    obj.Orientation = Direction.RIGHT;
+                                    obj.StartMovement(Direction.RIGHT);
+                                });
                             });
                         });
                         AddIncomingMessageHandler("Move:Up", async (proto, connectionId) => {
-                            DoThrottled(connectionId, (obj) =>
+                            var _ = RunInMainThread(() =>
                             {
-                                obj.StartMovement(Direction.UP);
+                                DoThrottled(connectionId, (obj) =>
+                                {
+                                    obj.Orientation = Direction.UP;
+                                    obj.StartMovement(Direction.UP);
+                                });
                             });
                         });
                     }

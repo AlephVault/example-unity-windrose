@@ -69,10 +69,6 @@ namespace GameMeanMachine.Unity.NetRose
                         public void Execute(MapObject obj)
                         {
                             if (obj.X != StartX || obj.Y != StartY) obj.Teleport(StartX, StartY, true);
-                            // TODO research: while invoking this Execute method,
-                            // TODO research: lacking of the following line caused
-                            // TODO research: Unity environment to CRASH AND EXIT.
-                            // TODO research: Why? Could this impact me some day?
                             obj.StartMovement(Direction);
                         }
                     }
@@ -184,6 +180,9 @@ namespace GameMeanMachine.Unity.NetRose
                     // This is the list of the queued commands.
                     private List<QueuedCommand> queue = new List<QueuedCommand>();
 
+                    // This tells whether the queue is currently running or not.
+                    private bool runningQueue = false;
+
                     // Queues a command in the queue, and runs the queue
                     // either in regular mode or in accelerated mode,
                     // depending on whether the queue was not full, or
@@ -199,15 +198,23 @@ namespace GameMeanMachine.Unity.NetRose
                     // free to move, or the whole call is accelerated.
                     private void RunQueue(bool accelerated)
                     {
-                        bool freeToMove = !MapObject.IsMoving;
-                        while (queue.Count > 0 && queue[0].CanExecute(freeToMove || accelerated))
+                        try
                         {
-                            queue[0].Execute(MapObject);
-                            if (queue[0] is MovementStartCommand)
+                            runningQueue = true;
+                            bool freeToMove = !MapObject.IsMoving;
+                            while (queue.Count > 0 && queue[0].CanExecute(freeToMove || accelerated))
                             {
-                                freeToMove = false;
+                                queue[0].Execute(MapObject);
+                                if (queue[0] is MovementStartCommand)
+                                {
+                                    freeToMove = false;
+                                }
+                                queue.RemoveAt(0);
                             }
-                            queue.RemoveAt(0);
+                        }
+                        finally
+                        {
+                            runningQueue = false;
                         }
                     }
                 }

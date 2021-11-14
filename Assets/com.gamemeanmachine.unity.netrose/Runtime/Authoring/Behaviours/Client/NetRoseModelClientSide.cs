@@ -72,12 +72,12 @@ namespace GameMeanMachine.Unity.NetRose
 
                     private void OnMovementFinished(Direction movement)
                     {
-                        if (spawned) RunQueue(false);
+                        if (spawned && !runningQueue) RunQueue(false);
                     }
 
                     private void OnMovementCancelled(Direction? movement)
                     {
-                        if (spawned) RunQueue(false);
+                        if (spawned && !runningQueue) RunQueue(false);
                     }
 
                     //

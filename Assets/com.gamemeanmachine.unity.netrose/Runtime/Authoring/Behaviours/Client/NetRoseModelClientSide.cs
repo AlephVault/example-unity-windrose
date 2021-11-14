@@ -162,21 +162,34 @@ namespace GameMeanMachine.Unity.NetRose
                         QueueElement(new OrientationChangeCommand() { Orientation = orientation });
                     }
 
+                    private void InflateBase(Status status, Direction orientation, uint speed, bool clearQueue)
+                    {
+                        MapObject.Orientation = orientation;
+                        MapObject.Speed = speed;
+                        if (status != null)
+                        {
+                            Attachment attachment = status.Attachment;
+                            Map map = Scope.GetComponent<Scope>()[(int)attachment.MapIndex];
+                            if (clearQueue) queue.Clear();
+                            MapObject.Attach(map, attachment.Position.X, attachment.Position.Y, true);
+                            Direction? movement = status.Movement;
+                            if (movement != null)
+                            {
+                                QueueElement(new MovementStartCommand()
+                                {
+                                    StartX = attachment.Position.X,
+                                    StartY = attachment.Position.Y,
+                                    Direction = movement.Value
+                                });
+                            }
+                        }
+                    }
+
                     // Updates the object with the full spawn data (attachment,
                     // movement and model).
                     protected override void InflateFrom(MapObjectModel<SpawnData> fullData)
                     {
-                        if (fullData.Status != null)
-                        {
-                            Attachment attachment = fullData.Status.Attachment;
-                            Map map = Scope.GetComponent<Scope>()[(int)attachment.MapIndex];
-                            MapObject.Attach(map, attachment.Position.X, attachment.Position.Y, true);
-                            Direction? movement = fullData.Status.Movement;
-                            if (movement != null)
-                            {
-                                QueueElement(new MovementStartCommand() { StartX = attachment.Position.X, StartY = attachment.Position.Y, Direction = movement.Value });
-                            }
-                        }
+                        InflateBase(fullData.Status, fullData.Orientation, fullData.Speed, false);
                         InflateFrom(fullData.Data);
                     }
 
@@ -189,18 +202,7 @@ namespace GameMeanMachine.Unity.NetRose
 
                     protected override void UpdateFrom(MapObjectModel<RefreshData> refreshData)
                     {
-                        if (refreshData.Status != null)
-                        {
-                            Attachment attachment = refreshData.Status.Attachment;
-                            Map map = Scope.GetComponent<Scope>()[(int)attachment.MapIndex];
-                            queue.Clear();
-                            MapObject.Attach(map, attachment.Position.X, attachment.Position.Y, true);
-                            Direction? movement = refreshData.Status.Movement;
-                            if (movement != null)
-                            {                                
-                                QueueElement(new MovementStartCommand() { StartX = attachment.Position.X, StartY = attachment.Position.Y, Direction = movement.Value });
-                            }
-                        }
+                        InflateBase(refreshData.Status, refreshData.Orientation, refreshData.Speed, true);
                         UpdateFrom(refreshData.Data);
                     }
 

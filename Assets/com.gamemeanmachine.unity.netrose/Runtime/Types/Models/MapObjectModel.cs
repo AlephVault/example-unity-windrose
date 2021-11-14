@@ -1,5 +1,5 @@
 ﻿using AlephVault.Unity.Binary;
-
+using GameMeanMachine.Unity.WindRose.Types;
 
 namespace GameMeanMachine.Unity.NetRose
 {
@@ -27,6 +27,16 @@ namespace GameMeanMachine.Unity.NetRose
                 /// </summary>
                 public ModelData Data;
 
+                /// <summary>
+                ///   The current object orientation.
+                /// </summary>
+                public Direction Orientation;
+
+                /// <summary>
+                ///   The current object speed.
+                /// </summary>
+                public uint Speed;
+
                 public void Serialize(Serializer serializer)
                 {
                     if (serializer.IsReading)
@@ -40,6 +50,9 @@ namespace GameMeanMachine.Unity.NetRose
                         {
                             Status = null;
                         }
+
+                        serializer.Serialize(ref Orientation);
+                        serializer.Serialize(ref Speed);
 
                         if (serializer.Reader.ReadBool())
                         {
@@ -55,6 +68,8 @@ namespace GameMeanMachine.Unity.NetRose
                     {
                         serializer.Writer.WriteBool(Status != null);
                         Status?.Serialize(serializer);
+                        serializer.Serialize(ref Orientation);
+                        serializer.Serialize(ref Speed);
                         serializer.Writer.WriteBool(Data != null);
                         Data?.Serialize(serializer);
                     }

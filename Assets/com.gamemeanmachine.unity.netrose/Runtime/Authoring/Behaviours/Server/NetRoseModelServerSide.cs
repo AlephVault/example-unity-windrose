@@ -203,6 +203,8 @@ namespace GameMeanMachine.Unity.NetRose
                     {
                         return new MapObjectModel<SpawnData>() {
                             Status = currentStatus,
+                            Orientation = MapObject.Orientation,
+                            Speed = MapObject.Speed,
                             Data = GetInnerFullData(connectionId)
                         };
                     }
@@ -213,6 +215,8 @@ namespace GameMeanMachine.Unity.NetRose
                     {
                         return new MapObjectModel<RefreshData>() {
                             Status = currentStatus,
+                            Orientation = MapObject.Orientation,
+                            Speed = MapObject.Speed,
                             Data = GetInnerRefreshData(connectionId, context)
                         };
                     }

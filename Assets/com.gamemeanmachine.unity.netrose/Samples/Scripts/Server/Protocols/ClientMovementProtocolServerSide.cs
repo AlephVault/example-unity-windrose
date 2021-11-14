@@ -84,7 +84,7 @@ namespace GameMeanMachine.Unity.NetRose
                             {
                                 objects.Remove(clientId);
                                 // It will de-spawn and destroy the object.
-                                Destroy(ownage.OwnedObject.MapObject);
+                                Destroy(ownage.OwnedObject.MapObject.gameObject);
                             }
                         });
                     }

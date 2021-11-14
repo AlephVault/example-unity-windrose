@@ -15,7 +15,7 @@ namespace GameMeanMachine.Unity.NetRose
         {
             namespace Client
             {
-                public abstract partial class NetRoseModelClientSide<SpawnData, RefreshData> : ModelClientSide<MapObjectModel<SpawnData>, MapObjectModel<RefreshData>>
+                public abstract partial class NetRoseModelClientSide<SpawnData, RefreshData> : ModelClientSide<MapObjectModel<SpawnData>, MapObjectModel<RefreshData>>, INetRoseModelClientSide
                     where SpawnData : class, ISerializable, new()
                     where RefreshData : class, ISerializable, new()
                 {
@@ -69,6 +69,11 @@ namespace GameMeanMachine.Unity.NetRose
                         public void Execute(MapObject obj)
                         {
                             if (obj.X != StartX || obj.Y != StartY) obj.Teleport(StartX, StartY, true);
+                            // TODO research: while invoking this Execute method,
+                            // TODO research: lacking of the following line caused
+                            // TODO research: Unity environment to CRASH AND EXIT.
+                            // TODO research: Why? Could this impact me some day?
+                            obj.StartMovement(Direction);
                         }
                     }
 

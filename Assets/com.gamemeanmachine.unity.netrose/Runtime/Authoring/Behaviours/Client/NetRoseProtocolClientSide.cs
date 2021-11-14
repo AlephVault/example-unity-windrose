@@ -81,7 +81,8 @@ namespace GameMeanMachine.Unity.NetRose
 
                     private void OnMovedToScope(ScopeClientSide obj)
                     {
-                        CurrentNetRoseScope = ScopesProtocolClientSide.CurrentScope == null ? null : ScopesProtocolClientSide.GetComponent<NetRoseScopeClientSide>();
+                        CurrentNetRoseScope = ScopesProtocolClientSide.CurrentScope == null ? null : ScopesProtocolClientSide.CurrentScope.GetComponent<NetRoseScopeClientSide>();
+                        Debug.Log((CurrentNetRoseScope == null) ? "Moved to a non-NetRose scope" : "Moved to a NetRose scope");
                     }
 
                     protected override void SetIncomingMessageHandlers()
@@ -180,7 +181,7 @@ namespace GameMeanMachine.Unity.NetRose
                     // scopeId / objectId for validity and executes a particular action,
                     // or raises a LocaError if invalid. It also raises a LocalError if
                     // the current scope is not a NetRose scope.
-                    private Task RunInMainThreadValidatingScopeAndObject(uint scopeId, uint objectId, Func<INetRoseMapObjectClientSide, Task> callback)
+                    private Task RunInMainThreadValidatingScopeAndObject(uint scopeId, uint objectId, Func<INetRoseModelClientSide, Task> callback)
                     {
                         return RunInMainThread(async () =>
                         {
@@ -202,7 +203,7 @@ namespace GameMeanMachine.Unity.NetRose
                                 return;
                             }
 
-                            INetRoseMapObjectClientSide netRoseObj = obj.GetComponent<INetRoseMapObjectClientSide>();
+                            INetRoseModelClientSide netRoseObj = obj.GetComponent<INetRoseModelClientSide>();
                             if (netRoseObj == null)
                             {
                                 await ScopesProtocolClientSide.LocalError("ObjectIsNotNetRose");
@@ -226,7 +227,7 @@ namespace GameMeanMachine.Unity.NetRose
                     }
 
                     // Checks the object to be in a valid map position.
-                    private async Task<bool> CheckInValidMapPosition(INetRoseMapObjectClientSide obj, ushort x, ushort y)
+                    private async Task<bool> CheckInValidMapPosition(INetRoseModelClientSide obj, ushort x, ushort y)
                     {
                         Map map = obj.MapObject.ParentMap;
                         if (map == null)

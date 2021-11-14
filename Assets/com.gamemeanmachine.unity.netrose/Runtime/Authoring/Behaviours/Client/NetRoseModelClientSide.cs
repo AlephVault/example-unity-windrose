@@ -22,7 +22,7 @@ namespace GameMeanMachine.Unity.NetRose
                 ///   a single WindRose map object in a single map.
                 /// </summary>
                 [RequireComponent(typeof(MapObject))]
-                public abstract partial class NetRoseModelClientSide<SpawnData, RefreshData> : ModelClientSide<MapObjectModel<SpawnData>, MapObjectModel<RefreshData>>
+                public abstract partial class NetRoseModelClientSide<SpawnData, RefreshData> : ModelClientSide<MapObjectModel<SpawnData>, MapObjectModel<RefreshData>>, INetRoseModelClientSide
                     where SpawnData : class, ISerializable, new()
                     where RefreshData : class, ISerializable, new()
                 {
@@ -70,14 +70,12 @@ namespace GameMeanMachine.Unity.NetRose
                         queue.Clear();
                     }
 
-                    // On movement finished, continue executing the queue.
-                    private void OnMovementFinished(Direction direction)
+                    private void OnMovementFinished(Direction movement)
                     {
                         if (spawned) RunQueue(false);
                     }
 
-                    // On movement ccancelled, continue executing the queue.
-                    private void OnMovementCancelled(Direction? direction)
+                    private void OnMovementCancelled(Direction? movement)
                     {
                         if (spawned) RunQueue(false);
                     }
@@ -90,7 +88,7 @@ namespace GameMeanMachine.Unity.NetRose
                     // Clears the queue (if it is executing, it stops),
                     // cancels the current movement (if any) and does
                     // the attachment.
-                    internal void OnAttached(Map map, ushort x, ushort y)
+                    void INetRoseModelClientSide.OnAttached(Map map, ushort x, ushort y)
                     {
                         if (!spawned) return;
                         queue.Clear();
@@ -101,7 +99,7 @@ namespace GameMeanMachine.Unity.NetRose
                     // Clears the queue (if it is executing, it stops),
                     // cancels the current movement (if any) and does
                     // the detachment.
-                    internal void OnDetached()
+                    void INetRoseModelClientSide.OnDetached()
                     {
                         if (!spawned) return;
                         queue.Clear();
@@ -112,7 +110,7 @@ namespace GameMeanMachine.Unity.NetRose
                     // Clears the queue (if it is executing, it stops),
                     // cancels the current movement (if any) and does
                     // the teleport.
-                    internal void OnTeleported(ushort x, ushort y)
+                    void INetRoseModelClientSide.OnTeleported(ushort x, ushort y)
                     {
                         if (!spawned) return;
                         queue.Clear();
@@ -122,7 +120,7 @@ namespace GameMeanMachine.Unity.NetRose
                     // Processes a movement start event. It queues the
                     // MovementStart command and, if the queue is not
                     // currently executing, it is now executed.
-                    internal void OnMovementStarted(ushort x, ushort y, Direction direction)
+                    void INetRoseModelClientSide.OnMovementStarted(ushort x, ushort y, Direction direction)
                     {
                         if (!spawned) return;
                         QueueElement(new MovementStartCommand() { StartX = x, StartY = y, Direction = direction });
@@ -131,7 +129,7 @@ namespace GameMeanMachine.Unity.NetRose
                     // Processes a movement cancel event. It queues the
                     // MovementCancel command and, if the queue is not
                     // currently executing, it is now executed.
-                    internal void OnMovementCancelled(ushort x, ushort y)
+                    void INetRoseModelClientSide.OnMovementCancelled(ushort x, ushort y)
                     {
                         if (!spawned) return;
                         QueueElement(new MovementCancelCommand() { RevertX = x, RevertY = y });
@@ -140,7 +138,7 @@ namespace GameMeanMachine.Unity.NetRose
                     // Processes a movement finish event. It queues the
                     // MovementFinish command and, if the queue is not
                     // currently executing, it is now executed.
-                    internal void OnMovementFinished(ushort x, ushort y)
+                    void INetRoseModelClientSide.OnMovementFinished(ushort x, ushort y)
                     {
                         if (!spawned) return;
                         QueueElement(new MovementFinishCommand() { EndX = x, EndY = y });
@@ -149,7 +147,7 @@ namespace GameMeanMachine.Unity.NetRose
                     // Processes a movement speed change event. It queues
                     // the SpeedChanged command and, if the queue is not
                     // currently executing, it is now executed.
-                    internal void OnSpeedChanged(uint speed)
+                    void INetRoseModelClientSide.OnSpeedChanged(uint speed)
                     {
                         if (!spawned) return;
                         QueueElement(new SpeedChangeCommand() { Speed = speed });
@@ -158,7 +156,7 @@ namespace GameMeanMachine.Unity.NetRose
                     // Processes an orientation change event. It queues the
                     // OrientationChanged command and, if the queue is not
                     // currently executing, it is now executed.
-                    internal void OnOrientationChanged(Direction orientation)
+                    void INetRoseModelClientSide.OnOrientationChanged(Direction orientation)
                     {
                         if (!spawned) return;
                         QueueElement(new OrientationChangeCommand() { Orientation = orientation });

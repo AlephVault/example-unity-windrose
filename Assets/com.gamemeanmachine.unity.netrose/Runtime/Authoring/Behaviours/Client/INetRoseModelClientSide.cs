@@ -19,7 +19,7 @@ namespace GameMeanMachine.Unity.NetRose
                 ///   for lag balance and recovery. This interface represents all
                 ///   the common methods for that networked object.
                 /// </summary>
-                public interface INetRoseMapObjectClientSide
+                public interface INetRoseModelClientSide
                 {
                     /// <summary>
                     ///   The required WindRose MapObject component.

@@ -46,10 +46,10 @@ namespace GameMeanMachine.Unity.NetRose
                 private KeyCode mode2Left = KeyCode.G;
 
                 [SerializeField]
-                private KeyCode mode2Up = KeyCode.H;
+                private KeyCode mode2Up = KeyCode.Y;
 
                 [SerializeField]
-                private KeyCode mode2Down = KeyCode.Y;
+                private KeyCode mode2Down = KeyCode.H;
 
                 [SerializeField]
                 private KeyCode mode2Right = KeyCode.J;

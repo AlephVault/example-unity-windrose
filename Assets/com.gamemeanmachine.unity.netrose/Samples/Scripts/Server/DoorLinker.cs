@@ -19,54 +19,66 @@ namespace GameMeanMachine.Unity.NetRose
             ///   Links the door to a certain target given by its key settings.
             /// </summary>
             [RequireComponent(typeof(Door))]
-            public class DoorLinker : EmptyModelServerSide
+            [RequireComponent(typeof(EmptyModelServerSide))]
+            public class DoorLinker : MonoBehaviour
             {
                 private static Dictionary<string, DoorLinker> doorLinkersByName = new Dictionary<string, DoorLinker>();
 
-                [SerializeField]
-                private string doorName;
+                private string doorName = "";
+                public string TargetName = "";
 
-                [SerializeField]
-                private string targetName;
+                private EmptyModelServerSide emptyModelServerSide;
+                private LocalTeleporter localTeleporter;
 
-                protected void Start()
+                private void Awake()
                 {
-                    base.Start();
-                    OnSpawned += DoorLinker_OnSpawned;
-                    OnDespawned += DoorLinker_OnDespawned;
+                    emptyModelServerSide = GetComponent<EmptyModelServerSide>();
+                    localTeleporter = GetComponent<LocalTeleporter>();
+                    emptyModelServerSide.OnSpawned += EmptyModelServerSide_OnSpawned;
                 }
 
-                private async Task DoorLinker_OnSpawned()
+                private async Task EmptyModelServerSide_OnSpawned()
                 {
-                    if (doorName == "")
+                    try
+                    {
+                        Debug.Log($"Spawning teleporter with name {doorName} and target {TargetName}");
+                        localTeleporter.Target = doorLinkersByName[TargetName].GetComponent<TeleportTarget>();
+                    }
+                    catch (KeyNotFoundException)
                     {
                         Destroy(gameObject);
-                        throw new Exception("Door linkers must have a name - destroying");
+                        throw new Exception("Invalid door linker name for target: " + TargetName);
                     }
-
-                    if (doorLinkersByName.ContainsKey(doorName))
+                    catch(Exception e)
                     {
-                        Destroy(gameObject);
-                        throw new Exception("Door linker name already in use: " + doorName);
+                        Debug.LogException(e);
                     }
-
-                    if (targetName != "")
-                    {
-                        try
-                        {
-                            GetComponent<LocalTeleporter>().Target = doorLinkersByName[targetName].GetComponent<TeleportTarget>();
-                        }
-                        catch (KeyNotFoundException)
-                        {
-                            Destroy(gameObject);
-                            throw new Exception("Invalid door linker name for target: " + targetName);
-                        }
-                    }
-
-                    doorLinkersByName.Add(doorName, this);
                 }
 
-                private async Task DoorLinker_OnDespawned()
+                public string DoorName
+                {
+                    get
+                    {
+                        return doorName;
+                    }
+                    set
+                    {
+                        if (value == "" || value == null)
+                        {
+                            throw new Exception("Door linkers must have a name");
+                        }
+                        if (doorLinkersByName.ContainsKey(value))
+                        {
+                            throw new Exception("Door linker name already in use: " + value);
+                        }
+                        doorLinkersByName.Remove(doorName);
+                        doorName = value;
+                        Debug.Log("Adding " + doorName + " to registry");
+                        doorLinkersByName.Add(doorName, this);
+                    }
+                }
+
+                private void OnDestroy()
                 {
                     doorLinkersByName.Remove(doorName);
                 }

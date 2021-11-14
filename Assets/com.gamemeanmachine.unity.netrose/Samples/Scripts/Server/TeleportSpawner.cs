@@ -1,10 +1,12 @@
 using AlephVault.Unity.Layout.Utils;
 using AlephVault.Unity.Meetgard.Scopes.Authoring.Behaviours.Server;
 using GameMeanMachine.Unity.NetRose.Authoring.Behaviours.Server;
+using GameMeanMachine.Unity.WindRose.Authoring.Behaviours.Entities.Objects;
 using GameMeanMachine.Unity.WindRose.Authoring.Behaviours.Entities.Objects.Teleport;
 using GameMeanMachine.Unity.WindRose.Authoring.Behaviours.World;
 using GameMeanMachine.Unity.WindRose.Types;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -33,6 +35,8 @@ namespace GameMeanMachine.Unity.NetRose
                 [SerializeField]
                 private TeleportSetting[] teleports;
 
+                private List<DoorLinker> linkers;
+
                 [SerializeField]
                 private uint teleportIndex;
 
@@ -53,24 +57,22 @@ namespace GameMeanMachine.Unity.NetRose
 
                 private async Task ScopeServerSide_OnLoad()
                 {
-                    foreach(TeleportSetting teleport in teleports)
+                    linkers = new List<DoorLinker>();
+                    foreach (TeleportSetting teleport in teleports)
                     {
                         try
                         {
                             ObjectServerSide obj = ScopeServerSide.Protocol.InstantiateHere(teleportIndex);
                             DoorLinker doorLinker = obj.GetComponent<DoorLinker>();
                             TeleportTarget teleportTarget = obj.GetComponent<TeleportTarget>();
-                            Behaviours.SetObjectFieldValues(doorLinker, new System.Collections.Generic.Dictionary<string, object>()
-                            {
-                                { "doorName", teleport.TeleportName },
-                                { "targetName", teleport.TeleportTarget }
-                            });
+                            doorLinker.DoorName = teleport.TeleportName;
+                            doorLinker.TargetName = teleport.TeleportTarget;
+                            linkers.Add(doorLinker);
+                            MapObject mapObj = ((INetRoseModelServerSide)obj).MapObject;
                             // Initialize it, to recognize itself as NOT attached beforehand.
                             // Otherwise, when attaching it, the initialization would count
                             // as double attachment.
-                            doorLinker.MapObject.Initialize();
-                            // Then, attach the object.
-                            doorLinker.MapObject.Attach(Scope[(int)teleport.MapIdx], teleport.X, teleport.Y, true);
+                            mapObj.Initialize();
                             // And finally, force the orientation of this teleporter.
                             teleportTarget.ForceOrientation = teleport.ForcesDirection;
                             teleportTarget.NewOrientation = teleport.Direction;
@@ -80,6 +82,19 @@ namespace GameMeanMachine.Unity.NetRose
                         {
                             Debug.LogException(e);
                         }
+                    }
+                    Invoke("AttachEverything", 1);
+                }
+
+                private void AttachEverything()
+                {
+                    int index = 0;
+                    foreach (TeleportSetting teleport in teleports)
+                    {
+                        // Then, attach the object.
+                        MapObject mapObj = linkers[index].GetComponent<INetRoseModelServerSide>().MapObject;
+                        mapObj.Attach(Scope[(int)teleport.MapIdx], teleport.X, teleport.Y, true);
+                        index++;
                     }
                 }
             }

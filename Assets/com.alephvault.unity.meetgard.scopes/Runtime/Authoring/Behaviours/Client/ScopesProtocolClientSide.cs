@@ -231,7 +231,8 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                 }
                                 catch (Exception e)
                                 {
-                                    Debug.LogError($"Exception of type {e.GetType().FullName} while spawning an object: {e.Message}");
+                                    Debug.LogError("Error on client-side spawning");
+                                    Debug.LogException(e);
                                     await LocalError("SpawnError");
                                     return;
                                 }

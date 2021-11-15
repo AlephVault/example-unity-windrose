@@ -86,25 +86,25 @@ namespace GameMeanMachine.Unity.NetRose
                             client.Close();
                             Debug.Log("Client::Disconnected.");
                         }
-                        else if (Input.GetKeyDown(mode2 ? mode2Left : mode1Left))
+                        else if (Input.GetKey(mode2 ? mode2Left : mode1Left))
                         {
                             Debug.Log("Client::Moving < ...");
                             protocol.WalkLeft();
                             Debug.Log("Client::Moved <.");
                         }
-                        else if (Input.GetKeyDown(mode2 ? mode2Up : mode1Up))
+                        else if (Input.GetKey(mode2 ? mode2Up : mode1Up))
                         {
                             Debug.Log("Client::Moving ^ ...");
                             protocol.WalkUp();
                             Debug.Log("Client::Moved ^.");
                         }
-                        else if (Input.GetKeyDown(mode2 ? mode2Down : mode1Down))
+                        else if (Input.GetKey(mode2 ? mode2Down : mode1Down))
                         {
                             Debug.Log("Client::Moving v ...");
                             protocol.WalkDown();
                             Debug.Log("Client::Moved v.");
                         }
-                        else if (Input.GetKeyDown(mode2 ? mode2Right : mode1Right))
+                        else if (Input.GetKey(mode2 ? mode2Right : mode1Right))
                         {
                             Debug.Log("Client::Moving > ...");
                             protocol.WalkRight();

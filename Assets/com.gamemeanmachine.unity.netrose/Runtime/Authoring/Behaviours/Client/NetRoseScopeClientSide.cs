@@ -33,7 +33,18 @@ namespace GameMeanMachine.Unity.NetRose
                     private void Awake()
                     {
                         ScopeClientSide = GetComponent<ScopeClientSide>();
+                        ScopeClientSide.OnLoad += ScopeClientSide_OnLoad;
                         Maps = GetComponent<Scope>();
+                    }
+
+                    private void ScopeClientSide_OnLoad()
+                    {
+                        Maps.Initialize();
+                    }
+
+                    private void OnDestroy()
+                    {
+                        ScopeClientSide.OnLoad -= ScopeClientSide_OnLoad;
                     }
 
                     /// <summary>

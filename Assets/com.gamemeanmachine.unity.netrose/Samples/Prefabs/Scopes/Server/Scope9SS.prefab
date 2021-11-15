@@ -42,9 +42,9 @@ MonoBehaviour:
     MapIdx: 0
     X: 8
     Y: 11
-    TeleportTarget: T8_R
+    TeleportTarget: T6_D
     ForcesDirection: 1
-    Direction: 2
+    Direction: 0
   - TeleportName: T9_L
     MapIdx: 0
     X: 0
@@ -52,6 +52,7 @@ MonoBehaviour:
     TeleportTarget: T8_R
     ForcesDirection: 1
     Direction: 2
+  teleportIndex: 0
 --- !u!1001 &877925451002815469
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -54,11 +54,12 @@ MonoBehaviour:
     Direction: 2
   - TeleportName: T6_D
     MapIdx: 0
-    X: 0
-    Y: 6
+    X: 8
+    Y: 0
     TeleportTarget: T9_U
     ForcesDirection: 1
     Direction: 3
+  teleportIndex: 0
 --- !u!1001 &2629211947845306351
 PrefabInstance:
   m_ObjectHideFlags: 0

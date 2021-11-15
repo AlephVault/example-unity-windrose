@@ -54,7 +54,8 @@ MonoBehaviour:
     Y: 0
     TeleportTarget: T5_M1
     ForcesDirection: 1
-    Direction: 0
+    Direction: 3
+  teleportIndex: 0
 --- !u!114 &1966906526
 MonoBehaviour:
   m_ObjectHideFlags: 0

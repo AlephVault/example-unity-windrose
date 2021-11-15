@@ -74,6 +74,18 @@ namespace GameMeanMachine.Unity.NetRose
                         Data?.Serialize(serializer);
                     }
                 }
+
+                public override string ToString()
+                {
+                    string statusStr = "detached";
+                    if (Status != null)
+                    {
+                        string movementStr = Status.Movement?.ToString() ?? "staying";
+                        string attachmentStr = $"[MapIdx={Status.Attachment.MapIndex}, coords=({Status.Attachment.Position.X}, {Status.Attachment.Position.Y})]";
+                        statusStr = $"[Attachment={attachmentStr}, Movement={movementStr}]";
+                    }
+                    return $"[Status={statusStr}, Speed={Speed}, Orientation={Orientation}, Data={Data}]";
+                }
             }
         }
     }

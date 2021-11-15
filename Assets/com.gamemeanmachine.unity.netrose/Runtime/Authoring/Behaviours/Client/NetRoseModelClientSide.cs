@@ -189,6 +189,14 @@ namespace GameMeanMachine.Unity.NetRose
                     // movement and model).
                     protected override void InflateFrom(MapObjectModel<SpawnData> fullData)
                     {
+                        // Also initializing the object here, to avoid executing
+                        // that behaviour in Start(). That one caused the movement
+                        // to be cancelled, if the object was to be spawned for
+                        // the first time and immediately (after Awake()) a new
+                        // movement was issued: Initialize() would cause another
+                        // forced attachment, which would ultimately cancel the
+                        // queued/issued new movement.
+                        MapObject.Initialize();
                         InflateBase(fullData.Status, fullData.Orientation, fullData.Speed, false);
                         InflateFrom(fullData.Data);
                     }

@@ -18,11 +18,13 @@ namespace GameMeanMachine.Unity.NetRose
                 protected override void InflateFrom(Ownable fullData)
                 {
                     IsOwned = fullData.IsOwned;
+                    Update();
                 }
 
                 protected override void UpdateFrom(Ownable refreshData)
                 {
                     IsOwned = refreshData.IsOwned;
+                    Update();
                 }
 
                 private void Update()

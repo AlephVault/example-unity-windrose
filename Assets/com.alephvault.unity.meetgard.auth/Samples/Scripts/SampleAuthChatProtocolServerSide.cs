@@ -52,7 +52,7 @@ namespace AlephVault.Unity.Meetgard.Auth
             {
                 users.Add(arg1, arg2);
                 Debug.Log($"SACPServer :: Session starting 1 {users} {arg2}");
-                await UntilBroadcastIsDone(BroadcastJoined(users.Keys, arg2.GetProfileDisplayData()));
+                _ = BroadcastJoined(users.Keys, arg2.GetProfileDisplayData());
                 Debug.Log($"SACPServer :: Session starting 2");
             }
 
@@ -60,7 +60,7 @@ namespace AlephVault.Unity.Meetgard.Auth
             {
                 SampleAccount account = users[arg1];
                 users.Remove(arg1);
-                await UntilBroadcastIsDone(BroadcastLeft(users.Keys, account.GetProfileDisplayData()));
+                _ = BroadcastLeft(users.Keys, account.GetProfileDisplayData());
             }
 
             protected override void SetIncomingMessageHandlers()

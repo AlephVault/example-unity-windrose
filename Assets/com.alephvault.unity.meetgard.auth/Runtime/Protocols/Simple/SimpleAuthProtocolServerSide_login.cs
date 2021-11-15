@@ -50,7 +50,7 @@ namespace AlephVault.Unity.Meetgard.Auth
                             pendingLoginConnections.TryUpdate(pair.Key, pair.Value + delta, pair.Value);
                             if (pendingLoginConnections.TryGetValue(pair.Key, out float value) && value >= loginTimeout)
                             {
-                                await UntilSendIsDone(SendTimeout(pair.Key));
+                                _ = SendTimeout(pair.Key);
                             }
                         }
                     });
@@ -89,12 +89,12 @@ namespace AlephVault.Unity.Meetgard.Auth
                                 Tuple<bool, LoginOK, LoginFailed, AccountIDType> result = await doLogin(message);
                                 if (result.Item1)
                                 {
-                                    await UntilSendIsDone(SendLoginOK(clientId, result.Item2));
+                                    _ = SendLoginOK(clientId, result.Item2);
                                     await OnLoggedIn(clientId, result.Item4);
                                 }
                                 else
                                 {
-                                    await UntilSendIsDone(SendLoginFailed(clientId, result.Item3));
+                                    _ = SendLoginFailed(clientId, result.Item3);
                                     server.Close(clientId);
                                 }
                             }

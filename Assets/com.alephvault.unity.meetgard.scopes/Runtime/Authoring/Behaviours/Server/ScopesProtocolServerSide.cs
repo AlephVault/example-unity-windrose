@@ -198,7 +198,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                         Debug.Log($"ScopesPSS::OnConnected({clientId})::Begin");
                         scopeForConnection[clientId] = Scope.Limbo;
                         Debug.Log($"ScopesPSS::OnConnected({clientId})::--Greeting");
-                        await UntilSendIsDone(SendWelcome(clientId));
+                        _ = SendWelcome(clientId);
                         Debug.Log($"ScopesPSS::OnConnected({clientId})::--Invoking OnWelcome");
                         await (OnWelcome?.InvokeAsync(clientId, async (e) => {
                             Debug.LogError(

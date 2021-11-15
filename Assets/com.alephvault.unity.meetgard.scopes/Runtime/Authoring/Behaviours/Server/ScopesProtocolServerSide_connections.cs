@@ -69,7 +69,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                             scopeForConnection[connection] = Scope.Limbo;
                             try
                             {
-                                await UntilSendIsDone(SendMovedToScope(connection, message));
+                                _ = SendMovedToScope(connection, message);
                             }
                             catch { /* Diaper-ignore */ }
                         }
@@ -104,22 +104,22 @@ namespace AlephVault.Unity.Meetgard.Scopes
                         switch (scopeId)
                         {
                             case Scope.Limbo:
-                                await UntilSendIsDone(SendMovedToScope(connectionId, new MovedToScope() { PrefabIndex = Scope.LimboPrefab, ScopeIndex = scopeId }));
+                                _ = SendMovedToScope(connectionId, new MovedToScope() { PrefabIndex = Scope.LimboPrefab, ScopeIndex = scopeId });
                                 break;
                             case Scope.Maintenance:
-                                await UntilSendIsDone(SendMovedToScope(connectionId, new MovedToScope() { PrefabIndex = Scope.MaintenancePrefab, ScopeIndex = scopeId }));
+                                _ = SendMovedToScope(connectionId, new MovedToScope() { PrefabIndex = Scope.MaintenancePrefab, ScopeIndex = scopeId });
                                 break;
                             default:
                                 Debug.Log($"ScopesPSS::DefaultOnJoiningScope::--Joining regular scope ({scopeId})");
                                 if (loadedScopes.TryGetValue(scopeId, out ScopeServerSide scope)) {
                                     Debug.Log($"ScopesPSS::DefaultOnJoiningScope::--Found a scope with that id - Adding and telling");
                                     scope.connections.Add(connectionId);
-                                    await UntilSendIsDone(SendMovedToScope(connectionId, new MovedToScope() { PrefabIndex = scope.PrefabId, ScopeIndex = scopeId }));
+                                    _ = SendMovedToScope(connectionId, new MovedToScope() { PrefabIndex = scope.PrefabId, ScopeIndex = scopeId });
                                     Debug.Log($"ScopesPSS::DefaultOnJoiningScope::--Found a scope with that id - Triggering the per-scope OnJoining event");
                                     await scope.TriggerOnJoining(connectionId);
                                 } else {
                                     Debug.LogError($"ScopesPSS::DefaultOnJoiningScope::--Did not find a scope with that id! Forcing Limbo for the connection");
-                                    var _ = SendToLimbo(connectionId);
+                                    _ = SendToLimbo(connectionId);
                                 }
                                 break;
                         }

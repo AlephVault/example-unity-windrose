@@ -460,6 +460,8 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     /// </param>
                     public async Task LocalError(string context)
                     {
+                        // We actually wait for this message before closing
+                        // the connection, to ensure it was sent.
                         await SendLocalError();
                         client.Close();
                         OnLocalError?.Invoke(context);

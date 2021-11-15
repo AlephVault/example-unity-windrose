@@ -54,25 +54,33 @@ namespace GameMeanMachine.Unity.NetRose
 
                     public override async Task OnConnected(ulong clientId)
                     {
+                        Debug.Log($"ClientMovementProtocolServerSide.OnConnected({clientId})::Queue");
                         var _ = RunInMainThread(() =>
                         {
+                            Debug.Log($"ClientMovementProtocolServerSide.OnConnected({clientId})::Start");
                             // Which index to take the character from?
                             int index = (clientId % 2 == 1) ? char1index : char2index;
                             // Instantiate it.
                             ObjectServerSide obj = ScopesProtocolServerSide.InstantiateHere((uint)index);
+                            Debug.Log($"ClientMovementProtocolServerSide.OnConnected({clientId})::--Picking index: {index}");
                             // Get the netrose component of it.
                             OwnableModelServerSide ownableObj = obj.GetComponent<OwnableModelServerSide>();
+                            Debug.Log($"ClientMovementProtocolServerSide.OnConnected({clientId})::--Getting ownable obj", ownableObj);
                             // Give it the required connection id.
                             ownableObj.ConnectionId = clientId;
-                            // Initialize it in no map.
-                            ownableObj.MapObject.Initialize();
                             // Add it to the dictionary.
+                            Debug.Log($"ClientMovementProtocolServerSide.OnConnected({clientId})::--Registering", ownableObj);
                             objects[clientId] = new ObjectOwnage() { LastCommandTime = 0, OwnedObject = obj.GetComponent<INetRoseModelServerSide>() };
+                            // Initialize it in no map.
+                            Debug.Log($"ClientMovementProtocolServerSide.OnConnected({clientId})::--Initializing", ownableObj);
+                            ownableObj.MapObject.Initialize();
                             // Attach it to a map.
+                            Debug.Log($"ClientMovementProtocolServerSide.OnConnected({clientId})::--Attaching", ownableObj);
                             ownableObj.MapObject.Attach(
                                 ScopesProtocolServerSide.LoadedScopes[4].GetComponent<Scope>()[0],
                                 8, 6, true
                             );
+                            Debug.Log($"ClientMovementProtocolServerSide.OnConnected({clientId})::End");
                         });
                     }
 
@@ -80,12 +88,15 @@ namespace GameMeanMachine.Unity.NetRose
                     {
                         var _ = RunInMainThread(() =>
                         {
+                            Debug.Log($"ClientMovementProtocolServerSide.OnDisconnected({clientId})::Start");
                             if (objects.TryGetValue(clientId, out ObjectOwnage ownage))
                             {
-                                objects.Remove(clientId);
                                 // It will de-spawn and destroy the object.
                                 Destroy(ownage.OwnedObject.MapObject.gameObject);
+                                // Then, unregistering it.
+                                objects.Remove(clientId);
                             }
+                            Debug.Log($"ClientMovementProtocolServerSide.OnDisconnected({clientId})::End");
                         });
                     }
 

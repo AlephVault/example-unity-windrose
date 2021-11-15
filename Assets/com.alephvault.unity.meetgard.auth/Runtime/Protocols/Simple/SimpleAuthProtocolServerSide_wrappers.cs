@@ -85,12 +85,12 @@ namespace AlephVault.Unity.Meetgard.Auth
                             }
                             else
                             {
-                                await UntilSendIsDone(SendForbidden(clientId));
+                                _ = SendForbidden(clientId);
                             }
                         }
                         else
                         {
-                            await UntilSendIsDone(SendNotLoggedIn(clientId));
+                            _ = SendNotLoggedIn(clientId);
                         }
                     };
                 }
@@ -121,12 +121,12 @@ namespace AlephVault.Unity.Meetgard.Auth
                             }
                             else
                             {
-                                await UntilSendIsDone(SendForbidden(clientId));
+                                _ = SendForbidden(clientId);
                             }
                         }
                         else
                         {
-                            await UntilSendIsDone(SendNotLoggedIn(clientId));
+                            _ = SendNotLoggedIn(clientId);
                         }
                     };
                 }
@@ -150,7 +150,7 @@ namespace AlephVault.Unity.Meetgard.Auth
                         }
                         else
                         {
-                            await UntilSendIsDone(SendNotLoggedIn(clientId));
+                            SendNotLoggedIn(clientId);
                         }
                     };
                 }
@@ -176,7 +176,7 @@ namespace AlephVault.Unity.Meetgard.Auth
                         }
                         else
                         {
-                            await UntilSendIsDone(SendNotLoggedIn(clientId));
+                            _ = SendNotLoggedIn(clientId);
                         }
                     };
                 }
@@ -200,7 +200,7 @@ namespace AlephVault.Unity.Meetgard.Auth
                         }
                         else
                         {
-                            await UntilSendIsDone(SendAlreadyLoggedIn(clientId));
+                            _ = SendAlreadyLoggedIn(clientId);
                         }
                     };
                 }
@@ -226,7 +226,7 @@ namespace AlephVault.Unity.Meetgard.Auth
                         }
                         else
                         {
-                            await UntilSendIsDone(SendAlreadyLoggedIn(clientId));
+                            _ = SendAlreadyLoggedIn(clientId);
                         }
                     };
                 }

@@ -84,11 +84,11 @@ namespace GameMeanMachine.Unity.NetRose
                         NetRoseScopeServerSide = null;
                     }
 
-                    private void RunInMainThreadIfSpawned(Func<Task> callback)
+                    private void RunInMainThreadIfSpawned(Action callback)
                     {
-                        Protocol.RunInMainThread(async () =>
+                        Protocol.RunInMainThread(() =>
                         {
-                            if (NetRoseScopeServerSide != null) await callback();
+                            if (NetRoseScopeServerSide != null) callback();
                         });
                     }
 
@@ -99,7 +99,7 @@ namespace GameMeanMachine.Unity.NetRose
                             UpdateCurrentStatus();
                             // Please note: By this point, we're in the appropriate scope.
                             // This means that the given map belongs to the current scope.
-                            return NetRoseScopeServerSide.BroadcastObjectAttached(
+                            _ = NetRoseScopeServerSide.BroadcastObjectAttached(
                                 Id, (uint)NetRoseScopeServerSide.Maps.MapsToIDs[map],
                                 MapObject.X, MapObject.Y
                             );
@@ -111,7 +111,7 @@ namespace GameMeanMachine.Unity.NetRose
                         RunInMainThreadIfSpawned(() =>
                         {
                             UpdateCurrentStatus();
-                            return NetRoseScopeServerSide.BroadcastObjectDetached(Id);
+                            _ = NetRoseScopeServerSide.BroadcastObjectDetached(Id);
                         });
                     }
 
@@ -120,7 +120,7 @@ namespace GameMeanMachine.Unity.NetRose
                         RunInMainThreadIfSpawned(() =>
                         {
                             UpdateCurrentStatus();
-                            return NetRoseScopeServerSide.BroadcastObjectMovementStarted(
+                            _ = NetRoseScopeServerSide.BroadcastObjectMovementStarted(
                                 Id, MapObject.X, MapObject.Y, direction
                             );
                         });
@@ -131,7 +131,7 @@ namespace GameMeanMachine.Unity.NetRose
                         RunInMainThreadIfSpawned(() =>
                         {
                             UpdateCurrentStatus();
-                            return NetRoseScopeServerSide.BroadcastObjectMovementFinished(
+                            _ = NetRoseScopeServerSide.BroadcastObjectMovementFinished(
                                 Id, MapObject.X, MapObject.Y
                             );
                         });
@@ -142,7 +142,7 @@ namespace GameMeanMachine.Unity.NetRose
                         RunInMainThreadIfSpawned(() =>
                         {
                             UpdateCurrentStatus();
-                            return NetRoseScopeServerSide.BroadcastObjectMovementCancelled(
+                            _ = NetRoseScopeServerSide.BroadcastObjectMovementCancelled(
                                 Id, MapObject.X, MapObject.Y
                             );
                         });
@@ -153,7 +153,7 @@ namespace GameMeanMachine.Unity.NetRose
                         RunInMainThreadIfSpawned(() =>
                         {
                             UpdateCurrentStatus();
-                            return NetRoseScopeServerSide.BroadcastObjectTeleported(Id, x, y);
+                            _ = NetRoseScopeServerSide.BroadcastObjectTeleported(Id, x, y);
                         });
                     }
 
@@ -161,7 +161,7 @@ namespace GameMeanMachine.Unity.NetRose
                     {
                         RunInMainThreadIfSpawned(() =>
                         {
-                            return NetRoseScopeServerSide.BroadcastObjectOrientationChanged(Id, direction);
+                            _ = NetRoseScopeServerSide.BroadcastObjectOrientationChanged(Id, direction);
                         });
                     }
 
@@ -169,7 +169,7 @@ namespace GameMeanMachine.Unity.NetRose
                     {
                         RunInMainThreadIfSpawned(() =>
                         {
-                            return NetRoseScopeServerSide.BroadcastObjectSpeedChanged(Id, speed);
+                            _ = NetRoseScopeServerSide.BroadcastObjectSpeedChanged(Id, speed);
                         });
                     }
 

@@ -30,6 +30,9 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     /// </summary>
                     internal async Task Load()
                     {
+                        XDebug debugger = new XDebug("Meetgard.Scopes", this, "Load()", debug);
+                        debugger.Start();
+                        debugger.Info("Triggering OnLoad");
                         await (OnLoad?.InvokeAsync(async (e) => {
                             Debug.LogException(e);
                             Debug.LogError(
@@ -37,6 +40,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                 $"If the exceptions are not properly handled, the game state might be inconsistent. "
                             );
                         }) ?? Task.CompletedTask);
+                        debugger.End();
                     }
 
                     /// <summary>
@@ -45,6 +49,9 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     /// </summary>
                     internal async Task Unload()
                     {
+                        XDebug debugger = new XDebug("Meetgard.Scopes", this, "Unload()", debug);
+                        debugger.Start();
+                        debugger.Info("Triggering OnUnload");
                         await (OnUnload?.InvokeAsync(async (e) => {
                             Debug.LogError(
                                 $"An error of type {e.GetType().FullName} has occurred in scope server side's OnUnload event. " +
@@ -52,6 +59,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                 $"The exception details are: {e.Message}"
                             );
                         }) ?? Task.CompletedTask);
+                        debugger.End();
                     }
 
                     /// <summary>
@@ -62,6 +70,9 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     /// <param name="connectionId">The id of the joining connection</param>
                     internal async Task TriggerOnJoining(ulong connectionId)
                     {
+                        XDebug debugger = new XDebug("Meetgard.Scopes", this, "TriggerOnJoining()", debug);
+                        debugger.Start();
+                        debugger.Info("Triggering OnJoining");
                         await (OnJoining?.InvokeAsync(connectionId, async (e) => {
                             Debug.LogError(
                                 $"An error of type {e.GetType().FullName} has occurred in scope server side's OnJoining event. " +
@@ -69,6 +80,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                 $"The exception details are: {e.Message}"
                             );
                         }) ?? Task.CompletedTask);
+                        debugger.End();
                     }
 
                     /// <summary>
@@ -76,6 +88,9 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     /// </summary>
                     internal async Task TriggerOnLeaving(ulong connectionId)
                     {
+                        XDebug debugger = new XDebug("Meetgard.Scopes", this, "TriggerOnLeaving()", debug);
+                        debugger.Start();
+                        debugger.Info("Triggering OnLeaving");
                         await (OnLeaving?.InvokeAsync(connectionId, async (e) => {
                             Debug.LogError(
                                 $"An error of type {e.GetType().FullName} has occurred in scope server side's OnLeaving event. " +
@@ -83,6 +98,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                 $"The exception details are: {e.Message}"
                             );
                         }) ?? Task.CompletedTask);
+                        debugger.End();
                     }
 
                     /// <summary>
@@ -92,6 +108,9 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     /// </summary>
                     internal async Task TriggerOnGoodBye(ulong connectionId)
                     {
+                        XDebug debugger = new XDebug("Meetgard.Scopes", this, "TriggerOnGoodBye()", debug);
+                        debugger.Start();
+                        debugger.Info("Triggering OnGoodBye");
                         await (OnGoodBye?.InvokeAsync(connectionId, async (e) => {
                             Debug.LogError(
                                 $"An error of type {e.GetType().FullName} has occurred in scope server side's OnGoodBye event. " +
@@ -99,6 +118,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                 $"The exception details are: {e.Message}"
                             );
                         }) ?? Task.CompletedTask);
+                        debugger.End();
                     }
 
                     /// <summary>

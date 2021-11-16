@@ -29,6 +29,9 @@ namespace AlephVault.Unity.Meetgard.Scopes
                 /// </summary>
                 public partial class ScopesProtocolServerSide : ProtocolServerSide<ScopesProtocolDefinition>
                 {
+                    // Whether to debug or not using XDebug.
+                    private static bool debug = false;
+
                     /// <summary>
                     ///   List of the prefabs that will be used to instantiate scopes.
                     ///   This list is mapped 1:1 with the scopes they instantiate,
@@ -167,9 +170,12 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     {
                         AddIncomingMessageHandler("LocalError", async (proto, connectionId) =>
                         {
+                            XDebug debugger = new XDebug("Meetgard.Scopes", this, "HandleMessage:LocalError", debug);
+                            debugger.Start();
                             // The connection will be closed. Further logic will be
                             // handled on connection close.
                             server.Close(connectionId);
+                            debugger.End();
                         });
                     }
 
@@ -179,10 +185,10 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     /// </summary>
                     public override async Task OnServerStarted()
                     {
-                        Debug.Log("ScopesPSS::OnServerStarted::Begin");
-                        Debug.Log("ScopesPSS::OnServerStarted::--Loading World");
+                        XDebug debugger = new XDebug("Meetgard.Scopes", this, "OnServerStarted()", debug);
+                        debugger.Start();
                         await RunInMainThread(LoadWorld);
-                        Debug.Log("ScopesPSS::OnServerStarted::End");
+                        debugger.End();
                     }
 
                     /// <summary>
@@ -195,11 +201,12 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     /// <param name="clientId">the connection being started.</param>
                     public override async Task OnConnected(ulong clientId)
                     {
-                        Debug.Log($"ScopesPSS::OnConnected({clientId})::Begin");
+                        XDebug debugger = new XDebug("Meetgard.Scopes", this, $"OnConnected({clientId})", debug);
+                        debugger.Start();
                         scopeForConnection[clientId] = Scope.Limbo;
-                        Debug.Log($"ScopesPSS::OnConnected({clientId})::--Greeting");
+                        debugger.Info("Greeting");
                         _ = SendWelcome(clientId);
-                        Debug.Log($"ScopesPSS::OnConnected({clientId})::--Invoking OnWelcome");
+                        debugger.Info("Triggering OnWelcome");
                         await (OnWelcome?.InvokeAsync(clientId, async (e) => {
                             Debug.LogError(
                                 $"An error of type {e.GetType().FullName} has occurred in server side's OnWelcome event. " +
@@ -207,7 +214,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                 $"The exception details are: {e.Message}"
                             );
                         }) ?? Task.CompletedTask);
-                        Debug.Log($"ScopesPSS::OnConnected({clientId})::End");
+                        debugger.End();
                     }
 
                     /// <summary>
@@ -222,13 +229,14 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     /// <param name="reason">The disconnection reason</param>
                     public override async Task OnDisconnected(ulong clientId, Exception reason)
                     {
-                        Debug.Log($"ScopesPSS::OnDisconnected({clientId})::Begin");
-                        Debug.Log($"ScopesPSS::OnDisconnected({clientId})::--Checking client");
+                        XDebug debugger = new XDebug("Meetgard.Scopes", this, $"OnDisconnected({clientId})", debug);
+                        debugger.Start();
+                        debugger.Info("Checking client");
                         if (scopeForConnection.TryGetValue(clientId, out uint scopeId))
                         {
-                            Debug.Log($"ScopesPSS::OnDisconnected({clientId})::--Found client in scope: {scopeId} - Clearing");
+                            debugger.Info($"Found client in scope: {scopeId} - Clearing");
                             scopeForConnection.Remove(clientId);
-                            Debug.Log($"ScopesPSS::OnDisconnected({clientId})::--And also triggering OnGoodBye event");
+                            debugger.Info("Triggering OnGoodBye");
                             await (OnGoodBye?.InvokeAsync(clientId, scopeId, async (e) => {
                                 Debug.LogError(
                                     $"An error of type {e.GetType().FullName} has occurred in server side's OnGoodBye event. " +
@@ -237,7 +245,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                 );
                             }) ?? Task.CompletedTask);
                         };
-                        Debug.Log($"ScopesPSS::OnDisconnected({clientId})::End");
+                        debugger.End();
                     }
 
                     /// <summary>
@@ -246,15 +254,15 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     /// </summary>
                     public override async Task OnServerStopped(Exception e)
                     {
-                        Debug.Log("ScopesPSS::OnServerStopped::Begin");
-                        Debug.Log("ScopesPSS::OnServerStopped::--Unloading World");
+                        XDebug debugger = new XDebug("Meetgard.Scopes", this, $"OnServerStopped()", debug);
+                        debugger.Start();
                         await RunInMainThread(UnloadWorld);
                         // At this point, the whole world is unloaded and all of the
                         // connections are being sent to Limbo. As long as they remain
                         // established, they will be kicked one by one gracefully and
                         // the OnDisconnection will be triggered for them (although
                         // the OnGoodBye event will make them depart from Limbo).
-                        Debug.Log("ScopesPSS::OnServerStopped::End");
+                        debugger.End();
                     }
                 }
             }

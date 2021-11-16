@@ -1,4 +1,5 @@
 using AlephVault.Unity.Binary;
+using AlephVault.Unity.Support.Utils;
 using AlephVault.Unity.Support.Generic.Types;
 using System;
 using System.Collections.Generic;
@@ -22,6 +23,9 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     where SpawnType : ISerializable, new()
                     where RefreshType : ISerializable, new()
                 {
+                    // Whether to debug or not using XDebug.
+                    private static bool debug = false;
+
                     /// <summary>
                     ///   Builds the whole layout of values to send
                     ///   to the different subsets of connections,
@@ -32,11 +36,15 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     /// <returns>A list of pairs (connections, data), so each set of connections can potentially receive different sets of data</returns>
                     public override List<Tuple<HashSet<ulong>, ISerializable>> FullData(HashSet<ulong> connections)
                     {
+                        XDebug debugger = new XDebug("Meetgard.Scopes", this, "FullData(...)", debug);
+                        debugger.Start();
                         Dictionary<SpawnType, HashSet<ulong>> results = new Dictionary<SpawnType, HashSet<ulong>>();
                         foreach(ulong connection in connections ?? new HashSet<ulong>())
                         {
+                            debugger.Info($"Grouping connection {connection} by full data");
                             results.SetDefault(GetFullData(connection), () => new HashSet<ulong>()).Add(connection);
                         }
+                        debugger.End();
                         return (from result in results select new Tuple<HashSet<ulong>, ISerializable>(
                             result.Value, result.Key
                         )).ToList();
@@ -59,7 +67,11 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     /// <inheritdoc />
                     public override ISerializable FullData(ulong connection)
                     {
-                        return GetFullData(connection);
+                        XDebug debugger = new XDebug("Meetgard.Scopes", this, $"FullData({connection})", debug);
+                        debugger.Start();
+                        SpawnType fullData = GetFullData(connection);
+                        debugger.End();
+                        return fullData;
                     }
 
                     /// <summary>
@@ -78,7 +90,11 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     /// <inheritdoc />
                     public override ISerializable RefreshData(ulong connection, string context)
                     {
-                        return GetRefreshData(connection, context);
+                        XDebug debugger = new XDebug("Meetgard.Scopes", this, $"RefreshData({connection}, {context})", debug);
+                        debugger.Start();
+                        RefreshType refreshData = GetRefreshData(connection, context);
+                        debugger.End();
+                        return refreshData;
                     }
                 }
             }

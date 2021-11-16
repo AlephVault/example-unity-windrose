@@ -1,5 +1,6 @@
 ﻿using AlephVault.Unity.Meetgard.Authoring.Behaviours.Server;
 using AlephVault.Unity.Meetgard.Scopes.Types.Protocols;
+using AlephVault.Unity.Support.Utils;
 using System.Collections.Generic;
 using System;
 
@@ -41,10 +42,13 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     /// <returns>The object instance</returns>
                     public ObjectServerSide InstantiateHere(uint prefabId)
                     {
+                        XDebug debugger = new XDebug("Meetgard.Scopes", this, $"InstantiateHere({prefabId})", debug);
+                        debugger.Start();
                         if (prefabId >= objectPrefabs.Length)
                         {
                             throw new ArgumentOutOfRangeException("prefabId");
                         }
+                        debugger.End();
 
                         // Now the object is to be instantiated and returned.
                         return InstantiateAndFill(objectPrefabs[prefabId], prefabId);
@@ -66,6 +70,8 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     /// <returns>The object instance</returns>
                     public ObjectServerSide InstantiateHere(string key)
                     {
+                        XDebug debugger = new XDebug("Meetgard.Scopes", this, $"InstantiateHere({key})", debug);
+                        debugger.Start();
                         key = key?.Trim();
                         if (key == null || key.Length == 0)
                         {
@@ -84,6 +90,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                         {
                             throw new ArgumentException("Unknown prefab key: " + key);
                         }
+                        debugger.End();
 
                         // Now the object is to be instantiated and returned.
                         return InstantiateAndFill(objectPrefabs[prefabId], prefabId);
@@ -106,6 +113,8 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     /// <returns>The object instance</returns>
                     public ObjectServerSide InstantiateHere(ObjectServerSide prefab)
                     {
+                        XDebug debugger = new XDebug("Meetgard.Scopes", this, $"InstantiateHere({prefab})", debug);
+                        debugger.Start();
                         if (prefab == null)
                         {
                             throw new ArgumentNullException("prefab");
@@ -120,6 +129,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                         {
                             throw new ArgumentException("Unknown prefab: " + prefab.name);
                         }
+                        debugger.End();
 
                         // Now the object is to be instantiated and returned.
                         return InstantiateAndFill(objectPrefabs[prefabId], prefabId);
@@ -128,9 +138,12 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     // Instantiates and populates the object's id fields.
                     private ObjectServerSide InstantiateAndFill(ObjectServerSide prefab, uint prefabId)
                     {
+                        XDebug debugger = new XDebug("Meetgard.Scopes", this, $"InstantiateAndFill({prefab}, {prefabId})", debug);
+                        debugger.Start();
                         ObjectServerSide instance = Instantiate(prefab);
                         instance.PrefabId = prefabId;
                         instance.Protocol = this;
+                        debugger.End();
                         return instance;
                     }
                 }

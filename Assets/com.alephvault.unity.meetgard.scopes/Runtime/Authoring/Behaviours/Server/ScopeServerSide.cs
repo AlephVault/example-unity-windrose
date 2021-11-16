@@ -33,6 +33,9 @@ namespace AlephVault.Unity.Meetgard.Scopes
                 /// </summary>
                 public partial class ScopeServerSide : MonoBehaviour
                 {
+                    // Whether to debug or not using XDebug.
+                    private static bool debug = false;
+
                     /// <summary>
                     ///   The key for this scope. Only meaningful if the
                     ///   scope is to be used as an extra scope prefab.

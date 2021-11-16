@@ -57,12 +57,15 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     // Clears all of the connections in a given scope.
                     private async Task ClearConnectionsFromScope(ScopeServerSide scope)
                     {
+                        XDebug debugger = new XDebug("Meetgard.Scopes", this, $"ClearConnectionsFromScope({scope.Id})", debug);
+                        debugger.Start();
                         // Create the limbo message.
                         var message = new MovedToScope()
                         {
                             PrefabIndex = Scope.LimboPrefab,
                             ScopeIndex = Scope.Limbo
                         };
+                        debugger.Info("Sending all the connections to Limbo");
                         // Then send it to each connection in the scope.
                         foreach (ulong connection in scope.connections)
                         {
@@ -74,11 +77,14 @@ namespace AlephVault.Unity.Meetgard.Scopes
                             catch { /* Diaper-ignore */ }
                         }
                         scope.connections.Clear();
+                        debugger.End();
                     }
 
                     // Default implementation for the OnLeavingScope event.
                     private async Task DefaultOnLeavingScope(ulong connectionId, uint scopeId)
                     {
+                        XDebug debugger = new XDebug("Meetgard.Scopes", this, $"DefaultOnLeavingScope({connectionId}, {scopeId})", debug);
+                        debugger.Start();
                         // There is no notification to send here.
                         switch(scopeId)
                         {
@@ -86,21 +92,25 @@ namespace AlephVault.Unity.Meetgard.Scopes
                             case Scope.Maintenance:
                                 break;
                             default:
+                                debugger.Info($"Checking the scope {scopeId} is loaded");
                                 if (loadedScopes.TryGetValue(scopeId, out ScopeServerSide scope))
                                 {
+                                    debugger.Info($"Removing the connection from the scope");
                                     scope.connections.Remove(connectionId);
+                                    debugger.Info($"Notifying the connection left the scope");
                                     await scope.TriggerOnLeaving(connectionId);
                                 };
                                 break;
                         }
+                        debugger.End();
                     }
 
                     // Default implementation for the OnJoiningScope event.
                     private async Task DefaultOnJoiningScope(ulong connectionId, uint scopeId)
                     {
                         // There is no notification to send here.
-                        Debug.Log("ScopesPSS::DefaultOnJoiningScope::Begin");
-                        Debug.Log($"ScopesPSS::DefaultOnJoiningScope::--Trying for scope {scopeId}");
+                        XDebug debugger = new XDebug("Meetgard.Scopes", this, $"DefaultOnJoiningScope({connectionId}, {scopeId})", debug);
+                        debugger.Start();
                         switch (scopeId)
                         {
                             case Scope.Limbo:
@@ -110,20 +120,21 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                 _ = SendMovedToScope(connectionId, new MovedToScope() { PrefabIndex = Scope.MaintenancePrefab, ScopeIndex = scopeId });
                                 break;
                             default:
-                                Debug.Log($"ScopesPSS::DefaultOnJoiningScope::--Joining regular scope ({scopeId})");
+                                debugger.Info($"Checking the scope {scopeId} is loaded");
                                 if (loadedScopes.TryGetValue(scopeId, out ScopeServerSide scope)) {
-                                    Debug.Log($"ScopesPSS::DefaultOnJoiningScope::--Found a scope with that id - Adding and telling");
+                                    debugger.Info("Adding the connection to the scope");
                                     scope.connections.Add(connectionId);
+                                    debugger.Info("Notifying to the connection that it joined a new scope");
                                     _ = SendMovedToScope(connectionId, new MovedToScope() { PrefabIndex = scope.PrefabId, ScopeIndex = scopeId });
-                                    Debug.Log($"ScopesPSS::DefaultOnJoiningScope::--Found a scope with that id - Triggering the per-scope OnJoining event");
+                                    debugger.Info("Notifying the connection joined the scope");
                                     await scope.TriggerOnJoining(connectionId);
                                 } else {
-                                    Debug.LogError($"ScopesPSS::DefaultOnJoiningScope::--Did not find a scope with that id! Forcing Limbo for the connection");
+                                    debugger.Info("Scope not found. Sending the connection to Limbo");
                                     _ = SendToLimbo(connectionId);
                                 }
                                 break;
                         }
-                        Debug.Log("ScopesPSS::DefaultOnJoiningScope::End");
+                        debugger.End();
                     }
 
                     // Default implementation for the OnGoodBye event.
@@ -132,19 +143,25 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     private async Task DefaultOnGoodBye(ulong connectionId, uint scopeId)
                     {
                         // There is no notification to send here.
+                        XDebug debugger = new XDebug("Meetgard.Scopes", this, $"DefaultOnJoiningScope({connectionId}, {scopeId})", debug);
+                        debugger.Start();
                         switch (scopeId)
                         {
                             case Scope.Limbo:
                             case Scope.Maintenance:
                                 break;
                             default:
+                                debugger.Info($"Checking the scope {scopeId} is loaded");
                                 if (loadedScopes.TryGetValue(scopeId, out ScopeServerSide scope))
                                 {
+                                    debugger.Info($"Removing the connection from the scope");
                                     scope.connections.Remove(connectionId);
+                                    debugger.Info($"Notifying the connection left the scope and the game");
                                     await scope.TriggerOnGoodBye(connectionId);
                                 };
                                 break;
                         }
+                        debugger.End();
                     }
 
                     /// <summary>
@@ -158,7 +175,8 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     public Task SendTo(ulong connectionId, uint newScopeId, bool force = false)
                     {
                         return RunInMainThread(async () => {
-                            Debug.Log("ScopesPSS::SendTo::Begin");
+                            XDebug debugger = new XDebug("Meetgard.Scopes", this, $"SendTo({connectionId}, {newScopeId})", debug);
+                            debugger.Start();
                             uint scopePrefabId;
                             try
                             {
@@ -190,10 +208,10 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                 throw new InvalidOperationException("The specified connection does not exist");
                             }
 
-                            Debug.Log("ScopesPSS::SendTo::--Checking");
+                            debugger.Info("Checking whether it is a different scope, or it is forced");
                             if (force || currentScopeId != newScopeId)
                             {
-                                Debug.Log($"ScopesPSS::SendTo::--Leaving ({connectionId}) previous scope ({currentScopeId})");
+                                debugger.Info($"Triggering OnLeavingScope({connectionId}, {currentScopeId})");
                                 await (OnLeavingScope?.InvokeAsync(connectionId, currentScopeId, async (e) => {
                                     Debug.LogError(
                                         $"An error of type {e.GetType().FullName} has occurred in server side's OnLeavingScope event. " +
@@ -202,7 +220,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                     );
                                 }) ?? Task.CompletedTask);
                                 scopeForConnection[connectionId] = newScopeId;
-                                Debug.Log($"ScopesPSS::SendTo::--Joining ({connectionId}) new scope ({newScopeId})");
+                                debugger.Info($"Triggering OnJoiningScope({connectionId}, {newScopeId})");
                                 await (OnJoiningScope?.InvokeAsync(connectionId, newScopeId, async (e) => {
                                     Debug.LogError(
                                         $"An error of type {e.GetType().FullName} has occurred in server side's OnJoiningScope event. " +
@@ -211,7 +229,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                     );
                                 }) ?? Task.CompletedTask);
                             }
-                            Debug.Log("ScopesPSS::SendTo::End");
+                            debugger.End();
                         });
                     }
 

@@ -64,6 +64,8 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     // connections in the scope.
                     private void NotifyObjectSpawnedToEveryone(ObjectServerSide target)
                     {
+                        XDebug debugger = new XDebug("Meetgard.Scopes", this, $"NotifyObjectSpawnedToEveryone({Id}, {target.Id})", debug);
+                        debugger.Start();
                         foreach(Tuple<HashSet<ulong>, ISerializable> pair in target.FullData(connections))
                         {
                             if (pair.Item2 == null)
@@ -84,15 +86,19 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                 Data = fullObjectData
                             });
                         }
+                        debugger.End();
                     }
 
                     // Broadcasts the object disappearance from the scope.
                     private void NotifyObjectDespawnedToEveryone(ObjectServerSide target)
                     {
+                        XDebug debugger = new XDebug("Meetgard.Scopes", this, $"NotifyObjectDespawnedToEveryone({Id}, {target.Id})", debug);
+                        debugger.Start();
                         Protocol.BroadcastObjectDespawned(connections, new ObjectDespawned() {
                             ObjectIndex = target.Id,
                             ScopeIndex = Id
                         });
+                        debugger.End();
                     }
 
                     /// <summary>
@@ -113,6 +119,10 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     {
                         return Protocol.RunInMainThread(async () =>
                         {
+                            XDebug debugger = new XDebug("Meetgard.Scopes", this, $"AddObject(scope {Id})", debug);
+                            debugger.Start();
+                            debugger.Info("Checking parameters and status");
+
                             // Null/Destroyed objects cannot be added.
                             if (target == null) throw new ArgumentNullException("target");
 
@@ -127,17 +137,22 @@ namespace AlephVault.Unity.Meetgard.Scopes
                             if (target.Scope != null) throw new ArgumentException("The target to add already belongs to a scope");
 
                             // Then we force the object to be descendant of this scope.
+                            debugger.Info("Setting the parent");
                             if (target.GetComponentInParent<ScopeServerSide>() != this)
                             {
                                 target.transform.SetParent(transform);
                             }
 
                             // Finally, register the object, and broadcast.
+                            debugger.Info("Registering the object");
                             RegisterObject(target);
+                            debugger.Info("Notifying the object being spawned");
                             NotifyObjectSpawnedToEveryone(target);
 
                             // In the end, trigger the event for the object.
+                            debugger.Info("Notifying locally (to the object)");
                             await (target.TriggerOnSpawned() ?? Task.CompletedTask);
+                            debugger.Info("Notifying locally (to the scope)");
                             await (OnSpawned?.InvokeAsync(target, async (e) => {
                                 Debug.LogError(
                                     $"An error of type {e.GetType().FullName} has occurred in scope server side's OnSpawned event. " +
@@ -145,6 +160,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                     $"The exception details are: {e.Message}"
                                 );
                             }) ?? Task.CompletedTask);
+                            debugger.End();
                         });
                     }
 
@@ -164,6 +180,10 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     {
                         return Protocol.RunInMainThread(async () =>
                         {
+                            XDebug debugger = new XDebug("Meetgard.Scopes", this, $"RemoveObject(scope {Id}, {target.Id})", debug);
+                            debugger.Start();
+                            debugger.Info("Checking parameters and status");
+
                             // Null objects cannot be removed.
                             if (ReferenceEquals(target, null)) throw new ArgumentNullException("target");
 
@@ -176,17 +196,22 @@ namespace AlephVault.Unity.Meetgard.Scopes
                             // Then we force the object to be not descendant of this object.
                             // We do this while the object is not destroyed. Otherwise, we
                             // skip this part.
+                            debugger.Info("Setting the parent");
                             if (target != null && target.GetComponentInParent<ScopeServerSide>() == this)
                             {
                                 target.transform.SetParent(transform.parent);
                             }
 
                             // Finally, unregister the object, and broadcast.
+                            debugger.Info("Notifying the object being despawned");
                             NotifyObjectDespawnedToEveryone(target);
+                            debugger.Info("Unregistering the object");
                             UnregisterObject(target);
 
                             // In the end, trigger the event for the object.
+                            debugger.Info("Notifying locally (to the object)");
                             await (target.TriggerOnDespawned() ?? Task.CompletedTask);
+                            debugger.Info("Notifying locally (to the scope)");
                             await (OnDespawned?.InvokeAsync(target, async (e) => {
                                 Debug.LogError(
                                     $"An error of type {e.GetType().FullName} has occurred in scope server side's OnDespawned event. " +
@@ -194,6 +219,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                     $"The exception details are: {e.Message}"
                                 );
                             }) ?? Task.CompletedTask);
+                            debugger.End();
                         });
                     }
 
@@ -209,24 +235,30 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     /// </summary>
                     /// <param name="connection">The connection that needs a refresh</param>
                     /// <param name="context">The refresh context</param>
-                    public async Task RefreshExistingObjectsTo(ulong connection, string context)
+                    public Task RefreshExistingObjectsTo(ulong connection, string context)
                     {
-                        foreach (ObjectServerSide obj in objects.Values)
+                        return Protocol.RunInMainThread(async () =>
                         {
-                            ISerializable refreshData = obj.RefreshData(connection, context);
-                            if (refreshData != null)
+                            XDebug debugger = new XDebug("Meetgard.Scopes", this, $"RefreshExistingObjectsTo({connection}, {context})", debug);
+                            debugger.Start();
+                            foreach (ObjectServerSide obj in objects.Values)
                             {
-                                // Lazy-allocate the array.
-                                if (fullObjectData == null) fullObjectData = Protocol.AllocateFullDataMessageBytes();
-                                // Serialize the object into the array.
-                                refreshData.Serialize(new Serializer(new Writer(new Binary.Buffer(fullObjectData))));
-                                await Tasks.UntilDone(Protocol.SendObjectRefreshed(connection, new ObjectRefreshed() {
-                                    ObjectIndex = obj.Id,
-                                    ScopeIndex = Id,
-                                    Data = fullObjectData
-                                }));
+                                ISerializable refreshData = obj.RefreshData(connection, context);
+                                if (refreshData != null)
+                                {
+                                    // Lazy-allocate the array.
+                                    if (fullObjectData == null) fullObjectData = Protocol.AllocateFullDataMessageBytes();
+                                    // Serialize the object into the array.
+                                    refreshData.Serialize(new Serializer(new Writer(new Binary.Buffer(fullObjectData))));
+                                    Protocol.SendObjectRefreshed(connection, new ObjectRefreshed() {
+                                        ObjectIndex = obj.Id,
+                                        ScopeIndex = Id,
+                                        Data = fullObjectData
+                                    });
+                                }
                             }
-                        }
+                            debugger.End();
+                        });
                     }
 
                     /// <summary>
@@ -243,22 +275,23 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     // bigger queued task.
                     private async Task SyncExistingObjectsTo(ulong connection)
                     {
-                        Debug.Log($"ScopeServerSide::SyncExistingObjectsTo({connection})::Begin");
+                        XDebug debugger = new XDebug("Meetgard.Scopes", this, $"SyncExistingObjectsTo({connection})", debug);
+                        debugger.Start();
                         foreach(ObjectServerSide obj in objects.Values)
                         {
                             // Lazy-allocate the array.
                             if (fullObjectData == null) fullObjectData = Protocol.AllocateFullDataMessageBytes();
                             // Serialize the object into the array.
                             obj.FullData(connection).Serialize(new Serializer(new Writer(new Binary.Buffer(fullObjectData))));
-                            await Tasks.UntilDone(Protocol.SendObjectSpawned(connection, new ObjectSpawned()
+                            Protocol.SendObjectSpawned(connection, new ObjectSpawned()
                             {
                                 ObjectIndex = obj.Id,
                                 ObjectPrefabIndex = obj.PrefabId,
                                 ScopeIndex = Id,
                                 Data = fullObjectData
-                            }));
+                            });
                         }
-                        Debug.Log($"ScopeServerSide::SyncExistingObjectsTo({connection})::End");
+                        debugger.End();
                     }
                 }
             }

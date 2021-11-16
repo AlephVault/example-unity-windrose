@@ -33,7 +33,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                 public class ScopeClientSide : MonoBehaviour
                 {
                     // Whether to debug or not using XDebug.
-                    private static bool debug = true;
+                    private static bool debug = false;
 
                     /// <summary>
                     ///   The id of the current scope. Given by the server.

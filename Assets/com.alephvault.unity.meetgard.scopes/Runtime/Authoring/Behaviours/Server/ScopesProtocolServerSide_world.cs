@@ -2,6 +2,7 @@
 using AlephVault.Unity.Meetgard.Scopes.Types.Constants;
 using AlephVault.Unity.Meetgard.Scopes.Types.Protocols;
 using AlephVault.Unity.Support.Types;
+using AlephVault.Unity.Support.Utils;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -80,18 +81,23 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     // closed, if already open.
                     private async Task LoadDefaultScopes()
                     {
+                        XDebug debugger = new XDebug("Meetgard.Scopes", this, "LoadDefaultScopes()", debug);
+                        debugger.Start();
                         loadedScopes = new Dictionary<uint, ScopeServerSide>();
                         loadedScopesIds = new IdPool(Scope.MaxScopes);
                         foreach(ScopeServerSide scopePrefab in defaultScopePrefabs)
                         {
+                            debugger.Info($"Instantiating the scope prefab: {scopePrefab}");
                             ScopeServerSide instance = Instantiate(scopePrefab, null, true);
                             uint newId = (uint)loadedScopesIds.Next();
                             instance.Id = newId;
                             instance.PrefabId = Scope.DefaultPrefab;
                             instance.Protocol = this;
+                            debugger.Info($"Registering it with id: {newId}");
                             loadedScopes.Add(newId, instance);
                             await instance.Load();
                         }
+                        debugger.End();
                     }
 
                     // Unloads all of the loaded scopes, one by one. This may involve
@@ -100,19 +106,24 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     // occurs in this process will be handled in a per-scope basis.
                     private async Task UnloadScopes()
                     {
+                        XDebug debugger = new XDebug("Meetgard.Scopes", this, "UnloadScopes()", debug);
+                        debugger.Start();
                         foreach(KeyValuePair<uint, ScopeServerSide> pair in loadedScopes)
                         {
                             if (pair.Value != null)
                             {
                                 try
                                 {
+                                    debugger.Info($"Clearing connections from scope: {pair.Key}");
                                     await ClearConnectionsFromScope(pair.Value);
+                                    debugger.Info($"Unloading scope: {pair.Key}");
                                     await pair.Value.Unload();
                                 }
                                 catch (System.Exception e)
                                 {
                                     try
                                     {
+                                        debugger.Info("Triggeing OnUnloadError");
                                         OnUnloadError?.Invoke(pair.Key, pair.Value, e);
                                     }
                                     catch(System.Exception)
@@ -128,12 +139,15 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                 }
                             }
                         }
+                        debugger.End();
                     }
 
                     // Clears the collection of loaded scopes, and destroys
                     // the scopes one by one.
                     private void DestroyInstantiatedScopes()
                     {
+                        XDebug debugger = new XDebug("Meetgard.Scopes", this, "DestroyInstantiatedScopes()", debug);
+                        debugger.Start();
                         Dictionary<uint, ScopeServerSide> instances = loadedScopes;
                         loadedScopes = null;
                         foreach(KeyValuePair<uint, ScopeServerSide> pair in instances)
@@ -143,6 +157,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                             pair.Value.Protocol = null;
                             loadedScopesIds.Release(pair.Key);
                         }
+                        debugger.End();
                     }
 
                     // This task will try to load the world and ensure it
@@ -150,6 +165,9 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     // then everything is reverted and the server is closed.
                     private async Task LoadWorld()
                     {
+                        XDebug debugger = new XDebug("Meetgard.Scopes", this, "LoadWorld()", debug);
+                        debugger.Start();
+
                         // This makes no sense when the world is not unloaded.
                         if (WorldLoadStatus != LoadStatus.Empty) return;
 
@@ -172,6 +190,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                             // Diaper-log any load exception.
                             try
                             {
+                                debugger.Info("Triggering OnLoadError");
                                 OnLoadError?.Invoke(e);
                             }
                             catch
@@ -197,6 +216,8 @@ namespace AlephVault.Unity.Meetgard.Scopes
                             // And finally, close the server.
                             if (server.IsListening) server.StopServer();
                         }
+
+                        debugger.End();
                     }
 
                     // This task will try to unload the world and ensure it
@@ -209,6 +230,9 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     // default and extra scopes will be both unloaded and destroyed.
                     private async Task UnloadWorld()
                     {
+                        XDebug debugger = new XDebug("Meetgard.Scopes", this, "UnloadWorld()", debug);
+                        debugger.Start();
+
                         // This makes no sense when the world is not loaded.
                         if (WorldLoadStatus != LoadStatus.Ready) return;
 
@@ -229,6 +253,8 @@ namespace AlephVault.Unity.Meetgard.Scopes
 
                         // Set the final, success, status.
                         WorldLoadStatus = LoadStatus.Empty;
+
+                        debugger.End();
                     }
 
                     /// <summary>
@@ -248,8 +274,9 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     {
                         return RunInMainThread(async () =>
                         {
-                            Debug.Log("ScopesPSS::LoadExtraScope::Begin");
-                            Debug.Log("ScopesPSS::LoadExtraScope::--Checking world satatus");
+                            XDebug debugger = new XDebug("Meetgard.Scopes", this, $"LoadExtraScope({extraScopePrefabKey})", debug);
+                            debugger.Start();
+                            debugger.Info("Checking world satatus");
                             if (WorldLoadStatus != LoadStatus.Ready)
                             {
                                 throw new InvalidOperationException(
@@ -257,7 +284,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                 );
                             }
 
-                            Debug.Log($"ScopesPSS::LoadExtraScope::--Getting appropriate extra prefab ({extraScopePrefabKey})");
+                            debugger.Info($"Getting appropriate extra prefab ({extraScopePrefabKey})");
                             uint extraScopePrefabIndex;
                             try
                             {
@@ -268,17 +295,17 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                 throw new ArgumentException($"Unknown extra scope prefab key: {extraScopePrefabKey}");
                             }
 
-                            Debug.Log("ScopesPSS::LoadExtraScope::--Instantiating extra scope");
+                            debugger.Info("Instantiating extra scope");
                             ScopeServerSide instance = Instantiate(extraScopePrefabs[extraScopePrefabIndex], null, true);
-                            Debug.Log("ScopesPSS::LoadExtraScope::--Assigning ID to the extra scope");
+                            debugger.Info("Assigning ID to the extra scope");
                             uint newId = (uint)loadedScopesIds.Next();
                             instance.Id = newId;
                             instance.PrefabId = extraScopePrefabIndex;
                             instance.Protocol = this;
                             loadedScopes.Add(newId, instance);
-                            Debug.Log("ScopesPSS::LoadExtraScope::--Loading extra scope");
+                            debugger.Info("Delegating load");
                             await instance.Load();
-                            Debug.Log("ScopesPSS::LoadExtraScope::End");
+                            debugger.End();
                             return instance;
                         });
                     }
@@ -286,14 +313,20 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     // Unloads and perhaps destroys a scope.
                     private async Task DoUnloadExtraScope(uint scopeId, ScopeServerSide scopeToUnload, bool destroy)
                     {
+                        XDebug debugger = new XDebug("Meetgard.Scopes", this, $"DoUnloadExtraScope({scopeId})", debug);
+                        debugger.Start();
+                        debugger.Info("Clearing connections");
                         await ClearConnectionsFromScope(scopeToUnload);
+                        debugger.Info("Delegating unload");
                         await scopeToUnload.Unload();
+                        debugger.Info("Resetting ID");
                         loadedScopes.Remove(scopeId);
                         loadedScopesIds.Release(scopeId);
                         if (scopeToUnload != null && destroy) Destroy(scopeToUnload.gameObject);
                         scopeToUnload.Id = 0;
                         scopeToUnload.PrefabId = 0;
                         scopeToUnload.Protocol = null;
+                        debugger.End();
                     }
 
                     /// <summary>
@@ -304,8 +337,9 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     public Task UnloadExtraScope(uint scopeId, bool destroy = true)
                     {
                         return RunInMainThread(async () => {
-                            Debug.Log("ScopesPSS::UnloadExtraScope::Begin");
-                            Debug.Log("ScopesPSS::UnloadExtraScope::--Checking the id is not a default one");
+                            XDebug debugger = new XDebug("Meetgard.Scopes", this, $"UnloadExtraScope({scopeId})", debug);
+                            debugger.Start();
+                            debugger.Info("Checking the id is not a default one");
                             if (scopeId <= defaultScopePrefabs.Length)
                             {
                                 throw new ArgumentException(
@@ -314,7 +348,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                 );
                             }
 
-                            Debug.Log("ScopesPSS::UnloadExtraScope::--Getting scope id to unload");
+                            debugger.Info("Getting scope id to unload");
                             ScopeServerSide scopeToUnload;
                             try
                             {
@@ -328,9 +362,9 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                 );
                             }
 
-                            Debug.Log("ScopesPSS::UnloadExtraScope::--Performing unload");
+                            debugger.Info("Performing unload");
                             await DoUnloadExtraScope(scopeId, scopeToUnload, destroy);
-                            Debug.Log("ScopesPSS::UnloadExtraScope::End");
+                            debugger.End();
                         });
                     }
 
@@ -342,8 +376,9 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     public Task UnloadExtraScope(ScopeServerSide scope, bool destroy = true)
                     {
                         return RunInMainThread(async () => {
-                            Debug.Log("ScopesPSS::UnloadExtraScope::Begin");
-                            Debug.Log("ScopesPSS::UnloadExtraScope::--Checking scope instance");
+                            XDebug debugger = new XDebug("Meetgard.Scopes", this, $"UnloadExtraScope({scope})", debug);
+                            debugger.Start();
+                            debugger.Info("Checking scope instance");
                             if (scope == null)
                             {
                                 throw new ArgumentNullException("scope");
@@ -353,7 +388,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                 throw new ArgumentException("The given scope does not belong to this server - it cannot be deleted");
                             }
 
-                            Debug.Log("ScopesPSS::UnloadExtraScope::--Checking the id is not a default one");
+                            debugger.Info("Checking the id is not a default one");
                             uint scopeId = scope.Id;
                             if (scopeId <= defaultScopePrefabs.Length)
                             {
@@ -363,9 +398,9 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                 );
                             }
 
-                            Debug.Log("ScopesPSS::UnloadExtraScope::--Performing unload");
+                            debugger.Info("Performing unload");
                             await DoUnloadExtraScope(scopeId, scope, destroy);
-                            Debug.Log("ScopesPSS::UnloadExtraScope::End");
+                            debugger.End();
                         });
                     }
                 }

@@ -14,6 +14,11 @@ namespace GameMeanMachine.Unity.NetRose
                     public void Serialize(Serializer serializer) {
                         serializer.Serialize(ref IsOwned);
                     }
+
+                    public override string ToString()
+                    {
+                        return $"[Owned={IsOwned}]";
+                    }
                 }
             }
         }

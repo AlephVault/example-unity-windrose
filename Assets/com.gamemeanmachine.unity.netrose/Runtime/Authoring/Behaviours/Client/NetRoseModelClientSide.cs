@@ -1,5 +1,6 @@
 ﻿using AlephVault.Unity.Binary;
 using AlephVault.Unity.Meetgard.Scopes.Authoring.Behaviours.Client;
+using AlephVault.Unity.Support.Utils;
 using GameMeanMachine.Unity.NetRose.Types.Models;
 using GameMeanMachine.Unity.WindRose.Authoring.Behaviours.Entities.Objects;
 using GameMeanMachine.Unity.WindRose.Authoring.Behaviours.World;
@@ -26,6 +27,9 @@ namespace GameMeanMachine.Unity.NetRose
                     where SpawnData : class, ISerializable, new()
                     where RefreshData : class, ISerializable, new()
                 {
+                    // Whether to debug or not using XDebug.
+                    private static bool debug = false;
+
                     /// <summary>
                     ///   The related WindRose map object.
                     /// </summary>
@@ -196,9 +200,15 @@ namespace GameMeanMachine.Unity.NetRose
                         // movement was issued: Initialize() would cause another
                         // forced attachment, which would ultimately cancel the
                         // queued/issued new movement.
+                        XDebug debugger = new XDebug("NetRose", this, $"InflateFrom({fullData})", debug);
+                        debugger.Start();
+                        debugger.Info("Initializing the object");
                         MapObject.Initialize();
+                        debugger.Info("Inflating the object's status");
                         InflateBase(fullData.Status, fullData.Orientation, fullData.Speed, false);
+                        debugger.Info("Inflating the object's model");
                         InflateFrom(fullData.Data);
+                        debugger.End();
                     }
 
                     /// <summary>
@@ -210,8 +220,13 @@ namespace GameMeanMachine.Unity.NetRose
 
                     protected override void UpdateFrom(MapObjectModel<RefreshData> refreshData)
                     {
+                        XDebug debugger = new XDebug("NetRose", this, $"UpdateFrom({refreshData})", debug);
+                        debugger.Start();
+                        debugger.Info("Inflating the object's status");
                         InflateBase(refreshData.Status, refreshData.Orientation, refreshData.Speed, true);
+                        debugger.Info("Inflating the object's model");
                         UpdateFrom(refreshData.Data);
+                        debugger.End();
                     }
 
                     /// <summary>

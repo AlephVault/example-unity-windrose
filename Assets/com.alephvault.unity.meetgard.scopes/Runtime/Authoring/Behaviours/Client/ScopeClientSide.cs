@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using AlephVault.Unity.Support.Utils;
 
 
 namespace AlephVault.Unity.Meetgard.Scopes
@@ -31,6 +32,9 @@ namespace AlephVault.Unity.Meetgard.Scopes
                 /// </summary>
                 public class ScopeClientSide : MonoBehaviour
                 {
+                    // Whether to debug or not using XDebug.
+                    private static bool debug = true;
+
                     /// <summary>
                     ///   The id of the current scope. Given by the server.
                     /// </summary>
@@ -53,7 +57,11 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     /// </summary>
                     internal void Load()
                     {
+                        XDebug debugger = new XDebug("Meetgard.Scopes", this, "Load()", debug);
+                        debugger.Start();
+                        debugger.Info("Triggering OnLoad");
                         OnLoad?.Invoke();
+                        debugger.End();
                     }
 
                     /// <summary>
@@ -63,7 +71,11 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     /// </summary>
                     internal void Unload()
                     {
+                        XDebug debugger = new XDebug("Meetgard.Scopes", this, "Unload()", debug);
+                        debugger.Start();
+                        debugger.Info("Triggering OnUnload");
                         OnUnload?.Invoke();
+                        debugger.End();
                     }
                 }
             }

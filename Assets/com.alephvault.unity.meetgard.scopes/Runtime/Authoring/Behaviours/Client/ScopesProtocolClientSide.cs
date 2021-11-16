@@ -5,6 +5,7 @@ using AlephVault.Unity.Meetgard.Scopes.Types.Protocols;
 using AlephVault.Unity.Meetgard.Scopes.Types.Protocols.Messages;
 using AlephVault.Unity.Support.Authoring.Behaviours;
 using AlephVault.Unity.Support.Generic.Vendor.IUnified.Authoring.Types;
+using AlephVault.Unity.Support.Utils;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -43,6 +44,9 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     /// </summary>
                     [Serializable]
                     public class IObjectClientSideInstanceManagerContainer : IUnifiedContainer<IObjectClientSideInstanceManager> {}
+
+                    // Whether to debug or not using XDebug.
+                    private static bool debug = false;
 
                     /// <summary>
                     ///   This is the list of scopes that will be paid attention to
@@ -169,142 +173,123 @@ namespace AlephVault.Unity.Meetgard.Scopes
                         AddIncomingMessageHandler("Welcome", (proto) => {
                             return RunInMainThread(async () =>
                             {
-                                Debug.Log("ScopesPCS::Handler:Welcome::Begin");
-                                Debug.Log("ScopesPCS::Handler:Welcome::--Clearing any current scope");
-                                // The action must be queued in the queueManager.
-                                // HOWEVER it will NOT be waited for (the queued
-                                // handler will be waited for, but not the returned
-                                // handler).
+                                XDebug debugger = new XDebug("Meetgard.Scopes", this, "HandleMessage:Welcome", debug);
+                                debugger.Start();
+                                debugger.Info("Clearing any current scope");
                                 ClearCurrentScope();
-                                Debug.Log("ScopesPCS::Handler:Welcome::--Setting Limbo as current scope");
+                                debugger.Info("Setting Limbo as current scope");
                                 CurrentScopeId = Scope.Limbo;
-                                Debug.Log("ScopesPCS::Handler:Welcome::--Triggering OnWelcome event");
+                                debugger.Info("Triggering OnWelcome event");
                                 OnWelcome?.Invoke();
-                                Debug.Log("ScopesPCS::Handler:Welcome::End");
+                                debugger.End();
                             });
                         });
                         AddIncomingMessageHandler<MovedToScope>("MovedToScope", (proto, message) => {
                             return RunInMainThread(async () =>
                             {
-                                Debug.Log("ScopesPCS::Handler:MovedToScope::Begin");
-                                Debug.Log("ScopesPCS::Handler:MovedToScope::--Clearing any current scope");
-                                // The action must be queued in the queueManager.
-                                // HOWEVER it will NOT be waited for (the queued
-                                // handler will be waited for, but not the returned
-                                // handler).
+                                XDebug debugger = new XDebug("Meetgard.Scopes", this, $"HandleMessage:MovedToScope({message.ScopeIndex}, {message.PrefabIndex})", debug);
+                                debugger.Start();
+                                debugger.Info("Clearing any current scope");
                                 ClearCurrentScope();
                                 try
                                 {
-                                    Debug.Log("ScopesPCS::Handler:MovedToScope::--Loading a new scope");
+                                    debugger.Info("Loading a new scope");
                                     LoadNewScope(message.ScopeIndex, message.PrefabIndex);
                                     CurrentScopeId = message.ScopeIndex;
                                 }
                                 catch (Exception e)
                                 {
-                                    Debug.LogError($"Exception of type {e.GetType().FullName} while loading a new scope: {e.Message}");
+                                    debugger.Exception(e);
                                     await LocalError("ScopeLoadError");
                                     return;
                                 }
-                                Debug.Log("ScopesPCS::Handler:MovedToScope::--Triggering OnMovedToScope event");
+                                debugger.Info("Triggering OnMovedToScope event");
                                 OnMovedToScope?.Invoke(CurrentScope);
-                                Debug.Log("ScopesPCS::Handler:MovedToScope::--End");
+                                debugger.End();
                             });
                         });
                         AddIncomingMessageHandler<ObjectSpawned>("ObjectSpawned", (proto, message) => {
                             return RunInMainThread(async () =>
                             {
-                                Debug.Log("ScopesPCS::Handler:ObjectSpawned::Begin");
-                                Debug.Log("ScopesPCS::Handler:ObjectSpawned::--Checking");
-                                // The action must be queued in the queueManager.
-                                // HOWEVER it will NOT be waited for (the queued
-                                // handler will be waited for, but not the returned
-                                // handler).
-
+                                XDebug debugger = new XDebug("Meetgard.Scopes", this, $"HandleMessage:ObjectSpawned({message.ScopeIndex}, {message.ObjectIndex}, {message.ObjectPrefabIndex})", debug);
+                                debugger.Start();
+                                debugger.Info("Checking");
                                 // It is to be checked: The current scope is a good one, object-holding and matching.
                                 if (!await RequireIsCurrentScopeAndHoldsObjects(message.ScopeIndex)) return;
 
                                 ObjectClientSide spawned;
                                 try
                                 {
-                                    Debug.Log("ScopesPCS::Handler:ObjectSpawned::--Spawning the object");
+                                    debugger.Info("--Spawning the object");
                                     spawned = Spawn(message.ObjectIndex, message.ObjectPrefabIndex, message.Data);
                                 }
                                 catch (Exception e)
                                 {
-                                    Debug.LogError("Error on client-side spawning");
-                                    Debug.LogException(e);
+                                    debugger.Exception(e);
                                     await LocalError("SpawnError");
                                     return;
                                 }
 
                                 // This event occurs after the per-object spawned event.
-                                Debug.Log("ScopesPCS::Handler:ObjectSpawned::--Triggering OnSpawned event");
+                                debugger.Info("--Triggering OnSpawned event");
                                 OnSpawned?.Invoke(spawned);
-                                Debug.Log("ScopesPCS::Handler:ObjectSpawned::--End");
+                                debugger.End();
                             });
                         });
                         AddIncomingMessageHandler<ObjectRefreshed>("ObjectRefreshed", (proto, message) => {
                             return RunInMainThread(async () =>
                             {
-                                Debug.Log("ScopesPCS::Handler:ObjectRefreshed::Begin");
-                                Debug.Log("ScopesPCS::Handler:ObjectRefreshed::--Checking");
-                                // The action must be queued in the queueManager.
-                                // HOWEVER it will NOT be waited for (the queued
-                                // handler will be waited for, but not the returned
-                                // handler).
-
+                                XDebug debugger = new XDebug("Meetgard.Scopes", this, $"HandleMessage:ObjectRefreshed({message.ScopeIndex}, {message.ObjectIndex})", debug);
+                                debugger.Start();
+                                debugger.Info("Checking");
                                 // It is to be checked: The current scope is a good one, object-holding and matching.
                                 if (!await RequireIsCurrentScopeAndHoldsObjects(message.ScopeIndex)) return;
 
                                 Tuple<ObjectClientSide, ISerializable> result;
                                 try
                                 {
-                                    Debug.Log("ScopesPCS::Handler:ObjectRefreshed::--Refreshing the object");
+                                    debugger.Info("Refreshing the object");
                                     result = Refresh(message.ObjectIndex, message.Data);
                                 }
                                 catch (Exception e)
                                 {
-                                    Debug.LogError($"Exception of type {e.GetType().FullName} while refreshing an object: {e.Message}");
+                                    debugger.Exception(e);
                                     await LocalError("RefreshError");
                                     return;
                                 }
 
                                 // This event occurs after the per-object refreshed event.
-                                Debug.Log("ScopesPCS::Handler:ObjectRefreshed::--Triggering OnRefreshed event");
+                                debugger.Info("Triggering OnRefreshed event");
                                 OnRefreshed?.Invoke(result.Item1, result.Item2);
-                                Debug.Log("ScopesPCS::Handler:ObjectRefreshed::End");
+                                debugger.End();
                             });
                         });
                         AddIncomingMessageHandler<ObjectDespawned>("ObjectDespawned", (proto, message) => {
                             return RunInMainThread(async () =>
                             {
-                                Debug.Log("ScopesPCS::Handler:ObjectDespawned::Begin");
-                                Debug.Log("ScopesPCS::Handler:ObjectDespawned::--Checking");
-                                // The action must be queued in the queueManager.
-                                // HOWEVER it will NOT be waited for (the queued
-                                // handler will be waited for, but not the returned
-                                // handler).
- 
+                                XDebug debugger = new XDebug("Meetgard.Scopes", this, $"HandleMessage:ObjectDespawned({message.ScopeIndex}, {message.ObjectIndex})", debug);
+                                debugger.Start();
+                                debugger.Info("Checking");
                                 // It is to be checked: The current scope is a good one, object-holding and matching.
                                 if (!await RequireIsCurrentScopeAndHoldsObjects(message.ScopeIndex)) return;
 
                                 ObjectClientSide despawned;
                                 try
                                 {
-                                    Debug.Log("ScopesPCS::Handler:ObjectDespawned::--Despawning the object");
+                                    debugger.Info("Despawning the object");
                                     despawned = Despawn(message.ObjectIndex);
                                 }
                                 catch (Exception e)
                                 {
-                                    Debug.LogError($"Exception of type {e.GetType().FullName} while despawning an object: {e.Message}");
+                                    debugger.Exception(e);
                                     await LocalError("DespawnError");
                                     return;
                                 }
 
                                 // This event occurs after the per-object despawned event.
-                                Debug.Log("ScopesPCS::Handler:ObjectDespawned::--Invoking OnDespawned event");
+                                debugger.Info("Invoking OnDespawned event");
                                 OnDespawned?.Invoke(despawned);
-                                Debug.Log("ScopesPCS::Handler:ObjectDespawned::End");
+                                debugger.End();
                             });
                         });
                     }
@@ -313,7 +298,10 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     {
                         var _ = RunInMainThread(() =>
                         {
+                            XDebug debugger = new XDebug("Meetgard.Scopes", this, "OnDisconnected", debug);
+                            debugger.Start();
                             ClearCurrentScope();
+                            debugger.End();
                         });
                     }
 
@@ -326,13 +314,16 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     /// <returns>Whether the current scope is the given one, and the given one holds objects</returns>
                     public async Task<bool> RequireIsCurrentScopeAndHoldsObjects(uint scopeIndex)
                     {
+                        XDebug debugger = new XDebug("Meetgard.Scopes", this, $"RequireIsCurrentScopeAndHoldsObjects({scopeIndex})", debug);
+                        debugger.Start();
                         if (CurrentScope.Id >= Scope.MaxScopes)
                         {
                             // This is an error: The scope id is aboce the maximum
                             // scopes that can be related to scope objects and thus
                             // reflect object states.
-                            Debug.LogError($"Invalid scope. Current scope, as the server told, is {CurrentScopeId} which is not an object-holding scope");
+                            debugger.Error($"Invalid scope. Current scope, as the server told, is {CurrentScopeId} which is not an object-holding scope");
                             await LocalError("InvalidServerScope");
+                            debugger.End();
                             return false;
                         }
 
@@ -342,19 +333,23 @@ namespace AlephVault.Unity.Meetgard.Scopes
                             // or unmatched against the incoming scope index.
                             //
                             // This all will be treated as a local error instead.
-                            Debug.LogError($"Scope mismatch. Current scope is {CurrentScopeId} and message scope is {scopeIndex}");
+                            debugger.Error($"Scope mismatch. Current scope is {CurrentScopeId} and message scope is {scopeIndex}");
                             await LocalError("ScopeMismatch");
+                            debugger.End();
                             return false;
                         }
-
+                        debugger.End();
                         return true;
                     }
 
                     // Clears the current scope, destroying everything.
                     private void ClearCurrentScope()
                     {
+                        XDebug debugger = new XDebug("Meetgard.Scopes", this, $"ClearCurrentScope()", debug);
+                        debugger.Start();
                         if (CurrentScope)
                         {
+                            debugger.Info($"There is a current objects-holding scope ({CurrentScopeId})");
                             foreach(ObjectClientSide instance in currentObjects.Values)
                             {
                                 instance.Despawn();
@@ -367,13 +362,17 @@ namespace AlephVault.Unity.Meetgard.Scopes
                             Destroy(CurrentScope.gameObject);
                             CurrentScope = null;
                         }
+                        debugger.End();
                     }
 
                     // Initializes a new scope.
                     private void LoadNewScope(uint scopeId, uint scopePrefabId)
                     {
+                        XDebug debugger = new XDebug("Meetgard.Scopes", this, $"LoadNewScope({scopeId}, {scopePrefabId})", debug);
+                        debugger.Start();
                         if (scopeId < Scope.MaxScopes)
                         {
+                            debugger.Info($"The mew scope is object-holding");
                             ScopeClientSide prefab;
                             if (scopePrefabId == Scope.DefaultPrefab)
                             {
@@ -383,23 +382,30 @@ namespace AlephVault.Unity.Meetgard.Scopes
                             {
                                 prefab = extraScopePrefabs[scopePrefabId];
                             }
+                            debugger.Info($"Instantiating the object");
                             ScopeClientSide instance = Instantiate(prefab);
                             instance.Id = scopeId;
                             CurrentScope = instance;
                             CurrentScopeId = scopeId;
+                            debugger.Info($"Loading te new scope");
                             instance.Load();
                         }
                         else
                         {
+                            debugger.Info($"The mew scope is not object-holding");
                             CurrentScopeId = scopeId;
                         }
+                        debugger.End();
                     }
 
                     // Spawns a new object.
                     private ObjectClientSide Spawn(uint objectId, uint objectPrefabId, byte[] data)
                     {
+                        XDebug debugger = new XDebug("Meetgard.Scopes", this, $"Spawn({objectId}, {objectPrefabId})", debug);
+                        debugger.Start();
                         if (currentObjects.ContainsKey(objectId))
                         {
+                            debugger.End();
                             throw new InvalidOperationException($"The object id: {objectId} is already in use");
                         }
                         else
@@ -409,6 +415,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                             instance.Protocol = this;
                             currentObjects.Add(objectId, instance);
                             instance.Spawn(CurrentScope, objectId, data);
+                            debugger.End();
                             return instance;
                         }
                     }
@@ -431,12 +438,16 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     // Despawns an object. Returns the already despawned object.
                     private ObjectClientSide Despawn(uint objectId)
                     {
+                        XDebug debugger = new XDebug("Meetgard.Scopes", this, $"Despawn({objectId})", debug);
+                        debugger.Start();
                         if (!currentObjects.TryGetValue(objectId, out ObjectClientSide instance))
                         {
+                            debugger.End();
                             throw new InvalidOperationException($"The object id: {objectId} is not in use");
                         }
                         else
                         {
+                            debugger.Info($"Despawning {objectId}");
                             // Despawn the instance, unregister it, and release it.
                             instance.Despawn();
                             currentObjects.Remove(objectId);
@@ -447,6 +458,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                             };
                             // The instance is already unspawned by this point. Depending on the
                             // strategy to use, this may imply the instance is destroyed..
+                            debugger.End();
                             return instance;
                         }
                     }
@@ -460,11 +472,15 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     /// </param>
                     public async Task LocalError(string context)
                     {
+                        XDebug debugger = new XDebug("Meetgard.Scopes", this, $"LocalError({context})", debug);
+                        debugger.Start();
                         // We actually wait for this message before closing
                         // the connection, to ensure it was sent.
                         await SendLocalError();
                         client.Close();
+                        debugger.Info("Triggering OnLocalError");
                         OnLocalError?.Invoke(context);
+                        debugger.End();
                     }
                 }
             }

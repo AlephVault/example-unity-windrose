@@ -1,4 +1,5 @@
 using AlephVault.Unity.Binary;
+using AlephVault.Unity.Support.Utils;
 
 
 namespace AlephVault.Unity.Meetgard.Scopes
@@ -18,12 +19,19 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     where SpawnType : ISerializable, new()
                     where RefreshType : ISerializable, new()
                 {
+                    // Whether to debug or not using XDebug.
+                    private static bool debug = false;
+
                     /// <inheritdoc/>
                     protected override void ReadSpawnData(byte[] data)
                     {
+                        XDebug debugger = new XDebug("Meetgard.Scopes", this, $"ReadSpawnData() [current id: {Id}]", debug);
+                        debugger.Start();
                         SpawnType obj = new SpawnType();
                         BinaryUtils.Load(obj, data);
+                        debugger.Info("Inflating");
                         InflateFrom(obj);
+                        debugger.End();
                     }
 
                     /// <summary>
@@ -35,9 +43,13 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     /// <inheritdoc/>
                     protected override ISerializable ReadRefreshData(byte[] data)
                     {
+                        XDebug debugger = new XDebug("Meetgard.Scopes", this, $"ReadRefreshData() [current id: {Id}]", debug);
+                        debugger.Start();
                         RefreshType obj = new RefreshType();
                         BinaryUtils.Load(obj, data);
+                        debugger.Info("Updating");
                         UpdateFrom(obj);
+                        debugger.End();
                         return obj;
                     }
 

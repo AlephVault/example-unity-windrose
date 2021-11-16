@@ -1,6 +1,7 @@
 using AlephVault.Unity.Binary;
 using AlephVault.Unity.Meetgard.Scopes.Types.Constants;
 using AlephVault.Unity.Support.Authoring.Behaviours;
+using AlephVault.Unity.Support.Utils;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -24,6 +25,9 @@ namespace AlephVault.Unity.Meetgard.Scopes
                 /// </summary>
                 public abstract class ObjectClientSide : MonoBehaviour
                 {
+                    // Whether to debug or not using XDebug.
+                    private static bool debug = false;
+
                     // This field is set by the protocol.
 
                     /// <summary>
@@ -90,6 +94,9 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     /// <param name="data">The data to use for spawning</param>
                     public void Spawn(ScopeClientSide scope, uint id, byte[] data)
                     {
+                        XDebug debugger = new XDebug("Meetgard.Scopes", this, $"Spawn({scope.Id}, {id})", debug);
+                        debugger.Start();
+                        debugger.Info("Checking parameters and status");
                         if (scope == null)
                         {
                             throw new ArgumentNullException("scope");
@@ -110,16 +117,21 @@ namespace AlephVault.Unity.Meetgard.Scopes
                             throw new InvalidOperationException("This object is already spawned");
                         }
 
+                        debugger.Info("Setting spawn id/scope");
                         Id = id;
                         Scope = scope;
+                        debugger.Info("Reading the spawn data");
                         ReadSpawnData(data);
 
+                        debugger.Info("Setting the parent");
                         if (GetComponentInParent<ScopeClientSide>() != scope)
                         {
                             transform.SetParent(scope.transform);
                         }
 
+                        debugger.Info("Triggering OnSpawned");
                         OnSpawned?.Invoke();
+                        debugger.End();
                     }
 
                     /// <summary>
@@ -137,6 +149,9 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     /// </summary>
                     public void Despawn()
                     {
+                        XDebug debugger = new XDebug("Meetgard.Scopes", this, $"Despawn() [current id: {Id}]", debug);
+                        debugger.Start();
+                        debugger.Info("Checking parameters and status");
                         if (!gameObject)
                         {
                             throw new InvalidOperationException("Cannot despawn a destroyed object");
@@ -147,14 +162,17 @@ namespace AlephVault.Unity.Meetgard.Scopes
                             throw new InvalidOperationException("This object is not spawned");
                         }
 
+                        debugger.Info("Resetting the parent");
                         if (GetComponentInParent<ScopeClientSide>() == Scope)
                         {
                             transform.SetParent(null);
                         }
 
+                        debugger.Info("Resetting the id/scope");
                         Scope = null;
-
+                        debugger.Info("Triggering OnDespawned");
                         OnDespawned?.Invoke();
+                        debugger.End();
                     }
 
                     /// <summary>
@@ -165,6 +183,9 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     /// <returns>The de-serialized model</returns>
                     public ISerializable Refresh(byte[] data)
                     {
+                        XDebug debugger = new XDebug("Meetgard.Scopes", this, $"Refresh() [current id: {Id}]", debug);
+                        debugger.Start();
+                        debugger.Info("Checking parameters and status");
                         if (!gameObject)
                         {
                             throw new InvalidOperationException("Cannot refresh a destroyed object");
@@ -175,8 +196,11 @@ namespace AlephVault.Unity.Meetgard.Scopes
                             throw new InvalidOperationException("This object is not spawned");
                         }
 
+                        debugger.Info("Reading the refresh data");
                         ISerializable model = ReadRefreshData(data);
+                        debugger.Info("Triggering OnRefreshed");
                         OnRefreshed?.Invoke(model);
+                        debugger.End();
                         return model;
                     }
 

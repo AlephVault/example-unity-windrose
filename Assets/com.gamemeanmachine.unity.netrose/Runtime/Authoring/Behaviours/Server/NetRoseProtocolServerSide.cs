@@ -215,6 +215,54 @@ namespace GameMeanMachine.Unity.NetRose
                             Content = (Enum<Direction>)orientation
                         }));
                     }
+
+                    /// <summary>
+                    ///   Initializes a prefab. If it is a netrose server side
+                    ///   object, it invokes Initialize() in the related map
+                    ///   object before returning it.
+                    /// </summary>
+                    /// <param name="prefabId">The index of the prefab to instantiate</param>
+                    /// <param name="callback">The optional callback to invoke in the new object</param>
+                    /// <returns>The instance</returns>
+                    public ObjectServerSide InstantiateHere(uint prefabId, Action<ObjectServerSide> callback = null)
+                    {
+                        ObjectServerSide obj = ScopesProtocolServerSide.InstantiateHere(prefabId);
+                        callback?.Invoke(obj);
+                        if (obj is INetRoseModelServerSide netroseObj) netroseObj.MapObject.Initialize();
+                        return obj;
+                    }
+
+                    /// <summary>
+                    ///   Initializes a prefab. If it is a netrose server side
+                    ///   object, it invokes Initialize() in the related map
+                    ///   object before returning it.
+                    /// </summary>
+                    /// <param name="prefab">The key of the prefab to instantiate</param>
+                    /// <param name="callback">The optional callback to invoke in the new object</param>
+                    /// <returns>The instance</returns>
+                    public ObjectServerSide InstantiateHere(string key, Action<ObjectServerSide> callback = null)
+                    {
+                        ObjectServerSide obj = ScopesProtocolServerSide.InstantiateHere(key);
+                        callback?.Invoke(obj);
+                        if (obj is INetRoseModelServerSide netroseObj) netroseObj.MapObject.Initialize();
+                        return obj;
+                    }
+
+                    /// <summary>
+                    ///   Initializes a prefab. If it is a netrose server side
+                    ///   object, it invokes Initialize() in the related map
+                    ///   object before returning it.
+                    /// </summary>
+                    /// <param name="prefab">The prefab to instantiate</param>
+                    /// <param name="callback">The optional callback to invoke in the new object</param>
+                    /// <returns>The instance</returns>
+                    public ObjectServerSide InstantiateHere(ObjectServerSide prefab, Action<ObjectServerSide> callback = null)
+                    {
+                        ObjectServerSide obj = ScopesProtocolServerSide.InstantiateHere(prefab);
+                        callback?.Invoke(obj);
+                        if (obj is INetRoseModelServerSide netroseObj) netroseObj.MapObject.Initialize();
+                        return obj;
+                    }
                 }
             }
         }

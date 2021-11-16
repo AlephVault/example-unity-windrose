@@ -35,11 +35,11 @@ namespace GameMeanMachine.Unity.NetRose
                     [SerializeField]
                     private int char2index = 2;
 
-                    private ScopesProtocolServerSide ScopesProtocolServerSide;
+                    private NetRoseProtocolServerSide NetRoseProtocolServerSide;
 
                     protected override void Setup()
                     {
-                        ScopesProtocolServerSide = GetComponent<ScopesProtocolServerSide>();
+                        NetRoseProtocolServerSide = GetComponent<NetRoseProtocolServerSide>();
                     }
 
                     public override async Task OnServerStarted()
@@ -61,23 +61,22 @@ namespace GameMeanMachine.Unity.NetRose
                             // Which index to take the character from?
                             int index = (clientId % 2 == 1) ? char1index : char2index;
                             // Instantiate it.
-                            ObjectServerSide obj = ScopesProtocolServerSide.InstantiateHere((uint)index);
-                            Debug.Log($"ClientMovementProtocolServerSide.OnConnected({clientId})::--Picking index: {index}");
-                            // Get the netrose component of it.
-                            OwnableModelServerSide ownableObj = obj.GetComponent<OwnableModelServerSide>();
-                            Debug.Log($"ClientMovementProtocolServerSide.OnConnected({clientId})::--Getting ownable obj", ownableObj);
-                            // Give it the required connection id.
-                            ownableObj.ConnectionId = clientId;
-                            // Add it to the dictionary.
-                            Debug.Log($"ClientMovementProtocolServerSide.OnConnected({clientId})::--Registering", ownableObj);
-                            objects[clientId] = new ObjectOwnage() { LastCommandTime = 0, OwnedObject = obj.GetComponent<INetRoseModelServerSide>() };
-                            // Initialize it in no map.
-                            Debug.Log($"ClientMovementProtocolServerSide.OnConnected({clientId})::--Initializing", ownableObj);
-                            ownableObj.MapObject.Initialize();
+                            ObjectServerSide obj = NetRoseProtocolServerSide.InstantiateHere((uint)index, (obj) => {
+                                Debug.Log($"ClientMovementProtocolServerSide.OnConnected({clientId})::--Picking index: {index}");
+                                // Get the netrose component of it.
+                                OwnableModelServerSide ownableObj = obj.GetComponent<OwnableModelServerSide>();
+                                Debug.Log($"ClientMovementProtocolServerSide.OnConnected({clientId})::--Getting ownable obj", ownableObj);
+                                // Give it the required connection id.
+                                ownableObj.ConnectionId = clientId;
+                                // Add it to the dictionary.
+                                Debug.Log($"ClientMovementProtocolServerSide.OnConnected({clientId})::--Registering", ownableObj);
+                                objects[clientId] = new ObjectOwnage() { LastCommandTime = 0, OwnedObject = obj.GetComponent<INetRoseModelServerSide>() };
+                                // Initialize it in no map.
+                            });
                             // Attach it to a map.
-                            Debug.Log($"ClientMovementProtocolServerSide.OnConnected({clientId})::--Attaching", ownableObj);
-                            ownableObj.MapObject.Attach(
-                                ScopesProtocolServerSide.LoadedScopes[4].GetComponent<Scope>()[0],
+                            Debug.Log($"ClientMovementProtocolServerSide.OnConnected({clientId})::--Attaching", obj);
+                            obj.GetComponent<INetRoseModelServerSide>().MapObject.Attach(
+                                NetRoseProtocolServerSide.ScopesProtocolServerSide.LoadedScopes[4].GetComponent<Scope>()[0],
                                 8, 6, true
                             );
                             Debug.Log($"ClientMovementProtocolServerSide.OnConnected({clientId})::End");

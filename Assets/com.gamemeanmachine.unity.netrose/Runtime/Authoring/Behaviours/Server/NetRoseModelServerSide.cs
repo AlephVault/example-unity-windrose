@@ -76,7 +76,7 @@ namespace GameMeanMachine.Unity.NetRose
                     private async Task ObjectServerSide_OnSpawned()
                     {
                         NetRoseScopeServerSide = Scope.GetComponent<NetRoseScopeServerSide>();
-                        UpdateCurrentStatus();
+                        currentStatus = GetCurrentStatus();
                     }
 
                     private async Task ObjectServerSide_OnDespawned()
@@ -94,9 +94,10 @@ namespace GameMeanMachine.Unity.NetRose
 
                     private void OnAttached(Map map)
                     {
+                        Status newStatus = GetCurrentStatus();
                         RunInMainThreadIfSpawned(() =>
                         {
-                            UpdateCurrentStatus();
+                            currentStatus = newStatus;
                             // Please note: By this point, we're in the appropriate scope.
                             // This means that the given map belongs to the current scope.
                             _ = NetRoseScopeServerSide.BroadcastObjectAttached(
@@ -108,18 +109,20 @@ namespace GameMeanMachine.Unity.NetRose
 
                     private void OnDetached()
                     {
+                        Status newStatus = GetCurrentStatus();
                         RunInMainThreadIfSpawned(() =>
                         {
-                            UpdateCurrentStatus();
+                            currentStatus = newStatus;
                             _ = NetRoseScopeServerSide.BroadcastObjectDetached(Id);
                         });
                     }
 
                     private void OnMovementStarted(Direction direction)
                     {
+                        Status newStatus = GetCurrentStatus();
                         RunInMainThreadIfSpawned(() =>
                         {
-                            UpdateCurrentStatus();
+                            currentStatus = newStatus;
                             _ = NetRoseScopeServerSide.BroadcastObjectMovementStarted(
                                 Id, MapObject.X, MapObject.Y, direction
                             );
@@ -128,9 +131,10 @@ namespace GameMeanMachine.Unity.NetRose
 
                     private void OnMovementFinished(Direction direction)
                     {
+                        Status newStatus = GetCurrentStatus();
                         RunInMainThreadIfSpawned(() =>
                         {
-                            UpdateCurrentStatus();
+                            currentStatus = newStatus;
                             _ = NetRoseScopeServerSide.BroadcastObjectMovementFinished(
                                 Id, MapObject.X, MapObject.Y
                             );
@@ -139,9 +143,10 @@ namespace GameMeanMachine.Unity.NetRose
 
                     private void OnMovementCancelled(Direction? direction)
                     {
+                        Status newStatus = GetCurrentStatus();
                         RunInMainThreadIfSpawned(() =>
                         {
-                            UpdateCurrentStatus();
+                            currentStatus = newStatus;
                             _ = NetRoseScopeServerSide.BroadcastObjectMovementCancelled(
                                 Id, MapObject.X, MapObject.Y
                             );
@@ -150,9 +155,10 @@ namespace GameMeanMachine.Unity.NetRose
 
                     private void OnTeleported(ushort x, ushort y)
                     {
+                        Status newStatus = GetCurrentStatus();
                         RunInMainThreadIfSpawned(() =>
                         {
-                            UpdateCurrentStatus();
+                            currentStatus = newStatus;
                             _ = NetRoseScopeServerSide.BroadcastObjectTeleported(Id, x, y);
                         });
                     }
@@ -175,11 +181,16 @@ namespace GameMeanMachine.Unity.NetRose
 
                     private Status currentStatus = null;
 
-                    private void UpdateCurrentStatus()
+                    private Status GetCurrentStatus()
                     {
                         if (MapObject.ParentMap != null)
                         {
-                            currentStatus = new Status()
+                            int index = MapObject.ParentMap.GetIndex();
+                            // If index is -1, the map is not synchronized.
+                            // In this case, the current status must be null
+                            // and nothing must be synchronized actually, for
+                            // no scope is currently the object in.
+                            return (index == -1) ? null : new Status()
                             {
                                 Attachment = new Attachment()
                                 {
@@ -188,14 +199,14 @@ namespace GameMeanMachine.Unity.NetRose
                                         X = MapObject.X,
                                         Y = MapObject.Y
                                     },
-                                    MapIndex = (uint)NetRoseScopeServerSide.Maps.MapsToIDs[MapObject.ParentMap]
+                                    MapIndex = (uint)index
                                 },
                                 Movement = MapObject.Movement
                             };
                         }
                         else
                         {
-                            currentStatus = null;
+                            return null;
                         }
                     }
 

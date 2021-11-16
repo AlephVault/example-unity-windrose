@@ -4,6 +4,7 @@ using AlephVault.Unity.Meetgard.Authoring.Behaviours.Server;
 using AlephVault.Unity.Meetgard.Scopes.Authoring.Behaviours.Client;
 using AlephVault.Unity.Meetgard.Scopes.Authoring.Behaviours.Server;
 using AlephVault.Unity.Meetgard.Types;
+using AlephVault.Unity.Support.Utils;
 using GameMeanMachine.Unity.NetRose.Types.Models;
 using GameMeanMachine.Unity.NetRose.Types.Protocols;
 using GameMeanMachine.Unity.NetRose.Types.Protocols.Messages;
@@ -30,6 +31,9 @@ namespace GameMeanMachine.Unity.NetRose
                 [RequireComponent(typeof(ScopesProtocolServerSide))]
                 public class NetRoseProtocolServerSide : ProtocolServerSide<NetRoseProtocolDefinition>
                 {
+                    // Whether to debug or not using XDebug.
+                    private static bool debug = false;
+
                     /// <summary>
                     ///   The related <see cref="ScopesProtocolServerSide"/>.
                     /// </summary>
@@ -226,9 +230,15 @@ namespace GameMeanMachine.Unity.NetRose
                     /// <returns>The instance</returns>
                     public ObjectServerSide InstantiateHere(uint prefabId, Action<ObjectServerSide> callback = null)
                     {
+                        XDebug debugger = new XDebug("NetRose", this, $"InstantiateHere({prefabId})", debug);
+                        debugger.Start();
+                        debugger.Info("Instantiating the object");
                         ObjectServerSide obj = ScopesProtocolServerSide.InstantiateHere(prefabId);
+                        debugger.Info("Invoking a custom init callback, if any");
                         callback?.Invoke(obj);
+                        debugger.Info("Invoking its Initialize method, if it is a NetRose object");
                         if (obj is INetRoseModelServerSide netroseObj) netroseObj.MapObject.Initialize();
+                        debugger.End();
                         return obj;
                     }
 
@@ -242,9 +252,15 @@ namespace GameMeanMachine.Unity.NetRose
                     /// <returns>The instance</returns>
                     public ObjectServerSide InstantiateHere(string key, Action<ObjectServerSide> callback = null)
                     {
+                        XDebug debugger = new XDebug("NetRose", this, $"InstantiateHere({key})", debug);
+                        debugger.Start();
+                        debugger.Info("Instantiating the object");
                         ObjectServerSide obj = ScopesProtocolServerSide.InstantiateHere(key);
+                        debugger.Info("Invoking a custom init callback, if any");
                         callback?.Invoke(obj);
+                        debugger.Info("Invoking its Initialize method, if it is a NetRose object");
                         if (obj is INetRoseModelServerSide netroseObj) netroseObj.MapObject.Initialize();
+                        debugger.End();
                         return obj;
                     }
 
@@ -258,9 +274,15 @@ namespace GameMeanMachine.Unity.NetRose
                     /// <returns>The instance</returns>
                     public ObjectServerSide InstantiateHere(ObjectServerSide prefab, Action<ObjectServerSide> callback = null)
                     {
+                        XDebug debugger = new XDebug("NetRose", this, $"InstantiateHere({prefab})", debug);
+                        debugger.Start();
+                        debugger.Info("Instantiating the object");
                         ObjectServerSide obj = ScopesProtocolServerSide.InstantiateHere(prefab);
+                        debugger.Info("Invoking a custom init callback, if any");
                         callback?.Invoke(obj);
+                        debugger.Info("Invoking its Initialize method, if it is a NetRose object");
                         if (obj is INetRoseModelServerSide netroseObj) netroseObj.MapObject.Initialize();
+                        debugger.End();
                         return obj;
                     }
                 }

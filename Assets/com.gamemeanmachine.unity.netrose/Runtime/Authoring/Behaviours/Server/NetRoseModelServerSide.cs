@@ -95,14 +95,16 @@ namespace GameMeanMachine.Unity.NetRose
                     private void OnAttached(Map map)
                     {
                         Status newStatus = GetCurrentStatus();
+                        ushort x = MapObject.X;
+                        ushort y = MapObject.Y;
+                        int mapIdx = map.GetIndex();
                         RunInMainThreadIfSpawned(() =>
                         {
                             currentStatus = newStatus;
                             // Please note: By this point, we're in the appropriate scope.
                             // This means that the given map belongs to the current scope.
                             _ = NetRoseScopeServerSide.BroadcastObjectAttached(
-                                Id, (uint)NetRoseScopeServerSide.Maps.MapsToIDs[map],
-                                MapObject.X, MapObject.Y
+                                Id, (uint)mapIdx, x, y
                             );
                         });
                     }
@@ -120,11 +122,13 @@ namespace GameMeanMachine.Unity.NetRose
                     private void OnMovementStarted(Direction direction)
                     {
                         Status newStatus = GetCurrentStatus();
+                        ushort x = MapObject.X;
+                        ushort y = MapObject.Y;
                         RunInMainThreadIfSpawned(() =>
                         {
                             currentStatus = newStatus;
                             _ = NetRoseScopeServerSide.BroadcastObjectMovementStarted(
-                                Id, MapObject.X, MapObject.Y, direction
+                                Id, x, y, direction
                             );
                         });
                     }
@@ -132,11 +136,13 @@ namespace GameMeanMachine.Unity.NetRose
                     private void OnMovementFinished(Direction direction)
                     {
                         Status newStatus = GetCurrentStatus();
+                        ushort x = MapObject.X;
+                        ushort y = MapObject.Y;
                         RunInMainThreadIfSpawned(() =>
                         {
                             currentStatus = newStatus;
                             _ = NetRoseScopeServerSide.BroadcastObjectMovementFinished(
-                                Id, MapObject.X, MapObject.Y
+                                Id, x, y
                             );
                         });
                     }
@@ -144,11 +150,13 @@ namespace GameMeanMachine.Unity.NetRose
                     private void OnMovementCancelled(Direction? direction)
                     {
                         Status newStatus = GetCurrentStatus();
+                        ushort x = MapObject.X;
+                        ushort y = MapObject.Y;
                         RunInMainThreadIfSpawned(() =>
                         {
                             currentStatus = newStatus;
                             _ = NetRoseScopeServerSide.BroadcastObjectMovementCancelled(
-                                Id, MapObject.X, MapObject.Y
+                                Id, x, y
                             );
                         });
                     }

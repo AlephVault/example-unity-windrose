@@ -70,20 +70,23 @@ namespace AlephVault.Unity.Meetgard.Scopes
                         {
                             if (pair.Item2 == null)
                             {
-                                Debug.LogWarning("Trying to spawn using a null value as data - the spawn was ignored");
+                                debugger.Warning("Trying to spawn using a null value as data - the spawn was ignored");
                                 continue;
                             }
 
                             // Lazy-allocate the array.
                             if (fullObjectData == null) fullObjectData = Protocol.AllocateFullDataMessageBytes();
                             // Serialize the object into the array.
-                            pair.Item2.Serialize(new Serializer(new Writer(new Binary.Buffer(fullObjectData))));                            
+                            Binary.Buffer buffer = new Binary.Buffer(fullObjectData);
+                            pair.Item2.Serialize(new Serializer(new Writer(buffer)));
+                            int position = (int)buffer.Position;
                             // Notify everyone.
                             Protocol.BroadcastObjectSpawned(pair.Item1, new ObjectSpawned() {
                                 ObjectIndex = target.Id,
                                 ObjectPrefabIndex = target.PrefabId,
                                 ScopeIndex = Id,
-                                Data = fullObjectData
+                                Model = pair.Item2,
+                                ModelSize = position
                             });
                         }
                         debugger.End();
@@ -249,11 +252,15 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                     // Lazy-allocate the array.
                                     if (fullObjectData == null) fullObjectData = Protocol.AllocateFullDataMessageBytes();
                                     // Serialize the object into the array.
-                                    refreshData.Serialize(new Serializer(new Writer(new Binary.Buffer(fullObjectData))));
+                                    Binary.Buffer buffer = new Binary.Buffer(fullObjectData);
+                                    refreshData.Serialize(new Serializer(new Writer(buffer)));
+                                    int position = (int)buffer.Position;
+                                    // Notify to the user.
                                     Protocol.SendObjectRefreshed(connection, new ObjectRefreshed() {
                                         ObjectIndex = obj.Id,
                                         ScopeIndex = Id,
-                                        Data = fullObjectData
+                                        Model = refreshData,
+                                        ModelSize = position
                                     });
                                 }
                             }
@@ -282,13 +289,18 @@ namespace AlephVault.Unity.Meetgard.Scopes
                             // Lazy-allocate the array.
                             if (fullObjectData == null) fullObjectData = Protocol.AllocateFullDataMessageBytes();
                             // Serialize the object into the array.
-                            obj.FullData(connection).Serialize(new Serializer(new Writer(new Binary.Buffer(fullObjectData))));
+                            ISerializable fullData = obj.FullData(connection);
+                            Binary.Buffer buffer = new Binary.Buffer(fullObjectData);
+                            fullData.Serialize(new Serializer(new Writer(buffer)));
+                            int position = (int)buffer.Position;
+                            // Notify the user.
                             Protocol.SendObjectSpawned(connection, new ObjectSpawned()
                             {
                                 ObjectIndex = obj.Id,
                                 ObjectPrefabIndex = obj.PrefabId,
                                 ScopeIndex = Id,
-                                Data = fullObjectData
+                                Model = fullData,
+                                ModelSize = position
                             });
                         }
                         debugger.End();

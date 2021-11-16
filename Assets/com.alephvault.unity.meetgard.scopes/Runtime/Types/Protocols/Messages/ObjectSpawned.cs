@@ -52,12 +52,44 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     /// </summary>
                     public byte[] Data;
 
+                    /// <summary>
+                    ///   This is a model to use in place of data. This is
+                    ///   actually useful to avoid dumping data to an array
+                    ///   and allocating buffers on each run, or having to
+                    ///   worry about buffer management. In this case, when
+                    ///   this Model is not null (this applies not to read
+                    ///   but write only), it will be used instead of using
+                    ///   the Data field.
+                    /// </summary>
+                    public ISerializable Model;
+
+                    /// <summary>
+                    ///   This is the size of the model. Only meaninful when
+                    ///   the Model is provided.
+                    /// </summary>
+                    public int ModelSize;
+
                     public void Serialize(Serializer serializer)
                     {
                         serializer.Serialize(ref ScopeIndex);
                         serializer.Serialize(ref ObjectPrefabIndex);
                         serializer.Serialize(ref ObjectIndex);
-                        serializer.Serialize(ref Data);
+                        if (!serializer.IsReading)
+                        {
+                            if (Model != null)
+                            {
+                                serializer.Serialize(ref ModelSize);
+                                Model.Serialize(serializer);
+                            }
+                            else
+                            {
+                                serializer.Serialize(ref Data);
+                            }
+                        }
+                        else
+                        {
+                            serializer.Serialize(ref Data);                            
+                        }
                     }
                 }
             }

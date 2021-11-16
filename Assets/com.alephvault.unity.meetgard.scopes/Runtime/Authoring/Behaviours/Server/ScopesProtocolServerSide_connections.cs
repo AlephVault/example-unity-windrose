@@ -195,6 +195,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                             }
                             catch(KeyNotFoundException)
                             {
+                                debugger.End();
                                 throw new InvalidOperationException("The specified new scope does not exist");
                             }
 
@@ -205,6 +206,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                             }
                             catch(KeyNotFoundException)
                             {
+                                debugger.End();
                                 throw new InvalidOperationException("The specified connection does not exist");
                             }
 

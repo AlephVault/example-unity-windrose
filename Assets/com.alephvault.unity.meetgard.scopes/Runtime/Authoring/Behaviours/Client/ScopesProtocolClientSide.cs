@@ -231,7 +231,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                 }
 
                                 // This event occurs after the per-object spawned event.
-                                debugger.Info("--Triggering OnSpawned event");
+                                debugger.Info("Triggering OnSpawned event");
                                 OnSpawned?.Invoke(spawned);
                                 debugger.End();
                             });

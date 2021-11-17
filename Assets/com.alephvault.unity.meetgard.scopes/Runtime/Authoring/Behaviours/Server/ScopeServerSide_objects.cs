@@ -120,7 +120,9 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     /// <param name="obj">The object to add</param>
                     public Task AddObject(ObjectServerSide target)
                     {
-                        return Protocol.RunInMainThread(async () =>
+                        // If there is no protocol, this scope is unloaded. It makes no sense
+                        // to add/remove objects.
+                        return (!Protocol || !gameObject) ? Task.CompletedTask :  Protocol.RunInMainThread(async () =>
                         {
                             XDebug debugger = new XDebug("Meetgard.Scopes", this, $"AddObject(scope {Id})", debug);
                             debugger.Start();
@@ -181,7 +183,10 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     /// <param name="obj">The object to remove</param>
                     public Task RemoveObject(ObjectServerSide target)
                     {
-                        return Protocol.RunInMainThread(async () =>
+                        // If there is no protocol, this scope is unloaded. It makes no sense
+                        // to add/remove objects. This might be called, for example, by an
+                        // object being destroyed while this scope is being destroyed.
+                        return (!Protocol || !gameObject) ? Task.CompletedTask : Protocol.RunInMainThread(async () =>
                         {
                             XDebug debugger = new XDebug("Meetgard.Scopes", this, $"RemoveObject(scope {Id}, {target.Id})", debug);
                             debugger.Start();

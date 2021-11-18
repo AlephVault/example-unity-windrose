@@ -170,8 +170,8 @@ namespace AlephVault.Unity.Meetgard.Scopes
 
                     protected override void SetIncomingMessageHandlers()
                     {
-                        AddIncomingMessageHandler("Welcome", (proto) => {
-                            return RunInMainThread(async () =>
+                        AddIncomingMessageHandler("Welcome", async (proto) => {
+                            _ = RunInMainThread(async () =>
                             {
                                 XDebug debugger = new XDebug("Meetgard.Scopes", this, "HandleMessage:Welcome", debug);
                                 debugger.Start();
@@ -184,8 +184,8 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                 debugger.End();
                             });
                         });
-                        AddIncomingMessageHandler<MovedToScope>("MovedToScope", (proto, message) => {
-                            return RunInMainThread(async () =>
+                        AddIncomingMessageHandler<MovedToScope>("MovedToScope", async (proto, message) => {
+                            _ = RunInMainThread(async () =>
                             {
                                 XDebug debugger = new XDebug("Meetgard.Scopes", this, $"HandleMessage:MovedToScope({message.ScopeIndex}, {message.PrefabIndex})", debug);
                                 debugger.Start();
@@ -208,8 +208,10 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                 debugger.End();
                             });
                         });
-                        AddIncomingMessageHandler<ObjectSpawned>("ObjectSpawned", (proto, message) => {
-                            return RunInMainThread(async () =>
+                        AddIncomingMessageHandler<ObjectSpawned>("ObjectSpawned", async (proto, message) => {
+                            XDebug debugger = new XDebug("Meetgard.Scopes", this, $"HandleMessage:ObjectSpawned({message.ScopeIndex}:Queue, {message.ObjectIndex}, {message.ObjectPrefabIndex})", debug);
+                            debugger.Start();
+                            _ = RunInMainThread(async () =>
                             {
                                 XDebug debugger = new XDebug("Meetgard.Scopes", this, $"HandleMessage:ObjectSpawned({message.ScopeIndex}, {message.ObjectIndex}, {message.ObjectPrefabIndex})", debug);
                                 debugger.Start();
@@ -220,7 +222,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                 ObjectClientSide spawned;
                                 try
                                 {
-                                    debugger.Info("--Spawning the object");
+                                    debugger.Info("Spawning the object");
                                     spawned = Spawn(message.ObjectIndex, message.ObjectPrefabIndex, message.Data);
                                 }
                                 catch (Exception e)
@@ -231,13 +233,13 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                 }
 
                                 // This event occurs after the per-object spawned event.
-                                debugger.Info("Triggering OnSpawned event");
+                                debugger.Info($"Triggering OnSpawned event for object: {spawned}");
                                 OnSpawned?.Invoke(spawned);
                                 debugger.End();
                             });
                         });
-                        AddIncomingMessageHandler<ObjectRefreshed>("ObjectRefreshed", (proto, message) => {
-                            return RunInMainThread(async () =>
+                        AddIncomingMessageHandler<ObjectRefreshed>("ObjectRefreshed", async (proto, message) => {
+                            _ = RunInMainThread(async () =>
                             {
                                 XDebug debugger = new XDebug("Meetgard.Scopes", this, $"HandleMessage:ObjectRefreshed({message.ScopeIndex}, {message.ObjectIndex})", debug);
                                 debugger.Start();
@@ -264,8 +266,8 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                 debugger.End();
                             });
                         });
-                        AddIncomingMessageHandler<ObjectDespawned>("ObjectDespawned", (proto, message) => {
-                            return RunInMainThread(async () =>
+                        AddIncomingMessageHandler<ObjectDespawned>("ObjectDespawned", async (proto, message) => {
+                            _ = RunInMainThread(async () =>
                             {
                                 XDebug debugger = new XDebug("Meetgard.Scopes", this, $"HandleMessage:ObjectDespawned({message.ScopeIndex}, {message.ObjectIndex})", debug);
                                 debugger.Start();
@@ -411,9 +413,12 @@ namespace AlephVault.Unity.Meetgard.Scopes
                         else
                         {
                             // Get a new instance, register it and spawn it.
+                            debugger.Info($"Instantiating the object locally (objectId={objectId}, prefabId={objectPrefabId}, prefab={objectPrefabs[objectPrefabId]})");
                             ObjectClientSide instance = InstanceManager.Result != null ? InstanceManager.Result.Get(objectPrefabs[objectPrefabId]) : Instantiate(objectPrefabs[objectPrefabId]);
+                            debugger.Info($"Assigning current client protocol and registering");
                             instance.Protocol = this;
                             currentObjects.Add(objectId, instance);
+                            debugger.Info($"Spawning the object locally");
                             instance.Spawn(CurrentScope, objectId, data);
                             debugger.End();
                             return instance;

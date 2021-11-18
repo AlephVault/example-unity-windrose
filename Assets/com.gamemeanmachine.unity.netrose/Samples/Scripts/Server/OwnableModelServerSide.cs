@@ -24,8 +24,8 @@ namespace GameMeanMachine.Unity.NetRose
                 protected void Awake()
                 {
                     base.Awake();
-                    OnSpawned += OwnableModelServerSide_OnSpawned;
-                    OnDespawned += OwnableModelServerSide_OnDespawned;
+                    OnAfterSpawned += OwnableModelServerSide_OnSpawned;
+                    OnBeforeDespawned += OwnableModelServerSide_OnDespawned;
                 }
 
                 protected void Start()

@@ -95,11 +95,25 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     public event Func<Task> OnSpawned = null;
 
                     /// <summary>
+                    ///   Triggered when the object spawn was fully performed.
+                    ///   Additional logic will take place with a fully spawned
+                    ///   and notified object.
+                    /// </summary>
+                    public event Func<Task> OnAfterSpawned = null;
+
+                    /// <summary>
                     ///   Triggered when the object is despawned from the
                     ///   last scope. By this point, the object will not
                     ///   have any sort of scope association information.
                     /// </summary>
                     public event Func<Task> OnDespawned = null;
+
+                    /// <summary>
+                    ///   Triggered before the object despawn is fully.
+                    ///   Additional logic will take place with a still spawned,
+                    ///   yet about to be despawned, object.
+                    /// </summary>
+                    public event Func<Task> OnBeforeDespawned = null;
 
                     /// <summary>
                     ///   Returns the data of this object to synchronize for the
@@ -197,12 +211,36 @@ namespace AlephVault.Unity.Meetgard.Scopes
                         });
                     }
 
+                    // Triggers the OnAfterSpawned event.
+                    internal Task TriggerOnAfterSpawned()
+                    {
+                        return OnAfterSpawned?.InvokeAsync(async (e) => {
+                            Debug.LogError(
+                                $"An error of type {e.GetType().FullName} has occurred in object server side's OnAfterSpawned event. " +
+                                $"If the exceptions are not properly handled, the game state might be inconsistent. " +
+                                $"The exception details are: {e.Message}"
+                            );
+                        });
+                    }
+
                     // Triggers the OnDespawned event.
                     internal Task TriggerOnDespawned()
                     {
                         return OnDespawned?.InvokeAsync(async (e) => {
                             Debug.LogError(
                                 $"An error of type {e.GetType().FullName} has occurred in object server side's OnDespawned event. " +
+                                $"If the exceptions are not properly handled, the game state might be inconsistent. " +
+                                $"The exception details are: {e.Message}"
+                            );
+                        });
+                    }
+
+                    // Triggers the OnBeforeDespawned event.
+                    internal Task TriggerOnBeforeDespawned()
+                    {
+                        return OnBeforeDespawned?.InvokeAsync(async (e) => {
+                            Debug.LogError(
+                                $"An error of type {e.GetType().FullName} has occurred in object server side's OnBeforeDespawned event. " +
                                 $"If the exceptions are not properly handled, the game state might be inconsistent. " +
                                 $"The exception details are: {e.Message}"
                             );

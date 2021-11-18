@@ -66,6 +66,8 @@ namespace AlephVault.Unity.Meetgard.Scopes
                     {
                         XDebug debugger = new XDebug("Meetgard.Scopes", this, $"NotifyObjectSpawnedToEveryone({Id}, {target.Id})", debug);
                         debugger.Start();
+                        string joinedConnectionsSet = string.Join(", ", connections);
+                        debugger.Info($"Current connections: {joinedConnectionsSet}");
                         foreach(Tuple<HashSet<ulong>, ISerializable> pair in target.FullData(connections))
                         {
                             if (pair.Item2 == null)
@@ -81,6 +83,8 @@ namespace AlephVault.Unity.Meetgard.Scopes
                             pair.Item2.Serialize(new Serializer(new Writer(buffer)));
                             int position = (int)buffer.Position;
                             // Notify everyone.
+                            string joinedConnectionsSubset = string.Join(", ", pair.Item1);
+                            debugger.Info($"Current connections subset: {joinedConnectionsSubset}, model: {pair.Item2}");
                             Protocol.BroadcastObjectSpawned(pair.Item1, new ObjectSpawned() {
                                 ObjectIndex = target.Id,
                                 ObjectPrefabIndex = target.PrefabId,
@@ -151,10 +155,10 @@ namespace AlephVault.Unity.Meetgard.Scopes
                             // Finally, register the object, and broadcast.
                             debugger.Info("Registering the object");
                             RegisterObject(target);
-                            debugger.Info("Notifying the object being spawned");
-                            NotifyObjectSpawnedToEveryone(target);
 
-                            // In the end, trigger the event for the object.
+                            // Then, trigger the event for the object.
+                            // The objects will prepare themselved on spawn.
+                            // (e.g. initialize per-spawn data).
                             debugger.Info("Notifying locally (to the object)");
                             await (target.TriggerOnSpawned() ?? Task.CompletedTask);
                             debugger.Info("Notifying locally (to the scope)");
@@ -165,6 +169,18 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                     $"The exception details are: {e.Message}"
                                 );
                             }) ?? Task.CompletedTask);
+                            // After that, when the objects are fully spawned
+                            // (and gained their own spawn-relevant data), those
+                            // objects may be notified to the clients (otherwise,
+                            // they will happen to be notified to the clients
+                            // when they are not ready, and errors will occur).
+                            debugger.Info("Notifying the object being spawned");
+                            NotifyObjectSpawnedToEveryone(target);
+                            // Finally, after the object is notified to all of
+                            // the existing connections in the scope, the object
+                            // can perform further "after spawn" logic.
+                            debugger.Info("Notifying locally (to the object, after spawn");
+                            await (target.TriggerOnAfterSpawned() ?? Task.CompletedTask);
                             debugger.End();
                         });
                     }
@@ -210,11 +226,15 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                 target.transform.SetParent(transform.parent);
                             }
 
+                            // Initially, before the object is notified to all of
+                            // the existing connections in the scope, the object
+                            // can perform previous "before despawn" logic.
+                            debugger.Info("Notifying locally (to the object, before despawn");
+                            await (target.TriggerOnAfterSpawned() ?? Task.CompletedTask);
+
                             // Finally, unregister the object, and broadcast.
                             debugger.Info("Notifying the object being despawned");
                             NotifyObjectDespawnedToEveryone(target);
-                            debugger.Info("Unregistering the object");
-                            UnregisterObject(target);
 
                             // In the end, trigger the event for the object.
                             debugger.Info("Notifying locally (to the object)");
@@ -227,6 +247,10 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                     $"The exception details are: {e.Message}"
                                 );
                             }) ?? Task.CompletedTask);
+
+                            // Then unregister the object.
+                            debugger.Info("Unregistering the object");
+                            UnregisterObject(target);
                             debugger.End();
                         });
                     }
@@ -261,7 +285,7 @@ namespace AlephVault.Unity.Meetgard.Scopes
                                     refreshData.Serialize(new Serializer(new Writer(buffer)));
                                     int position = (int)buffer.Position;
                                     // Notify to the user.
-                                    Protocol.SendObjectRefreshed(connection, new ObjectRefreshed() {
+                                    _ = Protocol.SendObjectRefreshed(connection, new ObjectRefreshed() {
                                         ObjectIndex = obj.Id,
                                         ScopeIndex = Id,
                                         Model = refreshData,
@@ -299,7 +323,8 @@ namespace AlephVault.Unity.Meetgard.Scopes
                             fullData.Serialize(new Serializer(new Writer(buffer)));
                             int position = (int)buffer.Position;
                             // Notify the user.
-                            Protocol.SendObjectSpawned(connection, new ObjectSpawned()
+                            debugger.Info($"Current connection: {connection}, model: {fullData}");
+                            _ = Protocol.SendObjectSpawned(connection, new ObjectSpawned()
                             {
                                 ObjectIndex = obj.Id,
                                 ObjectPrefabIndex = obj.PrefabId,

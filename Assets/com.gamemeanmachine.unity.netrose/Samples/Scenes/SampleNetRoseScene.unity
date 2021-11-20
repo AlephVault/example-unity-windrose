@@ -484,7 +484,7 @@ MonoBehaviour:
   DontDestroy: 0
   secure: 1
   sslProtocols: 240
-  certificatePath: /home/luismasuelli/Desktop/test.alephvault.com.pfx
+  certificatePath: /home/luismasuelli/Desktop/test.alephvault.com.txt
   privateKeyPassphraseEnvVar: prueba
 --- !u!114 &785681447
 MonoBehaviour:

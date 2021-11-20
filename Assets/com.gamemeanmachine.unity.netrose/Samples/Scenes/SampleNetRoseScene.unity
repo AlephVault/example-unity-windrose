@@ -220,7 +220,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   idleSleepTime: 0.01
   maxMessageSize: 1024
+  writeTimeout: 15
   DontDestroy: 0
+  secure: 1
+  trustServerCertificate: 0
+  sslProtocols: 240
+  checkCertificateRevocation: 1
 --- !u!114 &134967939
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -475,7 +480,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   idleSleepTime: 0.01
   maxMessageSize: 1024
+  writeTimeout: 15
   DontDestroy: 0
+  secure: 1
+  sslProtocols: 240
+  certificatePath: /home/luismasuelli/Desktop/test.alephvault.com.pfx
+  privateKeyPassphraseEnvVar: prueba
 --- !u!114 &785681447
 MonoBehaviour:
   m_ObjectHideFlags: 0

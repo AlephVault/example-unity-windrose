@@ -74,7 +74,7 @@ namespace GameMeanMachine.Unity.NetRose
                     if (Input.GetKeyDown(mode2 ? mode2StartKey : mode1StartKey) && !client.IsRunning && !client.IsConnected)
                     {
                         Debug.Log("Sample Server::Starting...");
-                        client.Connect("localhost", 9999);
+                        client.Connect("test.alephvault.com", 9999);
                         Debug.Log("Sample Server::Started.");
                     }
 

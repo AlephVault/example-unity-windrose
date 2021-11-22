@@ -5,6 +5,7 @@
     "com.alephvault.unity.layout": "file:../../unity-layout",
     "com.alephvault.unity.meetgard": "file:../../unity-meetgard",
     "com.alephvault.unity.meetgard.auth": "file:../../unity-meetgard-auth",
+    "com.alephvault.unity.meetgard.scopes": "file:/home/luismasuelli/Projects/Unity/unity-meetgard-scopes",
     "com.alephvault.unity.menuactions": "file:../../unity-menu-actions",
     "com.alephvault.unity.scenes": "file:../../unity-scenes",
     "com.alephvault.unity.soundaround": "file:../../unity-soundaround",

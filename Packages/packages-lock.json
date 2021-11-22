@@ -41,6 +41,15 @@
         "com.alephvault.unity.support.generic": "0.0.1"
       }
     },
+    "com.alephvault.unity.meetgard.scopes": {
+      "version": "file:/home/luismasuelli/Projects/Unity/unity-meetgard-scopes",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {
+        "com.alephvault.unity.meetgard": "0.0.1",
+        "com.alephvault.unity.support.generic": "0.0.1"
+      }
+    },
     "com.alephvault.unity.menuactions": {
       "version": "file:../../unity-menu-actions",
       "depth": 0,

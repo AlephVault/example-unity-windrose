@@ -32,6 +32,15 @@
         "com.alephvault.unity.binary": "0.0.1"
       }
     },
+    "com.alephvault.unity.meetgard.auth": {
+      "version": "file:../../unity-meetgard-auth",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {
+        "com.alephvault.unity.meetgard": "0.0.1",
+        "com.alephvault.unity.support.generic": "0.0.1"
+      }
+    },
     "com.alephvault.unity.menuactions": {
       "version": "file:../../unity-menu-actions",
       "depth": 0,
@@ -196,23 +205,6 @@
       "dependencies": {},
       "url": "https://packages.unity.com"
     },
-    "com.unity.multiplayer.mlapi": {
-      "version": "file:../../com.unity.multiplayer.mlapi/com.unity.multiplayer.mlapi",
-      "depth": 0,
-      "source": "local",
-      "dependencies": {
-        "com.unity.modules.ai": "1.0.0",
-        "com.unity.modules.animation": "1.0.0",
-        "com.unity.nuget.mono-cecil": "1.10.1-preview.1"
-      }
-    },
-    "com.unity.nuget.mono-cecil": {
-      "version": "1.10.1-preview.1",
-      "depth": 1,
-      "source": "registry",
-      "dependencies": {},
-      "url": "https://packages.unity.com"
-    },
     "com.unity.nuget.newtonsoft-json": {
       "version": "2.0.0",
       "depth": 1,
@@ -278,6 +270,16 @@
         "com.unity.modules.animation": "1.0.0",
         "com.unity.modules.audio": "1.0.0",
         "com.unity.modules.particlesystem": "1.0.0"
+      },
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.toolchain.linux-x86_64": {
+      "version": "0.1.19-preview",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.sysroot": "0.1.19-preview",
+        "com.unity.sysroot.linux-x86_64": "0.1.14-preview"
       },
       "url": "https://packages.unity.com"
     },

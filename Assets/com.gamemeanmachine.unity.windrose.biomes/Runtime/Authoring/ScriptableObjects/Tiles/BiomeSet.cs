@@ -100,6 +100,18 @@ namespace GameMeanMachine.Unity.WindRose.Biomes
                         int count = 0;
                         foreach (BiomeEntry entry in biomes)
                         {
+                            if (count == 64)
+                            {
+                                Debug.LogWarning(
+                                    "More than 64 biomes are loaded. They will be truncated " +
+                                    "to only keep the first 64 biomes in the list."
+                                );
+                                while (biomes.Count > 64)
+                                {
+                                    biomes.RemoveAt(64);
+                                }
+                                return;
+                            }
                             biomeIndexByCode.Add(entry.Code, count++);
                         }
                     }

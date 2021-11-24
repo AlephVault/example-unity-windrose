@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f53f6e8b15ede54cba6359eaa0f1d9fb, type: 3}
+  m_Name: Common
+  m_EditorClassIdentifier: 
+  biomes:
+  - code: NORMAL
+    name: Normal
+  - code: WATER
+    name: Water
+  - code: LAVA
+    name: Lava
+  - code: AIR
+    name: Air

@@ -50,15 +50,15 @@ namespace GameMeanMachine.Unity.WindRose.Biomes
                                     {
                                         bool set = EditorGUILayout.ToggleLeft(
                                             $"{entry.Item2} ({entry.Item1})",
-                                            (component.biome & (1 << index)) != 0
+                                            (component.biome & (ulong) (1 << index)) != 0
                                         );
                                         if (set)
                                         {
-                                            component.biome |= (ushort) (1 << index);
+                                            component.biome |= (ulong)1 << index;
                                         }
                                         else
                                         {
-                                            component.biome &= (ushort) ~(1 << index);
+                                            component.biome &= ~((ulong)1 << index);
                                         }
 
                                         index++;
@@ -86,12 +86,12 @@ namespace GameMeanMachine.Unity.WindRose.Biomes
                         ///   The biomes this tile contains, with respect
                         ///   to the related <see cref="biomeSet"/>.
                         /// </summary>
-                        [SerializeField] private ushort biome;
+                        [SerializeField] private ulong biome;
 
                         /// <summary>
                         ///   See <see cref="biome"/>.
                         /// </summary>
-                        public ushort Biome => biome;
+                        public ulong Biome => biome;
                     }
                 }
             }

@@ -1,3 +1,16 @@
 {
-	"name": "GameMeanMachine.Unity.WindRose.Biomes.Samples"
+    "name": "GameMeanMachine.Unity.WindRose.Biomes.Samples",
+    "rootNamespace": "",
+    "references": [
+        "GUID:f7c3966930d94b1788eddc41d2f8ceb5"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

@@ -16,6 +16,7 @@ namespace GameMeanMachine.Unity.WindRose.Biomes
                 ///   Represents a read-only bundle having all of the
                 ///   biomes for a given map layout.
                 /// </summary>
+                [CreateAssetMenu(fileName = "NewBiomeSet", menuName = "Wind Rose/Biome Set", order = 210)]
                 public class BiomeSet : ScriptableObject, IEnumerable<Tuple<string, string>>
                 {
                     /// <summary>

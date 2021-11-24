@@ -5,6 +5,10 @@ namespace GameMeanMachine.Unity.WindRose.Biomes
 {
     namespace Types
     {
+        /// <summary>
+        ///   This exception is triggered when a biome is not set on behaviours
+        ///   that make use of them.
+        /// </summary>
         public class MissingBiomeSetException : Exception
         {
             public MissingBiomeSetException() { }

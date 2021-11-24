@@ -10,7 +10,7 @@ namespace GameMeanMachine.Unity.WindRose.Biomes
     {
         namespace ScriptableObjects
         {
-            namespace Core
+            namespace Tiles
             {
                 /// <summary>
                 ///   Represents a read-only bundle having all of the

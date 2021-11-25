@@ -145,7 +145,15 @@ namespace GameMeanMachine.Unity.WindRose.Biomes
                                         BiomeTileStrategy biomeTileStrategy = BundledTile.GetStrategyFrom<BiomeTileStrategy>(tile);
                                         if (biomeTileStrategy)
                                         {
-                                            biome = biomeTileStrategy.Biome;
+                                            if (biomeTileStrategy.OverrideMode ==
+                                                BiomeTileStrategy.BiomeOverrideMode.Extend)
+                                            {
+                                                biome |= biomeTileStrategy.BiomeMask;
+                                            }
+                                            else
+                                            {
+                                                biome = biomeTileStrategy.BiomeMask;
+                                            }
                                         }
                                     }
                                     

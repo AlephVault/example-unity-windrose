@@ -9,9 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3963bd325c6b4d088c643d6d5d203ef6, type: 3}
-  m_Name: Shore
+  m_Script: {fileID: 11500000, guid: e018d3d6050d06645a14fb232dd2881b, type: 3}
+  m_Name: Free
   m_EditorClassIdentifier: 
-  biomeSet: {fileID: 11400000, guid: 86a815283f8d94040a551275c6ed7e05, type: 2}
-  OverrideMode: 0
-  biome: 0
+  blocks: 0

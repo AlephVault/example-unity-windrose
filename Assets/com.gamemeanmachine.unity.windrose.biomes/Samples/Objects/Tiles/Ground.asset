@@ -13,4 +13,5 @@ MonoBehaviour:
   m_Name: Ground
   m_EditorClassIdentifier: 
   biomeSet: {fileID: 11400000, guid: 86a815283f8d94040a551275c6ed7e05, type: 2}
-  biome: 1
+  OverrideMode: 1
+  biome: 0

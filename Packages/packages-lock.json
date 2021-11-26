@@ -152,6 +152,14 @@
         "com.gamemeanmachine.unity.gabtab": "0.0.1"
       }
     },
+    "com.gamemeanmachine.unity.windrose.biomes": {
+      "version": "file:/home/luismasuelli/Projects/Unity/unity-windrose-biomes",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {
+        "com.gamemeanmachine.unity.windrose": "0.0.2"
+      }
+    },
     "com.unity.2d.sprite": {
       "version": "1.0.0",
       "depth": 0,

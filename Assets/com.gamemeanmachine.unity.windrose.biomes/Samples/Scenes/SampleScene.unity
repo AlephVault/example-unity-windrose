@@ -283,8 +283,9 @@ GameObject:
   - component: {fileID: 1388753185}
   - component: {fileID: 1388753184}
   - component: {fileID: 1388753183}
-  - component: {fileID: 1388753182}
   - component: {fileID: 1388753181}
+  - component: {fileID: 1388753189}
+  - component: {fileID: 1388753182}
   m_Layer: 0
   m_Name: ObjectsLayer
   m_TagString: Untagged
@@ -330,7 +331,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1388753179}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5ca0689cacf5c274ba2c19d23c11a093, type: 3}
+  m_Script: {fileID: 11500000, guid: b8bb5f1ed04c41b0ac32d797337f0ae6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &1388753183
@@ -405,6 +406,19 @@ Grid:
   m_CellGap: {x: 0, y: 0, z: 0}
   m_CellLayout: 0
   m_CellSwizzle: 0
+--- !u!114 &1388753189
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1388753179}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ed97acc8ee0af7915bdf9883136538b8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  biomeSet: {fileID: 11400000, guid: 86a815283f8d94040a551275c6ed7e05, type: 2}
 --- !u!1 &1404512765
 GameObject:
   m_ObjectHideFlags: 0
@@ -1551,7 +1565,9 @@ GameObject:
   - component: {fileID: 1760025605}
   - component: {fileID: 1760025604}
   - component: {fileID: 1760025603}
+  - component: {fileID: 1760025608}
   - component: {fileID: 1760025602}
+  - component: {fileID: 1760025609}
   m_Layer: 0
   m_Name: Character
   m_TagString: Untagged
@@ -1583,7 +1599,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1760025600}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9c86cdb8f375a8c4e9953119597fc921, type: 3}
+  m_Script: {fileID: 11500000, guid: fc8cb7c6511b4d588b38c8de252076eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &1760025603
@@ -1632,7 +1648,7 @@ MonoBehaviour:
   height: 1
   speed: 4
   orientation: 0
-  mainVisual: {fileID: 0}
+  mainVisual: {fileID: 1983880358}
 --- !u!114 &1760025606
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1658,6 +1674,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c6b592f73c40ee543b4a91a132c2a574, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1760025608
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1760025600}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d8bd950db704c37829338788e387901, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  biomeSet: {fileID: 11400000, guid: 86a815283f8d94040a551275c6ed7e05, type: 2}
+  biome: 0
+--- !u!114 &1760025609
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1760025600}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ffe3bf303e4c4889987962435d27cc03, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GroundStaying: {fileID: 11400000, guid: 23af7c1e184665f4fa4de630abbacff4, type: 2}
+  GroundMoving: {fileID: 11400000, guid: f27a270b532f889d582b20059bdaf074, type: 2}
+  WaterStaying: {fileID: 11400000, guid: fbe7bba010ca0b619b8db6a5314b8fe4, type: 2}
+  WaterMoving: {fileID: 11400000, guid: ce4707ec7626ed4329304c2cb86f7f34, type: 2}
 --- !u!1 &1966676645
 GameObject:
   m_ObjectHideFlags: 0

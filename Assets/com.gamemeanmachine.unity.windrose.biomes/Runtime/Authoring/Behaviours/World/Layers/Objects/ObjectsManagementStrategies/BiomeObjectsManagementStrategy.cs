@@ -94,7 +94,6 @@ namespace GameMeanMachine.Unity.WindRose.Biomes
                                     if (!base.CanAttachStrategy(otherComponentsResults, strategy, ref reason)) return false;
                                     if (((BiomeObjectStrategy) strategy).biomeSet == biomeSet)
                                     {
-                                        reason = "";
                                         return true;
                                     }
                                     reason = "Related object strategy counterpart uses a different biome set";

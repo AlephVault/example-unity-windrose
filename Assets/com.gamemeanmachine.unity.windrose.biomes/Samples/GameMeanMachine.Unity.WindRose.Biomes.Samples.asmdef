@@ -2,7 +2,8 @@
     "name": "GameMeanMachine.Unity.WindRose.Biomes.Samples",
     "rootNamespace": "",
     "references": [
-        "GUID:f7c3966930d94b1788eddc41d2f8ceb5"
+        "GUID:f7c3966930d94b1788eddc41d2f8ceb5",
+        "GUID:439919d2a7071004695af55cbbe6745b"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

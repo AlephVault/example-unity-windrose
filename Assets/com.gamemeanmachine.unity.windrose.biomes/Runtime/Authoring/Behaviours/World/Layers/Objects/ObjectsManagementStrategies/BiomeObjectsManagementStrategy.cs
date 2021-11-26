@@ -47,6 +47,14 @@ namespace GameMeanMachine.Unity.WindRose.Biomes
                                 // This variable is set on strategy initialization.
                                 private Bitmask[] biomes;
 
+                                private LayoutObjectsManagementStrategy layoutObjectsManagementStrategy;
+
+                                protected override void Awake()
+                                {
+                                    base.Awake();
+                                    layoutObjectsManagementStrategy = GetComponent<LayoutObjectsManagementStrategy>();
+                                }
+
                                 // For a given biome bitmask, checks whether any square in any adjacent side
                                 // is unset (i.e. lacks of biome).
                                 private bool IsAdjacencyUnset(Bitmask bitmask, uint x, uint y, uint width, uint height, Direction? direction)
@@ -91,17 +99,17 @@ namespace GameMeanMachine.Unity.WindRose.Biomes
                                 }
 
                                 public override bool CanAllocateMovement(
-                                    Dictionary<Type, bool> otherComponentsResults, ObjectStrategy strategy,
+                                    Dictionary<ObjectsManagementStrategy, bool> otherComponentsResults, ObjectStrategy strategy,
                                     ObjectsManagementStrategyHolder.Status status, Direction direction,
                                     bool continued
                                 )
                                 {
-                                    if (!otherComponentsResults[typeof(LayoutObjectsManagementStrategy)]) return false;
+                                    if (!otherComponentsResults[layoutObjectsManagementStrategy]) return false;
                                     return !IsAdjacencyUnset(biomes[((BiomeObjectStrategy)strategy).Biome], status.X, status.Y, strategy.StrategyHolder.Object.Width, strategy.StrategyHolder.Object.Height, direction);
                                 }
 
                                 public override bool CanClearMovement(
-                                    Dictionary<Type, bool> otherComponentsResults,
+                                    Dictionary<ObjectsManagementStrategy, bool> otherComponentsResults,
                                     ObjectStrategy strategy, ObjectsManagementStrategyHolder.Status status)
                                 {
                                     return true;

@@ -9,11 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f53f6e8b15ede54cba6359eaa0f1d9fb, type: 3}
-  m_Name: Common
+  m_Script: {fileID: 11500000, guid: 7d6d1f97c3a38584b83ace1ec6aec7a2, type: 3}
+  m_Name: Ground-Staying-Down
   m_EditorClassIdentifier: 
-  biomes:
-  - code: NORMAL
-    name: Normal
-  - code: WATER
-    name: Water
+  sprites:
+  - {fileID: 3980893755669651623, guid: 9a92dfb33a95dc5788262de8681b53bd, type: 3}
+  fps: 1

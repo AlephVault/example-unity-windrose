@@ -108,6 +108,20 @@ namespace GameMeanMachine.Unity.WindRose.Biomes
                                 )
                                 {
                                     if (!otherComponentsResults[layoutObjectsManagementStrategy]) return false;
+                                    // Also, if the object is NOT 1x1, then movement is currently not supported.
+                                    // This will change in a future development, but so far it will be totally
+                                    // ruled out.
+                                    if (strategy.Object.Width != 1 || strategy.Object.Height != 1)
+                                    {
+                                        Debug.Log(
+                                            "Currently, movement for non-1x1 objects is not supported in " +
+                                            "the biome objects management strategy. This might be implemented in " +
+                                            "the future, but so far is not.", strategy.Object
+                                        );
+                                        return false;
+                                    }
+                                    // Otherwise, the check will be done similarly to what the Layout strategy
+                                    // does in general for block/unblock.
                                     return !IsAdjacencyUnset(biomes[((BiomeObjectStrategy)strategy).Biome], status.X, status.Y, strategy.StrategyHolder.Object.Width, strategy.StrategyHolder.Object.Height, direction);
                                 }
 

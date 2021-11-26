@@ -19,71 +19,68 @@ namespace GameMeanMachine.Unity.WindRose.Biomes
             {
                 namespace Strategies
                 {
-                    namespace Base
+                    /// <summary>
+                    ///   This strategy is just the counterpart of <see cref="BiomeObjectsManagementStrategy"/>.
+                    /// </summary>
+                    [RequireComponent(typeof(LayoutObjectStrategy))]
+                    public class BiomeObjectStrategy : ObjectStrategy
                     {
                         /// <summary>
-                        ///   This strategy is just the counterpart of <see cref="BiomeObjectsManagementStrategy"/>.
+                        ///   The counterpart type is <see cref="BiomeObjectsManagementStrategy"/>.
                         /// </summary>
-                        [RequireComponent(typeof(LayoutObjectStrategy))]
-                        public class BiomeObjectStrategy : ObjectStrategy
+                        protected override Type GetCounterpartType()
                         {
-                            /// <summary>
-                            ///   The counterpart type is <see cref="BiomeObjectsManagementStrategy"/>.
-                            /// </summary>
-                            protected override Type GetCounterpartType()
+                            return typeof(BiomeObjectsManagementStrategy);
+                        }
+                        
+                        /// <summary>
+                        ///   The biome set this strategy relates to.
+                        /// </summary>
+                        [SerializeField]
+                        internal BiomeSet biomeSet;
+
+                        // The current biome.
+                        [SerializeField]
+                        private byte biome = 0;
+
+                        /// <summary>
+                        ///   The current biome for this object.
+                        /// </summary>
+                        public byte Biome
+                        {
+                            get => biome;
+                            set
                             {
-                                return typeof(BiomeObjectsManagementStrategy);
-                            }
-                            
-                            /// <summary>
-                            ///   The biome set this strategy relates to.
-                            /// </summary>
-                            [SerializeField]
-                            internal BiomeSet biomeSet;
-
-                            // The current biome.
-                            [SerializeField]
-                            private byte biome = 0;
-
-                            /// <summary>
-                            ///   The current biome for this object.
-                            /// </summary>
-                            public byte Biome
-                            {
-                                get => biome;
-                                set
+                                if (value >= biomeSet.Count)
                                 {
-                                    if (value >= biomeSet.Count)
-                                    {
-                                        throw new IndexOutOfRangeException(
-                                            "The new biome index is not valid"
-                                        );
-                                    }
-
-                                    byte oldBiome = biome;
-                                    biome = value;
-                                    PropertyWasUpdated("biome", oldBiome, biome);
-                                }
-                            }
-
-                            protected override void Awake()
-                            {
-                                base.Awake();
-                                if (biomeSet == null)
-                                {
-                                    Destroy(gameObject);
-                                    throw new MissingBiomeSetException(
-                                        "A biome set must be added to this object strategy"
-                                    );
-                                }
-
-                                if (biome >= biomeSet.Count)
-                                {
-                                    Destroy(gameObject);
                                     throw new IndexOutOfRangeException(
-                                        "The default biome index is not valid"
+                                        "The new biome index is not valid"
                                     );
                                 }
+
+                                byte oldBiome = biome;
+                                biome = value;
+                                PropertyWasUpdated("biome", oldBiome, biome);
+                            }
+                        }
+
+                        protected override void Awake()
+                        {
+                            base.Awake();
+                            if (biomeSet == null)
+                            {
+                                Destroy(gameObject);
+                                throw new MissingBiomeSetException(
+                                    "A biome set must be added to this object strategy"
+                                );
+                            }
+
+                            if (biome >= biomeSet.Count)
+                            {
+                                Destroy(gameObject);
+                                throw new IndexOutOfRangeException(
+                                    "The default biome index is not valid"
+                                );
                             }
                         }
                     }

@@ -6,7 +6,7 @@ using GameMeanMachine.Unity.WindRose.Authoring.Behaviours.World.Layers.Objects;
 using GameMeanMachine.Unity.WindRose.Authoring.Behaviours.World.Layers.Objects.ObjectsManagementStrategies;
 using GameMeanMachine.Unity.WindRose.Authoring.Behaviours.World.Layers.Objects.ObjectsManagementStrategies.Base;
 using GameMeanMachine.Unity.WindRose.Authoring.ScriptableObjects.Tiles;
-using GameMeanMachine.Unity.WindRose.Biomes.Authoring.Behaviours.Entities.Objects.Strategies.Base;
+using GameMeanMachine.Unity.WindRose.Biomes.Authoring.Behaviours.Entities.Objects.Strategies;
 using GameMeanMachine.Unity.WindRose.Biomes.Authoring.ScriptableObjects.Tiles;
 using GameMeanMachine.Unity.WindRose.Biomes.Authoring.ScriptableObjects.Tiles.Strategies;
 using GameMeanMachine.Unity.WindRose.Biomes.Types;

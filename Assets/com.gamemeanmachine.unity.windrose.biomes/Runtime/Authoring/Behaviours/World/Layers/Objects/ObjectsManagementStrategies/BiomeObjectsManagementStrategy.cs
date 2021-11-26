@@ -83,12 +83,15 @@ namespace GameMeanMachine.Unity.WindRose.Biomes
                                 ///   Tests whether the new strategy is not null and also has the same
                                 ///   biome set of this management strategy
                                 /// </summary>
+                                /// <param name="otherComponentsResults">
+                                ///   A dictionary holding the calculated value, for this method, in the dependencies. You can -and often
+                                ///     WILL- also take those values into account for this calculation</param>
                                 /// <param name="strategy">The object strategy counterpart to accept or reject</param>
                                 /// <param name="reason">And output reason for the rejection</param>
                                 /// <returns>Whether the strategy is rejected or not</returns>
-                                public override bool CanAttachStrategy(ObjectStrategy strategy, out string reason)
+                                public override bool CanAttachStrategy(Dictionary<ObjectsManagementStrategy, bool> otherComponentsResults, ObjectStrategy strategy, ref string reason)
                                 {
-                                    if (!base.CanAttachStrategy(strategy, out reason)) return false;
+                                    if (!base.CanAttachStrategy(otherComponentsResults, strategy, ref reason)) return false;
                                     if (((BiomeObjectStrategy) strategy).biomeSet == biomeSet)
                                     {
                                         reason = "";

@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using GameMeanMachine.Unity.WindRose.Authoring.Behaviours.Entities.Objects;
 using GameMeanMachine.Unity.WindRose.Authoring.Behaviours.Entities.Objects.Strategies;
 using GameMeanMachine.Unity.WindRose.Authoring.Behaviours.World;
@@ -8,6 +7,10 @@ using GameMeanMachine.Unity.WindRose.Authoring.Behaviours.World.Layers.Objects.O
 using GameMeanMachine.Unity.WindRose.NeighbourTeleports.Authoring.Behaviours.Entities.Objects.Strategies;
 using GameMeanMachine.Unity.WindRose.Types;
 using UnityEngine;
+using AlephVault.Unity.Support.Generic.Authoring.Types;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 
 namespace GameMeanMachine.Unity.WindRose.NeighbourTeleports
@@ -34,15 +37,29 @@ namespace GameMeanMachine.Unity.WindRose.NeighbourTeleports
                             {
                                 // Keeps a single link specifying: a target map, and the
                                 // side of arrival in that target map.
-                                private class SideLink
+                                [Serializable]
+                                public class SideLink
                                 {
                                     public Direction TargetSide;
                                     public NeighbourTeleportObjectsManagementStrategy Target;
                                 }
-                                
+
+                                /// <summary>
+                                ///   Keeps the track of all the links a map has. Only one
+                                ///   link per direction will exist.
+                                /// </summary>
+                                [Serializable]
+                                public class SideLinks : Dictionary<Direction, SideLink> {}
+
+#if UNITY_EDITOR
+                                [CustomPropertyDrawer(typeof(SideLinks))]
+                                public class SideLinksPropertyDrawer : DictionaryPropertyDrawer {}
+#endif
+
                                 // Keeps the track of all the links this map has. Only one
                                 // link per direction will exist.
-                                private Dictionary<Direction, SideLink> links = new Dictionary<Direction, SideLink>();
+                                [SerializeField]
+                                private SideLinks links = new SideLinks();
 
                                 // Gets the boundary size of the underlying map.
                                 private static ushort BoundarySize(
@@ -351,9 +368,12 @@ namespace GameMeanMachine.Unity.WindRose.NeighbourTeleports
                                             x, y, objW, objH, targetMap.Width, targetMap.Height,
                                             direction, link.TargetSide
                                         );
-                                        DoTeleport(() => obj.Attach(
-                                            targetMap, coordinates.Item1, coordinates.Item2, true
-                                        ), obj, direction, link.Target, link.TargetSide);
+                                        DoTeleport(() =>
+                                        {
+                                            obj.Attach(targetMap, coordinates.Item1, coordinates.Item2, true);
+                                            obj.Orientation = direction;
+                                            obj.StartMovement(direction);
+                                        }, obj, direction, link.Target, link.TargetSide);
                                     }
                                 }
 

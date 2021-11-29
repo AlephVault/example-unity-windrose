@@ -38,6 +38,42 @@ TextureImporter:
   - first:
       213: 7940447939104442901
     second: Luc_11
+  - first:
+      213: -1479397629853255373
+    second: CubeCharacter_0
+  - first:
+      213: -8683558491446535129
+    second: CubeCharacter_1
+  - first:
+      213: 2981317609809319451
+    second: CubeCharacter_2
+  - first:
+      213: -7160679756071140414
+    second: CubeCharacter_3
+  - first:
+      213: 2239404966275823818
+    second: CubeCharacter_4
+  - first:
+      213: -1557824441255350370
+    second: CubeCharacter_5
+  - first:
+      213: -1818128973471468952
+    second: CubeCharacter_6
+  - first:
+      213: -7027752453647981211
+    second: CubeCharacter_7
+  - first:
+      213: 3464533848539888573
+    second: CubeCharacter_8
+  - first:
+      213: -6314022283813536231
+    second: CubeCharacter_9
+  - first:
+      213: -6434312583190706676
+    second: CubeCharacter_10
+  - first:
+      213: -6397349778446185882
+    second: CubeCharacter_11
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -151,7 +187,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Luc_0
+      name: CubeCharacter_0
       rect:
         serializedVersion: 2
         x: 0
@@ -165,14 +201,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0e285726565d3c3e0800000000000000
-      internalID: -2034547975221050656
+      spriteID: 339ba0f91bf187be0800000000000000
+      internalID: -1479397629853255373
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Luc_1
+      name: CubeCharacter_1
       rect:
         serializedVersion: 2
         x: 32
@@ -186,14 +222,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 1bf5f3e1a84db0150800000000000000
-      internalID: 5839995031494025137
+      spriteID: 72c900b3f8dcd7780800000000000000
+      internalID: -8683558491446535129
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Luc_2
+      name: CubeCharacter_2
       rect:
         serializedVersion: 2
         x: 64
@@ -207,14 +243,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 5487217466c3d9df0800000000000000
-      internalID: -171914800793487291
+      spriteID: b161d470294cf5920800000000000000
+      internalID: 2981317609809319451
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Luc_3
+      name: CubeCharacter_3
       rect:
         serializedVersion: 2
         x: 0
@@ -228,14 +264,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 072399eaca88b5b70800000000000000
-      internalID: 8888848564790833776
+      spriteID: 2c38c0563b720ac90800000000000000
+      internalID: -7160679756071140414
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Luc_4
+      name: CubeCharacter_4
       rect:
         serializedVersion: 2
         x: 32
@@ -249,14 +285,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f66847cfa128536f0800000000000000
-      internalID: -705514714197358993
+      spriteID: ac8bd13b3f6f31f10800000000000000
+      internalID: 2239404966275823818
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Luc_5
+      name: CubeCharacter_5
       rect:
         serializedVersion: 2
         x: 64
@@ -270,14 +306,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 49d8bc328b7ce2500800000000000000
-      internalID: 373455412806782356
+      spriteID: e9fad84acee716ae0800000000000000
+      internalID: -1557824441255350370
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Luc_6
+      name: CubeCharacter_6
       rect:
         serializedVersion: 2
         x: 0
@@ -291,14 +327,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 1fea4e56ee2eaa6f0800000000000000
-      internalID: -672475680798888207
+      spriteID: 862336cd455b4c6e0800000000000000
+      internalID: -1818128973471468952
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Luc_7
+      name: CubeCharacter_7
       rect:
         serializedVersion: 2
         x: 32
@@ -312,14 +348,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: dbfe7cde0ccfa4150800000000000000
-      internalID: 5857772170901974973
+      spriteID: 565aee6c068687e90800000000000000
+      internalID: -7027752453647981211
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Luc_8
+      name: CubeCharacter_8
       rect:
         serializedVersion: 2
         x: 64
@@ -333,14 +369,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 398a5dce12ffde870800000000000000
-      internalID: 8713901375204206739
+      spriteID: dbb798aed2f741030800000000000000
+      internalID: 3464533848539888573
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Luc_9
+      name: CubeCharacter_9
       rect:
         serializedVersion: 2
         x: 0
@@ -354,14 +390,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f8297a4eebdbef780800000000000000
-      internalID: -8647265606927150449
+      spriteID: 91eb46d9f261068a0800000000000000
+      internalID: -6314022283813536231
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Luc_10
+      name: CubeCharacter_10
       rect:
         serializedVersion: 2
         x: 32
@@ -375,14 +411,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d13df87782db5a350800000000000000
-      internalID: 6027431657807532829
+      spriteID: c068719cbcab4b6a0800000000000000
+      internalID: -6434312583190706676
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Luc_11
+      name: CubeCharacter_11
       rect:
         serializedVersion: 2
         x: 64
@@ -396,8 +432,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 51a8dcf8453223e60800000000000000
-      internalID: 7940447939104442901
+      spriteID: 66a8ac7654c0837a0800000000000000
+      internalID: -6397349778446185882
       vertices: []
       indices: 
       edges: []

@@ -204,7 +204,7 @@ namespace GameMeanMachine.Unity.WindRose.NeighbourTeleports
                                     switch (direction)
                                     {
                                         case Direction.UP:
-                                            return mapObject.Xf == StrategyHolder.Map.Height - 1;
+                                            return mapObject.Yf == StrategyHolder.Map.Height - 1;
                                         case Direction.DOWN:
                                             return mapObject.Y == 0;
                                         case Direction.LEFT:
@@ -368,11 +368,13 @@ namespace GameMeanMachine.Unity.WindRose.NeighbourTeleports
                                             x, y, objW, objH, targetMap.Width, targetMap.Height,
                                             direction, link.TargetSide
                                         );
+                                        Direction opposite = link.TargetSide.Opposite();
                                         DoTeleport(() =>
                                         {
                                             obj.Attach(targetMap, coordinates.Item1, coordinates.Item2, true);
-                                            obj.Orientation = direction;
-                                            obj.StartMovement(direction);
+                                            obj.CancelMovement();
+                                            obj.Orientation = opposite;
+                                            obj.StartMovement(opposite);
                                         }, obj, direction, link.Target, link.TargetSide);
                                     }
                                 }

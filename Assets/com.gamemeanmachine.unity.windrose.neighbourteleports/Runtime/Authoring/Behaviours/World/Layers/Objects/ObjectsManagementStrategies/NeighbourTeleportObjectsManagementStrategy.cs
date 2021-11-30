@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using GameMeanMachine.Unity.WindRose.Authoring.Behaviours.Entities.Objects;
 using GameMeanMachine.Unity.WindRose.Authoring.Behaviours.Entities.Objects.Strategies;
 using GameMeanMachine.Unity.WindRose.Authoring.Behaviours.World;
@@ -49,7 +51,7 @@ namespace GameMeanMachine.Unity.WindRose.NeighbourTeleports
                                 ///   link per direction will exist.
                                 /// </summary>
                                 [Serializable]
-                                public class SideLinks : Dictionary<Direction, SideLink> {}
+                                public class SideLinks : AlephVault.Unity.Support.Generic.Authoring.Types.Dictionary<Direction, SideLink> {}
 
 #if UNITY_EDITOR
                                 [CustomPropertyDrawer(typeof(SideLinks))]
@@ -184,6 +186,29 @@ namespace GameMeanMachine.Unity.WindRose.NeighbourTeleports
                                 {
                                     if (vertical) Link(Direction.UP, this, Direction.DOWN);
                                     if (horizontal) Link(Direction.LEFT, this, Direction.RIGHT);
+                                }
+
+                                protected override void Awake()
+                                {
+                                    base.Awake();
+                                    foreach (KeyValuePair<Direction, SideLink> pair in links.ToArray())
+                                    {
+                                        if (!Enum.IsDefined(typeof(Direction), pair.Key)
+                                            || pair.Value == null
+                                            || !Enum.IsDefined(typeof(Direction), pair.Value.TargetSide)
+                                            || pair.Value.Target == null
+                                            || !BoundarySizeMatches(
+                                                this, pair.Key,
+                                                pair.Value.Target, pair.Value.TargetSide))
+                                        {
+                                            Debug.LogWarning(
+                                                $"Side link for direction {pair.Key} was " +
+                                                $"removed on initialization. Fix the link in the " +
+                                                $"editor and try again", this
+                                            );
+                                            links.Remove(pair.Key);
+                                        }
+                                    }
                                 }
 
                                 private void OnDestroy()

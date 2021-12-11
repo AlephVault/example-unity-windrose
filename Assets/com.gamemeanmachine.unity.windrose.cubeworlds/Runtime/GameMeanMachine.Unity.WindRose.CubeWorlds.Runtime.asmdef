@@ -1,0 +1,18 @@
+{
+    "name": "GameMeanMachine.Unity.WindRose.CubeWorlds.Runtime",
+    "rootNamespace": "",
+    "references": [
+        "GUID:24bccb8f3a7ace54a920a1876f50dce8",
+        "GUID:439919d2a7071004695af55cbbe6745b",
+        "GUID:51c93eeead5fa7b17869dc240f6b9d0e"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

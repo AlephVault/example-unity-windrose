@@ -36,7 +36,7 @@ namespace GameMeanMachine.Unity.WindRose.CubeWorlds
                     case FaceOrientation.Back:
                         return Quaternion.Euler(0, 180, 0);
                     case FaceOrientation.Down:
-                        return Quaternion.Euler(-90, 0, 0);
+                        return Quaternion.Euler(-90, 180, 0);
                     case FaceOrientation.Up:
                         return Quaternion.Euler(90, 0, 0);
                     case FaceOrientation.Left:
@@ -64,6 +64,7 @@ namespace GameMeanMachine.Unity.WindRose.CubeWorlds
                     case FaceOrientation.Back:
                         return new Vector3(1, -1, 1);
                     case FaceOrientation.Down:
+                        return new Vector3(1, -1, -1);
                     case FaceOrientation.Left:
                         return new Vector3(-1, -1, 1);
                     case FaceOrientation.Up:

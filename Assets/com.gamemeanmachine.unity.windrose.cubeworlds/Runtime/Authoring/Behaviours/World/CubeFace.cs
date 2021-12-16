@@ -13,15 +13,28 @@ namespace GameMeanMachine.Unity.WindRose.CubeWorlds
             {
                 /// <summary>
                 ///   Depends on neighbour teleport strategy and also behaves
-                ///   as a cube face (so it reorients appropriately). It also
-                ///   serves to <see cref="CubePivot"/>, which takes 6 cube
-                ///   faces and assembles them into a cube.
+                ///   as a cube face (so it reorients appropriately - basement
+                ///   layers always reorient to the front side). It requires
+                ///   to be squared and creates 6 internal pivots.
                 /// </summary>
                 [RequireComponent(typeof(NeighbourTeleportObjectsManagementStrategy))]
                 public class CubeFace : MonoBehaviour
                 {
                     /// <summary>
-                    ///   The face orientation for this map.
+                    ///   The face type for this map. Either a surface
+                    ///   map, or a basement map.
+                    /// </summary>
+                    [SerializeField]
+                    private FaceType faceType;
+
+                    /// <summary>
+                    ///   See <see cref="faceType"/>.
+                    /// </summary>
+                    public FaceType FaceType => faceType;
+
+                    /// <summary>
+                    ///   The face orientation for this map. Only meaningful
+                    ///   when <see cref="faceType"/> is Surface.
                     /// </summary>
                     [SerializeField]
                     private FaceOrientation faceOrientation;
@@ -31,10 +44,27 @@ namespace GameMeanMachine.Unity.WindRose.CubeWorlds
                     /// </summary>
                     public FaceOrientation FaceOrientation => faceOrientation;
 
+                    /// <summary>
+                    ///   The basement level for this map. Only meaningful
+                    ///   when <see cref="faceType"/> is Basement.
+                    /// </summary>
+                    [SerializeField]
+                    private byte faceLevel;
+
+                    /// <summary>
+                    ///   See <see cref="faceLevel"/>.
+                    /// </summary>
+                    public byte FaceLevel => faceLevel;
+                    
                     // Sets the local rotation of the map.
                     protected void Awake()
                     {
-                        transform.localRotation = FaceOrientation.Rotation();
+                        // Set the rotation of the object to the appropriate
+                        // orientation given the face. For basement layers,
+                        // the rotation is always front.
+                        transform.localRotation = faceType == FaceType.Surface ?
+                            FaceOrientation.Rotation() :
+                            FaceOrientation.Front.Rotation();
                     }
                 }
             }

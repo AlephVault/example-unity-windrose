@@ -1,7 +1,3 @@
-using System;
-using UnityEngine;
-
-
 namespace GameMeanMachine.Unity.WindRose.CubeWorlds
 {
     namespace Types

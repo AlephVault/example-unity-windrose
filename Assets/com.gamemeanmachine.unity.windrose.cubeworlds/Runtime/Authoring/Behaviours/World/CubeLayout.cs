@@ -4,6 +4,7 @@ using AlephVault.Unity.Support.Utils;
 using GameMeanMachine.Unity.WindRose.Authoring.Behaviours.World;
 using GameMeanMachine.Unity.WindRose.CubeWorlds.Types;
 using GameMeanMachine.Unity.WindRose.NeighbourTeleports.Authoring.Behaviours.World.Layers.Objects.ObjectsManagementStrategies;
+using GameMeanMachine.Unity.WindRose.Types;
 using UnityEngine;
 
 
@@ -36,6 +37,143 @@ namespace GameMeanMachine.Unity.WindRose.CubeWorlds
                 /// </summary>
                 public class CubeLayout : MonoBehaviour
                 {
+                    private struct LinkSetting
+                    {
+                        public FaceOrientation source;
+                        public Direction sourceSide;
+                        public FaceOrientation destination;
+                        public Direction destinationSide;
+                    }
+
+                    private static LinkSetting[] linkSettings = {
+                        // Front side
+                        new LinkSetting
+                        {
+                            source = FaceOrientation.Front, sourceSide = Direction.LEFT,
+                            destination = FaceOrientation.Left, destinationSide = Direction.RIGHT
+                        },
+                        new LinkSetting
+                        {
+                            source = FaceOrientation.Front, sourceSide = Direction.UP,
+                            destination = FaceOrientation.Up, destinationSide = Direction.DOWN
+                        },
+                        new LinkSetting
+                        {
+                            source = FaceOrientation.Front, sourceSide = Direction.RIGHT,
+                            destination = FaceOrientation.Right, destinationSide = Direction.LEFT
+                        },
+                        new LinkSetting
+                        {
+                            source = FaceOrientation.Front, sourceSide = Direction.DOWN,
+                            destination = FaceOrientation.Down, destinationSide = Direction.DOWN
+                        },
+                        // Back side
+                        new LinkSetting
+                        {
+                            source = FaceOrientation.Back, sourceSide = Direction.LEFT,
+                            destination = FaceOrientation.Right, destinationSide = Direction.RIGHT
+                        },
+                        new LinkSetting
+                        {
+                            source = FaceOrientation.Back, sourceSide = Direction.UP,
+                            destination = FaceOrientation.Up, destinationSide = Direction.UP
+                        },
+                        new LinkSetting
+                        {
+                            source = FaceOrientation.Back, sourceSide = Direction.RIGHT,
+                            destination = FaceOrientation.Left, destinationSide = Direction.LEFT
+                        },
+                        new LinkSetting
+                        {
+                            source = FaceOrientation.Back, sourceSide = Direction.DOWN,
+                            destination = FaceOrientation.Down, destinationSide = Direction.UP
+                        },
+                        // Left side
+                        new LinkSetting
+                        {
+                            source = FaceOrientation.Left, sourceSide = Direction.LEFT,
+                            destination = FaceOrientation.Back, destinationSide = Direction.RIGHT
+                        },
+                        new LinkSetting
+                        {
+                            source = FaceOrientation.Left, sourceSide = Direction.UP,
+                            destination = FaceOrientation.Up, destinationSide = Direction.LEFT
+                        },
+                        new LinkSetting
+                        {
+                            source = FaceOrientation.Left, sourceSide = Direction.RIGHT,
+                            destination = FaceOrientation.Front, destinationSide = Direction.LEFT
+                        },
+                        new LinkSetting
+                        {
+                            source = FaceOrientation.Left, sourceSide = Direction.DOWN,
+                            destination = FaceOrientation.Down, destinationSide = Direction.RIGHT
+                        },
+                        // Right side
+                        new LinkSetting
+                        {
+                            source = FaceOrientation.Right, sourceSide = Direction.LEFT,
+                            destination = FaceOrientation.Front, destinationSide = Direction.RIGHT
+                        },
+                        new LinkSetting
+                        {
+                            source = FaceOrientation.Right, sourceSide = Direction.UP,
+                            destination = FaceOrientation.Up, destinationSide = Direction.RIGHT
+                        },
+                        new LinkSetting
+                        {
+                            source = FaceOrientation.Right, sourceSide = Direction.RIGHT,
+                            destination = FaceOrientation.Back, destinationSide = Direction.LEFT
+                        },
+                        new LinkSetting
+                        {
+                            source = FaceOrientation.Right, sourceSide = Direction.DOWN,
+                            destination = FaceOrientation.Down, destinationSide = Direction.LEFT
+                        },
+                        // Up side
+                        new LinkSetting
+                        {
+                            source = FaceOrientation.Up, sourceSide = Direction.LEFT,
+                            destination = FaceOrientation.Left, destinationSide = Direction.UP
+                        },
+                        new LinkSetting
+                        {
+                            source = FaceOrientation.Up, sourceSide = Direction.UP,
+                            destination = FaceOrientation.Back, destinationSide = Direction.UP
+                        },
+                        new LinkSetting
+                        {
+                            source = FaceOrientation.Up, sourceSide = Direction.RIGHT,
+                            destination = FaceOrientation.Right, destinationSide = Direction.UP
+                        },
+                        new LinkSetting
+                        {
+                            source = FaceOrientation.Up, sourceSide = Direction.DOWN,
+                            destination = FaceOrientation.Front, destinationSide = Direction.UP
+                        },
+                        // Down side
+                        new LinkSetting
+                        {
+                            source = FaceOrientation.Down, sourceSide = Direction.LEFT,
+                            destination = FaceOrientation.Right, destinationSide = Direction.DOWN
+                        },
+                        new LinkSetting
+                        {
+                            source = FaceOrientation.Down, sourceSide = Direction.UP,
+                            destination = FaceOrientation.Back, destinationSide = Direction.DOWN
+                        },
+                        new LinkSetting
+                        {
+                            source = FaceOrientation.Down, sourceSide = Direction.RIGHT,
+                            destination = FaceOrientation.Left, destinationSide = Direction.DOWN
+                        },
+                        new LinkSetting
+                        {
+                            source = FaceOrientation.Down, sourceSide = Direction.DOWN,
+                            destination = FaceOrientation.Front, destinationSide = Direction.DOWN
+                        },
+                    };
+                    
                     /// <summary>
                     ///   <para>
                     ///     How many cells, on each direction, do each basement
@@ -103,6 +241,7 @@ namespace GameMeanMachine.Unity.WindRose.CubeWorlds
                         return (ushort)(2 * delta * (basements + 1 - level));
                     }
 
+                    // Inverts the normal of a Quad.
                     private void InvertNormals(MeshFilter filter)
                     {
                         Vector3[] normals = filter.mesh.normals;
@@ -117,6 +256,7 @@ namespace GameMeanMachine.Unity.WindRose.CubeWorlds
                         filter.mesh.triangles = triangles;
                     }
 
+                    // Validates a map and aligns it.
                     private void ValidateAndAlign(
                         Map map, FaceType faceType,
                         FaceOrientation faceOrientation,
@@ -210,6 +350,30 @@ namespace GameMeanMachine.Unity.WindRose.CubeWorlds
                         }
                     }
 
+                    // Joins the maps in the surface appropriately.
+                    private void JoinSurface()
+                    {
+                        foreach (LinkSetting setting in linkSettings)
+                        {
+                            if (surfaceFaces.TryGetValue(setting.source, out Map sourceMap) &&
+                                surfaceFaces.TryGetValue(setting.destination, out Map destinationMap))
+                            {
+                                NeighbourTeleportObjectsManagementStrategy sourceOMS =
+                                    sourceMap.GetComponent<NeighbourTeleportObjectsManagementStrategy>();
+                                NeighbourTeleportObjectsManagementStrategy destinationOMS =
+                                    destinationMap.GetComponent<NeighbourTeleportObjectsManagementStrategy>();
+                                if (sourceOMS && destinationOMS)
+                                {
+                                    sourceOMS.Unlink(setting.sourceSide, false);
+                                    sourceOMS.Link(
+                                        setting.sourceSide, destinationOMS, 
+                                        setting.destinationSide, false
+                                    );
+                                }
+                            }
+                        }
+                    }
+
                     private void Awake()
                     {
                         surfaceSize = (ushort)(2 * delta * (basements + 1));
@@ -233,6 +397,7 @@ namespace GameMeanMachine.Unity.WindRose.CubeWorlds
                                 ValidateAndAlign(map, faceType, faceOrientation, faceLevel);
                             }
                         }
+                        JoinSurface();
                     }
                 }
             }

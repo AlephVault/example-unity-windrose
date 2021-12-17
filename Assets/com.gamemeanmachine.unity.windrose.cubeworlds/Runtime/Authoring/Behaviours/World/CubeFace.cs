@@ -62,7 +62,7 @@ namespace GameMeanMachine.Unity.WindRose.CubeWorlds
                         // Set the rotation of the object to the appropriate
                         // orientation given the face. For basement layers,
                         // the rotation is always front.
-                        transform.localRotation = faceType == FaceType.Surface ?
+                        transform.parent.localRotation = faceType == FaceType.Surface ?
                             FaceOrientation.Rotation() :
                             FaceOrientation.Front.Rotation();
                     }

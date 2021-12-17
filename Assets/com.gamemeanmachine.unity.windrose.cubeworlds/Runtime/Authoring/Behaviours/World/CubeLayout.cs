@@ -235,6 +235,14 @@ namespace GameMeanMachine.Unity.WindRose.CubeWorlds
                     // The width and height of surface size.
                     private ushort surfaceSize;
 
+                    /// <summary>
+                    ///   The face size of the cube, in game units.
+                    /// </summary>
+                    public float FaceSize()
+                    {
+                        return cellSize * surfaceSize;
+                    }
+
                     // The expected size of a given basement.
                     private ushort BasementSize(byte level)
                     {

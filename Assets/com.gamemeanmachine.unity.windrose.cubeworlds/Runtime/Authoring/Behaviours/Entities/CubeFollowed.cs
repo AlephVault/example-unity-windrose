@@ -57,7 +57,7 @@ namespace GameMeanMachine.Unity.WindRose.CubeWorlds
                         mapObject.onAttached.RemoveListener(OnAttached);
                     }
 
-                    private void OnAttached(Map map)
+                    private void OnAttached(Map newMap)
                     {
                         // Destroy any current movement.
                         if (currentRotation != null)
@@ -66,54 +66,45 @@ namespace GameMeanMachine.Unity.WindRose.CubeWorlds
                             currentRotation = null;
                         }
                         
+                        CubeFace previousFace = previousMap ? previousMap.ObjectsLayer.GetComponent<CubeFace>() : null;
+                        CubeFace newFace = newMap ? newMap.ObjectsLayer.GetComponent<CubeFace>() : null;
+                        Transform previousMapParent = previousMap.transform.parent;
+                        CubeLayout previousLayout = previousMap && previousMapParent ? previousMapParent.GetComponent<CubeLayout>() : null;
+                        Transform newMapParent = newMap.transform.parent;
+                        CubeLayout newLayout = newMap && newMapParent ? newMapParent.GetComponent<CubeLayout>() : null;
+
                         // First, the previous map must not be null / destroyed.
                         // Also, they must be different maps.
-                        if (!previousMap || map == previousMap)
+                        if (!previousMap || newMap == previousMap)
                         {
-                            // A default distance and the size ("Orthographic" mode, or the
-                            // previous camera mode).
-                            InstantFixCamera(
-                                map, DefaultDistance, !map || !Watcher || Watcher.IsOrthographic
-                            );
+                            InstantFixCamera(newMap, newFace, newLayout);
                             return;
                         }
 
                         // Next, both the previous and new map must be CubeFace,
                         // within the same CubeLayout.
-                        CubeFace previousFace = previousMap.ObjectsLayer.GetComponent<CubeFace>();
-                        CubeFace newFace = map.ObjectsLayer.GetComponent<CubeFace>();
                         if (previousFace == null || newFace == null)
                         {
-                            // The new projection will be orthographic if the new
-                            // map is not CubeFace. Otherwise, perspective. Also,
-                            // the distance will be the default if the map is not
-                            // CubeFace. Otherwise, map.Width * map.CellSize.x / 2.
-                            float distance = newFace == null ? DefaultDistance : map.Width * map.CellSize.x / 2;
-                            InstantFixCamera(map, distance, newFace == null);
+                            InstantFixCamera(newMap, newFace, newLayout);
                             return;
                         }
 
                         // Next, both faces must belong to the same parent cube.
-                        if (map.transform.parent == null || previousMap.transform.parent == null)
+                        if (newMap.transform.parent == null || previousMap.transform.parent == null)
                         {
-                            // Perspective and halved map size.
-                            InstantFixCamera(map, map.Width * map.CellSize.x / 2, true);
+                            InstantFixCamera(newMap, newFace, newLayout);
                             return;
                         }
-                        CubeLayout previousLayout = previousMap.transform.parent.GetComponent<CubeLayout>();
-                        CubeLayout newLayout = map.transform.parent.GetComponent<CubeLayout>();
                         if (previousLayout == null || newLayout == null || previousLayout != newLayout)
                         {
-                            // Perspective and halved map size.
-                            InstantFixCamera(map, map.Width * map.CellSize.x / 2, true);
+                            InstantFixCamera(newMap, newFace, newLayout);
                             return;
                         }
                         
                         // Next, both faces must be SURFACE.
                         if (previousFace.FaceType != FaceType.Surface || newFace.FaceType != FaceType.Surface)
                         {
-                            // Perspective and halved map size.
-                            InstantFixCamera(map, map.Width * map.CellSize.x / 2, true);
+                            InstantFixCamera(newMap, newFace, newLayout);
                             return;
                         }
                         
@@ -123,7 +114,7 @@ namespace GameMeanMachine.Unity.WindRose.CubeWorlds
                         StartCoroutine(CubeRotatingMovement());
                     }
 
-                    private void InstantFixCamera(Map map, float distance, bool orthographic)
+                    private void InstantFixCamera(Map map, CubeFace cubeFace, CubeLayout cubeLayout)
                     {
                         if (!Watcher) return;
                         Transform mapTransform = map.transform;
@@ -136,15 +127,40 @@ namespace GameMeanMachine.Unity.WindRose.CubeWorlds
                         watcherTransform.localRotation = mapTransform.localRotation;
                         
                         // 2. Fix the distance of the inner camera in the watcher.
-                        Watcher.Distance = distance;
+                        if (cubeLayout)
+                        {
+                            Watcher.Distance = cubeLayout.FaceSize() / 2;
+                        }
+                        else if (cubeFace)
+                        {
+                            Watcher.Distance = map.Width * map.CellSize.x;
+                        }
+                        else
+                        {
+                            Watcher.Distance = DefaultDistance;
+                        }
                         
                         // 3. Set the mode appropriately: Orthographic or Perspective.
-                        Watcher.IsOrthographic = orthographic;
+                        Watcher.IsOrthographic = cubeFace != null;
                         
                         // 4. Set the camera size.
                         Watcher.Size = CameraSize;
-                        
-                        // 5. Set the inner camera's (x, y) to the object's position plus
+
+                        // 5. Set the clip distance.
+                        if (cubeLayout)
+                        {
+                            Watcher.ClipDistance = 2 * cubeLayout.FaceSize();
+                        }
+                        else if (cubeFace)
+                        {
+                            Watcher.ClipDistance = map.Width * map.CellSize.x;
+                        }
+                        else
+                        {
+                            Watcher.Distance = DefaultDistance + Mathf.Epsilon;
+                        }
+
+                        // 6. Set the inner camera's (x, y) to the object's position plus
                         //    the considered offset.
                         Watcher.CameraPosition = (Vector2)transform.localPosition + Offset;
                     }

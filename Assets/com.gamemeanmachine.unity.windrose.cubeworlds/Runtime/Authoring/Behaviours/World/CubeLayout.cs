@@ -224,7 +224,7 @@ namespace GameMeanMachine.Unity.WindRose.CubeWorlds
                     ///   The color to use for basement backgrounds.
                     /// </summary>
                     [SerializeField]
-                    private Color32 basementBackgroundColor = new Color32(139,69,19);
+                    private Color32 basementBackgroundColor = new Color(139f/255,69f/255,19f/255);
 
                     // This is the surface level faces.
                     private Dictionary<FaceOrientation, Map> surfaceFaces;

@@ -384,10 +384,10 @@ namespace GameMeanMachine.Unity.WindRose.CubeWorlds
                         for (int i = 0; i < transform.childCount; i++)
                         {
                             Transform child = transform.GetChild(i);
-                            NeighbourTeleportObjectsManagementStrategy neighbourTeleportStrategy =
-                                child.GetComponent<NeighbourTeleportObjectsManagementStrategy>();
                             Map map = child.GetComponent<Map>();
-                            CubeFace cubeFace = child.GetComponent<CubeFace>();
+                            NeighbourTeleportObjectsManagementStrategy neighbourTeleportStrategy =
+                                map.ObjectsLayer.GetComponent<NeighbourTeleportObjectsManagementStrategy>();
+                            CubeFace cubeFace = neighbourTeleportStrategy.GetComponent<CubeFace>();
                             
                             if (map != null && cubeFace != null && neighbourTeleportStrategy != null)
                             {

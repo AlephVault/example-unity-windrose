@@ -95,7 +95,7 @@ namespace GameMeanMachine.Unity.WindRose.CubeWorlds
                     /// <summary>
                     ///   The vertical size of the camera (from the center). This is the
                     ///   orthographic size when the camera is orthographic, otherwise
-                    ///   this is (distance / 2)*tan(fieldOfView).
+                    ///   this is distance*tan(fieldOfView).
                     /// </summary>
                     public float Size
                     {
@@ -110,7 +110,7 @@ namespace GameMeanMachine.Unity.WindRose.CubeWorlds
                                 }
                                 else
                                 {
-                                    Camera.fieldOfView = Mathf.Atan2(value, -Camera.transform.localPosition.z / 2);
+                                    Camera.fieldOfView = Mathf.Atan2(value, -Camera.transform.localPosition.z);
                                 }
                             }
                         }
@@ -122,7 +122,7 @@ namespace GameMeanMachine.Unity.WindRose.CubeWorlds
                                 {
                                     return Camera.orthographicSize;
                                 }
-                                return -Camera.transform.localPosition.z / 2 * Mathf.Tan(Camera.fieldOfView);
+                                return -Camera.transform.localPosition.z * Mathf.Tan(Camera.fieldOfView);
                             }
                             return 0f;
                         }

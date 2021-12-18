@@ -37,6 +37,11 @@ namespace GameMeanMachine.Unity.WindRose.CubeWorlds
                     ///   have a CubeFace.
                     /// </summary>
                     public float CameraSize = 12f;
+
+                    /// <summary>
+                    ///   The cube rotation time.
+                    /// </summary>
+                    public float RotationTime = 1f;
                     
                     // The related map object.
                     private MapObject mapObject;
@@ -114,10 +119,7 @@ namespace GameMeanMachine.Unity.WindRose.CubeWorlds
                             // Now, all the conditions are satisfied: CubeFaces inside
                             // the same CubeLayout, both different and both surface. The
                             // next thing to do is perform an animation.
-                            currentRotation = StartCoroutine(CubeRotatingMovement(
-                                previousMap, previousFace, previousLayout,
-                                newMap, newFace, newLayout                        
-                            ));
+                            currentRotation = StartCoroutine(CubeRotatingMovement(previousMap, newMap));
                         }
                         finally
                         {
@@ -152,7 +154,7 @@ namespace GameMeanMachine.Unity.WindRose.CubeWorlds
                         }
                         
                         // 3. Set the mode appropriately: Orthographic or Perspective.
-                        Watcher.IsOrthographic = cubeFace != null;
+                        Watcher.IsOrthographic = cubeFace == null;
                         
                         // 4. Set the camera size.
                         Watcher.Size = CameraSize;
@@ -176,21 +178,44 @@ namespace GameMeanMachine.Unity.WindRose.CubeWorlds
                         Watcher.CameraPosition = (Vector2)transform.localPosition + Offset;
                     }
 
-                    private IEnumerator CubeRotatingMovement(
-                        Map previousMap, CubeFace previousFace, CubeLayout previousLayout,
-                        Map newMap, CubeFace newFace, CubeLayout newLayout
-                    )
+                    private IEnumerator CubeRotatingMovement(Map previousMap, Map newMap)
                     {
+                        if (!Watcher) yield break;
+                        
                         try
                         {
-                            // First, fix the start position and rotation.
-                            // Do it hardly, with no wait or smooth.
-                            InstantFixCamera(previousMap, previousFace, previousLayout);
-                            // Second, start the smoothed movement.
-                            // TODO.
+                            Transform previousMapTransform = previousMap.transform;
+                            Transform newMapTransform = newMap.transform;
+                            Vector2 initialCameraPosition = Watcher.CameraPosition;
 
-                            // Then remove this return statement.
-                            yield return null;
+                            // Second, start the smoothed movement.
+                            float rotationTime = Mathf.Max(RotationTime, Mathf.Epsilon);
+                            float currentTime = 0;
+                            while (currentTime < rotationTime)
+                            {
+                                float stepCurrentTime = Mathf.SmoothStep(0, rotationTime, currentTime);
+                                // 1. Slerp the rotation.
+                                Watcher.transform.localRotation = Quaternion.Slerp(
+                                    previousMapTransform.localRotation, newMapTransform.localRotation,
+                                    stepCurrentTime
+                                );
+                                // 2. Lerp the position.
+                                Watcher.transform.localPosition = Vector3.Lerp(
+                                    previousMapTransform.localPosition, newMapTransform.localPosition,
+                                    stepCurrentTime
+                                );
+                                // 3. Lerp the camera position.
+                                Watcher.CameraPosition = Vector2.Lerp(
+                                    initialCameraPosition, transform.localPosition, stepCurrentTime
+                                ) + Offset;
+                                yield return null;
+                                // (distance and perspective will be the same)
+                                currentTime += Time.deltaTime;
+                            }
+                            // Force-fix by the end (position, rotation, and camera position).
+                            Watcher.transform.localRotation = newMapTransform.localRotation;
+                            Watcher.transform.localPosition = newMapTransform.localPosition;
+                            Watcher.CameraPosition = (Vector2)transform.localPosition + Offset;
                         }
                         finally
                         {

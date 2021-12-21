@@ -1,0 +1,18 @@
+{
+    "name": "GameMeanMachine.Unity.WindRose.CubeWorlds.Samples",
+    "rootNamespace": "",
+    "references": [
+        "GUID:439919d2a7071004695af55cbbe6745b",
+        "GUID:51c93eeead5fa7b17869dc240f6b9d0e",
+        "GUID:de547ac7bbd8413ce87ce33124a38928"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

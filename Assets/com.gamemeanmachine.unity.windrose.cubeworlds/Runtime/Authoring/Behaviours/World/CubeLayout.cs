@@ -288,7 +288,7 @@ namespace GameMeanMachine.Unity.WindRose.CubeWorlds
                             {
                                 Debug.LogWarning($"Unknown face orientation: {faceOrientation}", map);
                             }
-                            if (surfaceFaces[faceOrientation] != null)
+                            if (surfaceFaces.ContainsKey(faceOrientation))
                             {
                                 Debug.LogWarning(
                                     $"Orientation {faceOrientation} is already occupied by " +
@@ -318,9 +318,9 @@ namespace GameMeanMachine.Unity.WindRose.CubeWorlds
                                 // - Same parent (i.e. this).
                                 // - Inverted normals.
                                 GameObject quad = GameObject.CreatePrimitive(PrimitiveType.Quad);
-                                quad.transform.parent = transform;
-                                quad.transform.localPosition = cubePivotPosition;
-                                quad.transform.localRotation = map.transform.localRotation;
+                                quad.transform.parent = map.transform;
+                                quad.transform.localPosition = Vector2.one * (basements + 1) * cellSize * delta;
+                                quad.transform.localRotation = Quaternion.identity;
                                 quad.transform.localScale = Vector3.one * (basements + 1) * cellSize * delta * 2;
                                 quad.GetComponent<Renderer>().material.color = basementBackgroundColor;
                                 InvertNormals(quad.GetComponent<MeshFilter>());
@@ -333,14 +333,14 @@ namespace GameMeanMachine.Unity.WindRose.CubeWorlds
                             {
                                 Debug.LogWarning($"Level {level} is 0 or above the number of basements", map);
                             }
-                            if (basementFaces[level] != null)
+                            if (basementFaces[level - 1] != null)
                             {
                                 Debug.LogWarning($"Level {level} is already occupied by another map", map);
                             }
                             else if (map.Width != basementSize)
                             {
                                 Debug.LogWarning(
-                                    "(Height, Width) of a surface map must be " +
+                                    "(Height, Width) of a basement map must be " +
                                     $"({basementSize}, {basementSize})", map
                                 );
                             }
@@ -389,7 +389,12 @@ namespace GameMeanMachine.Unity.WindRose.CubeWorlds
                         cellSize = Values.Max(cellSize, Mathf.Epsilon);
                         basementFaces = new Map[basements];
                         surfaceFaces = new Dictionary<FaceOrientation, Map>();
-                        for (int i = 0; i < transform.childCount; i++)
+                    }
+
+                    private void Start()
+                    {
+                        int childCount = transform.childCount;
+                        for (int i = 0; i < childCount; i++)
                         {
                             Transform child = transform.GetChild(i);
                             Map map = child.GetComponent<Map>();

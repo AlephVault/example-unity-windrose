@@ -1,6 +1,8 @@
 using System.Collections;
 using GameMeanMachine.Unity.WindRose.Authoring.Behaviours.Entities.Objects;
 using GameMeanMachine.Unity.WindRose.Authoring.Behaviours.World;
+using GameMeanMachine.Unity.WindRose.CubeWorlds.Authoring.Behaviours.Watch;
+using GameMeanMachine.Unity.WindRose.CubeWorlds.Authoring.Behaviours.World;
 using GameMeanMachine.Unity.WindRose.CubeWorlds.Types;
 using GameMeanMachine.Unity.WindRose.NeighbourTeleports.Authoring.Behaviours.Entities.Objects.Strategies;
 using UnityEngine;
@@ -12,7 +14,7 @@ namespace GameMeanMachine.Unity.WindRose.CubeWorlds
     {
         namespace Behaviours
         {
-            namespace World
+            namespace Entities
             {
                 /// <summary>
                 ///   Attached to neighbour-teleportable strategies, this

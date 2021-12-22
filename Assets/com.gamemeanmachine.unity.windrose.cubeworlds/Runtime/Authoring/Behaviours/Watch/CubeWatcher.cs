@@ -7,7 +7,7 @@ namespace GameMeanMachine.Unity.WindRose.CubeWorlds
     {
         namespace Behaviours
         {
-            namespace World
+            namespace Watch
             {
                 /// <summary>
                 ///   A watcher object - it handles rotation and camera

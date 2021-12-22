@@ -398,11 +398,15 @@ namespace GameMeanMachine.Unity.WindRose.CubeWorlds
                         {
                             Transform child = transform.GetChild(i);
                             Map map = child.GetComponent<Map>();
+
+                            if (!map) continue;
+                            
+                            Debug.Log("Iterating map", map);
                             NeighbourTeleportObjectsManagementStrategy neighbourTeleportStrategy =
                                 map.ObjectsLayer.GetComponent<NeighbourTeleportObjectsManagementStrategy>();
                             CubeFace cubeFace = neighbourTeleportStrategy.GetComponent<CubeFace>();
                             
-                            if (map != null && cubeFace != null && neighbourTeleportStrategy != null)
+                            if (cubeFace != null && neighbourTeleportStrategy != null)
                             {
                                 FaceType faceType = cubeFace.FaceType;
                                 FaceOrientation faceOrientation = cubeFace.FaceOrientation;

@@ -6,6 +6,7 @@ using GameMeanMachine.Unity.WindRose.CubeWorlds.Authoring.Behaviours.Entities;
 using GameMeanMachine.Unity.WindRose.CubeWorlds.Types;
 using GameMeanMachine.Unity.WindRose.NeighbourTeleports.Authoring.Behaviours.World.Layers.Objects.ObjectsManagementStrategies;
 using GameMeanMachine.Unity.WindRose.Types;
+using UnityEditor;
 using UnityEngine;
 
 
@@ -370,9 +371,10 @@ namespace GameMeanMachine.Unity.WindRose.CubeWorlds
                                 surfaceFaces.TryGetValue(setting.destination, out Map destinationMap))
                             {
                                 NeighbourTeleportObjectsManagementStrategy sourceOMS =
-                                    sourceMap.GetComponent<NeighbourTeleportObjectsManagementStrategy>();
+                                    sourceMap.ObjectsLayer.GetComponent<NeighbourTeleportObjectsManagementStrategy>();
                                 NeighbourTeleportObjectsManagementStrategy destinationOMS =
-                                    destinationMap.GetComponent<NeighbourTeleportObjectsManagementStrategy>();
+                                    destinationMap.ObjectsLayer.GetComponent<NeighbourTeleportObjectsManagementStrategy>();
+                                Debug.Log($"Attempting links: {sourceOMS}:{setting.sourceSide} -> {destinationOMS}:{setting.destinationSide}");
                                 if (sourceOMS && destinationOMS)
                                 {
                                     sourceOMS.Unlink(setting.sourceSide, false);

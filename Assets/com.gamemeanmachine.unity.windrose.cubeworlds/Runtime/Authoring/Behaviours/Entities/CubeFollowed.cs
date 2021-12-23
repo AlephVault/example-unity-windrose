@@ -208,7 +208,7 @@ namespace GameMeanMachine.Unity.WindRose.CubeWorlds
                             float currentTime = 0;
                             while (currentTime < rotationTime)
                             {
-                                float stepCurrentTime = Mathf.SmoothStep(0, rotationTime, currentTime);
+                                float stepCurrentTime = Mathf.SmoothStep(0, 1, currentTime / rotationTime);
                                 // 1. Slerp the rotation.
                                 Watcher.transform.localRotation = Quaternion.Slerp(
                                     previousMapTransform.localRotation, newMapTransform.localRotation,

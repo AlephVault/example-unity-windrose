@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using AlephVault.Unity.Support.Utils;
 using GameMeanMachine.Unity.WindRose.Authoring.Behaviours.World;
+using GameMeanMachine.Unity.WindRose.CubeWorlds.Authoring.Behaviours.Entities;
 using GameMeanMachine.Unity.WindRose.CubeWorlds.Types;
 using GameMeanMachine.Unity.WindRose.NeighbourTeleports.Authoring.Behaviours.World.Layers.Objects.ObjectsManagementStrategies;
 using GameMeanMachine.Unity.WindRose.Types;
@@ -308,7 +309,7 @@ namespace GameMeanMachine.Unity.WindRose.CubeWorlds
                                 // Store the face and adjust its position.
                                 surfaceFaces[faceOrientation] = map;
                                 Vector3 cubePivotPosition = faceOrientation.CubicAssemblyPosition() * 
-                                                            (basements + 1) * cellSize * delta;
+                                                            ((basements + 1) * cellSize * delta);
                                 map.transform.localPosition = cubePivotPosition;
                                 // Also, create a Quad, with:
                                 // - Same local cubic position.
@@ -319,9 +320,11 @@ namespace GameMeanMachine.Unity.WindRose.CubeWorlds
                                 // - Inverted normals.
                                 GameObject quad = GameObject.CreatePrimitive(PrimitiveType.Quad);
                                 quad.transform.parent = map.transform;
-                                quad.transform.localPosition = Vector2.one * (basements + 1) * cellSize * delta;
+                                quad.transform.localPosition =
+                                    (Vector3)(Vector2.one * (basements + 1) * cellSize * delta) +
+                                    0.001f * Vector3.one;
                                 quad.transform.localRotation = Quaternion.identity;
-                                quad.transform.localScale = Vector3.one * (basements + 1) * cellSize * delta * 2;
+                                quad.transform.localScale = Vector3.one * ((basements + 1) * cellSize * delta - 0.001f) * 2;
                                 quad.GetComponent<Renderer>().material.color = basementBackgroundColor;
                                 InvertNormals(quad.GetComponent<MeshFilter>());
                             }
@@ -401,7 +404,6 @@ namespace GameMeanMachine.Unity.WindRose.CubeWorlds
 
                             if (!map) continue;
                             
-                            Debug.Log("Iterating map", map);
                             NeighbourTeleportObjectsManagementStrategy neighbourTeleportStrategy =
                                 map.ObjectsLayer.GetComponent<NeighbourTeleportObjectsManagementStrategy>();
                             CubeFace cubeFace = neighbourTeleportStrategy.GetComponent<CubeFace>();
@@ -415,6 +417,10 @@ namespace GameMeanMachine.Unity.WindRose.CubeWorlds
                             }
                         }
                         JoinSurface();
+                        foreach (CubeFollowed cubeFollowed in GetComponentsInChildren<CubeFollowed>())
+                        {
+                            cubeFollowed.RefreshWatcherStatus();
+                        }
                     }
                 }
             }

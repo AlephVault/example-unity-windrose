@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 
@@ -110,7 +111,7 @@ namespace GameMeanMachine.Unity.WindRose.CubeWorlds
                                 }
                                 else
                                 {
-                                    Camera.fieldOfView = Mathf.Atan2(value, -Camera.transform.localPosition.z);
+                                    Camera.fieldOfView = Mathf.Atan2(value, -Camera.transform.localPosition.z) * Mathf.Rad2Deg;
                                 }
                             }
                         }
@@ -122,7 +123,7 @@ namespace GameMeanMachine.Unity.WindRose.CubeWorlds
                                 {
                                     return Camera.orthographicSize;
                                 }
-                                return -Camera.transform.localPosition.z * Mathf.Tan(Camera.fieldOfView);
+                                return -Camera.transform.localPosition.z * Mathf.Tan(Camera.fieldOfView * Mathf.Deg2Rad);
                             }
                             return 0f;
                         }

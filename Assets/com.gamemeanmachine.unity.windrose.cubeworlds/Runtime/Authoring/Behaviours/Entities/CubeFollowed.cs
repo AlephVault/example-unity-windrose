@@ -56,6 +56,10 @@ namespace GameMeanMachine.Unity.WindRose.CubeWorlds
                     private void Awake()
                     {
                         mapObject = GetComponent<MapObject>();
+                    }
+
+                    private void Start()
+                    {
                         mapObject.onAttached.AddListener(OnAttached);
                     }
 
@@ -63,9 +67,13 @@ namespace GameMeanMachine.Unity.WindRose.CubeWorlds
                     {
                         mapObject.onAttached.RemoveListener(OnAttached);
                     }
-
-                    private void OnAttached(Map newMap)
+                    
+                    /// <summary>
+                    ///   Refreshes the related watcher status and mode.
+                    /// </summary>
+                    internal void RefreshWatcherStatus()
                     {
+                        Map currentMap = mapObject.ParentMap;
                         try
                         {
                             // Destroy any current movement.
@@ -76,17 +84,17 @@ namespace GameMeanMachine.Unity.WindRose.CubeWorlds
                             }
                             
                             CubeFace previousFace = previousMap ? previousMap.ObjectsLayer.GetComponent<CubeFace>() : null;
-                            CubeFace newFace = newMap ? newMap.ObjectsLayer.GetComponent<CubeFace>() : null;
-                            Transform previousMapParent = previousMap.transform.parent;
+                            CubeFace newFace = currentMap ? currentMap.ObjectsLayer.GetComponent<CubeFace>() : null;
+                            Transform previousMapParent = previousMap ? previousMap.transform.parent : null;
                             CubeLayout previousLayout = previousMap && previousMapParent ? previousMapParent.GetComponent<CubeLayout>() : null;
-                            Transform newMapParent = newMap.transform.parent;
-                            CubeLayout newLayout = newMap && newMapParent ? newMapParent.GetComponent<CubeLayout>() : null;
+                            Transform newMapParent = currentMap.transform.parent;
+                            CubeLayout newLayout = currentMap && newMapParent ? newMapParent.GetComponent<CubeLayout>() : null;
 
                             // First, the previous map must not be null / destroyed.
                             // Also, they must be different maps.
-                            if (!previousMap || newMap == previousMap)
+                            if (!previousMap || currentMap == previousMap)
                             {
-                                InstantFixCamera(newMap, newFace, newLayout);
+                                InstantFixCamera(currentMap, newFace, newLayout);
                                 return;
                             }
 
@@ -94,40 +102,46 @@ namespace GameMeanMachine.Unity.WindRose.CubeWorlds
                             // within the same CubeLayout.
                             if (previousFace == null || newFace == null)
                             {
-                                InstantFixCamera(newMap, newFace, newLayout);
+                                InstantFixCamera(currentMap, newFace, newLayout);
                                 return;
                             }
 
                             // Next, both faces must belong to the same parent cube.
-                            if (newMap.transform.parent == null || previousMap.transform.parent == null)
+                            if (currentMap.transform.parent == null || previousMap.transform.parent == null)
                             {
-                                InstantFixCamera(newMap, newFace, newLayout);
+                                InstantFixCamera(currentMap, newFace, newLayout);
                                 return;
                             }
                             if (previousLayout == null || newLayout == null || previousLayout != newLayout)
                             {
-                                InstantFixCamera(newMap, newFace, newLayout);
+                                InstantFixCamera(currentMap, newFace, newLayout);
                                 return;
                             }
                             
                             // Next, both faces must be SURFACE.
                             if (previousFace.FaceType != FaceType.Surface || newFace.FaceType != FaceType.Surface)
                             {
-                                InstantFixCamera(newMap, newFace, newLayout);
+                                InstantFixCamera(currentMap, newFace, newLayout);
                                 return;
                             }
                             
                             // Now, all the conditions are satisfied: CubeFaces inside
                             // the same CubeLayout, both different and both surface. The
                             // next thing to do is perform an animation.
-                            currentRotation = StartCoroutine(CubeRotatingMovement(previousMap, newMap));
+                            currentRotation = StartCoroutine(CubeRotatingMovement(previousMap, currentMap));
                         }
                         finally
                         {
-                            previousMap = newMap;
+                            previousMap = currentMap;
                         }
                     }
 
+                    private void OnAttached(Map newMap)
+                    {
+                        // newMap will already be the current map.
+                        RefreshWatcherStatus();
+                    }
+                    
                     private void InstantFixCamera(Map map, CubeFace cubeFace, CubeLayout cubeLayout)
                     {
                         if (!Watcher) return;

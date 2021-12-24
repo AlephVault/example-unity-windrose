@@ -107,11 +107,11 @@ namespace GameMeanMachine.Unity.WindRose.CubeWorlds
                             {
                                 if (Camera.orthographic)
                                 {
-                                    Camera.orthographicSize = value / 2;
+                                    Camera.orthographicSize = value;
                                 }
                                 else
                                 {
-                                    Camera.fieldOfView = 2 * Mathf.Atan2(value / 2, -Camera.transform.localPosition.z) * Mathf.Rad2Deg;
+                                    Camera.fieldOfView = 2 * Mathf.Atan2(value, -Camera.transform.localPosition.z) * Mathf.Rad2Deg;
                                 }
                             }
                         }
@@ -121,9 +121,9 @@ namespace GameMeanMachine.Unity.WindRose.CubeWorlds
                             {
                                 if (Camera.orthographic)
                                 {
-                                    return Camera.orthographicSize * 2;
+                                    return Camera.orthographicSize;
                                 }
-                                return -Camera.transform.localPosition.z * Mathf.Tan(Camera.fieldOfView / 2 * Mathf.Deg2Rad) * 2;
+                                return -Camera.transform.localPosition.z * Mathf.Tan(Camera.fieldOfView / 2 * Mathf.Deg2Rad);
                             }
                             return 0f;
                         }

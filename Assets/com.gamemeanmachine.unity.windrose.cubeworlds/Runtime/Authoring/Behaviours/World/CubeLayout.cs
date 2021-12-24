@@ -194,6 +194,11 @@ namespace GameMeanMachine.Unity.WindRose.CubeWorlds
                     private byte delta = 5;
 
                     /// <summary>
+                    ///   See <see cref="delta"/>.
+                    /// </summary>
+                    public byte Delta => delta;
+
+                    /// <summary>
                     ///   <para>
                     ///     How many basement levels this cube layout has. This
                     ///     does not include the surface level.

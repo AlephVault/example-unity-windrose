@@ -157,7 +157,11 @@ namespace GameMeanMachine.Unity.WindRose.CubeWorlds
                         // 2. Fix the distance of the inner camera in the watcher.
                         if (cubeLayout)
                         {
-                            Watcher.Distance = cubeLayout.FaceSize() / 2;
+                            // If the cube face is outer, then FaceSize()/2 is an appropriate
+                            // distance. For Basement cube faces, delta-0.5 serves.
+                            Watcher.Distance = cubeFace.FaceType == FaceType.Surface
+                                ? cubeLayout.FaceSize() / 2
+                                : cubeLayout.Delta - 0.5f;
                         }
                         else if (cubeFace)
                         {
@@ -169,7 +173,7 @@ namespace GameMeanMachine.Unity.WindRose.CubeWorlds
                         }
                         
                         // 3. Set the mode appropriately: Orthographic or Perspective.
-                        Watcher.IsOrthographic = cubeFace == null;
+                        Watcher.IsOrthographic = cubeFace == null || cubeFace.FaceType != FaceType.Surface;
                         
                         // 4. Set the camera size.
                         Watcher.Size = CameraSize;

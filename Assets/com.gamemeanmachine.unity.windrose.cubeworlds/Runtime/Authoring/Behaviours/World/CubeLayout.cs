@@ -313,21 +313,37 @@ namespace GameMeanMachine.Unity.WindRose.CubeWorlds
                                                             ((basements + 1) * cellSize * delta);
                                 map.transform.localPosition = cubePivotPosition;
                                 // Also, create a Quad, with:
-                                // - Same local cubic position.
+                                // - Same local cubic position (save for a 0.001 buffering).
                                 // - Same local orientation.
                                 // - Color: The given color here.
-                                // - Scale: Vector3.one * (basements + 1) * cellSize * delta * 2.
+                                // - Scale: Vector3.one * (basements + 1) * cellSize * delta * 2
+                                //   (save for a 0.001 buffering).
+                                // - Same parent (i.e. this).
+                                // Also, create a Quad, with:
+                                // - Same local cubic position  (save for a 0.002 buffering).
+                                // - Same local orientation.
+                                // - Color: The given color here.
+                                // - Scale: Vector3.one * (basements + 1) * cellSize * delta * 2
+                                //   (save for a 0.002 buffering).
                                 // - Same parent (i.e. this).
                                 // - Inverted normals.
-                                GameObject quad = GameObject.CreatePrimitive(PrimitiveType.Quad);
-                                quad.transform.parent = map.transform;
-                                quad.transform.localPosition =
+                                GameObject quadOut = GameObject.CreatePrimitive(PrimitiveType.Quad);
+                                quadOut.transform.parent = map.transform;
+                                quadOut.transform.localPosition =
                                     (Vector3)(Vector2.one * (basements + 1) * cellSize * delta) +
                                     0.001f * Vector3.one;
-                                quad.transform.localRotation = Quaternion.identity;
-                                quad.transform.localScale = Vector3.one * ((basements + 1) * cellSize * delta - 0.001f) * 2;
-                                quad.GetComponent<Renderer>().material.color = basementBackgroundColor;
-                                InvertNormals(quad.GetComponent<MeshFilter>());
+                                quadOut.transform.localRotation = Quaternion.identity;
+                                quadOut.transform.localScale = Vector3.one * ((basements + 1) * cellSize * delta - 0.001f) * 2;
+                                quadOut.GetComponent<Renderer>().material.color = basementBackgroundColor;
+                                GameObject quadIn = GameObject.CreatePrimitive(PrimitiveType.Quad);
+                                quadIn.transform.parent = map.transform;
+                                quadIn.transform.localPosition =
+                                    (Vector3)(Vector2.one * (basements + 1) * cellSize * delta) +
+                                    0.002f * Vector3.one;
+                                quadIn.transform.localRotation = Quaternion.identity;
+                                quadIn.transform.localScale = Vector3.one * ((basements + 1) * cellSize * delta - 0.002f) * 2;
+                                quadIn.GetComponent<Renderer>().material.color = basementBackgroundColor;
+                                InvertNormals(quadIn.GetComponent<MeshFilter>());
                             }
                         }
                         else if (faceType == FaceType.Basement)

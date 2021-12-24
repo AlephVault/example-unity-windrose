@@ -3696,7 +3696,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DefaultDistance: 1
   CameraSize: 16
-  RotationTime: 0.25
+  RotationTime: 1
   Watcher: {fileID: 1415553226}
   Offset: {x: 0.5, y: 0.5}
 --- !u!114 &716792314

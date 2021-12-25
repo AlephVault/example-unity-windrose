@@ -228,6 +228,11 @@ namespace GameMeanMachine.Unity.WindRose.CubeWorlds
                     private float cellSize = 1f;
 
                     /// <summary>
+                    ///   See <see cref="cellSize"/>.
+                    /// </summary>
+                    public float CellSize => cellSize;
+
+                    /// <summary>
                     ///   The color to use for basement backgrounds.
                     /// </summary>
                     [SerializeField]

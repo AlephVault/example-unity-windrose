@@ -161,7 +161,7 @@ namespace GameMeanMachine.Unity.WindRose.CubeWorlds
                             // distance. For Basement cube faces, delta-0.5 serves.
                             Watcher.Distance = cubeFace.FaceType == FaceType.Surface
                                 ? cubeLayout.FaceSize() / 2
-                                : cubeLayout.Delta - 0.5f;
+                                : (cubeLayout.Delta - 0.5f) * cubeLayout.CellSize;
                         }
                         else if (cubeFace)
                         {

@@ -50,6 +50,12 @@ namespace GameMeanMachine.Unity.WindRose.CubeWorlds
                     // The previous map this object was attached to.
                     private Map previousMap;
 
+                    // The current map.
+                    private Map currentMap;
+
+                    // The per-character offset.
+                    private Vector2 offset;
+
                     // The current rotation coroutine.
                     private Coroutine currentRotation;
                     
@@ -61,11 +67,13 @@ namespace GameMeanMachine.Unity.WindRose.CubeWorlds
                     private void Start()
                     {
                         mapObject.onAttached.AddListener(OnAttached);
+                        mapObject.onDetached.AddListener(OnDetached);
                     }
 
                     private void OnDestroy()
                     {
                         mapObject.onAttached.RemoveListener(OnAttached);
+                        mapObject.onDetached.RemoveListener(OnDetached);
                     }
                     
                     /// <summary>
@@ -73,7 +81,11 @@ namespace GameMeanMachine.Unity.WindRose.CubeWorlds
                     /// </summary>
                     internal void RefreshWatcherStatus()
                     {
-                        Map currentMap = mapObject.ParentMap;
+                        currentMap = mapObject.ParentMap;
+                        offset = new Vector2(
+                            currentMap.CellSize.x * mapObject.Width / 2,
+                            currentMap.CellSize.y * mapObject.Height / 2
+                        );
                         try
                         {
                             // Destroy any current movement.
@@ -141,6 +153,11 @@ namespace GameMeanMachine.Unity.WindRose.CubeWorlds
                         // newMap will already be the current map.
                         RefreshWatcherStatus();
                     }
+
+                    private void OnDetached()
+                    {
+                        currentMap = null;
+                    }
                     
                     private void InstantFixCamera(Map map, CubeFace cubeFace, CubeLayout cubeLayout)
                     {
@@ -194,7 +211,7 @@ namespace GameMeanMachine.Unity.WindRose.CubeWorlds
 
                         // 6. Set the inner camera's (x, y) to the object's position plus
                         //    the considered offset.
-                        Watcher.CameraPosition = (Vector2)transform.localPosition + Offset;
+                        Watcher.CameraPosition = (Vector2)transform.localPosition + offset;
                     }
 
                     private IEnumerator CubeRotatingMovement(Map previousMap, Map newMap)
@@ -226,7 +243,7 @@ namespace GameMeanMachine.Unity.WindRose.CubeWorlds
                                 // 3. Lerp the camera position.
                                 Watcher.CameraPosition = Vector2.Lerp(
                                     initialCameraPosition, transform.localPosition, stepCurrentTime
-                                ) + Offset;
+                                ) + offset;
                                 yield return null;
                                 // (distance and perspective will be the same)
                                 currentTime += Time.deltaTime;
@@ -234,7 +251,7 @@ namespace GameMeanMachine.Unity.WindRose.CubeWorlds
                             // Force-fix by the end (position, rotation, and camera position).
                             Watcher.transform.localRotation = newMapTransform.localRotation;
                             Watcher.transform.localPosition = newMapTransform.localPosition;
-                            Watcher.CameraPosition = (Vector2)transform.localPosition + Offset;
+                            Watcher.CameraPosition = (Vector2)transform.localPosition + offset;
                         }
                         finally
                         {
@@ -244,10 +261,10 @@ namespace GameMeanMachine.Unity.WindRose.CubeWorlds
 
                     private void Update()
                     {
-                        if (currentRotation == null && Watcher)
+                        if (currentRotation == null && Watcher && currentMap)
                         {
                             // Adjust the camera position.
-                            Watcher.CameraPosition = (Vector2)transform.localPosition + Offset;
+                            Watcher.CameraPosition = (Vector2)transform.localPosition + offset;
                         }
                     }
 
@@ -255,17 +272,6 @@ namespace GameMeanMachine.Unity.WindRose.CubeWorlds
                     ///   The target watcher to force a follow.
                     /// </summary>
                     public CubeWatcher Watcher;
-                    
-                    /// <summary>
-                    ///   <para>
-                    ///     An offset, by default (1/2, 1/2), to apply to the watcher's camera.
-                    ///     Typically, set once and unchanged. Still, open for free-change.
-                    ///   </para>
-                    ///   <para>
-                    ///     typically, the offset becomes (k, k) where k = object's width / 2.
-                    ///   </para>
-                    /// </summary>
-                    public Vector2 Offset = Vector2.one * 0.5f;
                 }
             }
         }

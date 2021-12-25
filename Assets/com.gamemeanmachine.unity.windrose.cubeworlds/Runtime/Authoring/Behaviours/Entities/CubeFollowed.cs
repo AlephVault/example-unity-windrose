@@ -40,6 +40,11 @@ namespace GameMeanMachine.Unity.WindRose.CubeWorlds
                     public float CameraSize = 12f;
 
                     /// <summary>
+                    ///   The clip distance for the watcher.
+                    /// </summary>
+                    public float ClipDistance = 30f;
+
+                    /// <summary>
                     ///   The cube rotation time.
                     /// </summary>
                     public float RotationTime = 1f;
@@ -151,6 +156,7 @@ namespace GameMeanMachine.Unity.WindRose.CubeWorlds
                     private void OnAttached(Map newMap)
                     {
                         // newMap will already be the current map.
+                        transform.localRotation = Quaternion.identity;
                         RefreshWatcherStatus();
                     }
 
@@ -196,18 +202,7 @@ namespace GameMeanMachine.Unity.WindRose.CubeWorlds
                         Watcher.Size = CameraSize;
 
                         // 5. Set the clip distance.
-                        if (cubeLayout)
-                        {
-                            Watcher.ClipDistance = 2 * cubeLayout.FaceSize();
-                        }
-                        else if (cubeFace)
-                        {
-                            Watcher.ClipDistance = map.Width * map.CellSize.x;
-                        }
-                        else
-                        {
-                            Watcher.Distance = DefaultDistance + Mathf.Epsilon;
-                        }
+                        Watcher.ClipDistance = ClipDistance;
 
                         // 6. Set the inner camera's (x, y) to the object's position plus
                         //    the considered offset.

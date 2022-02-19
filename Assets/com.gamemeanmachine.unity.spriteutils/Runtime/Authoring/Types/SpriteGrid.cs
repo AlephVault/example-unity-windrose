@@ -107,16 +107,26 @@ namespace AlephVault.Unity.SpriteUtils
                 }
                 return sprites[row * FrameColumns + column];
             }
+            
+            /// <summary>
+            ///   Invoked when this sprite grid is "used". Invokes <see cref="OnUsed"/>.
+            /// </summary>
+            internal void Used() { OnUsed(); }
+            
+            /// <summary>
+            ///   Invoked when this sprite grid is "released". Invokes <see cref="OnReleased"/>.
+            /// </summary>
+            internal void Released() { OnReleased(); }
 
             /// <summary>
             ///   Invoked when this sprite grid is "used".
             /// </summary>
-            protected internal abstract void Used();
+            protected abstract void OnUsed();
 
             /// <summary>
             ///   Invoked when this sprite grid is "released".
             /// </summary>
-            protected internal abstract void Released();
+            protected abstract void OnReleased();
         }
     }
 }

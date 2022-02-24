@@ -10,6 +10,7 @@
     "com.alephvault.unity.menuactions": "file:../../unity-menu-actions",
     "com.alephvault.unity.scenes": "file:../../unity-scenes",
     "com.alephvault.unity.soundaround": "file:../../unity-soundaround",
+    "com.alephvault.unity.spriteutils": "file:/home/luismasuelli/Projects/Unity/unity-spriteutils",
     "com.alephvault.unity.support": "file:../../unity-support",
     "com.alephvault.unity.support.generic": "file:../../unity-support-generic",
     "com.gamemeanmachine.unity.backpack": "file:../../unity-backpack",

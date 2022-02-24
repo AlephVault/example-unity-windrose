@@ -81,6 +81,14 @@
       "source": "local",
       "dependencies": {}
     },
+    "com.alephvault.unity.spriteutils": {
+      "version": "file:/home/luismasuelli/Projects/Unity/unity-spriteutils",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {
+        "com.alephvault.unity.support": "0.0.1"
+      }
+    },
     "com.alephvault.unity.support": {
       "version": "file:../../unity-support",
       "depth": 0,
@@ -165,7 +173,7 @@
       "depth": 0,
       "source": "local",
       "dependencies": {
-        "com.gamemeanmachine.unity.windrose": "0.0.2"
+        "com.gamemeanmachine.unity.windrose": "0.0.3"
       }
     },
     "com.gamemeanmachine.unity.windrose.cubeworlds": {

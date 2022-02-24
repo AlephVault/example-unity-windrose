@@ -88,7 +88,7 @@ namespace AlephVault.Unity.SpriteUtils
                 /// <param name="key">The key to retrieve an instance for</param>
                 /// <param name="ifAbsent">A function returning the parameters to use for its creation, if absent</param>
                 /// <returns>The instance corresponding to that key</returns>
-                public IdentifiedSpriteGrid<T> Get(T key, Func<Tuple<Texture2D, uint, uint, float>> ifAbsent)
+                public static IdentifiedSpriteGrid<T> Get(T key, Func<Tuple<Texture2D, uint, uint, float>> ifAbsent)
                 {
                     if (instances.TryGetValue(key, out WeakReference<IdentifiedSpriteGrid<T>> instanceRef) && 
                         instanceRef.TryGetTarget(out IdentifiedSpriteGrid<T> target))

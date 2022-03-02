@@ -56,7 +56,8 @@ namespace AlephVault.Unity.TextureUtils
             }
 
             /// <summary>
-            ///   Creates an instance with certain type
+            ///   Creates an instance with certain dimension, size, and whether
+            ///   to use <see cref="RenderTexture"/> instances or not.
             /// </summary>
             /// <param name="size">The size of the pool, in MB</param>
             /// <param name="dimension">The dimensions of the textures being created</param>

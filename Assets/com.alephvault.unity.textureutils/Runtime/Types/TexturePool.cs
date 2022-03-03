@@ -88,6 +88,7 @@ namespace AlephVault.Unity.TextureUtils
                     instanceByRef.Remove(tracking.texture);
                 }
 
+                // Alive references.
                 foreach (TexTracking tracking in instanceByKey.Values)
                 {
                     instanceByRef.Remove(tracking.texture);

@@ -75,6 +75,27 @@ namespace AlephVault.Unity.TextureUtils
             /// </summary>
             public TexturePool() : this(20) {}
 
+            // Clears all the references from the pool, both dead and alive.
+            // This, because textures cannot be defined themselves to self
+            // manage their death with the pool-relevant logic, so the logic
+            // must be invoked here, on pool destruction.
+            ~TexturePool()
+            {
+                // Dead pool (!!!! XD) references.
+                foreach (TexTracking tracking in lastSecondRescue.ShiftUntil(0))
+                {
+                    instanceByKey.Remove(tracking.key);
+                    instanceByRef.Remove(tracking.texture);
+                }
+
+                foreach (TexTracking tracking in instanceByKey.Values)
+                {
+                    instanceByRef.Remove(tracking.texture);
+                    tracking.onShifted?.Invoke(tracking.texture);
+                }
+                instanceByKey.Clear();
+            }
+
             /// <summary>
             ///   <para>
             ///     Attempts to retrieve an existing texture (by its key) or create/load

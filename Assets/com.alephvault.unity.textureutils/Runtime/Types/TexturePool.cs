@@ -126,7 +126,7 @@ namespace AlephVault.Unity.TextureUtils
             ///   ignored if a texture already exists with the given key.
             /// </param>
             /// <returns>The corresponding texture</returns>
-            public Texture Use(KeyType key, Func<TexType> onAbsent, Action<TexType> onShifted)
+            public TexType Use(KeyType key, Func<TexType> onAbsent, Action<TexType> onShifted)
             {
                 if (key == null) throw new ArgumentNullException(nameof(key));
                 
@@ -213,7 +213,7 @@ namespace AlephVault.Unity.TextureUtils
             /// </summary>
             /// <param name="texture">The texture reference to release, if present</param>
             /// <returns>false if the texture is not present</returns>
-            public bool Release(Texture texture)
+            public bool Release(TexType texture)
             {
                 if (instanceByRef.TryGetValue(texture, out TexTracking tracking) && tracking.refCount > 0)
                 {

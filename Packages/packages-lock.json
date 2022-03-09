@@ -103,6 +103,14 @@
         "com.alephvault.unity.support": "0.0.1"
       }
     },
+    "com.alephvault.unity.textureutils": {
+      "version": "file:/home/luismasuelli/Projects/Unity/unity-textureutils",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {
+        "com.alephvault.unity.support.generic": "0.0.1"
+      }
+    },
     "com.gamemeanmachine.unity.backpack": {
       "version": "file:../../unity-backpack",
       "depth": 0,

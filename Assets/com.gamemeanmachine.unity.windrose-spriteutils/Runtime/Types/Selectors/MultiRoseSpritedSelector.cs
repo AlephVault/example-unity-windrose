@@ -43,7 +43,7 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
                         }
 
                         if (pair.Value == null) throw new ArgumentException(
-                            $"A null value was given to the sprite rose-tuple dictionary in key: {pair.Key.FullName}"
+                            $"A null value was given to the sprite rose-tuple dictionary by key: {pair.Key.FullName}"
                         );
                         result[pair.Key] = new RoseTuple<Sprite>(
                             ValidateAndMapSprite(sourceGrid, pair.Value.Up),

@@ -15,7 +15,7 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
         namespace Selectors
         {
             /// <summary>
-            ///   A multi-state animated selector involves a list of sprites per state.
+            ///   A multi-state & animated selector involves a list of sprites per state.
             /// </summary>
             public class MultiAnimatedSelector
                 : MappedSpriteGridSelection<Dictionary<Type, ReadOnlyCollection<Vector2Int>>, Dictionary<Type, ReadOnlyCollection<Sprite>>>

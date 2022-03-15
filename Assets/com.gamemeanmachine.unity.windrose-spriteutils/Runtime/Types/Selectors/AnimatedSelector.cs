@@ -13,7 +13,7 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
         namespace Selectors
         {
             /// <summary>
-            ///   A simple animated selector involves a list of sprites.
+            ///   A simple & animated selector involves a list of sprites.
             /// </summary>
             public class AnimatedSelector : MappedSpriteGridSelection<ReadOnlyCollection<Vector2Int>, ReadOnlyCollection<Sprite>>
             {

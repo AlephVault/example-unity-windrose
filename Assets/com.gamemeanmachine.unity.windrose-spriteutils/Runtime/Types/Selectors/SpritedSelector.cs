@@ -9,7 +9,7 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
         namespace Selectors
         {
             /// <summary>
-            ///   A simple sprited selector involves just one sprite.
+            ///   A simple & sprited selector involves just one sprite.
             /// </summary>
             public class SpritedSelector : MappedSpriteGridSelection<Vector2Int, Sprite>
             {

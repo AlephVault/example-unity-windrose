@@ -13,7 +13,7 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
         namespace Selectors
         {
             /// <summary>
-            ///   A multi-state sprited selector involves just one sprite per state.
+            ///   A multi-state & sprited selector involves just one sprite per state.
             /// </summary>
             public class MultiSpritedSelector : MappedSpriteGridSelection<Dictionary<Type, Vector2Int>, Dictionary<Type, Sprite>>
             {

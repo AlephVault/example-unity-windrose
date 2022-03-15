@@ -19,11 +19,12 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
             {
                 public MultiSpritedSelector(SpriteGrid sourceGrid, Dictionary<Type, Vector2Int> selection) : base(sourceGrid, selection)
                 {
+                    if (selection == null) throw new ArgumentNullException(nameof(selection));
                 }
 
                 /// <summary>
-                ///   Validates and maps a dictionary of type => Vector2Int. Each value must be valid
-                ///   and each type must be a subclass of <see cref="SpriteBundle"/>.
+                ///   Validates and maps a dictionary of <see cref="Type"/> => <see cref="Vector2Int"/>. Each value
+                ///   must be valid and each type must be a subclass of <see cref="SpriteBundle"/>.
                 /// </summary>
                 /// <param name="sourceGrid">The grid to validate against</param>
                 /// <param name="selection">The positions to select (mapped from type)</param>

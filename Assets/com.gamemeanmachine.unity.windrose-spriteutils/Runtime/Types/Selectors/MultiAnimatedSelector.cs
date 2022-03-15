@@ -26,8 +26,8 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
                 }
 
                 /// <summary>
-                ///   Validates and maps a dictionary of <see cref="Type"/> => <see cref="Vector2Int"/>. Each value
-                ///   must be valid and each type must be a subclass of <see cref="SpriteBundle"/>.
+                ///   Validates and maps a dictionary of <see cref="Type"/> => <see cref="ReadOnlyCollection{Vector2Int}"/>.
+                ///   Each value must be valid and each type must be a subclass of <see cref="SpriteBundle"/>.
                 /// </summary>
                 /// <param name="sourceGrid">The grid to validate against</param>
                 /// <param name="selection">The positions lists to select (mapped from type)</param>

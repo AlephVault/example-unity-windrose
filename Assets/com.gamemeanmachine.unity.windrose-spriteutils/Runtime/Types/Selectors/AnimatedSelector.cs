@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using AlephVault.Unity.Layout.Utils;
 using AlephVault.Unity.SpriteUtils.Types;
+using AlephVault.Unity.Support.Utils;
 using UnityEngine;
 using Animation = GameMeanMachine.Unity.WindRose.Authoring.ScriptableObjects.VisualResources.Animation;
 using Object = UnityEngine.Object;
@@ -20,9 +21,13 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
             /// </summary>
             public class AnimatedSelector : MappedSpriteGridSelection<ReadOnlyCollection<Vector2Int>, Animation>
             {
-                public AnimatedSelector(SpriteGrid sourceGrid, ReadOnlyCollection<Vector2Int> selection) : base(sourceGrid, selection)
+                // The FPS to use for the selection.
+                private uint fps;
+                
+                public AnimatedSelector(SpriteGrid sourceGrid, ReadOnlyCollection<Vector2Int> selection, uint framesPerSecond) : base(sourceGrid, selection)
                 {
                     if (selection == null) throw new ArgumentNullException(nameof(selection));
+                    fps = Values.Max(1u, framesPerSecond);
                 }
 
                 /// <summary>
@@ -38,7 +43,7 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
                                         select ValidateAndMapSprite(sourceGrid, position)).ToArray();
                     Animation result = ScriptableObject.CreateInstance<Animation>();
                     Behaviours.SetObjectFieldValues(result, new Dictionary<string, object> {
-                        { "sprites", sprites }
+                        { "sprites", sprites }, { "fps", fps }
                     });
                     return result;
                 }

@@ -23,9 +23,13 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
             public class MultiAnimatedSelector
                 : MappedSpriteGridSelection<Dictionary<Type, ReadOnlyCollection<Vector2Int>>, Dictionary<Type, Animation>>
             {
-                public MultiAnimatedSelector(SpriteGrid sourceGrid, Dictionary<Type, ReadOnlyCollection<Vector2Int>> selection) : base(sourceGrid, selection)
+                // The FPS to use for the selection.
+                private uint fps;
+                
+                public MultiAnimatedSelector(SpriteGrid sourceGrid, Dictionary<Type, ReadOnlyCollection<Vector2Int>> selection, uint framesPerSecond) : base(sourceGrid, selection)
                 {
                     if (selection == null) throw new ArgumentNullException(nameof(selection));
+                    fps = Values.Max(1u, framesPerSecond);
                 }
 
                 /// <summary>
@@ -54,7 +58,7 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
                                             select ValidateAndMapSprite(sourceGrid, position)).ToArray();
                         Animation animation = ScriptableObject.CreateInstance<Animation>();
                         Behaviours.SetObjectFieldValues(animation, new Dictionary<string, object> {
-                            { "sprites", sprites }
+                            { "sprites", sprites }, { "fps", fps }
                         });
                         result[pair.Key] = animation;
                     }

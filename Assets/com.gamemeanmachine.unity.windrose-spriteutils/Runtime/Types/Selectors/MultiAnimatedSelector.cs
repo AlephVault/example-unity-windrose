@@ -38,7 +38,7 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
                 /// </summary>
                 /// <param name="sourceGrid">The grid to validate against</param>
                 /// <param name="selection">The positions lists to select (mapped from type)</param>
-                /// <returns>The sprites lists (mapped from type)</returns>
+                /// <returns>The mapped WindRose animation (mapped from type)</returns>
                 protected override Dictionary<Type, Animation> ValidateAndMap(SpriteGrid sourceGrid, Dictionary<Type, ReadOnlyCollection<Vector2Int>> selection)
                 {
                     Dictionary<Type, Animation> result = new Dictionary<Type, Animation>();

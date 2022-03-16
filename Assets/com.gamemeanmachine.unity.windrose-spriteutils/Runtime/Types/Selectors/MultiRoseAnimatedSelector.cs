@@ -42,7 +42,7 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
                 /// </summary>
                 /// <param name="sourceGrid">The grid to validate against</param>
                 /// <param name="selection">The positions lists to select, for each direction (mapped from type)</param>
-                /// <returns>The sprites lists, for each direction (mapped from type)</returns>
+                /// <returns>The mapped WindRose animation rose (mapped from type)</returns>
                 protected override Dictionary<Type, AnimationRose> ValidateAndMap(SpriteGrid sourceGrid, Dictionary<Type, RoseTuple<ReadOnlyCollection<Vector2Int>>> selection)
                 {
                     Dictionary<Type, AnimationRose> result = new Dictionary<Type, AnimationRose>();

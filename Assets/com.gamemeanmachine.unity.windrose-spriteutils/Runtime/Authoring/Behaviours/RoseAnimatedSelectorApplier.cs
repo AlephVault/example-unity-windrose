@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using AlephVault.Unity.SpriteUtils.Authoring.Types;
 using AlephVault.Unity.SpriteUtils.Types;
+using GameMeanMachine.Unity.WindRose.Authoring.Behaviours.Entities.Visuals;
+using GameMeanMachine.Unity.WindRose.Authoring.ScriptableObjects.VisualResources;
 using GameMeanMachine.Unity.WindRose.Types;
 using UnityEngine;
 
@@ -13,30 +15,36 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
     {
         namespace Behaviours
         {
-            public class RoseAnimatedSelectorApplier : SpriteGridSelectionApplier<RoseTuple<ReadOnlyCollection<Sprite>>>
+            /// <summary>
+            ///   Rose-Animated selector appliers are added on top of <see cref="RoseAnimated"/>
+            ///   visuals so they are able to replace the animation rose they use.
+            /// </summary>
+            [RequireComponent(typeof(RoseAnimated))]
+            public class RoseAnimatedSelectorApplier : SpriteGridSelectionApplier<AnimationRose>
             {
-                protected override bool IsCompatible(SpriteGridSelection<RoseTuple<ReadOnlyCollection<Sprite>>> selection)
+                private RoseAnimated roseAnimated;
+
+                private void Awake()
                 {
-                    // Test compatibility (no empty animation).
-                    return base.IsCompatible(selection);
+                    roseAnimated = GetComponent<RoseAnimated>();
                 }
 
-                protected override void BeforeUse(SpriteGridSelection<RoseTuple<ReadOnlyCollection<Sprite>>> selection)
+                /// <summary>
+                ///   Sets the animation rose directly into the RoseAnimated behaviour.
+                /// </summary>
+                /// <param name="selection">The new selection</param>
+                protected override void AfterUse(SpriteGridSelection<AnimationRose> selection)
                 {
-                    // Ensure compatibility, or fail (no empty animation).
-                    base.BeforeUse(selection);
+                    roseAnimated.AnimationRose = selection.GetSelection();
                 }
 
-                protected override void AfterUse(SpriteGridSelection<RoseTuple<ReadOnlyCollection<Sprite>>> selection)
+                /// <summary>
+                ///   Clears the animation rose from the RoseAnimated behaviour.
+                /// </summary>
+                /// <param name="selection">The previous, just released, selection</param>
+                protected override void AfterRelease(SpriteGridSelection<AnimationRose> selection)
                 {
-                    // Apply the value.
-                    throw new NotImplementedException();
-                }
-
-                protected override void AfterRelease(SpriteGridSelection<RoseTuple<ReadOnlyCollection<Sprite>>> selection)
-                {
-                    // Clear the value.
-                    throw new NotImplementedException();
+                    roseAnimated.AnimationRose = null;
                 }
             }
         }

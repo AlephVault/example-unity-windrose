@@ -32,17 +32,9 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
                 protected override MultiSettings<Sprite> ValidateAndMap(SpriteGrid sourceGrid, MultiSettings<Vector2Int> selection)
                 {
                     Sprite idle = ValidateAndMapSprite(sourceGrid, selection.Item1);
-                    Dictionary<Type, Tuple<Sprite, string>> mapping = new Dictionary<Type, Tuple<Sprite, string>>();
-                    foreach (KeyValuePair<Type, Tuple<Vector2Int, string>> pair in selection.Item2)
+                    Dictionary<string, Tuple<Sprite, string>> mapping = new Dictionary<string, Tuple<Sprite, string>>();
+                    foreach (KeyValuePair<string, Tuple<Vector2Int, string>> pair in selection.Item2)
                     {
-                        if (!Classes.IsSameOrSubclassOf(pair.Key, typeof(SpriteBundle)))
-                        {
-                            throw new ArgumentException(
-                                $"Cannot use type {pair.Key} as key, since it is not a subclass of " +
-                                $"{typeof(SpriteBundle).FullName}"
-                            );
-                        }
-
                         mapping[pair.Key] = new Tuple<Sprite, string>(
                             !string.IsNullOrEmpty(pair.Value.Item2) ? ValidateAndMapSprite(sourceGrid, pair.Value.Item1) : null,
                             pair.Value.Item2

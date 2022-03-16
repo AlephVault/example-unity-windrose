@@ -45,18 +45,11 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
                         "A null value was given to the sprite list in idle state"
                     );
                     Animation idle = ValidateAndMapAnimation(sourceGrid, selection.Item1);
-                    Dictionary<Type, Tuple<Animation, string>> mapping = new Dictionary<Type, Tuple<Animation, string>>();
-                    foreach (KeyValuePair<Type, Tuple<ReadOnlyCollection<Vector2Int>, string>> pair in selection.Item2)
+                    Dictionary<string, Tuple<Animation, string>> mapping = new Dictionary<string, Tuple<Animation, string>>();
+                    foreach (KeyValuePair<string, Tuple<ReadOnlyCollection<Vector2Int>, string>> pair in selection.Item2)
                     {
-                        if (!Classes.IsSameOrSubclassOf(pair.Key, typeof(SpriteBundle)))
-                        {
-                            throw new ArgumentException(
-                                $"Cannot use type {pair.Key} as key, since it is not a subclass of " +
-                                $"{typeof(SpriteBundle).FullName}"
-                            );
-                        }
                         if (pair.Value == null) throw new ArgumentException(
-                            $"A null value was given to the sprite list by key: {pair.Key.FullName}"
+                            $"A null value was given to the sprite list by key: {pair.Key}"
                         );
 
                         mapping[pair.Key] = new Tuple<Animation, string>(

@@ -42,19 +42,11 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
                         sourceGrid, selection.Item1.Up, selection.Item1.Down, selection.Item1.Left,
                         selection.Item1.Right
                     );
-                    Dictionary<Type, Tuple<SpriteRose, string>> mapping = new Dictionary<Type, Tuple<SpriteRose, string>>();
-                    foreach (KeyValuePair<Type, Tuple<RoseTuple<Vector2Int>, string>> pair in selection.Item2)
+                    Dictionary<string, Tuple<SpriteRose, string>> mapping = new Dictionary<string, Tuple<SpriteRose, string>>();
+                    foreach (KeyValuePair<string, Tuple<RoseTuple<Vector2Int>, string>> pair in selection.Item2)
                     {
-                        if (!Classes.IsSameOrSubclassOf(pair.Key, typeof(SpriteBundle)))
-                        {
-                            throw new ArgumentException(
-                                $"Cannot use type {pair.Key} as key, since it is not a subclass of " +
-                                $"{typeof(SpriteBundle).FullName}"
-                            );
-                        }
-
                         if (pair.Value == null) throw new ArgumentException(
-                            $"A null value was given to the sprite rose-tuple dictionary by key: {pair.Key.FullName}"
+                            $"A null value was given to the sprite rose-tuple dictionary by key: {pair.Key}"
                         );
 
                         mapping[pair.Key] = new Tuple<SpriteRose, string>(

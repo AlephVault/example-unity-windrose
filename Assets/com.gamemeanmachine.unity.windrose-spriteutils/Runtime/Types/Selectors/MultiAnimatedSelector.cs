@@ -2,10 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using AlephVault.Unity.Layout.Utils;
 using AlephVault.Unity.SpriteUtils.Types;
 using AlephVault.Unity.Support.Utils;
 using GameMeanMachine.Unity.WindRose.Authoring.Behaviours.Entities.Visuals.StateBundles;
 using UnityEngine;
+using Animation = GameMeanMachine.Unity.WindRose.Authoring.ScriptableObjects.VisualResources.Animation;
+using Object = UnityEngine.Object;
 
 
 namespace GameMeanMachine.Unity.WindRose.SpriteUtils
@@ -18,7 +21,7 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
             ///   A multi-state & animated selector involves a list of sprites per state.
             /// </summary>
             public class MultiAnimatedSelector
-                : MappedSpriteGridSelection<Dictionary<Type, ReadOnlyCollection<Vector2Int>>, Dictionary<Type, ReadOnlyCollection<Sprite>>>
+                : MappedSpriteGridSelection<Dictionary<Type, ReadOnlyCollection<Vector2Int>>, Dictionary<Type, Animation>>
             {
                 public MultiAnimatedSelector(SpriteGrid sourceGrid, Dictionary<Type, ReadOnlyCollection<Vector2Int>> selection) : base(sourceGrid, selection)
                 {
@@ -32,9 +35,9 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
                 /// <param name="sourceGrid">The grid to validate against</param>
                 /// <param name="selection">The positions lists to select (mapped from type)</param>
                 /// <returns>The sprites lists (mapped from type)</returns>
-                protected override Dictionary<Type, ReadOnlyCollection<Sprite>> ValidateAndMap(SpriteGrid sourceGrid, Dictionary<Type, ReadOnlyCollection<Vector2Int>> selection)
+                protected override Dictionary<Type, Animation> ValidateAndMap(SpriteGrid sourceGrid, Dictionary<Type, ReadOnlyCollection<Vector2Int>> selection)
                 {
-                    Dictionary<Type, ReadOnlyCollection<Sprite>> result = new Dictionary<Type, ReadOnlyCollection<Sprite>>();
+                    Dictionary<Type, Animation> result = new Dictionary<Type, Animation>();
                     foreach (KeyValuePair<Type, ReadOnlyCollection<Vector2Int>> pair in selection)
                     {
                         if (!Classes.IsSameOrSubclassOf(pair.Key, typeof(SpriteBundle)))
@@ -47,12 +50,27 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
                         if (pair.Value == null) throw new ArgumentException(
                             $"A null value was given to the sprite list dictionary by key: {pair.Key.FullName}"
                         );
-                        result[pair.Key] = new ReadOnlyCollection<Sprite>(
-                            (IList<Sprite>) from position in pair.Value select ValidateAndMapSprite(sourceGrid, position)
-                        );
+                        Sprite[] sprites = (from position in pair.Value
+                                            select ValidateAndMapSprite(sourceGrid, position)).ToArray();
+                        Animation animation = ScriptableObject.CreateInstance<Animation>();
+                        Behaviours.SetObjectFieldValues(animation, new Dictionary<string, object> {
+                            { "sprites", sprites }
+                        });
+                        result[pair.Key] = animation;
                     }
 
                     return result;
+                }
+
+                ~MultiAnimatedSelector()
+                {
+                    if (result != null)
+                    {
+                        foreach (Animation animation in result.Values)
+                        {
+                            Object.Destroy(animation);
+                        }
+                    }
                 }
             }
         }

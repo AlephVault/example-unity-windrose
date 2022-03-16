@@ -19,9 +19,9 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
             /// <summary>
             ///   A multi-state oriented & sprited selector involves just one sprite per state and direction.
             /// </summary>
-            public class MultiRoseSpritedSelector : MappedSpriteGridSelection<Dictionary<Type, RoseTuple<Vector2Int>>, Dictionary<Type, SpriteRose>>
+            public class MultiRoseSpritedSelector : MappedSpriteGridSelection<MultiSettings<RoseTuple<Vector2Int>>, MultiSettings<SpriteRose>>
             {
-                public MultiRoseSpritedSelector(SpriteGrid sourceGrid, Dictionary<Type, RoseTuple<Vector2Int>> selection) : base(sourceGrid, selection)
+                public MultiRoseSpritedSelector(SpriteGrid sourceGrid, MultiSettings<RoseTuple<Vector2Int>> selection) : base(sourceGrid, selection)
                 {
                     if (selection == null) throw new ArgumentNullException(nameof(selection));
                 }
@@ -33,10 +33,17 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
                 /// <param name="sourceGrid">The grid to validate against</param>
                 /// <param name="selection">The rose tuples of positions to select (mapped from type)</param>
                 /// <returns>The mapped WindRose sprite roses (mapped from type)</returns>
-                protected override Dictionary<Type, SpriteRose> ValidateAndMap(SpriteGrid sourceGrid, Dictionary<Type, RoseTuple<Vector2Int>> selection)
+                protected override MultiSettings<SpriteRose> ValidateAndMap(SpriteGrid sourceGrid, MultiSettings<RoseTuple<Vector2Int>> selection)
                 {
-                    Dictionary<Type, SpriteRose> result = new Dictionary<Type, SpriteRose>();
-                    foreach (KeyValuePair<Type, RoseTuple<Vector2Int>> pair in selection)
+                    if (selection.Item1 == null) throw new ArgumentException(
+                        $"A null value was given to the sprite rose-tuple dictionary in idle state"
+                    );
+                    SpriteRose idle = ValidateAndMapSpriteRose(
+                        sourceGrid, selection.Item1.Up, selection.Item1.Down, selection.Item1.Left,
+                        selection.Item1.Right
+                    );
+                    Dictionary<Type, Tuple<SpriteRose, string>> mapping = new Dictionary<Type, Tuple<SpriteRose, string>>();
+                    foreach (KeyValuePair<Type, Tuple<RoseTuple<Vector2Int>, string>> pair in selection.Item2)
                     {
                         if (!Classes.IsSameOrSubclassOf(pair.Key, typeof(SpriteBundle)))
                         {
@@ -49,26 +56,42 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
                         if (pair.Value == null) throw new ArgumentException(
                             $"A null value was given to the sprite rose-tuple dictionary by key: {pair.Key.FullName}"
                         );
-                        SpriteRose spriteRose = ScriptableObject.CreateInstance<SpriteRose>();
-                        Behaviours.SetObjectFieldValues(spriteRose, new Dictionary<string, object>() {
-                            { "up", ValidateAndMapSprite(sourceGrid, pair.Value.Up) },
-                            { "down", ValidateAndMapSprite(sourceGrid, pair.Value.Down) },
-                            { "left", ValidateAndMapSprite(sourceGrid, pair.Value.Left) },
-                            { "right", ValidateAndMapSprite(sourceGrid, pair.Value.Right) }
-                        });
-                        result[pair.Key] = spriteRose;
+
+                        mapping[pair.Key] = new Tuple<SpriteRose, string>(
+                            pair.Value.Item1 != null ? ValidateAndMapSpriteRose(
+                                sourceGrid, pair.Value.Item1.Up, pair.Value.Item1.Down, pair.Value.Item1.Left,
+                                pair.Value.Item1.Right
+                            ) : null,
+                            pair.Value.Item2
+                        );
                     }
 
-                    return result;
+                    return new MultiSettings<SpriteRose>(idle, mapping);
+                }
+
+                // Maps and creates a sprite rose from input
+                private SpriteRose ValidateAndMapSpriteRose(
+                    SpriteGrid sourceGrid, Vector2Int up, Vector2Int down, Vector2Int left, Vector2Int right
+                )
+                {
+                    SpriteRose spriteRose = ScriptableObject.CreateInstance<SpriteRose>();
+                    Behaviours.SetObjectFieldValues(spriteRose, new Dictionary<string, object>() {
+                        { "up", ValidateAndMapSprite(sourceGrid, up) },
+                        { "down", ValidateAndMapSprite(sourceGrid, down) },
+                        { "left", ValidateAndMapSprite(sourceGrid, left) },
+                        { "right", ValidateAndMapSprite(sourceGrid, right) }
+                    });
+                    return spriteRose;
                 }
 
                 ~MultiRoseSpritedSelector()
                 {
                     if (result != null)
                     {
-                        foreach (SpriteRose spriteRose in result.Values)
+                        Object.Destroy(result.Item1);
+                        foreach (Tuple<SpriteRose, string> state in result.Item2.Values)
                         {
-                            Object.Destroy(spriteRose);
+                            if (state.Item1) Object.Destroy(state.Item1);
                         }
                     }
                 }

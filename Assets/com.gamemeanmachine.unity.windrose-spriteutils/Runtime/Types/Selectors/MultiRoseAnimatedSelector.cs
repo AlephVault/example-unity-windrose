@@ -42,7 +42,7 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
                 /// </summary>
                 /// <param name="sourceGrid">The grid to validate against</param>
                 /// <param name="selection">The positions lists to select, for each direction (mapped from type)</param>
-                /// <returns>The mapped WindRose animation rose (mapped from type)</returns>
+                /// <returns>The mapped WindRose animation rose (mapped from type, and idle state)</returns>
                 protected override MultiSettings<AnimationRose> ValidateAndMap(SpriteGrid sourceGrid, MultiSettings<RoseTuple<ReadOnlyCollection<Vector2Int>>> selection)
                 {
                     if (selection.Item1 == null || selection.Item1.Up == null || selection.Item1.Left == null ||
@@ -77,7 +77,6 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
                             );
                         }
 
-                        AnimationRose animationRose = ScriptableObject.CreateInstance<AnimationRose>();
                         mapping[pair.Key] = new Tuple<AnimationRose, string>(
                             pair.Value.Item1 != null ? ValidateAndMapAnimationRose(
                                 sourceGrid, pair.Value.Item1.Up, pair.Value.Item1.Down, pair.Value.Item1.Left,
@@ -94,7 +93,8 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
                 private AnimationRose ValidateAndMapAnimationRose(
                     SpriteGrid sourceGrid, ReadOnlyCollection<Vector2Int> up,
                     ReadOnlyCollection<Vector2Int> down, ReadOnlyCollection<Vector2Int> left,
-                    ReadOnlyCollection<Vector2Int> right)
+                    ReadOnlyCollection<Vector2Int> right
+                )
                 {
                     AnimationRose animationRose = ScriptableObject.CreateInstance<AnimationRose>();
                     Behaviours.SetObjectFieldValues(animationRose, new Dictionary<string, object>() {

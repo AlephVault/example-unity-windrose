@@ -38,7 +38,7 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
                 /// </summary>
                 /// <param name="sourceGrid">The grid to validate against</param>
                 /// <param name="selection">The positions lists to select (mapped from type)</param>
-                /// <returns>The mapped WindRose animation (mapped from type)</returns>
+                /// <returns>The mapped WindRose animation (mapped from type, and idle state)</returns>
                 protected override MultiSettings<Animation> ValidateAndMap(SpriteGrid sourceGrid, MultiSettings<ReadOnlyCollection<Vector2Int>> selection)
                 {
                     if (selection.Item1 == null) throw new ArgumentException(

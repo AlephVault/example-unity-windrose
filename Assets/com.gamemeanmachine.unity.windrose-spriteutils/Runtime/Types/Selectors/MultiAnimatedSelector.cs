@@ -60,7 +60,7 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
                         );
 
                         mapping[pair.Key] = new Tuple<Animation, string>(
-                            string.IsNullOrEmpty(pair.Value.Item2) ? ValidateAndMapAnimation(sourceGrid, pair.Value.Item1) : null,
+                            pair.Value.Item1 != null ? ValidateAndMapAnimation(sourceGrid, pair.Value.Item1) : null,
                             pair.Value.Item2
                         );
                     }

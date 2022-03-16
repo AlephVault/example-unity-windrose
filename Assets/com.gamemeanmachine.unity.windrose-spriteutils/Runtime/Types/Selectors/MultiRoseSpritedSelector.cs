@@ -32,7 +32,7 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
                 /// </summary>
                 /// <param name="sourceGrid">The grid to validate against</param>
                 /// <param name="selection">The rose tuples of positions to select (mapped from type)</param>
-                /// <returns>The mapped WindRose sprite roses (mapped from type)</returns>
+                /// <returns>The mapped WindRose sprite roses (mapped from type, and an idle state)</returns>
                 protected override MultiSettings<SpriteRose> ValidateAndMap(SpriteGrid sourceGrid, MultiSettings<RoseTuple<Vector2Int>> selection)
                 {
                     if (selection.Item1 == null) throw new ArgumentException(

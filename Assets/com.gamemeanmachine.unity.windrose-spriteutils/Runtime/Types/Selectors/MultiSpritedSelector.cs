@@ -15,9 +15,9 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
             /// <summary>
             ///   A multi-state & sprited selector involves just one sprite per state.
             /// </summary>
-            public class MultiSpritedSelector : MappedSpriteGridSelection<Dictionary<Type, Vector2Int>, Dictionary<Type, Sprite>>
+            public class MultiSpritedSelector : MappedSpriteGridSelection<MultiSettings<Vector2Int>, MultiSettings<Sprite>>
             {
-                public MultiSpritedSelector(SpriteGrid sourceGrid, Dictionary<Type, Vector2Int> selection) : base(sourceGrid, selection)
+                public MultiSpritedSelector(SpriteGrid sourceGrid, MultiSettings<Vector2Int> selection) : base(sourceGrid, selection)
                 {
                     if (selection == null) throw new ArgumentNullException(nameof(selection));
                 }
@@ -28,11 +28,12 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
                 /// </summary>
                 /// <param name="sourceGrid">The grid to validate against</param>
                 /// <param name="selection">The positions to select (mapped from type)</param>
-                /// <returns>The sprites (mapped from type)</returns>
-                protected override Dictionary<Type, Sprite> ValidateAndMap(SpriteGrid sourceGrid, Dictionary<Type, Vector2Int> selection)
+                /// <returns>The sprites (mapped from type, and an idle state)</returns>
+                protected override MultiSettings<Sprite> ValidateAndMap(SpriteGrid sourceGrid, MultiSettings<Vector2Int> selection)
                 {
-                    Dictionary<Type, Sprite> result = new Dictionary<Type, Sprite>();
-                    foreach (KeyValuePair<Type, Vector2Int> pair in selection)
+                    Sprite idle = ValidateAndMapSprite(sourceGrid, selection.Item1);
+                    Dictionary<Type, Tuple<Sprite, string>> mapping = new Dictionary<Type, Tuple<Sprite, string>>();
+                    foreach (KeyValuePair<Type, Tuple<Vector2Int, string>> pair in selection.Item2)
                     {
                         if (!Classes.IsSameOrSubclassOf(pair.Key, typeof(SpriteBundle)))
                         {
@@ -41,10 +42,14 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
                                 $"{typeof(SpriteBundle).FullName}"
                             );
                         }
-                        result[pair.Key] = ValidateAndMapSprite(sourceGrid, pair.Value);
+
+                        mapping[pair.Key] = new Tuple<Sprite, string>(
+                            !string.IsNullOrEmpty(pair.Value.Item2) ? ValidateAndMapSprite(sourceGrid, pair.Value.Item1) : null,
+                            pair.Value.Item2
+                        );
                     }
 
-                    return result;
+                    return new MultiSettings<Sprite>(idle, mapping);
                 }
             }
         }

@@ -8,12 +8,12 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
     {
         /// <summary>
         ///   A multi setting is useful to set the values both for a default
-        ///   "idle" state and for extra state bundles.
+        ///   "idle" state and for extra state bundles (with fallbacks).
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        public class MultiSettings<T> : Tuple<T, Dictionary<Type, T>>
+        public class MultiSettings<T> : Tuple<T, Dictionary<Type, Tuple<T, string>>>
         {
-            public MultiSettings(T item1, Dictionary<Type, T> item2) : base(item1, item2) {}
+            public MultiSettings(T item1, Dictionary<Type, Tuple<T, string>> item2) : base(item1, item2) {}
         }
     }
 }

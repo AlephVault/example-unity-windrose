@@ -23,14 +23,14 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
             ///   A multi-state oriented & animated selector involves a list of sprites per direction & state.
             /// </summary>
             public class MultiRoseAnimatedSelector : MappedSpriteGridSelection<
-                Dictionary<Type, RoseTuple<ReadOnlyCollection<Vector2Int>>>,
-                Dictionary<Type, AnimationRose>
+                MultiSettings<RoseTuple<ReadOnlyCollection<Vector2Int>>>,
+                MultiSettings<AnimationRose>
             >
             {
                 // The FPS to use for the selection.
                 private uint fps;
 
-                public MultiRoseAnimatedSelector(SpriteGrid sourceGrid, Dictionary<Type, RoseTuple<ReadOnlyCollection<Vector2Int>>> selection, uint framesPerSecond) : base(sourceGrid, selection)
+                public MultiRoseAnimatedSelector(SpriteGrid sourceGrid, MultiSettings<RoseTuple<ReadOnlyCollection<Vector2Int>>> selection, uint framesPerSecond) : base(sourceGrid, selection)
                 {
                     if (selection == null) throw new ArgumentNullException(nameof(selection));
                     fps = Values.Max(1u, framesPerSecond);
@@ -43,10 +43,22 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
                 /// <param name="sourceGrid">The grid to validate against</param>
                 /// <param name="selection">The positions lists to select, for each direction (mapped from type)</param>
                 /// <returns>The mapped WindRose animation rose (mapped from type)</returns>
-                protected override Dictionary<Type, AnimationRose> ValidateAndMap(SpriteGrid sourceGrid, Dictionary<Type, RoseTuple<ReadOnlyCollection<Vector2Int>>> selection)
+                protected override MultiSettings<AnimationRose> ValidateAndMap(SpriteGrid sourceGrid, MultiSettings<RoseTuple<ReadOnlyCollection<Vector2Int>>> selection)
                 {
-                    Dictionary<Type, AnimationRose> result = new Dictionary<Type, AnimationRose>();
-                    foreach (KeyValuePair<Type, RoseTuple<ReadOnlyCollection<Vector2Int>>> pair in selection)
+                    if (selection.Item1 == null || selection.Item1.Up == null || selection.Item1.Left == null ||
+                        selection.Item1.Right == null || selection.Item1.Down == null)
+                    {
+                        throw new ArgumentException(
+                            $"A null value was given to the sprite list rose tuple in idle state"
+                        );
+                    }
+
+                    AnimationRose idle = ValidateAndMapAnimationRose(
+                        sourceGrid, selection.Item1.Up, selection.Item1.Down, selection.Item1.Left,
+                        selection.Item1.Right
+                    );
+                    Dictionary<Type, Tuple<AnimationRose, string>> mapping = new Dictionary<Type, Tuple<AnimationRose, string>>();
+                    foreach (KeyValuePair<Type, Tuple<RoseTuple<ReadOnlyCollection<Vector2Int>>, string>> pair in selection.Item2)
                     {
                         if (!Classes.IsSameOrSubclassOf(pair.Key, typeof(SpriteBundle)))
                         {
@@ -56,26 +68,42 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
                             );
                         }
 
-                        if (pair.Value == null || pair.Value.Up == null || pair.Value.Left == null ||
-                            pair.Value.Right == null || pair.Value.Down == null)
+                        if (pair.Value == null || pair.Value.Item1 != null && (pair.Value.Item1.Up == null ||
+                            pair.Value.Item1.Left == null || pair.Value.Item1.Right == null || pair.Value.Item1.Down == null))
                         {
                             throw new ArgumentException(
                                 $"A null value was given to the sprite list rose tuple dictionary by key: " +
-                                $"{pair.Key.FullName}, or any of its fields is null"
+                                $"{pair.Key.FullName} or, given the rose, any of its component"
                             );
                         }
 
                         AnimationRose animationRose = ScriptableObject.CreateInstance<AnimationRose>();
-                        Behaviours.SetObjectFieldValues(animationRose, new Dictionary<string, object>() {
-                            { "up", MakeAnimation(from position in pair.Value.Up select ValidateAndMapSprite(sourceGrid, position)) },
-                            { "down", MakeAnimation(from position in pair.Value.Down select ValidateAndMapSprite(sourceGrid, position)) },
-                            { "left", MakeAnimation(from position in pair.Value.Left select ValidateAndMapSprite(sourceGrid, position)) },
-                            { "right", MakeAnimation(from position in pair.Value.Right select ValidateAndMapSprite(sourceGrid, position)) },
-                        });
-                        result[pair.Key] = animationRose;
+                        mapping[pair.Key] = new Tuple<AnimationRose, string>(
+                            pair.Value.Item1 != null ? ValidateAndMapAnimationRose(
+                                sourceGrid, pair.Value.Item1.Up, pair.Value.Item1.Down, pair.Value.Item1.Left,
+                                pair.Value.Item1.Right
+                            ) : null,
+                            pair.Value.Item2
+                        );
                     }
 
-                    return result;
+                    return new MultiSettings<AnimationRose>(idle, mapping);
+                }
+
+                // Maps and creates an animation rose from input.
+                private AnimationRose ValidateAndMapAnimationRose(
+                    SpriteGrid sourceGrid, ReadOnlyCollection<Vector2Int> up,
+                    ReadOnlyCollection<Vector2Int> down, ReadOnlyCollection<Vector2Int> left,
+                    ReadOnlyCollection<Vector2Int> right)
+                {
+                    AnimationRose animationRose = ScriptableObject.CreateInstance<AnimationRose>();
+                    Behaviours.SetObjectFieldValues(animationRose, new Dictionary<string, object>() {
+                        { "up", MakeAnimation(from position in up select ValidateAndMapSprite(sourceGrid, position)) },
+                        { "down", MakeAnimation(from position in down select ValidateAndMapSprite(sourceGrid, position)) },
+                        { "left", MakeAnimation(from position in left select ValidateAndMapSprite(sourceGrid, position)) },
+                        { "right", MakeAnimation(from position in right select ValidateAndMapSprite(sourceGrid, position)) },
+                    });
+                    return animationRose;
                 }
 
                 // Creates an animation object.
@@ -92,13 +120,22 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
                 {
                     if (result != null)
                     {
-                        foreach (AnimationRose animation in result.Values)
+                        Object.Destroy(result.Item1.GetForDirection(Direction.UP));
+                        Object.Destroy(result.Item1.GetForDirection(Direction.DOWN));
+                        Object.Destroy(result.Item1.GetForDirection(Direction.LEFT));
+                        Object.Destroy(result.Item1.GetForDirection(Direction.RIGHT));
+                        Object.Destroy(result.Item1);
+                        
+                        foreach (Tuple<AnimationRose, string> state in result.Item2.Values)
                         {
-                            Object.Destroy(animation.GetForDirection(Direction.UP));
-                            Object.Destroy(animation.GetForDirection(Direction.DOWN));
-                            Object.Destroy(animation.GetForDirection(Direction.LEFT));
-                            Object.Destroy(animation.GetForDirection(Direction.RIGHT));
-                            Object.Destroy(animation);
+                            if (state.Item1)
+                            {
+                                Object.Destroy(state.Item1.GetForDirection(Direction.UP));
+                                Object.Destroy(state.Item1.GetForDirection(Direction.DOWN));
+                                Object.Destroy(state.Item1.GetForDirection(Direction.LEFT));
+                                Object.Destroy(state.Item1.GetForDirection(Direction.RIGHT));
+                                Object.Destroy(state.Item1);
+                            }
                         }
                     }
                 }

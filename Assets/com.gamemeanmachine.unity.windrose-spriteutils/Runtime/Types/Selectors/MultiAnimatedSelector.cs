@@ -21,12 +21,12 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
             ///   A multi-state & animated selector involves a list of sprites per state.
             /// </summary>
             public class MultiAnimatedSelector
-                : MappedSpriteGridSelection<Dictionary<Type, ReadOnlyCollection<Vector2Int>>, Dictionary<Type, Animation>>
+                : MappedSpriteGridSelection<MultiSettings<ReadOnlyCollection<Vector2Int>>, MultiSettings<Animation>>
             {
                 // The FPS to use for the selection.
                 private uint fps;
                 
-                public MultiAnimatedSelector(SpriteGrid sourceGrid, Dictionary<Type, ReadOnlyCollection<Vector2Int>> selection, uint framesPerSecond) : base(sourceGrid, selection)
+                public MultiAnimatedSelector(SpriteGrid sourceGrid, MultiSettings<ReadOnlyCollection<Vector2Int>> selection, uint framesPerSecond) : base(sourceGrid, selection)
                 {
                     if (selection == null) throw new ArgumentNullException(nameof(selection));
                     fps = Values.Max(1u, framesPerSecond);
@@ -39,10 +39,14 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
                 /// <param name="sourceGrid">The grid to validate against</param>
                 /// <param name="selection">The positions lists to select (mapped from type)</param>
                 /// <returns>The mapped WindRose animation (mapped from type)</returns>
-                protected override Dictionary<Type, Animation> ValidateAndMap(SpriteGrid sourceGrid, Dictionary<Type, ReadOnlyCollection<Vector2Int>> selection)
+                protected override MultiSettings<Animation> ValidateAndMap(SpriteGrid sourceGrid, MultiSettings<ReadOnlyCollection<Vector2Int>> selection)
                 {
-                    Dictionary<Type, Animation> result = new Dictionary<Type, Animation>();
-                    foreach (KeyValuePair<Type, ReadOnlyCollection<Vector2Int>> pair in selection)
+                    if (selection.Item1 == null) throw new ArgumentException(
+                        "A null value was given to the sprite list in idle state"
+                    );
+                    Animation idle = ValidateAndMapAnimation(sourceGrid, selection.Item1);
+                    Dictionary<Type, Tuple<Animation, string>> mapping = new Dictionary<Type, Tuple<Animation, string>>();
+                    foreach (KeyValuePair<Type, Tuple<ReadOnlyCollection<Vector2Int>, string>> pair in selection.Item2)
                     {
                         if (!Classes.IsSameOrSubclassOf(pair.Key, typeof(SpriteBundle)))
                         {
@@ -52,27 +56,38 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
                             );
                         }
                         if (pair.Value == null) throw new ArgumentException(
-                            $"A null value was given to the sprite list dictionary by key: {pair.Key.FullName}"
+                            $"A null value was given to the sprite list by key: {pair.Key.FullName}"
                         );
-                        Sprite[] sprites = (from position in pair.Value
-                                            select ValidateAndMapSprite(sourceGrid, position)).ToArray();
-                        Animation animation = ScriptableObject.CreateInstance<Animation>();
-                        Behaviours.SetObjectFieldValues(animation, new Dictionary<string, object> {
-                            { "sprites", sprites }, { "fps", fps }
-                        });
-                        result[pair.Key] = animation;
+
+                        mapping[pair.Key] = new Tuple<Animation, string>(
+                            string.IsNullOrEmpty(pair.Value.Item2) ? ValidateAndMapAnimation(sourceGrid, pair.Value.Item1) : null,
+                            pair.Value.Item2
+                        );
                     }
 
-                    return result;
+                    return new MultiSettings<Animation>(idle, mapping);
+                }
+
+                // Maps an entire animation from the input positions and the sprite grid.
+                private Animation ValidateAndMapAnimation(SpriteGrid sourceGrid, ReadOnlyCollection<Vector2Int> value)
+                {
+                    Sprite[] sprites = (from position in value
+                                        select ValidateAndMapSprite(sourceGrid, position)).ToArray();
+                    Animation animation = ScriptableObject.CreateInstance<Animation>();
+                    Behaviours.SetObjectFieldValues(animation, new Dictionary<string, object> {
+                        { "sprites", sprites }, { "fps", fps }
+                    });
+                    return animation;
                 }
 
                 ~MultiAnimatedSelector()
                 {
                     if (result != null)
                     {
-                        foreach (Animation animation in result.Values)
+                        Object.Destroy(result.Item1);
+                        foreach (Tuple<Animation, string> state in result.Item2.Values)
                         {
-                            Object.Destroy(animation);
+                            if (state.Item1) Object.Destroy(state.Item1);
                         }
                     }
                 }

@@ -1,10 +1,14 @@
 using System;
 using System.Collections.Generic;
+using AlephVault.Unity.Layout.Utils;
 using AlephVault.Unity.SpriteUtils.Types;
 using AlephVault.Unity.Support.Utils;
 using GameMeanMachine.Unity.WindRose.Authoring.Behaviours.Entities.Visuals.StateBundles;
+using GameMeanMachine.Unity.WindRose.Authoring.ScriptableObjects.VisualResources;
 using GameMeanMachine.Unity.WindRose.Types;
 using UnityEngine;
+using Object = UnityEngine.Object;
+
 
 namespace GameMeanMachine.Unity.WindRose.SpriteUtils
 {
@@ -15,7 +19,7 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
             /// <summary>
             ///   A multi-state oriented & sprited selector involves just one sprite per state and direction.
             /// </summary>
-            public class MultiRoseSpritedSelector : MappedSpriteGridSelection<Dictionary<Type, RoseTuple<Vector2Int>>, Dictionary<Type, RoseTuple<Sprite>>>
+            public class MultiRoseSpritedSelector : MappedSpriteGridSelection<Dictionary<Type, RoseTuple<Vector2Int>>, Dictionary<Type, SpriteRose>>
             {
                 public MultiRoseSpritedSelector(SpriteGrid sourceGrid, Dictionary<Type, RoseTuple<Vector2Int>> selection) : base(sourceGrid, selection)
                 {
@@ -28,10 +32,10 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
                 /// </summary>
                 /// <param name="sourceGrid">The grid to validate against</param>
                 /// <param name="selection">The rose tuples of positions to select (mapped from type)</param>
-                /// <returns>The rose tuples of sprites (mapped from type)</returns>
-                protected override Dictionary<Type, RoseTuple<Sprite>> ValidateAndMap(SpriteGrid sourceGrid, Dictionary<Type, RoseTuple<Vector2Int>> selection)
+                /// <returns>The mapped WindRose sprite roses (mapped from type)</returns>
+                protected override Dictionary<Type, SpriteRose> ValidateAndMap(SpriteGrid sourceGrid, Dictionary<Type, RoseTuple<Vector2Int>> selection)
                 {
-                    Dictionary<Type, RoseTuple<Sprite>> result = new Dictionary<Type, RoseTuple<Sprite>>();
+                    Dictionary<Type, SpriteRose> result = new Dictionary<Type, SpriteRose>();
                     foreach (KeyValuePair<Type, RoseTuple<Vector2Int>> pair in selection)
                     {
                         if (!Classes.IsSameOrSubclassOf(pair.Key, typeof(SpriteBundle)))
@@ -45,15 +49,28 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
                         if (pair.Value == null) throw new ArgumentException(
                             $"A null value was given to the sprite rose-tuple dictionary by key: {pair.Key.FullName}"
                         );
-                        result[pair.Key] = new RoseTuple<Sprite>(
-                            ValidateAndMapSprite(sourceGrid, pair.Value.Up),
-                            ValidateAndMapSprite(sourceGrid, pair.Value.Left),
-                            ValidateAndMapSprite(sourceGrid, pair.Value.Right),
-                            ValidateAndMapSprite(sourceGrid, pair.Value.Down)
-                        );
+                        SpriteRose spriteRose = ScriptableObject.CreateInstance<SpriteRose>();
+                        Behaviours.SetObjectFieldValues(spriteRose, new Dictionary<string, object>() {
+                            { "up", ValidateAndMapSprite(sourceGrid, pair.Value.Up) },
+                            { "down", ValidateAndMapSprite(sourceGrid, pair.Value.Down) },
+                            { "left", ValidateAndMapSprite(sourceGrid, pair.Value.Left) },
+                            { "right", ValidateAndMapSprite(sourceGrid, pair.Value.Right) }
+                        });
+                        result[pair.Key] = spriteRose;
                     }
 
                     return result;
+                }
+
+                ~MultiRoseSpritedSelector()
+                {
+                    if (result != null)
+                    {
+                        foreach (SpriteRose spriteRose in result.Values)
+                        {
+                            Object.Destroy(spriteRose);
+                        }
+                    }
                 }
             }
         }

@@ -18,46 +18,31 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
             ///   visuals so they are able to replace the animation they use.
             /// </summary>
             [RequireComponent(typeof(Animated))]
-            public class AnimatedSelectorApplier : SpriteGridSelectionApplier<ReadOnlyCollection<Sprite>>
+            public class AnimatedSelectorApplier : SpriteGridSelectionApplier<Animation>
             {
-                private SpriteRenderer renderer;
                 private Animated animated;
                 
                 private void Awake()
                 {
-                    renderer = GetComponent<SpriteRenderer>();
                     animated = GetComponent<Animated>();
                 }
-
-                protected override bool IsCompatible(SpriteGridSelection<ReadOnlyCollection<Sprite>> selection)
+                
+                /// <summary>
+                ///   Sets the animation directly into the animated behaviour.
+                /// </summary>
+                /// <param name="selection">The new selection</param>
+                protected override void AfterUse(SpriteGridSelection<Animation> selection)
                 {
-                    return selection.GetSelection().Count > 0;
+                    animated.Animation = selection.GetSelection();
                 }
 
-                protected override void BeforeUse(SpriteGridSelection<ReadOnlyCollection<Sprite>> selection)
+                /// <summary>
+                ///   Clears the animation from the animated behaviour.
+                /// </summary>
+                /// <param name="selection">The previous, just released, selection</param>
+                protected override void AfterRelease(SpriteGridSelection<Animation> selection)
                 {
-                    if (selection.GetSelection().Count == 0)
-                    {
-                        throw new IncompatibleSelectionException("Cannot use an empty animation");
-                    }
-                }
-
-                protected override void AfterUse(SpriteGridSelection<ReadOnlyCollection<Sprite>> selection)
-                {
-                    // animated.Animation.Sprites = selection.GetSelection();
-                    // show the sprite renderer.
-                    if (animated.Animation)
-                    {
-                        Animation animation = animated.Animation;
-                        
-                        animated.Animation = null;
-                    }
-                }
-
-                protected override void AfterRelease(SpriteGridSelection<ReadOnlyCollection<Sprite>> selection)
-                {
-                    // animation.Animation.Sprites = nothing.
-                    // hide the sprite renderer.
+                    animated.Animation = null;
                 }
             }
         }

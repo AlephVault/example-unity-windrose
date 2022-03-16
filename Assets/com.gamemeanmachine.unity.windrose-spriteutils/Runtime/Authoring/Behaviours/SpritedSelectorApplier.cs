@@ -13,18 +13,36 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
     {
         namespace Behaviours
         {
+            /// <summary>
+            ///   Sprited selector appliers are added on top of <see cref="SpriteRenderer"/>
+            ///   visuals so they are able to replace the animation they use.
+            /// </summary>
+            [RequireComponent(typeof(SpriteRenderer))]
             public class SpritedSelectorApplier : SpriteGridSelectionApplier<Sprite>
             {
-                protected override void AfterUse(SpriteGridSelection<Sprite> selection)
+                private SpriteRenderer renderer;
+
+                private void Awake()
                 {
-                    // Apply the value.
-                    throw new NotImplementedException();
+                    renderer = GetComponent<SpriteRenderer>();
                 }
 
+                /// <summary>
+                ///   Sets the sprite directly into the SpriteRenderer behaviour.
+                /// </summary>
+                /// <param name="selection">The new selection</param>
+                protected override void AfterUse(SpriteGridSelection<Sprite> selection)
+                {
+                    renderer.sprite = selection.GetSelection();
+                }
+
+                /// <summary>
+                ///   Clears the sprite from the SpriteRenderer behaviour.
+                /// </summary>
+                /// <param name="selection">The previous, just released, selection</param>
                 protected override void AfterRelease(SpriteGridSelection<Sprite> selection)
                 {
-                    // Clear the value.
-                    throw new NotImplementedException();
+                    renderer.sprite = null;
                 }
             }
         }

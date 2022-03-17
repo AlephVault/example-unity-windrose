@@ -5,6 +5,7 @@ using AlephVault.Unity.SpriteUtils.Types;
 using GameMeanMachine.Unity.WindRose.Authoring.Behaviours.Entities.Visuals;
 using GameMeanMachine.Unity.WindRose.Authoring.ScriptableObjects.VisualResources;
 using GameMeanMachine.Unity.WindRose.SpriteUtils.Types;
+using UnityEngine;
 
 
 namespace GameMeanMachine.Unity.WindRose.SpriteUtils
@@ -17,6 +18,7 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
             ///   Multi-State Rose-Sprited selector appliers are added on top of <see cref="MultiRoseSprited"/>
             ///   visuals so they are able to replace the multiple sprite roses they use.
             /// </summary>
+            [RequireComponent(typeof(MultiRoseSprited))]
             public class MultiRoseSpritedSelectorApplier : SpriteGridSelectionApplier<MultiSettings<SpriteRose>>
             {
                 private MultiRoseSprited multiRoseSprited;

@@ -16,35 +16,35 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
         namespace Behaviours
         {
             /// <summary>
-            ///   Rose-Sprited selector appliers are added on top of <see cref="RoseSprited"/>
+            ///   Rose-Animated selector appliers are added on top of <see cref="RoseAnimated"/>
             ///   visuals so they are able to replace the animation rose they use.
             /// </summary>
-            [RequireComponent(typeof(RoseSprited))]
-            public class RoseSpritedSelectorApplier : SpriteGridSelectionApplier<SpriteRose>
+            [RequireComponent(typeof(RoseAnimated))]
+            public class RoseAnimatedSelectionApplier : SpriteGridSelectionApplier<AnimationRose>
             {
-                private RoseSprited roseSprited;
+                private RoseAnimated roseAnimated;
 
                 private void Awake()
                 {
-                    roseSprited = GetComponent<RoseSprited>();
+                    roseAnimated = GetComponent<RoseAnimated>();
                 }
 
                 /// <summary>
-                ///   Sets the sprite rose directly into the RoseSprited behaviour.
+                ///   Sets the animation rose directly into the RoseAnimated behaviour.
                 /// </summary>
                 /// <param name="selection">The new selection</param>
-                protected override void AfterUse(SpriteGridSelection<SpriteRose> selection)
+                protected override void AfterUse(SpriteGridSelection<AnimationRose> selection)
                 {
-                    roseSprited.SpriteRose = selection.GetSelection();
+                    roseAnimated.AnimationRose = selection.GetSelection();
                 }
 
                 /// <summary>
-                ///   Clears the sprite rose from the RoseSprited behaviour.
+                ///   Clears the animation rose from the RoseAnimated behaviour.
                 /// </summary>
                 /// <param name="selection">The previous, just released, selection</param>
-                protected override void AfterRelease(SpriteGridSelection<SpriteRose> selection)
+                protected override void AfterRelease(SpriteGridSelection<AnimationRose> selection)
                 {
-                    roseSprited.SpriteRose = null;
+                    roseAnimated.AnimationRose = null;
                 }
             }
         }

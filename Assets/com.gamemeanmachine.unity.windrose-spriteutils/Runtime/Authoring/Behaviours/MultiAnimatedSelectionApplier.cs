@@ -18,7 +18,7 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
             ///   visuals so they are able to replace the multiple animations they use.
             /// </summary>
             [RequireComponent(typeof(MultiAnimated))]
-            public class MultiAnimatedSelectorApplier : MultiStateSelectorApplier<Animation, MultiAnimated> {}
+            public class MultiAnimatedSelectionApplier : MultiStateSelectionApplier<Animation, MultiAnimated> {}
         }
     }
 }

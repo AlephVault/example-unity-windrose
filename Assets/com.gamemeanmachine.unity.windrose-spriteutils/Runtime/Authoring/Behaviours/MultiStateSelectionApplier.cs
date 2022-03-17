@@ -18,7 +18,7 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
             ///   Multi-State selector appliers are added on top of a <see cref="MultiState{T}"/>
             ///   visual so they are able to replace the multiple states they use.
             /// </summary>
-            public abstract class MultiStateSelectorApplier<StateType, MultiStateType> : SpriteGridSelectionApplier<MultiSettings<StateType>>
+            public abstract class MultiStateSelectionApplier<StateType, MultiStateType> : SpriteGridSelectionApplier<MultiSettings<StateType>>
                 where MultiStateType : MultiState<StateType>
             {
                 private MultiStateType multiState;

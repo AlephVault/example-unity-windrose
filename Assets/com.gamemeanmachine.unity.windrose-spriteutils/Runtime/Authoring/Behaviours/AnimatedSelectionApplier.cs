@@ -18,7 +18,7 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
             ///   visuals so they are able to replace the animation they use.
             /// </summary>
             [RequireComponent(typeof(Animated))]
-            public class AnimatedSelectorApplier : SpriteGridSelectionApplier<Animation>
+            public class AnimatedSelectionApplier : SpriteGridSelectionApplier<Animation>
             {
                 private Animated animated;
                 

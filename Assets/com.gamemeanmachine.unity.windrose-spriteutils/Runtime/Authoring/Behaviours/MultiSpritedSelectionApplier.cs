@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using AlephVault.Unity.SpriteUtils.Authoring.Types;
 using AlephVault.Unity.SpriteUtils.Types;
 using GameMeanMachine.Unity.WindRose.Authoring.Behaviours.Entities.Visuals;
-using GameMeanMachine.Unity.WindRose.Authoring.ScriptableObjects.VisualResources;
 using GameMeanMachine.Unity.WindRose.SpriteUtils.Types;
 using UnityEngine;
 
@@ -15,11 +14,11 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
         namespace Behaviours
         {
             /// <summary>
-            ///   Multi-State Rose-Sprited selector appliers are added on top of <see cref="MultiRoseSprited"/>
-            ///   visuals so they are able to replace the multiple sprite roses they use.
+            ///   Multi-State Sprited selector appliers are added on top of <see cref="MultiSprited"/>
+            ///   visuals so they are able to replace the multiple sprites they use.
             /// </summary>
-            [RequireComponent(typeof(MultiRoseSprited))]
-            public class MultiRoseSpritedSelectorApplier : MultiStateSelectorApplier<SpriteRose, MultiRoseSprited> {}
+            [RequireComponent(typeof(MultiSprited))]
+            public class MultiSpritedSelectionApplier : MultiStateSelectionApplier<Sprite, MultiSprited> {}
         }
     }
 }

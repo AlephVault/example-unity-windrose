@@ -41,24 +41,17 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
                 /// <returns>The mapped WindRose animation (mapped from type, and idle state)</returns>
                 protected override MultiSettings<Animation> ValidateAndMap(SpriteGrid sourceGrid, MultiSettings<ReadOnlyCollection<Vector2Int>> selection)
                 {
-                    if (selection.Item1 == null) throw new ArgumentException(
-                        "A null value was given to the sprite list in idle state"
-                    );
-                    Animation idle = ValidateAndMapAnimation(sourceGrid, selection.Item1);
-                    Dictionary<string, Tuple<Animation, string>> mapping = new Dictionary<string, Tuple<Animation, string>>();
-                    foreach (KeyValuePair<string, Tuple<ReadOnlyCollection<Vector2Int>, string>> pair in selection.Item2)
+                    MultiSettings<Animation> mapping = new MultiSettings<Animation>();
+                    foreach (KeyValuePair<string, ReadOnlyCollection<Vector2Int>> pair in selection)
                     {
                         if (pair.Value == null) throw new ArgumentException(
                             $"A null value was given to the sprite list by key: {pair.Key}"
                         );
 
-                        mapping[pair.Key] = new Tuple<Animation, string>(
-                            pair.Value.Item1 != null ? ValidateAndMapAnimation(sourceGrid, pair.Value.Item1) : null,
-                            pair.Value.Item2
-                        );
+                        mapping[pair.Key] = ValidateAndMapAnimation(sourceGrid, pair.Value);
                     }
 
-                    return new MultiSettings<Animation>(idle, mapping);
+                    return mapping;
                 }
 
                 // Maps an entire animation from the input positions and the sprite grid.
@@ -77,10 +70,9 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
                 {
                     if (result != null)
                     {
-                        Object.Destroy(result.Item1);
-                        foreach (Tuple<Animation, string> state in result.Item2.Values)
+                        foreach (Animation state in result.Values)
                         {
-                            if (state.Item1) Object.Destroy(state.Item1);
+                            if (state) Object.Destroy(state);
                         }
                     }
                 }

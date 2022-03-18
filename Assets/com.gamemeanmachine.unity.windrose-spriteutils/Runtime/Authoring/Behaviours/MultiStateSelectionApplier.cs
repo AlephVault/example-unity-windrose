@@ -35,7 +35,7 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
                 /// <returns>Whether all the states in the selection exist in the multi-state</returns>
                 protected override bool IsCompatible(SpriteGridSelection<MultiSettings<StateType>> selection)
                 {
-                    foreach (string key in selection.GetSelection().Item2.Keys)
+                    foreach (string key in selection.GetSelection().Keys)
                     {
                         if (!multiState.HasState(key)) return false;
                     }
@@ -52,7 +52,7 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
                 /// </exception>
                 protected override void BeforeUse(SpriteGridSelection<MultiSettings<StateType>> selection)
                 {
-                    foreach (string key in selection.GetSelection().Item2.Keys)
+                    foreach (string key in selection.GetSelection().Keys)
                     {
                         if (!multiState.HasState(key)) throw new IncompatibleSelectionException(
                             $"The given selection requires the state with name '{key}' to " +
@@ -67,10 +67,9 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
                 /// <param name="selection">The selection to apply</param>
                 protected override void AfterUse(SpriteGridSelection<MultiSettings<StateType>> selection)
                 {
-                    multiState.ReplaceState(MultiRoseSprited.IDLE, selection.GetSelection().Item1);
-                    foreach (KeyValuePair<string, Tuple<StateType, string>> item in selection.GetSelection().Item2)
+                    foreach (KeyValuePair<string, StateType> item in selection.GetSelection())
                     {
-                        multiState.ReplaceState(item.Key, item.Value.Item1);
+                        multiState.ReplaceState(item.Key, item.Value);
                     }
                 }
 
@@ -80,10 +79,9 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
                 /// <param name="selection">The selection being removed</param>
                 protected override void AfterRelease(SpriteGridSelection<MultiSettings<StateType>> selection)
                 {
-                    multiState.ReplaceState(MultiRoseSprited.IDLE, default);
-                    foreach (KeyValuePair<string, Tuple<StateType, string>> item in selection.GetSelection().Item2)
+                    foreach (KeyValuePair<string, StateType> item in selection.GetSelection())
                     {
-                        multiState.ReplaceState(item.Key, item.Value.Item1);
+                        multiState.ReplaceState(item.Key, default);
                     }
                 }
             }

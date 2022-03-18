@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using AlephVault.Unity.Layout.Utils;
 using AlephVault.Unity.SpriteUtils.Types;
-using AlephVault.Unity.Support.Utils;
 using GameMeanMachine.Unity.WindRose.Authoring.Behaviours.Entities.Visuals.StateBundles;
 using GameMeanMachine.Unity.WindRose.Authoring.ScriptableObjects.VisualResources;
 using GameMeanMachine.Unity.WindRose.Types;
@@ -35,30 +34,19 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
                 /// <returns>The mapped WindRose sprite roses (mapped from type, and an idle state)</returns>
                 protected override MultiSettings<SpriteRose> ValidateAndMap(SpriteGrid sourceGrid, MultiSettings<RoseTuple<Vector2Int>> selection)
                 {
-                    if (selection.Item1 == null) throw new ArgumentException(
-                        $"A null value was given to the sprite rose-tuple dictionary in idle state"
-                    );
-                    SpriteRose idle = ValidateAndMapSpriteRose(
-                        sourceGrid, selection.Item1.Up, selection.Item1.Down, selection.Item1.Left,
-                        selection.Item1.Right
-                    );
-                    Dictionary<string, Tuple<SpriteRose, string>> mapping = new Dictionary<string, Tuple<SpriteRose, string>>();
-                    foreach (KeyValuePair<string, Tuple<RoseTuple<Vector2Int>, string>> pair in selection.Item2)
+                    MultiSettings<SpriteRose> mapping = new MultiSettings<SpriteRose>();
+                    foreach (KeyValuePair<string, RoseTuple<Vector2Int>> pair in selection)
                     {
                         if (pair.Value == null) throw new ArgumentException(
                             $"A null value was given to the sprite rose-tuple dictionary by key: {pair.Key}"
                         );
 
-                        mapping[pair.Key] = new Tuple<SpriteRose, string>(
-                            pair.Value.Item1 != null ? ValidateAndMapSpriteRose(
-                                sourceGrid, pair.Value.Item1.Up, pair.Value.Item1.Down, pair.Value.Item1.Left,
-                                pair.Value.Item1.Right
-                            ) : null,
-                            pair.Value.Item2
+                        mapping[pair.Key] = ValidateAndMapSpriteRose(
+                            sourceGrid, pair.Value.Up, pair.Value.Down, pair.Value.Left, pair.Value.Right
                         );
                     }
 
-                    return new MultiSettings<SpriteRose>(idle, mapping);
+                    return mapping;
                 }
 
                 // Maps and creates a sprite rose from input
@@ -80,10 +68,9 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
                 {
                     if (result != null)
                     {
-                        Object.Destroy(result.Item1);
-                        foreach (Tuple<SpriteRose, string> state in result.Item2.Values)
+                        foreach (SpriteRose state in result.Values)
                         {
-                            if (state.Item1) Object.Destroy(state.Item1);
+                            if (state) Object.Destroy(state);
                         }
                     }
                 }

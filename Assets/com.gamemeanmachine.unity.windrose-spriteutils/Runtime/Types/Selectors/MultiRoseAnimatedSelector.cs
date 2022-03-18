@@ -45,23 +45,11 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
                 /// <returns>The mapped WindRose animation rose (mapped from type, and idle state)</returns>
                 protected override MultiSettings<AnimationRose> ValidateAndMap(SpriteGrid sourceGrid, MultiSettings<RoseTuple<ReadOnlyCollection<Vector2Int>>> selection)
                 {
-                    if (selection.Item1 == null || selection.Item1.Up == null || selection.Item1.Left == null ||
-                        selection.Item1.Right == null || selection.Item1.Down == null)
+                    MultiSettings<AnimationRose> mapping = new MultiSettings<AnimationRose>();
+                    foreach (KeyValuePair<string, RoseTuple<ReadOnlyCollection<Vector2Int>>> pair in selection)
                     {
-                        throw new ArgumentException(
-                            $"A null value was given to the sprite list rose tuple in idle state"
-                        );
-                    }
-
-                    AnimationRose idle = ValidateAndMapAnimationRose(
-                        sourceGrid, selection.Item1.Up, selection.Item1.Down, selection.Item1.Left,
-                        selection.Item1.Right
-                    );
-                    Dictionary<string, Tuple<AnimationRose, string>> mapping = new Dictionary<string, Tuple<AnimationRose, string>>();
-                    foreach (KeyValuePair<string, Tuple<RoseTuple<ReadOnlyCollection<Vector2Int>>, string>> pair in selection.Item2)
-                    {
-                        if (pair.Value == null || pair.Value.Item1 != null && (pair.Value.Item1.Up == null ||
-                            pair.Value.Item1.Left == null || pair.Value.Item1.Right == null || pair.Value.Item1.Down == null))
+                        if (pair.Value == null || pair.Value.Up == null || pair.Value.Left == null ||
+                            pair.Value.Right == null || pair.Value.Down == null)
                         {
                             throw new ArgumentException(
                                 $"A null value was given to the sprite list rose tuple dictionary by key: " +
@@ -69,16 +57,13 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
                             );
                         }
 
-                        mapping[pair.Key] = new Tuple<AnimationRose, string>(
-                            pair.Value.Item1 != null ? ValidateAndMapAnimationRose(
-                                sourceGrid, pair.Value.Item1.Up, pair.Value.Item1.Down, pair.Value.Item1.Left,
-                                pair.Value.Item1.Right
-                            ) : null,
-                            pair.Value.Item2
+                        mapping[pair.Key] = ValidateAndMapAnimationRose(
+                            sourceGrid, pair.Value.Up, pair.Value.Down, pair.Value.Left,
+                            pair.Value.Right
                         );
                     }
 
-                    return new MultiSettings<AnimationRose>(idle, mapping);
+                    return mapping;
                 }
 
                 // Maps and creates an animation rose from input.
@@ -112,21 +97,15 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
                 {
                     if (result != null)
                     {
-                        Object.Destroy(result.Item1.GetForDirection(Direction.UP));
-                        Object.Destroy(result.Item1.GetForDirection(Direction.DOWN));
-                        Object.Destroy(result.Item1.GetForDirection(Direction.LEFT));
-                        Object.Destroy(result.Item1.GetForDirection(Direction.RIGHT));
-                        Object.Destroy(result.Item1);
-                        
-                        foreach (Tuple<AnimationRose, string> state in result.Item2.Values)
+                        foreach (AnimationRose state in result.Values)
                         {
-                            if (state.Item1)
+                            if (state)
                             {
-                                Object.Destroy(state.Item1.GetForDirection(Direction.UP));
-                                Object.Destroy(state.Item1.GetForDirection(Direction.DOWN));
-                                Object.Destroy(state.Item1.GetForDirection(Direction.LEFT));
-                                Object.Destroy(state.Item1.GetForDirection(Direction.RIGHT));
-                                Object.Destroy(state.Item1);
+                                Object.Destroy(state.GetForDirection(Direction.UP));
+                                Object.Destroy(state.GetForDirection(Direction.DOWN));
+                                Object.Destroy(state.GetForDirection(Direction.LEFT));
+                                Object.Destroy(state.GetForDirection(Direction.RIGHT));
+                                Object.Destroy(state);
                             }
                         }
                     }

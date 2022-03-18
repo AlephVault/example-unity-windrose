@@ -31,17 +31,13 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
                 /// <returns>The sprites (mapped from type, and an idle state)</returns>
                 protected override MultiSettings<Sprite> ValidateAndMap(SpriteGrid sourceGrid, MultiSettings<Vector2Int> selection)
                 {
-                    Sprite idle = ValidateAndMapSprite(sourceGrid, selection.Item1);
-                    Dictionary<string, Tuple<Sprite, string>> mapping = new Dictionary<string, Tuple<Sprite, string>>();
-                    foreach (KeyValuePair<string, Tuple<Vector2Int, string>> pair in selection.Item2)
+                    MultiSettings<Sprite> mapping = new MultiSettings<Sprite>();
+                    foreach (KeyValuePair<string, Vector2Int> pair in selection)
                     {
-                        mapping[pair.Key] = new Tuple<Sprite, string>(
-                            !string.IsNullOrEmpty(pair.Value.Item2) ? ValidateAndMapSprite(sourceGrid, pair.Value.Item1) : null,
-                            pair.Value.Item2
-                        );
+                        mapping[pair.Key] = ValidateAndMapSprite(sourceGrid, pair.Value);
                     }
 
-                    return new MultiSettings<Sprite>(idle, mapping);
+                    return mapping;
                 }
             }
         }

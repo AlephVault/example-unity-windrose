@@ -22,7 +22,7 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
             /// <summary>
             ///   A multi-state oriented & animated selector involves a list of sprites per direction & state.
             /// </summary>
-            public class MultiRoseAnimatedSelector : MappedSpriteGridSelection<
+            public class MultiRoseAnimatedSelection : MappedSpriteGridSelection<
                 MultiSettings<RoseTuple<ReadOnlyCollection<Vector2Int>>>,
                 MultiSettings<AnimationRose>
             >
@@ -30,7 +30,7 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
                 // The FPS to use for the selection.
                 private uint fps;
 
-                public MultiRoseAnimatedSelector(SpriteGrid sourceGrid, MultiSettings<RoseTuple<ReadOnlyCollection<Vector2Int>>> selection, uint framesPerSecond) : base(sourceGrid, selection)
+                public MultiRoseAnimatedSelection(SpriteGrid sourceGrid, MultiSettings<RoseTuple<ReadOnlyCollection<Vector2Int>>> selection, uint framesPerSecond) : base(sourceGrid, selection)
                 {
                     if (selection == null) throw new ArgumentNullException(nameof(selection));
                     fps = Values.Max(1u, framesPerSecond);
@@ -93,7 +93,7 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
                     return result;
                 }
 
-                ~MultiRoseAnimatedSelector()
+                ~MultiRoseAnimatedSelection()
                 {
                     if (result != null)
                     {

@@ -19,12 +19,12 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
             /// <summary>
             ///   A simple & animated selector involves a list of sprites.
             /// </summary>
-            public class AnimatedSelector : MappedSpriteGridSelection<ReadOnlyCollection<Vector2Int>, Animation>
+            public class AnimatedSelection : MappedSpriteGridSelection<ReadOnlyCollection<Vector2Int>, Animation>
             {
                 // The FPS to use for the selection.
                 private uint fps;
                 
-                public AnimatedSelector(SpriteGrid sourceGrid, ReadOnlyCollection<Vector2Int> selection, uint framesPerSecond) : base(sourceGrid, selection)
+                public AnimatedSelection(SpriteGrid sourceGrid, ReadOnlyCollection<Vector2Int> selection, uint framesPerSecond) : base(sourceGrid, selection)
                 {
                     if (selection == null) throw new ArgumentNullException(nameof(selection));
                     fps = Values.Max(1u, framesPerSecond);
@@ -48,7 +48,7 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
                     return result;
                 }
 
-                ~AnimatedSelector()
+                ~AnimatedSelection()
                 {
                     if (result != null) Object.Destroy(result);
                 }

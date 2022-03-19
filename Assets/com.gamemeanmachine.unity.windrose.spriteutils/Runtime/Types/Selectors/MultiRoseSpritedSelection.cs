@@ -18,9 +18,9 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
             /// <summary>
             ///   A multi-state oriented & sprited selector involves just one sprite per state and direction.
             /// </summary>
-            public class MultiRoseSpritedSelector : MappedSpriteGridSelection<MultiSettings<RoseTuple<Vector2Int>>, MultiSettings<SpriteRose>>
+            public class MultiRoseSpritedSelection : MappedSpriteGridSelection<MultiSettings<RoseTuple<Vector2Int>>, MultiSettings<SpriteRose>>
             {
-                public MultiRoseSpritedSelector(SpriteGrid sourceGrid, MultiSettings<RoseTuple<Vector2Int>> selection) : base(sourceGrid, selection)
+                public MultiRoseSpritedSelection(SpriteGrid sourceGrid, MultiSettings<RoseTuple<Vector2Int>> selection) : base(sourceGrid, selection)
                 {
                     if (selection == null) throw new ArgumentNullException(nameof(selection));
                 }
@@ -64,7 +64,7 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
                     return spriteRose;
                 }
 
-                ~MultiRoseSpritedSelector()
+                ~MultiRoseSpritedSelection()
                 {
                     if (result != null)
                     {

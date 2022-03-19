@@ -15,9 +15,9 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
             /// <summary>
             ///   A multi-state & sprited selector involves just one sprite per state.
             /// </summary>
-            public class MultiSpritedSelector : MappedSpriteGridSelection<MultiSettings<Vector2Int>, MultiSettings<Sprite>>
+            public class MultiSpritedSelection : MappedSpriteGridSelection<MultiSettings<Vector2Int>, MultiSettings<Sprite>>
             {
-                public MultiSpritedSelector(SpriteGrid sourceGrid, MultiSettings<Vector2Int> selection) : base(sourceGrid, selection)
+                public MultiSpritedSelection(SpriteGrid sourceGrid, MultiSettings<Vector2Int> selection) : base(sourceGrid, selection)
                 {
                     if (selection == null) throw new ArgumentNullException(nameof(selection));
                 }

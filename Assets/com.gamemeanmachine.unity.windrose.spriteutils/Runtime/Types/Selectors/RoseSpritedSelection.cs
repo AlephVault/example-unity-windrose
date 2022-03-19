@@ -17,9 +17,9 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
             /// <summary>
             ///   An oriented & sprited selector involves just one sprite per direction.
             /// </summary>
-            public class RoseSpritedSelector : MappedSpriteGridSelection<RoseTuple<Vector2Int>, SpriteRose>
+            public class RoseSpritedSelection : MappedSpriteGridSelection<RoseTuple<Vector2Int>, SpriteRose>
             {
-                public RoseSpritedSelector(SpriteGrid sourceGrid, RoseTuple<Vector2Int> selection) : base(sourceGrid, selection)
+                public RoseSpritedSelection(SpriteGrid sourceGrid, RoseTuple<Vector2Int> selection) : base(sourceGrid, selection)
                 {
                     if (selection == null) throw new ArgumentNullException(nameof(selection));
                 }
@@ -43,7 +43,7 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
                     return spriteRose;
                 }
 
-                ~RoseSpritedSelector()
+                ~RoseSpritedSelection()
                 {
                     if (result != null)
                     {

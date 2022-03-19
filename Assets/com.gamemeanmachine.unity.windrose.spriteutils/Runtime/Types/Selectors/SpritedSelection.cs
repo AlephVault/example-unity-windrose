@@ -11,9 +11,9 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
             /// <summary>
             ///   A simple & sprited selector involves just one sprite.
             /// </summary>
-            public class SpritedSelector : MappedSpriteGridSelection<Vector2Int, Sprite>
+            public class SpritedSelection : MappedSpriteGridSelection<Vector2Int, Sprite>
             {
-                public SpritedSelector(SpriteGrid sourceGrid, Vector2Int selection) : base(sourceGrid, selection)
+                public SpritedSelection(SpriteGrid sourceGrid, Vector2Int selection) : base(sourceGrid, selection)
                 {
                 }
 

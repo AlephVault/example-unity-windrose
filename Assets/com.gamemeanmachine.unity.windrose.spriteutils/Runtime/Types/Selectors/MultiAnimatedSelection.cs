@@ -20,13 +20,13 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
             /// <summary>
             ///   A multi-state & animated selector involves a list of sprites per state.
             /// </summary>
-            public class MultiAnimatedSelector
+            public class MultiAnimatedSelection
                 : MappedSpriteGridSelection<MultiSettings<ReadOnlyCollection<Vector2Int>>, MultiSettings<Animation>>
             {
                 // The FPS to use for the selection.
                 private uint fps;
                 
-                public MultiAnimatedSelector(SpriteGrid sourceGrid, MultiSettings<ReadOnlyCollection<Vector2Int>> selection, uint framesPerSecond) : base(sourceGrid, selection)
+                public MultiAnimatedSelection(SpriteGrid sourceGrid, MultiSettings<ReadOnlyCollection<Vector2Int>> selection, uint framesPerSecond) : base(sourceGrid, selection)
                 {
                     if (selection == null) throw new ArgumentNullException(nameof(selection));
                     fps = Values.Max(1u, framesPerSecond);
@@ -66,7 +66,7 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
                     return animation;
                 }
 
-                ~MultiAnimatedSelector()
+                ~MultiAnimatedSelection()
                 {
                     if (result != null)
                     {

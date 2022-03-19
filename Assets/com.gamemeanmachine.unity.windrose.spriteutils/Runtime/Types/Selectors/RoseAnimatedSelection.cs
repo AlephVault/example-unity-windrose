@@ -21,12 +21,12 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
             /// <summary>
             ///   An oriented & animated selector involves a list of sprites per direction.
             /// </summary>
-            public class RoseAnimatedSelector : MappedSpriteGridSelection<RoseTuple<ReadOnlyCollection<Vector2Int>>, AnimationRose>
+            public class RoseAnimatedSelection : MappedSpriteGridSelection<RoseTuple<ReadOnlyCollection<Vector2Int>>, AnimationRose>
             {
                 // The FPS to use for the selection.
                 private uint fps;
 
-                public RoseAnimatedSelector(SpriteGrid sourceGrid, RoseTuple<ReadOnlyCollection<Vector2Int>> selection, uint framesPerSecond) : base(sourceGrid, selection)
+                public RoseAnimatedSelection(SpriteGrid sourceGrid, RoseTuple<ReadOnlyCollection<Vector2Int>> selection, uint framesPerSecond) : base(sourceGrid, selection)
                 {
                     if (selection == null) throw new ArgumentNullException(nameof(selection));
                     fps = Values.Max(1u, framesPerSecond);
@@ -69,7 +69,7 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
                     return result;
                 }
                 
-                ~RoseAnimatedSelector()
+                ~RoseAnimatedSelection()
                 {
                     if (result != null)
                     {

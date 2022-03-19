@@ -88,7 +88,7 @@ namespace GameMeanMachine.Unity.WindRose.SpriteUtils
                 {
                     Animation result = ScriptableObject.CreateInstance<Animation>();
                     Behaviours.SetObjectFieldValues(result, new Dictionary<string, object> {
-                        { "sprites", sprites }, { "fps", fps }
+                        { "sprites", sprites.ToArray() }, { "fps", fps }
                     });
                     return result;
                 }

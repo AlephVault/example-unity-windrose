@@ -123,6 +123,11 @@ namespace AlephVault.Unity.RemoteStorage
                 Replaced,
                 
                 /// <summary>
+                ///   The element was successfully deleted.
+                /// </summary>
+                Deleted,
+                
+                /// <summary>
                 ///   The element was found (or elements, if a list was requested).
                 /// </summary>
                 Ok,

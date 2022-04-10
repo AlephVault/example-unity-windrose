@@ -22,11 +22,11 @@ namespace AlephVault.Unity.RemoteStorage
                 
                 // Particular methods (`Create` makes use of ElementIDType):
 
-                public Task<IResult> Create(ElementType payload);
-                public Task<IResult> Get(L1 l1);
-                public Task<IResult> Replace(L1 l1, ElementType data);
-                public Task<IResult> Update(L1 l1, IDictionary<string, object> data);
-                public Task<IResult> Delete(L1 l1);
+                public Task<Result<ElementType, ElementIDType>> Create(ElementType payload);
+                public Task<Result<ElementType, ElementIDType>> Get(L1 l1);
+                public Task<Result<ElementType, ElementIDType>> Replace(L1 l1, ElementType data);
+                public Task<Result<ElementType, ElementIDType>> Update(L1 l1, IDictionary<string, object> data);
+                public Task<Result<ElementType, ElementIDType>> Delete(L1 l1);
             }
         }
     }

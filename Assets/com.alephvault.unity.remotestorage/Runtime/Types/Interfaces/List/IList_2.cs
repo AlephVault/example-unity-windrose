@@ -22,8 +22,8 @@ namespace AlephVault.Unity.RemoteStorage
                 // Particular methods:
 
                 public IElement<AuthType, L1, L2, ElementIDType, ElementType> GetElement(ElementIDType id);
-                public Task<IResult> Create(L1 l1, L2 l2, ElementType payload);
-                public Task<IResult> List(L1 l1, L2 l2, CursorType cursor);
+                public Task<Result<ElementType, ElementIDType>> Create(L1 l1, L2 l2, ElementType payload);
+                public Task<Result<ElementType, ElementIDType>> List(L1 l1, L2 l2, CursorType cursor);
             }
         }
     }

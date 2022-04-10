@@ -59,6 +59,14 @@ namespace AlephVault.Unity.RemoteStorage
                 /// </summary>
                 Conflict,
                 
+                /// <summary>
+                ///   The query or request went well, but the result is a list when it should
+                ///   not, or vice versa. Alternatively, the result was not appropriately
+                ///   deserialized (this applies to any engine) or it is not of appropriate
+                ///   format (this applies to engines like HTTP).
+                /// </summary>
+                FormatError,
+                
                 // Regarding other client-side (i.e. unity server) errors.
                 
                 /// <summary>

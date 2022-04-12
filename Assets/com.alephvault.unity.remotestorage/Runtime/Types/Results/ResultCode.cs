@@ -52,6 +52,12 @@ namespace AlephVault.Unity.RemoteStorage
                 ValidationError,
                 
                 /// <summary>
+                ///   The resource is in use by other resources (i.e. this is a referential
+                ///   integrity check).
+                /// </summary>
+                InUse,
+                
+                /// <summary>
                 ///   The user is authenticated and not forbidden. The method is supported.
                 ///   However, when trying to create, update or replace, there was a conflict
                 ///   (which is not a validation error but a posterior check). This applies

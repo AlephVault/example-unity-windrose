@@ -12,8 +12,8 @@ namespace AlephVault.Unity.RemoteStorage.StandardHttp
     {
         public static partial class Engine
         {
-            public static async Task<ElementType[]> List<ElementType, CursorType, AuthType>(string endpoint, AuthType authorization, CursorType cursor)
-                where AuthType : Authorization where CursorType : Cursor
+            public static async Task<ElementType[]> List<ElementType, CursorType, AuthType>(string endpoint,
+                AuthType authorization, CursorType cursor) where AuthType : Authorization where CursorType : Cursor
             {
                 UnityWebRequest request = new UnityWebRequest($"{endpoint.Split('?')[0]}?{cursor.QueryString()}");
                 request.SetRequestHeader("Authorization", $"{authorization.Scheme} {authorization.Value}");
@@ -48,6 +48,28 @@ namespace AlephVault.Unity.RemoteStorage.StandardHttp
                 FailOnOtherErrors(status);
                 // Deserialize everything.
                 return Deserialize<ElementType>(request.downloadHandler.data);
+            }
+
+            public static async Task<ElementIDType> Create<ElementType, ElementIDType, AuthType>(string endpoint,
+                ElementType data, AuthType authorization) where AuthType : Authorization
+            {
+                UnityWebRequest request = new UnityWebRequest(endpoint.Split('?')[0]);
+                request.SetRequestHeader("Authorization", $"{authorization.Scheme} {authorization.Value}");
+                request.SetRequestHeader("Content-Type", "application/json");
+                request.method = "POST";
+                request.uploadHandler = new UploadHandlerRaw(Serialize<ElementType>(data));
+                // Send the request.
+                await SendRequest(request);
+                // Get the result.
+                long status = request.responseCode;
+                FailOnAccess(status);
+                FailOnConflict(status, request.downloadHandler);
+                FailOnBadRequest(status, request.downloadHandler);
+                FailOnFormatError(status);
+                FailOnServerError(status);
+                FailOnOtherErrors(status);
+                // TODO - parse the result.                
+                return default;
             }
         }
     }

@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Threading.Tasks;
 using AlephVault.Unity.RemoteStorage.Types.Results;
@@ -51,6 +52,21 @@ namespace AlephVault.Unity.RemoteStorage.StandardHttp
                     return JsonSerializer.Create().Deserialize<ElementType>(
                         new JsonTextReader(new StreamReader(new MemoryStream(data)))
                     );
+                }
+                catch (Exception)
+                {
+                    throw new Exception(errorCode);
+                }
+            }
+            
+            // Serializes content using Newtonsoft.Json.
+            private static byte[] Serialize<ElementType>(ElementType data, ResultCode errorCode = ResultCode.FormatError)
+            {
+                try
+                {
+                    MemoryStream stream = new MemoryStream();
+                    JsonSerializer.Create().Serialize(new JsonTextWriter(new StreamWriter(stream)), data);
+                    return stream.GetBuffer();
                 }
                 catch (Exception)
                 {

@@ -94,11 +94,14 @@ namespace AlephVault.Unity.RemoteStorage.StandardHttp
                     ResultCode code;
                     switch (conflict.Code)
                     {
-                        case "already_exists":
+                        case "already-exists":
                             code = ResultCode.AlreadyExists;
                             break;
-                        case "in_use":
+                        case "in-use":
                             code = ResultCode.InUse;
+                            break;
+                        case "duplicate-key":
+                            code = ResultCode.DuplicateKey;
                             break;
                         default:
                             code = ResultCode.Conflict;

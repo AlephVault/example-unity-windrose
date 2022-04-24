@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using AlephVault.Unity.RemoteStorage.Types.Results;
 using AlephVault.Unity.Support.Generic.Authoring.Types;
+using Newtonsoft.Json.Linq;
 
 
 namespace AlephVault.Unity.RemoteStorage
@@ -79,7 +80,67 @@ namespace AlephVault.Unity.RemoteStorage
                 /// <returns>A result of the operation</returns>
                 public Task<Result<ElementType, IDType>> Delete(IDType id);
                 
-                // TODO think tomorrow about the invocation of custom methods.
+                /// <summary>
+                ///   Queries a view method from the whole list.
+                /// </summary>
+                /// <param name="method">The method to query</param>
+                /// <param name="args">The arguments to pass</param>
+                /// <returns>A result of the operation. The id type is, actually, typically ignored</returns>
+                public Task<Result<JObject, IDType>> View(string method, Dictionary<string, string> args);
+
+                /// <summary>
+                ///   Runs an operation method from the whole list.
+                ///   It also provides a custom body.
+                /// </summary>
+                /// <param name="method">The method to run</param>
+                /// <param name="args">The arguments to pass</param>
+                /// <param name="body">The body to send</param>
+                /// <returns>A result of the operation. The id type is, actually, typically ignored</returns>
+                public Task<Result<JObject, IDType>> Operation<E>(string method, Dictionary<string, string> args,
+                    E body);
+
+                /// <summary>
+                ///   Runs an operation method from the whole list.
+                /// </summary>
+                /// <param name="method">The method to run</param>
+                /// <param name="args">The arguments to pass</param>
+                /// <returns>A result of the operation. The id type is, actually, typically ignored</returns>
+                public Task<Result<JObject, IDType>> Operation(string method, Dictionary<string, string> args);
+
+                /// <summary>
+                ///   Queries a view method from the whole list
+                ///   for a particular item.
+                /// </summary>
+                /// <param name="item">The intended item in the list</param>
+                /// <param name="method">The method to query</param>
+                /// <param name="args">The arguments to pass</param>
+                /// <returns>A result of the operation. The id type is, actually, typically ignored</returns>
+                public Task<Result<JObject, IDType>> ItemView(IDType item, string method,
+                    Dictionary<string, string> args);
+
+                /// <summary>
+                ///   Runs an operation method from the whole list
+                ///   for a particular item. It also provides a custom
+                ///   body.
+                /// </summary>
+                /// <param name="item">The intended item in the list</param>
+                /// <param name="method">The method to run</param>
+                /// <param name="args">The arguments to pass</param>
+                /// <param name="body">The body to send</param>
+                /// <returns>A result of the operation. The id type is, actually, typically ignored</returns>
+                public Task<Result<JObject, IDType>> ItemOperation<E>(IDType item,
+                    string method, Dictionary<string, string> args, E body);
+
+                /// <summary>
+                ///   Runs an operation method from the whole list
+                ///   for a particular item.
+                /// </summary>
+                /// <param name="item">The intended item in the list</param>
+                /// <param name="method">The method to run</param>
+                /// <param name="args">The arguments to pass</param>
+                /// <returns>A result of the operation. The id type is, actually, typically ignored</returns>
+                public Task<Result<JObject, IDType>> ItemOperation(IDType item, string method,
+                    Dictionary<string, string> args);
             }
         }
     }

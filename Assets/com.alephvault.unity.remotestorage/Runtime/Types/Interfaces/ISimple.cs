@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using AlephVault.Unity.RemoteStorage.Types.Results;
 using AlephVault.Unity.Support.Generic.Authoring.Types;
+using Newtonsoft.Json.Linq;
 
 
 namespace AlephVault.Unity.RemoteStorage
@@ -61,7 +62,34 @@ namespace AlephVault.Unity.RemoteStorage
                 /// <returns>A result of the operation</returns>
                 public Task<Result<ElementType, IDType>> Delete();
                 
-                // TODO think tomorrow about the invocation of custom methods.
+                /// <summary>
+                ///   Queries a view method from the only item in the
+                ///   collection.
+                /// </summary>
+                /// <param name="method">The method to query</param>
+                /// <param name="args">The arguments to pass</param>
+                /// <returns>A result of the operation. The id type is, actually, typically ignored</returns>
+                public Task<Result<JObject, IDType>> View(string method, Dictionary<string, string> args);
+
+                /// <summary>
+                ///   Runs an operation method from the only item in
+                ///   the collection. It also provides a custom body.
+                /// </summary>
+                /// <param name="method">The method to run</param>
+                /// <param name="args">The arguments to pass</param>
+                /// <param name="body">The body to send</param>
+                /// <returns>A result of the operation. The id type is, actually, typically ignored</returns>
+                public Task<Result<JObject, IDType>> Operation<E>(string method, Dictionary<string, string> args,
+                    E body);
+
+                /// <summary>
+                ///   Runs an operation method from the only item in
+                ///   the collection.
+                /// </summary>
+                /// <param name="method">The method to run</param>
+                /// <param name="args">The arguments to pass</param>
+                /// <returns>A result of the operation. The id type is, actually, typically ignored</returns>
+                public Task<Result<JObject, IDType>> Operation(string method, Dictionary<string, string> args);
             }
         }
     }

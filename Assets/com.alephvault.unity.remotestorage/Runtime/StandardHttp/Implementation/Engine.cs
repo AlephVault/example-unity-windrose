@@ -26,11 +26,10 @@ namespace AlephVault.Unity.RemoteStorage.StandardHttp
             /// <param name="authorization">The authorization to use</param>
             /// <param name="cursor">The cursor to use for paging</param>
             /// <typeparam name="ElementType">The type of elements</typeparam>
-            /// <typeparam name="CursorType">The cursor type</typeparam>
             /// <typeparam name="AuthType">The authentication type</typeparam>
             /// <returns>The list of elements</returns>
-            public static async Task<ElementType[]> List<ElementType, CursorType, AuthType>(string endpoint,
-                AuthType authorization, CursorType cursor) where AuthType : Authorization where CursorType : Cursor
+            public static async Task<ElementType[]> List<ElementType, AuthType>(string endpoint,
+                AuthType authorization, Cursor cursor) where AuthType : Authorization
             {
                 UnityWebRequest request = new UnityWebRequest($"{endpoint.Split('?')[0]}?{cursor.QueryString()}");
                 request.SetRequestHeader("Authorization", $"{authorization.Scheme} {authorization.Value}");

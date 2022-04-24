@@ -12,8 +12,9 @@ namespace AlephVault.Unity.RemoteStorage
                 /// <summary>
                 ///   The code of the conflict. Two types of conflict errors
                 ///   can occur:
-                ///   - "Already Exists" ("already_exists").
-                ///   - "Still in Use" ("in_use").
+                ///   - "Duplicate Key" ("duplicate-key").
+                ///   - "Already Exists" ("already-exists").
+                ///   - "Still in Use" ("in-use").
                 /// </summary>
                 public string Code;
             }

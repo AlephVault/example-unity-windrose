@@ -61,7 +61,7 @@ namespace AlephVault.Unity.RemoteStorage.StandardHttp
                         new JsonTextReader(new StreamReader(new MemoryStream(data)))
                     );
                 }
-                catch (Exception)
+                catch (System.Exception)
                 {
                     throw new Exception(errorCode);
                 }
@@ -76,7 +76,7 @@ namespace AlephVault.Unity.RemoteStorage.StandardHttp
                     JsonSerializer.Create().Serialize(new JsonTextWriter(new StreamWriter(stream)), data);
                     return stream.GetBuffer();
                 }
-                catch (Exception)
+                catch (System.Exception)
                 {
                     throw new Exception(errorCode);
                 }

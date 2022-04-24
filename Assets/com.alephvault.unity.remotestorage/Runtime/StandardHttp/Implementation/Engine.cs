@@ -125,7 +125,7 @@ namespace AlephVault.Unity.RemoteStorage.StandardHttp
                 UnityWebRequest request = new UnityWebRequest(endpoint.Split('?')[0]);
                 request.SetRequestHeader("Authorization", $"{authorization.Scheme} {authorization.Value}");
                 request.SetRequestHeader("Content-Type", "application/json");
-                request.method = "POST";
+                request.method = "PATCH";
                 request.uploadHandler = new UploadHandlerRaw(Serialize(patch));
                 // Send the request.
                 await SendRequest(request);
@@ -138,6 +138,67 @@ namespace AlephVault.Unity.RemoteStorage.StandardHttp
                 FailOnServerError(status);
                 FailOnOtherErrors(status);
                 // Everything is OK by this point.                
+            }
+
+            /// <summary>
+            ///   Replaces an element using a replace endpoint. Typically, this
+            ///   intended intended for both "/foo/{objectid}" list-element
+            ///   endpoints, and "/bar" simple element endpoints. An "already-exists"
+            ///   conflict may arise for the "/bar" simple element endpoints.
+            /// </summary>
+            /// <param name="endpoint">The whole endpoint url</param>
+            /// <param name="replacement">The data to replace the element with</param>
+            /// <param name="authorization">The authorization to use</param>
+            /// <typeparam name="ElementType">The type of elements</typeparam>
+            /// <typeparam name="AuthType">The authentication type</typeparam>
+            public static async Task Replace<ElementType, AuthType>(string endpoint, ElementType replacement,
+                AuthType authorization) where AuthType : Authorization
+            {
+                UnityWebRequest request = new UnityWebRequest(endpoint.Split('?')[0]);
+                request.SetRequestHeader("Authorization", $"{authorization.Scheme} {authorization.Value}");
+                request.SetRequestHeader("Content-Type", "application/json");
+                request.method = "PUT";
+                request.uploadHandler = new UploadHandlerRaw(Serialize(replacement));
+                // Send the request.
+                await SendRequest(request);
+                // Get the result.
+                long status = request.responseCode;
+                FailOnAccess(status);
+                FailOnConflict(status, request.downloadHandler);
+                FailOnBadRequest(status, request.downloadHandler);
+                FailOnFormatError(status);
+                FailOnServerError(status);
+                FailOnOtherErrors(status);
+                // Everything is OK by this point.
+            }
+
+            /// <summary>
+            ///   Deletes an element using a delete endpoint. Typically, this
+            ///   intended intended for both "/foo/{objectid}" list-element
+            ///   endpoints, and "/bar" simple element endpoints. An "already-exists"
+            ///   conflict may arise for the "/bar" simple element endpoints.
+            /// </summary>
+            /// <param name="endpoint">The whole endpoint url</param>
+            /// <param name="authorization">The authorization to use</param>
+            /// <typeparam name="AuthType">The authentication type</typeparam>
+            public static async Task Delete<AuthType>(string endpoint, AuthType authorization)
+                where AuthType : Authorization
+            {
+                UnityWebRequest request = new UnityWebRequest(endpoint.Split('?')[0]);
+                request.SetRequestHeader("Authorization", $"{authorization.Scheme} {authorization.Value}");
+                request.SetRequestHeader("Content-Type", "application/json");
+                request.method = "DELETE";
+                // Send the request.
+                await SendRequest(request);
+                // Get the result.
+                long status = request.responseCode;
+                FailOnAccess(status);
+                FailOnConflict(status, request.downloadHandler);
+                FailOnBadRequest(status, request.downloadHandler);
+                FailOnFormatError(status);
+                FailOnServerError(status);
+                FailOnOtherErrors(status);
+                // Everything is OK by this point.
             }
         }
     }

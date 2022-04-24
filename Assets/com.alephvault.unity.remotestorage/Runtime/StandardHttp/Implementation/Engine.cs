@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using AlephVault.Unity.RemoteStorage.StandardHttp.Types;
+using Newtonsoft.Json.Linq;
 using UnityEngine.Networking;
 
 
@@ -87,7 +88,7 @@ namespace AlephVault.Unity.RemoteStorage.StandardHttp
                 request.SetRequestHeader("Authorization", $"{authorization.Scheme} {authorization.Value}");
                 request.SetRequestHeader("Content-Type", "application/json");
                 request.method = "POST";
-                request.uploadHandler = new UploadHandlerRaw(Serialize<ElementType>(data));
+                request.uploadHandler = new UploadHandlerRaw(Serialize(data));
                 // Send the request.
                 await SendRequest(request);
                 // Get the result.
@@ -107,6 +108,36 @@ namespace AlephVault.Unity.RemoteStorage.StandardHttp
                     // The id will not be returned, but no error will be raised.
                     return "";
                 }
+            }
+
+            /// <summary>
+            ///   Updates an element using an update endpoint. Typically, this
+            ///   is intended for both "/foo/{objectid}" list-element endpoints,
+            ///   and "/bar" simple element endpoints.
+            /// </summary>
+            /// <param name="endpoint">The whole endpoint url</param>
+            /// <param name="patch">The data to patch the new element with</param>
+            /// <param name="authorization">The authorization to use</param>
+            /// <typeparam name="AuthType">The authentication type</typeparam>
+            public static async Task Update<AuthType>(string endpoint, AuthType authorization, JObject patch)
+                where AuthType : Authorization
+            {
+                UnityWebRequest request = new UnityWebRequest(endpoint.Split('?')[0]);
+                request.SetRequestHeader("Authorization", $"{authorization.Scheme} {authorization.Value}");
+                request.SetRequestHeader("Content-Type", "application/json");
+                request.method = "POST";
+                request.uploadHandler = new UploadHandlerRaw(Serialize(patch));
+                // Send the request.
+                await SendRequest(request);
+                // Get the result.
+                long status = request.responseCode;
+                FailOnAccess(status);
+                FailOnConflict(status, request.downloadHandler);
+                FailOnBadRequest(status, request.downloadHandler);
+                FailOnFormatError(status);
+                FailOnServerError(status);
+                FailOnOtherErrors(status);
+                // Everything is OK by this point.                
             }
         }
     }

@@ -81,6 +81,21 @@ namespace AlephVault.Unity.RemoteStorage.StandardHttp
                     throw new Exception(errorCode);
                 }
             }
+            
+            // Serializes a JObject content to byte array.
+            private static byte[] Serialize(JObject data, ResultCode errorCode = ResultCode.FormatError)
+            {
+                try
+                {
+                    MemoryStream stream = new MemoryStream();
+                    new StreamWriter(stream).Write(data.ToString());
+                    return stream.GetBuffer();
+                }
+                catch (System.Exception)
+                {
+                    throw new Exception(errorCode);
+                }
+            }
         }
     }
 }

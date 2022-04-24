@@ -24,11 +24,12 @@ namespace AlephVault.Unity.RemoteStorage
                 ///   Retrieves an instance of a handler to a remote list resource.
                 /// </summary>
                 /// <param name="name">The resource name</param>
+                /// <typeparam name="LE">The type to marshal the related resource instances as list items</typeparam>
                 /// <typeparam name="E">The type to marshal the related resource instances</typeparam>
                 /// <typeparam name="ID">The type to marshal the related resource ids</typeparam>
                 /// <typeparam name="C">The type to marshal the paging cursor</typeparam>
                 /// <returns>A simple resource reference</returns>
-                public IList<AuthType, E, ID, C> GetList<E, ID, C>(string name);
+                public IList<AuthType, LE, E, ID, C> GetList<LE, E, ID, C>(string name);
             }
         }
     }

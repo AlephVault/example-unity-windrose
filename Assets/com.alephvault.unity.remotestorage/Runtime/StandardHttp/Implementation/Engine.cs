@@ -250,6 +250,60 @@ namespace AlephVault.Unity.RemoteStorage.StandardHttp
                 FailOnOtherErrors(status);
                 return DeserializeArbitrary(request.downloadHandler.data);
             }
+
+            /// <summary>
+            ///   Runs a particular operation (from an item or from a simple
+            ///   resource).
+            /// </summary>
+            /// <param name="endpoint">The whole endpoint url</param>
+            /// <param name="requestArgs">The arguments for the query string</param>
+            /// <param name="body">The body to use</param>
+            /// <param name="authorization">The authorization to use</param>
+            /// <typeparam name="AuthType">The authentication type</typeparam>
+            public static async Task<JObject> Operation<ElementType, AuthType>(string endpoint,
+                Dictionary<string, string> requestArgs, ElementType body, AuthType authorization)
+                where AuthType : Authorization
+            {
+                string url = endpoint.Split('?')[0];
+                if (requestArgs != null && requestArgs.Count > 0)
+                {
+                    string args = string.Join("&",
+                        from arg in requestArgs
+                        select $"{HttpUtility.UrlEncode(arg.Key)}={HttpUtility.UrlEncode(arg.Value.ToString())}"
+                    );
+                    url += "?{args}";
+                }
+                UnityWebRequest request = new UnityWebRequest();
+                request.SetRequestHeader("Authorization", $"{authorization.Scheme} {authorization.Value}");
+                request.SetRequestHeader("Content-Type", "application/json");
+                request.method = "POST";
+                if (body != null) request.uploadHandler = new UploadHandlerRaw(Serialize(body));
+                // Send the request.
+                await SendRequest(request);
+                // Get the result.
+                long status = request.responseCode;
+                FailOnAccess(status);
+                FailOnConflict(status, request.downloadHandler);
+                FailOnBadRequest(status, request.downloadHandler);
+                FailOnFormatError(status);
+                FailOnServerError(status);
+                FailOnOtherErrors(status);
+                return DeserializeArbitrary(request.downloadHandler.data);
+            }
+
+            /// <summary>
+            ///   Runs a particular operation (from an item or from a simple
+            ///   resource).
+            /// </summary>
+            /// <param name="endpoint">The whole endpoint url</param>
+            /// <param name="requestArgs">The arguments for the query string</param>
+            /// <param name="authorization">The authorization to use</param>
+            /// <typeparam name="AuthType">The authentication type</typeparam>
+            public static async Task<JObject> Operation<AuthType>(string endpoint,
+                Dictionary<string, string> requestArgs, AuthType authorization) where AuthType : Authorization
+            {
+                return await Operation<object, AuthType>(endpoint, requestArgs, null, authorization);
+            }
         }
     }
 }

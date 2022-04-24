@@ -18,7 +18,7 @@ namespace AlephVault.Unity.RemoteStorage
                 /// <typeparam name="E">The type to marshal the related resource instances</typeparam>
                 /// <typeparam name="ID">The type to marshal the related resource ids</typeparam>
                 /// <returns>A simple resource reference</returns>
-                public ISimple<AuthType, E, ID> GetSimple<E, ID>(string name);
+                public ISimpleResource<AuthType, E, ID> GetSimple<E, ID>(string name);
                 
                 /// <summary>
                 ///   Retrieves an instance of a handler to a remote list resource.
@@ -29,7 +29,7 @@ namespace AlephVault.Unity.RemoteStorage
                 /// <typeparam name="ID">The type to marshal the related resource ids</typeparam>
                 /// <typeparam name="C">The type to marshal the paging cursor</typeparam>
                 /// <returns>A simple resource reference</returns>
-                public IList<AuthType, LE, E, ID, C> GetList<LE, E, ID, C>(string name);
+                public IListResource<AuthType, LE, E, ID, C> GetList<LE, E, ID, C>(string name);
             }
         }
     }

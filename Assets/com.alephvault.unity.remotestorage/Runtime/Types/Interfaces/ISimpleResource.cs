@@ -19,7 +19,7 @@ namespace AlephVault.Unity.RemoteStorage
             /// <typeparam name="AuthType">The type to marshal authentication details</typeparam>
             /// <typeparam name="ElementType">The type to marshal the related resource instances</typeparam>
             /// <typeparam name="IDType">The type to marshal the related resource ids</typeparam>
-            public interface ISimple<AuthType, ElementType, IDType>
+            public interface ISimpleResource<AuthType, ElementType, IDType>
             {
                 /// <summary>
                 ///   Creates the resource. It is an error if the resource is

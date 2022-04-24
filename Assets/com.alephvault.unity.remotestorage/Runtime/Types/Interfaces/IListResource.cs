@@ -29,7 +29,7 @@ namespace AlephVault.Unity.RemoteStorage
             /// </typeparam>
             /// <typeparam name="IDType">The type to marshal the related resource ids</typeparam>
             /// <typeparam name="CursorType">The type to marshal the paging cursor</typeparam>
-            public interface IList<AuthType, ListElementType, ElementType, IDType, CursorType>
+            public interface IListResource<AuthType, ListElementType, ElementType, IDType, CursorType>
             {
                 /// <summary>
                 ///   List a page of resources.

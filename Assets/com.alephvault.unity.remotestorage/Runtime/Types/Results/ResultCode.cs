@@ -52,6 +52,13 @@ namespace AlephVault.Unity.RemoteStorage
                 ValidationError,
                 
                 /// <summary>
+                ///   While trying to create, update or replace a resource, a key was found to
+                ///   be duplicate with respect to other records (depending on the engine, the
+                ///   key might be a single field or a specific sequence of fields).
+                /// </summary>
+                DuplicateKey,
+                
+                /// <summary>
                 ///   The resource is in use by other resources (i.e. this is a referential
                 ///   integrity check).
                 /// </summary>

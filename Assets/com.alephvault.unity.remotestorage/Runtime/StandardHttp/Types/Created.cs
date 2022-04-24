@@ -10,7 +10,7 @@ namespace AlephVault.Unity.RemoteStorage
             /// <summary>
             ///   Data of a conflict message.
             /// </summary>
-            public class Conflict
+            public class Created
             {
                 /// <summary>
                 ///   The code of the conflict. Two types of conflict errors
@@ -19,8 +19,8 @@ namespace AlephVault.Unity.RemoteStorage
                 ///   - "Already Exists" ("already-exists").
                 ///   - "Still in Use" ("in-use").
                 /// </summary>
-                [JsonProperty("code")]
-                public string Code;
+                [JsonProperty("id")]
+                public string Id;
             }
         }
     }

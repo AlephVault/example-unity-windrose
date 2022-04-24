@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 
@@ -20,12 +21,14 @@ namespace AlephVault.Unity.RemoteStorage
                 ///   - Format: Unexpected ("format:unexpected").
                 ///   - Validation errors ("schema:invalid").
                 /// </summary>
+                [JsonProperty("code")]
                 public string Code;
 
                 /// <summary>
                 ///   For the case of validation errors, this field
                 ///   contains the actual validation errors.
                 /// </summary>
+                [JsonProperty("errors")]
                 public JObject ValidationErrors;
             }
         }

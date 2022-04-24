@@ -1,8 +1,5 @@
-using System.IO;
 using System.Threading.Tasks;
 using AlephVault.Unity.RemoteStorage.StandardHttp.Types;
-using AlephVault.Unity.RemoteStorage.Types.Results;
-using Newtonsoft.Json;
 using UnityEngine.Networking;
 
 
@@ -68,7 +65,7 @@ namespace AlephVault.Unity.RemoteStorage.StandardHttp
                 FailOnFormatError(status);
                 FailOnServerError(status);
                 FailOnOtherErrors(status);
-                // TODO - parse the result.                
+                // TODO - parse the result.
                 return default;
             }
         }

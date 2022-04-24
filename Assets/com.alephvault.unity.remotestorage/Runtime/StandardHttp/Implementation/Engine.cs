@@ -47,7 +47,7 @@ namespace AlephVault.Unity.RemoteStorage.StandardHttp
                 return Deserialize<ElementType>(request.downloadHandler.data);
             }
 
-            public static async Task<ElementIDType> Create<ElementType, ElementIDType, AuthType>(string endpoint,
+            public static async Task<string> Create<ElementType, AuthType>(string endpoint,
                 ElementType data, AuthType authorization) where AuthType : Authorization
             {
                 UnityWebRequest request = new UnityWebRequest(endpoint.Split('?')[0]);
@@ -65,8 +65,15 @@ namespace AlephVault.Unity.RemoteStorage.StandardHttp
                 FailOnFormatError(status);
                 FailOnServerError(status);
                 FailOnOtherErrors(status);
-                // TODO - parse the result.
-                return default;
+                try
+                {
+                    return Deserialize<Created>(request.downloadHandler.data).Id;
+                }
+                catch (Exception)
+                {
+                    // The id will not be returned, but no error will be raised.
+                    return "";
+                }
             }
         }
     }

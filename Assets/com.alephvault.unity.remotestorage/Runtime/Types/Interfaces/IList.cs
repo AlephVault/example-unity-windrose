@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using AlephVault.Unity.RemoteStorage.Types.Results;
 using AlephVault.Unity.Support.Generic.Authoring.Types;
-using UnityEngine;
+
 
 namespace AlephVault.Unity.RemoteStorage
 {
@@ -74,7 +74,7 @@ namespace AlephVault.Unity.RemoteStorage
                 /// <summary>
                 ///   Deletes a resource. It is an error if the resource does not
                 ///   exist by the given key. It may also incur in referential
-                ///   integrity errors (by its potential obsence).
+                ///   integrity errors (by its potential absence).
                 /// </summary>
                 /// <returns>A result of the operation</returns>
                 public Task<Result<ElementType, IDType>> Delete(IDType id);

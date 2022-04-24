@@ -28,10 +28,8 @@ namespace AlephVault.Unity.RemoteStorage.StandardHttp
                 ///   The validation errors.
                 /// </summary>
                 public readonly JObject ValidationErrors;
-
-                public Exception(ResultCode code) : this(code, null) {}
                 
-                public Exception(ResultCode code, JObject errors) : base($"Storage access failure ({code})")
+                public Exception(ResultCode code, JObject errors = null) : base($"Storage access failure ({code})")
                 {
                     Code = code;
                     ValidationErrors = errors;

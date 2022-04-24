@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using AlephVault.Unity.RemoteStorage.Types.Results;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using UnityEngine.Networking;
 
 
@@ -13,7 +14,8 @@ namespace AlephVault.Unity.RemoteStorage.StandardHttp
         public static partial class Engine
         {
             /// <summary>
-            ///   An exception to be raised on http queries.
+            ///   An exception to be raised on http queries. The
+            ///   validation errors are given, when the case.
             /// </summary>
             public class Exception : System.Exception
             {
@@ -22,9 +24,17 @@ namespace AlephVault.Unity.RemoteStorage.StandardHttp
                 /// </summary>
                 public readonly ResultCode Code;
 
-                public Exception(ResultCode code) : base($"Storage access failure ({code})")
+                /// <summary>
+                ///   The validation errors.
+                /// </summary>
+                public readonly JObject ValidationErrors;
+
+                public Exception(ResultCode code) : this(code, null) {}
+                
+                public Exception(ResultCode code, JObject errors) : base($"Storage access failure ({code})")
                 {
                     Code = code;
+                    ValidationErrors = errors;
                 }
             }
 

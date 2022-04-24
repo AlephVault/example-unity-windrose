@@ -1,5 +1,6 @@
 using AlephVault.Unity.RemoteStorage.StandardHttp.Types;
 using AlephVault.Unity.RemoteStorage.Types.Results;
+using Newtonsoft.Json.Linq;
 using UnityEngine.Networking;
 
 
@@ -70,9 +71,21 @@ namespace AlephVault.Unity.RemoteStorage.StandardHttp
             // whether this is a validation error or another kind.
             private static void FailOnBadRequest(long status, DownloadHandler downloadHandler)
             {
-                // TODO If the response is JSON and providing errors,
-                // TODO then we raise an INVALID error. Otherwise,
-                // TODO then we raise a FORMAT error.
+                if (status == 404)
+                {
+                    BadRequest badRequest = Deserialize<BadRequest>(downloadHandler.data);
+                    switch (badRequest.Code)
+                    {
+                        case "authorization:missing-header":
+                            throw new Exception(ResultCode.Unauthorized);
+                        case "authorization:bad-scheme":
+                            throw new Exception(ResultCode.Unauthorized);
+                        case "schema:invalid":
+                            throw new Exception(ResultCode.ValidationError, badRequest.ValidationErrors);
+                        default:
+                            throw new Exception(ResultCode.FormatError);
+                    }
+                }
             }
             
             // Fails on conflict. Conflicts can come in many flavors, but

@@ -128,7 +128,10 @@ namespace AlephVault.Unity.RemoteStorage.StandardHttp
             ///   and "/bar" simple element endpoints.
             /// </summary>
             /// <param name="endpoint">The whole endpoint url</param>
-            /// <param name="patch">The data to patch the new element with</param>
+            /// <param name="patch">
+            ///   The data to patch the new element with. It must follow MongoDB
+            ///   syntax (e.g. {"$set": {"foo": 3}}).
+            /// </param>
             /// <param name="authorization">The authorization to use</param>
             /// <typeparam name="AuthType">The authentication type</typeparam>
             public static async Task Update<AuthType>(string endpoint, AuthType authorization, JObject patch)

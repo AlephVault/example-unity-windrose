@@ -9,6 +9,17 @@ namespace AlephVault.Unity.RemoteStorage.StandardHttp
     {
         public static partial class Engine
         {
+            /// <summary>
+            ///   Lists the result from an endpoint. Typically, this is intended for
+            ///   the "/foo" list endpoints.
+            /// </summary>
+            /// <param name="endpoint">The whole endpoint url</param>
+            /// <param name="authorization">The authorization to use</param>
+            /// <param name="cursor">The cursor to use for paging</param>
+            /// <typeparam name="ElementType">The type of elements</typeparam>
+            /// <typeparam name="CursorType">The cursor type</typeparam>
+            /// <typeparam name="AuthType">The authentication type</typeparam>
+            /// <returns>The list of elements</returns>
             public static async Task<ElementType[]> List<ElementType, CursorType, AuthType>(string endpoint,
                 AuthType authorization, CursorType cursor) where AuthType : Authorization where CursorType : Cursor
             {
@@ -28,6 +39,16 @@ namespace AlephVault.Unity.RemoteStorage.StandardHttp
                 return Deserialize<ElementType[]>(request.downloadHandler.data);
             }
 
+            /// <summary>
+            ///   Gets the result from an endpoint. Typically, this is intended for
+            ///   both "/foo/{objectid}" list-element endpoints, and "/bar" simple
+            ///   endpoints.
+            /// </summary>
+            /// <param name="endpoint">The whole endpoint url</param>
+            /// <param name="authorization">The authorization to use</param>
+            /// <typeparam name="ElementType">The type of elements</typeparam>
+            /// <typeparam name="AuthType">The authentication type</typeparam>
+            /// <returns>The element</returns>
             public static async Task<ElementType> One<ElementType, AuthType>(string endpoint, AuthType authorization)
                 where AuthType : Authorization
             {
@@ -47,6 +68,18 @@ namespace AlephVault.Unity.RemoteStorage.StandardHttp
                 return Deserialize<ElementType>(request.downloadHandler.data);
             }
 
+            /// <summary>
+            ///   Creates an element using a create endpoint. Typically, this is
+            ///   intended for both "/foo" list-element endpoints, and "/bar"
+            ///   simple element endpoints. An "already-exists" conflict may
+            ///   arise for the "/bar" simple element endpoints.
+            /// </summary>
+            /// <param name="endpoint">The whole endpoint url</param>
+            /// <param name="data">The data to create the new element with</param>
+            /// <param name="authorization">The authorization to use</param>
+            /// <typeparam name="ElementType">The type of elements</typeparam>
+            /// <typeparam name="AuthType">The authentication type</typeparam>
+            /// <returns>The id of the new element, or empty if the 200 response does not have expected format</returns>
             public static async Task<string> Create<ElementType, AuthType>(string endpoint,
                 ElementType data, AuthType authorization) where AuthType : Authorization
             {

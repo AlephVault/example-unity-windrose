@@ -66,6 +66,21 @@ namespace AlephVault.Unity.RemoteStorage.StandardHttp
                     throw new Exception(errorCode);
                 }
             }
+
+            // Deserializes content using Newtonsoft.Json into JObject.
+            private static JObject DeserializeArbitrary(byte[] data, ResultCode errorCode = ResultCode.FormatError)
+            {
+                try
+                {
+                    MemoryStream stream = new MemoryStream(data);
+                    StreamReader reader = new StreamReader(stream);
+                    return JObject.Parse(reader.ReadToEnd());
+                }
+                catch (System.Exception e)
+                {
+                    throw new Exception(errorCode);
+                }
+            }
             
             // Serializes content using Newtonsoft.Json.
             private static byte[] Serialize<ElementType>(ElementType data, ResultCode errorCode = ResultCode.FormatError)
@@ -83,7 +98,7 @@ namespace AlephVault.Unity.RemoteStorage.StandardHttp
             }
             
             // Serializes a JObject content to byte array.
-            private static byte[] Serialize(JObject data, ResultCode errorCode = ResultCode.FormatError)
+            private static byte[] SerializeArbitrary(JObject data, ResultCode errorCode = ResultCode.FormatError)
             {
                 try
                 {

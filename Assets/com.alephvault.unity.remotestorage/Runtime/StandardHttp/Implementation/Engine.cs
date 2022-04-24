@@ -1,5 +1,8 @@
+using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
 using AlephVault.Unity.RemoteStorage.StandardHttp.Types;
+using AlephVault.Unity.Support.Generic.Authoring.Types;
 using Newtonsoft.Json.Linq;
 using UnityEngine.Networking;
 
@@ -11,8 +14,13 @@ namespace AlephVault.Unity.RemoteStorage.StandardHttp
         public static partial class Engine
         {
             /// <summary>
-            ///   Lists the result from an endpoint. Typically, this is intended for
-            ///   the "/foo" list endpoints.
+            ///   <para>
+            ///     Lists the result from an endpoint. Typically, this is intended
+            ///     for the "/foo" list endpoints.
+            ///   </para>
+            ///   <para>
+            ///     Notes: Specifying a custom projection is not yet supported.
+            ///   </para>
             /// </summary>
             /// <param name="endpoint">The whole endpoint url</param>
             /// <param name="authorization">The authorization to use</param>
@@ -41,9 +49,14 @@ namespace AlephVault.Unity.RemoteStorage.StandardHttp
             }
 
             /// <summary>
-            ///   Gets the result from an endpoint. Typically, this is intended for
-            ///   both "/foo/{objectid}" list-element endpoints, and "/bar" simple
-            ///   endpoints.
+            ///   <para>
+            ///     Gets the result from an endpoint. Typically, this is intended for
+            ///      both "/foo/{objectid}" list-element endpoints, and "/bar" simple
+            ///     endpoints.
+            ///   </para>
+            ///   <para>
+            ///     Notes: Specifying a custom projection is not yet supported.
+            ///   </para>
             /// </summary>
             /// <param name="endpoint">The whole endpoint url</param>
             /// <param name="authorization">The authorization to use</param>
@@ -126,7 +139,7 @@ namespace AlephVault.Unity.RemoteStorage.StandardHttp
                 request.SetRequestHeader("Authorization", $"{authorization.Scheme} {authorization.Value}");
                 request.SetRequestHeader("Content-Type", "application/json");
                 request.method = "PATCH";
-                request.uploadHandler = new UploadHandlerRaw(Serialize(patch));
+                request.uploadHandler = new UploadHandlerRaw(SerializeArbitrary(patch));
                 // Send the request.
                 await SendRequest(request);
                 // Get the result.
@@ -199,6 +212,43 @@ namespace AlephVault.Unity.RemoteStorage.StandardHttp
                 FailOnServerError(status);
                 FailOnOtherErrors(status);
                 // Everything is OK by this point.
+            }
+
+            /// <summary>
+            ///   Queries a particular view (from an item or from a simple
+            ///   resource).
+            /// </summary>
+            /// <param name="endpoint">The whole endpoint url</param>
+            /// <param name="requestArgs">The arguments for the query string</param>
+            /// <param name="authorization">The authorization to use</param>
+            /// <typeparam name="AuthType">The authentication type</typeparam>
+            public static async Task<JObject> View<AuthType>(string endpoint, Dictionary<string, string> requestArgs,
+                AuthType authorization) where AuthType : Authorization
+            {
+                string url = endpoint.Split('?')[0];
+                if (requestArgs != null && requestArgs.Count > 0)
+                {
+                    string args = string.Join("&",
+                        from arg in requestArgs
+                        select $"{HttpUtility.UrlEncode(arg.Key)}={HttpUtility.UrlEncode(arg.Value.ToString())}"
+                    );
+                    url += "?{args}";
+                }
+                UnityWebRequest request = new UnityWebRequest();
+                request.SetRequestHeader("Authorization", $"{authorization.Scheme} {authorization.Value}");
+                request.SetRequestHeader("Content-Type", "application/json");
+                request.method = "GET";
+                // Send the request.
+                await SendRequest(request);
+                // Get the result.
+                long status = request.responseCode;
+                FailOnAccess(status);
+                FailOnConflict(status, request.downloadHandler);
+                FailOnBadRequest(status, request.downloadHandler);
+                FailOnFormatError(status);
+                FailOnServerError(status);
+                FailOnOtherErrors(status);
+                return DeserializeArbitrary(request.downloadHandler.data);
             }
         }
     }

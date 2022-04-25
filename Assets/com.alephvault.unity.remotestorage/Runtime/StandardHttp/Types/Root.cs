@@ -13,16 +13,22 @@ namespace AlephVault.Unity.RemoteStorage
             /// </summary>
             public class Root : IRoot<Authorization>
             {
+                // The endpoint.
+                public readonly string BaseEndpoint;
+                
                 // The authorization to use.
                 private Authorization Authorization;
                 
                 /// <summary>
-                ///   On creation, it takes an authorization header.
+                ///   On creation, it takes an authorization header and the
+                ///   base endpoint.
                 /// </summary>
+                /// <param name="baseEndpoint">The base endpoint, like http://localhost:7777</param>
                 /// <param name="authorization">The authorization header to use</param>
                 /// <exception cref="ArgumentNullException">The authorization is null</exception>
-                public Root(Authorization authorization)
+                public Root(string baseEndpoint, Authorization authorization)
                 {
+                    BaseEndpoint = baseEndpoint ?? throw new ArgumentNullException(nameof(baseEndpoint));
                     Authorization = authorization ?? throw new ArgumentNullException(nameof(authorization));
                 }
                 
@@ -41,7 +47,9 @@ namespace AlephVault.Unity.RemoteStorage
                     }
 
                     // Just create a resource.
-                    return (ISimpleResource<Authorization, E, ID>)new SimpleResource<Authorization, E>(name, Authorization);
+                    return (ISimpleResource<Authorization, E, ID>)new SimpleResource<Authorization, E>(
+                        name, BaseEndpoint, Authorization
+                    );
                 }
 
                 /// <summary>
@@ -53,7 +61,7 @@ namespace AlephVault.Unity.RemoteStorage
                 public ISimpleResource<Authorization, E, string> GetSimple<E>(string name)
                 {
                     // Just create a resource.
-                    return new SimpleResource<Authorization, E>(name, Authorization);
+                    return new SimpleResource<Authorization, E>(name, BaseEndpoint, Authorization);
                 }
 
                 /// <summary>
@@ -74,7 +82,9 @@ namespace AlephVault.Unity.RemoteStorage
                     }
                     
                     // Just create a resource.
-                    return (IListResource<Authorization, LE, E, ID, C>)new ListResource<Authorization, LE, E>(name, Authorization);
+                    return (IListResource<Authorization, LE, E, ID, C>)new ListResource<Authorization, LE, E>(
+                        name, BaseEndpoint, Authorization
+                    );
                 }
                 
                 
@@ -88,7 +98,7 @@ namespace AlephVault.Unity.RemoteStorage
                 public IListResource<Authorization, LE, E, string, Cursor> GetList<LE, E>(string name)
                 {
                     // Just create a resource.
-                    return new ListResource<Authorization, LE, E>(name, Authorization);
+                    return new ListResource<Authorization, LE, E>(name, BaseEndpoint, Authorization);
                 }
             }
         }

@@ -21,11 +21,13 @@ namespace AlephVault.Unity.RemoteStorage
             {
                 /// <summary>
                 ///   Creating a list resource requires both
-                ///   the name and authorization header.
+                ///   the name and authorization header, as well
+                ///   as the base endpoint to hit.
                 /// </summary>
                 /// <param name="name">The resource name</param>
+                /// <param name="baseEndpoint">The base endpoint</param>
                 /// <param name="authorization">The authorization header</param>
-                public ListResource(string name, Authorization authorization) : base(name, authorization) {}
+                public ListResource(string name, string baseEndpoint, Authorization authorization) : base(name, baseEndpoint, authorization) {}
 
                 public Task<Result<ListType[], string>> List(Cursor cursor)
                 {

@@ -19,6 +19,11 @@ namespace AlephVault.Unity.RemoteStorage
             public class Resource
             {
                 /// <summary>
+                ///   The base endpoint.
+                /// </summary>
+                public readonly string BaseEndpoint;
+                
+                /// <summary>
                 ///   The resource name.
                 /// </summary>
                 public readonly string Name;
@@ -32,9 +37,10 @@ namespace AlephVault.Unity.RemoteStorage
                 /// </summary>
                 /// <param name="name">The resource name</param>
                 /// <param name="authorization">The authorization header</param>
-                public Resource(string name, Authorization authorization)
+                public Resource(string name, string baseEndpoint, Authorization authorization)
                 {
                     Name = name;
+                    BaseEndpoint = baseEndpoint;
                     Authorization = authorization;
                 }
 

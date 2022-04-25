@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using AlephVault.Unity.RemoteStorage.StandardHttp.Implementation;
 using AlephVault.Unity.RemoteStorage.Types.Interfaces;
 using AlephVault.Unity.RemoteStorage.Types.Results;
 using AlephVault.Unity.Support.Generic.Authoring.Types;
@@ -26,6 +27,12 @@ namespace AlephVault.Unity.RemoteStorage
                 // The authorization header.
                 private readonly Authorization Authorization;
                 
+                /// <summary>
+                ///   Creating the resource implies the name and the
+                ///   authorization header to use.
+                /// </summary>
+                /// <param name="name">The resource name</param>
+                /// <param name="authorization">The authorization header</param>
                 public ListResource(string name, Authorization authorization)
                 {
                     Name = name;

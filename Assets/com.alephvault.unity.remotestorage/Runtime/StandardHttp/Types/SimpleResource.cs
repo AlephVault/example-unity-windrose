@@ -26,6 +26,12 @@ namespace AlephVault.Unity.RemoteStorage
                 // The authorization header.
                 private readonly Authorization Authorization;
                 
+                /// <summary>
+                ///   Creating the resource implies the name and the
+                ///   authorization header to use.
+                /// </summary>
+                /// <param name="name">The resource name</param>
+                /// <param name="authorization">The authorization header</param>
                 public SimpleResource(string name, Authorization authorization)
                 {
                     Name = name;

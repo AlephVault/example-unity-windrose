@@ -1,9 +1,11 @@
 using System;
 using System.Threading.Tasks;
+using AlephVault.Unity.RemoteStorage.StandardHttp.Implementation;
 using AlephVault.Unity.RemoteStorage.Types.Interfaces;
 using AlephVault.Unity.RemoteStorage.Types.Results;
 using AlephVault.Unity.Support.Generic.Authoring.Types;
 using Newtonsoft.Json.Linq;
+
 
 namespace AlephVault.Unity.RemoteStorage
 {
@@ -16,11 +18,18 @@ namespace AlephVault.Unity.RemoteStorage
             /// </summary>
             public class SimpleResource<AuthType, ElementType, IDType> : ISimpleResource<AuthType, ElementType, IDType>
             {
+                /// <summary>
+                ///   The resource name.
+                /// </summary>
                 public readonly string Name;
                 
-                public SimpleResource(string name)
+                // The authorization header.
+                private readonly Authorization Authorization;
+                
+                public SimpleResource(string name, Authorization authorization)
                 {
                     Name = name;
+                    Authorization = authorization;
                 }
 
                 public Task<Result<ElementType, IDType>> Create(ElementType body)

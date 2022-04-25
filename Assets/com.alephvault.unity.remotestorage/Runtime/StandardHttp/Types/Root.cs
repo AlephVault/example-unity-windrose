@@ -1,6 +1,7 @@
 using System;
 using AlephVault.Unity.RemoteStorage.Types.Interfaces;
 
+
 namespace AlephVault.Unity.RemoteStorage
 {
     namespace StandardHttp
@@ -12,6 +13,19 @@ namespace AlephVault.Unity.RemoteStorage
             /// </summary>
             public class Root : IRoot<Authorization>
             {
+                // The authorization to use.
+                private Authorization Authorization;
+                
+                /// <summary>
+                ///   On creation, it takes an authorization header.
+                /// </summary>
+                /// <param name="authorization">The authorization header to use</param>
+                /// <exception cref="ArgumentNullException">The authorization is null</exception>
+                public Root(Authorization authorization)
+                {
+                    Authorization = authorization ?? throw new ArgumentNullException(nameof(authorization));
+                }
+                
                 /// <summary>
                 ///   Returns a Standard HTTP MongoDB Storage simple resource.
                 /// </summary>
@@ -27,7 +41,7 @@ namespace AlephVault.Unity.RemoteStorage
                     }
 
                     // Just create a resource.
-                    return new SimpleResource<Authorization, E, ID>(name);
+                    return new SimpleResource<Authorization, E, ID>(name, Authorization);
                 }
 
                 /// <summary>
@@ -39,7 +53,7 @@ namespace AlephVault.Unity.RemoteStorage
                 public ISimpleResource<Authorization, E, string> GetSimple<E>(string name)
                 {
                     // Just create a resource.
-                    return new SimpleResource<Authorization, E, string>(name);
+                    return new SimpleResource<Authorization, E, string>(name, Authorization);
                 }
 
                 /// <summary>
@@ -60,7 +74,7 @@ namespace AlephVault.Unity.RemoteStorage
                     }
                     
                     // Just create a resource.
-                    return new ListResource<Authorization, LE, E, ID, C>(name);
+                    return new ListResource<Authorization, LE, E, ID, C>(name, Authorization);
                 }
                 
                 
@@ -74,7 +88,7 @@ namespace AlephVault.Unity.RemoteStorage
                 public IListResource<Authorization, LE, E, string, Cursor> GetList<LE, E>(string name)
                 {
                     // Just create a resource.
-                    return new ListResource<Authorization, LE, E, string, Cursor>(name);
+                    return new ListResource<Authorization, LE, E, string, Cursor>(name, Authorization);
                 }
             }
         }

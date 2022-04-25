@@ -5,6 +5,7 @@ using AlephVault.Unity.RemoteStorage.Types.Results;
 using AlephVault.Unity.Support.Generic.Authoring.Types;
 using Newtonsoft.Json.Linq;
 
+
 namespace AlephVault.Unity.RemoteStorage
 {
     namespace StandardHttp
@@ -17,11 +18,18 @@ namespace AlephVault.Unity.RemoteStorage
             public class ListResource<AuthType, ListType, ElementType, IDType, CursorType> :
                 IListResource<AuthType, ListType, ElementType, IDType, CursorType>
             {
+                /// <summary>
+                ///   The resource name.
+                /// </summary>
                 public readonly string Name;
                 
-                public ListResource(string name)
+                // The authorization header.
+                private readonly Authorization Authorization;
+                
+                public ListResource(string name, Authorization authorization)
                 {
                     Name = name;
+                    Authorization = authorization;
                 }
 
                 public Task<Result<ListType[], IDType>> List(CursorType cursor)

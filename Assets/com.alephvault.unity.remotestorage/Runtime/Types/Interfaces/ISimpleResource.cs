@@ -44,7 +44,7 @@ namespace AlephVault.Unity.RemoteStorage
                 /// </summary>
                 /// <param name="changes">The map of changes to apply</param>
                 /// <returns>A result of the operation</returns>
-                public Task<Result<ElementType, IDType>> Update(Dictionary<string, object> changes);
+                public Task<Result<ElementType, IDType>> Update(JObject changes);
                 
                 /// <summary>
                 ///   Replaces the resource with a new one. It is an error if the

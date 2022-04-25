@@ -94,7 +94,7 @@ namespace AlephVault.Unity.RemoteStorage.StandardHttp
             /// <typeparam name="AuthType">The authentication type</typeparam>
             /// <returns>The id of the new element, or empty if the 200 response does not have expected format</returns>
             public static async Task<string> Create<ElementType, AuthType>(string endpoint,
-                ElementType data, AuthType authorization) where AuthType : Authorization
+                AuthType authorization, ElementType data) where AuthType : Authorization
             {
                 UnityWebRequest request = new UnityWebRequest(endpoint.Split('?')[0]);
                 request.SetRequestHeader("Authorization", $"{authorization.Scheme} {authorization.Value}");
@@ -166,8 +166,8 @@ namespace AlephVault.Unity.RemoteStorage.StandardHttp
             /// <param name="authorization">The authorization to use</param>
             /// <typeparam name="ElementType">The type of elements</typeparam>
             /// <typeparam name="AuthType">The authentication type</typeparam>
-            public static async Task Replace<ElementType, AuthType>(string endpoint, ElementType replacement,
-                AuthType authorization) where AuthType : Authorization
+            public static async Task Replace<ElementType, AuthType>(string endpoint, AuthType authorization,
+                ElementType replacement) where AuthType : Authorization
             {
                 UnityWebRequest request = new UnityWebRequest(endpoint.Split('?')[0]);
                 request.SetRequestHeader("Authorization", $"{authorization.Scheme} {authorization.Value}");
@@ -224,8 +224,8 @@ namespace AlephVault.Unity.RemoteStorage.StandardHttp
             /// <param name="requestArgs">The arguments for the query string</param>
             /// <param name="authorization">The authorization to use</param>
             /// <typeparam name="AuthType">The authentication type</typeparam>
-            public static async Task<JObject> View<AuthType>(string endpoint, Dictionary<string, string> requestArgs,
-                AuthType authorization) where AuthType : Authorization
+            public static async Task<JObject> View<AuthType>(string endpoint, AuthType authorization,
+                Dictionary<string, string> requestArgs) where AuthType : Authorization
             {
                 string url = endpoint.Split('?')[0];
                 if (requestArgs != null && requestArgs.Count > 0)
@@ -263,7 +263,7 @@ namespace AlephVault.Unity.RemoteStorage.StandardHttp
             /// <param name="authorization">The authorization to use</param>
             /// <typeparam name="AuthType">The authentication type</typeparam>
             public static async Task<JObject> Operation<ElementType, AuthType>(string endpoint,
-                Dictionary<string, string> requestArgs, ElementType body, AuthType authorization)
+                AuthType authorization, Dictionary<string, string> requestArgs, ElementType body)
                 where AuthType : Authorization
             {
                 string url = endpoint.Split('?')[0];
@@ -301,10 +301,10 @@ namespace AlephVault.Unity.RemoteStorage.StandardHttp
             /// <param name="requestArgs">The arguments for the query string</param>
             /// <param name="authorization">The authorization to use</param>
             /// <typeparam name="AuthType">The authentication type</typeparam>
-            public static async Task<JObject> Operation<AuthType>(string endpoint,
-                Dictionary<string, string> requestArgs, AuthType authorization) where AuthType : Authorization
+            public static async Task<JObject> Operation<AuthType>(string endpoint, AuthType authorization,
+                Dictionary<string, string> requestArgs) where AuthType : Authorization
             {
-                return await Operation<object, AuthType>(endpoint, requestArgs, null, authorization);
+                return await Operation<object, AuthType>(endpoint, authorization, requestArgs, null);
             }
         }
     }

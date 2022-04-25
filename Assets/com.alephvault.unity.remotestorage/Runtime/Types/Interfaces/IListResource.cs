@@ -36,7 +36,7 @@ namespace AlephVault.Unity.RemoteStorage
                 /// </summary>
                 /// <param name="cursor">The cursor to use for the query</param>
                 /// <returns>A result of the operation</returns>
-                public Task<Result<ListElementType[], IDType>> List(CursorType cursor);
+                public Task<Result<ListElementType, IDType>> List(CursorType cursor);
                 
                 /// <summary>
                 ///   Creates a resource. It may incur in validation errors
@@ -60,7 +60,7 @@ namespace AlephVault.Unity.RemoteStorage
                 /// </summary>
                 /// <param name="changes">The map of changes to apply</param>
                 /// <returns>A result of the operation</returns>
-                public Task<Result<ElementType, IDType>> Update(IDType id, Dictionary<string, object> changes);
+                public Task<Result<ElementType, IDType>> Update(IDType id, JObject changes);
                 
                 /// <summary>
                 ///   Replaces a resource with a new one. It is an error if the

@@ -40,7 +40,7 @@ namespace AlephVault.Unity.RemoteStorage
                     throw new NotImplementedException();
                 }
 
-                public Task<Result<ElementType, string>> Update(Dictionary<string, object> changes)
+                public Task<Result<ElementType, string>> Update(JObject changes)
                 {
                     throw new NotImplementedException();
                 }

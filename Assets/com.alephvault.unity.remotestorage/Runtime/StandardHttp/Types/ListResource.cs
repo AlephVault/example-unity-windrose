@@ -29,34 +29,87 @@ namespace AlephVault.Unity.RemoteStorage
                 /// <param name="authorization">The authorization header</param>
                 public ListResource(string name, string baseEndpoint, Authorization authorization) : base(name, baseEndpoint, authorization) {}
 
-                public Task<Result<ListType[], string>> List(Cursor cursor)
+                public Task<Result<ListType, string>> List(Cursor cursor)
                 {
-                    throw new NotImplementedException();
+                    return WrapException(async () =>
+                    {
+                        ListType[] result = await Engine.List<ListType, Authorization>(
+                            $"{BaseEndpoint}/{Name}", Authorization, cursor
+                        );
+                        return new Result<ListType, string>
+                        {
+                            Code = ResultCode.Ok,
+                            Elements = result
+                        };
+                    });
                 }
 
                 public Task<Result<ElementType, string>> Create(ElementType body)
                 {
-                    throw new NotImplementedException();
+                    return WrapException(async () =>
+                    {
+                        string id = await Engine.Create($"{BaseEndpoint}/{Name}", Authorization, body);
+                        return new Result<ElementType, string>
+                        {
+                            Code = ResultCode.Created,
+                            CreatedID = id
+                        };
+                    });
                 }
 
                 public Task<Result<ElementType, string>> Read(string id)
                 {
-                    throw new NotImplementedException();
+                    return WrapException(async () =>
+                    {
+                        ElementType result = await Engine.One<ElementType, Authorization>(
+                            $"{BaseEndpoint}/{Name}", Authorization
+                        );
+                        return new Result<ElementType, string>
+                        {
+                            Code = ResultCode.Ok,
+                            Element = result
+                        };
+                    });
                 }
 
-                public Task<Result<ElementType, string>> Update(string id, Dictionary<string, object> changes)
+                public Task<Result<ElementType, string>> Update(string id, JObject changes)
                 {
-                    throw new NotImplementedException();
+                    return WrapException(async () =>
+                    {
+                        await Engine.Update(
+                            $"{BaseEndpoint}/{Name}", Authorization, changes
+                        );
+                        return new Result<ElementType, string>
+                        {
+                            Code = ResultCode.Ok
+                        };
+                    });
                 }
 
                 public Task<Result<ElementType, string>> Replace(string id, ElementType replacement)
                 {
-                    throw new NotImplementedException();
+                    return WrapException(async () =>
+                    {
+                        await Engine.Replace(
+                            $"{BaseEndpoint}/{Name}", Authorization, replacement
+                        );
+                        return new Result<ElementType, string>
+                        {
+                            Code = ResultCode.Ok
+                        };
+                    });
                 }
 
                 public Task<Result<ElementType, string>> Delete(string id)
                 {
-                    throw new NotImplementedException();
+                    return WrapException(async () =>
+                    {
+                        await Engine.Delete($"{BaseEndpoint}/{Name}", Authorization);
+                        return new Result<ElementType, string>
+                        {
+                            Code = ResultCode.Ok
+                        };
+                    });
                 }
 
                 public Task<Result<JObject, string>> View(string method, Dictionary<string, string> args)

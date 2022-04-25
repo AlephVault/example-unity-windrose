@@ -46,7 +46,7 @@ namespace AlephVault.Unity.RemoteStorage
                 /// <typeparam name="E">The result's element type</typeparam>
                 /// <typeparam name="ID">The result's ID type</typeparam>
                 /// <returns>A task that, once awaited, returns the underlying result</returns>
-                protected async Task<Result<E, ID>> WrapException<E, ID>(Func<Task<Result<E, ID>>> wrapped)
+                protected async Task<Result<E, string>> WrapException<E>(Func<Task<Result<E, string>>> wrapped)
                 {
                     try
                     {
@@ -54,7 +54,7 @@ namespace AlephVault.Unity.RemoteStorage
                     }
                     catch (Engine.Exception e)
                     {
-                        return new Result<E, ID>
+                        return new Result<E, string>
                         {
                             Code = e.Code,
                             ValidationErrors = e.ValidationErrors

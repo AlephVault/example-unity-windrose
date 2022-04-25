@@ -16,8 +16,8 @@ namespace AlephVault.Unity.RemoteStorage
             /// <summary>
             ///   A Standard HTTP MongoDB Storage list resource.
             /// </summary>
-            public class ListResource<AuthType, ListType, ElementType, IDType, CursorType> :
-                Resource, IListResource<AuthType, ListType, ElementType, IDType, CursorType>
+            public class ListResource<AuthType, ListType, ElementType> :
+                Resource, IListResource<AuthType, ListType, ElementType, string, Cursor>
             {
                 /// <summary>
                 ///   Creating a list resource requires both
@@ -27,62 +27,62 @@ namespace AlephVault.Unity.RemoteStorage
                 /// <param name="authorization">The authorization header</param>
                 public ListResource(string name, Authorization authorization) : base(name, authorization) {}
 
-                public Task<Result<ListType[], IDType>> List(CursorType cursor)
+                public Task<Result<ListType[], string>> List(Cursor cursor)
                 {
                     throw new NotImplementedException();
                 }
 
-                public Task<Result<ElementType, IDType>> Create(ElementType body)
+                public Task<Result<ElementType, string>> Create(ElementType body)
                 {
                     throw new NotImplementedException();
                 }
 
-                public Task<Result<ElementType, IDType>> Read(IDType id)
+                public Task<Result<ElementType, string>> Read(string id)
                 {
                     throw new NotImplementedException();
                 }
 
-                public Task<Result<ElementType, IDType>> Update(IDType id, Dictionary<string, object> changes)
+                public Task<Result<ElementType, string>> Update(string id, Dictionary<string, object> changes)
                 {
                     throw new NotImplementedException();
                 }
 
-                public Task<Result<ElementType, IDType>> Replace(IDType id, ElementType replacement)
+                public Task<Result<ElementType, string>> Replace(string id, ElementType replacement)
                 {
                     throw new NotImplementedException();
                 }
 
-                public Task<Result<ElementType, IDType>> Delete(IDType id)
+                public Task<Result<ElementType, string>> Delete(string id)
                 {
                     throw new NotImplementedException();
                 }
 
-                public Task<Result<JObject, IDType>> View(string method, Dictionary<string, string> args)
+                public Task<Result<JObject, string>> View(string method, Dictionary<string, string> args)
                 {
                     throw new NotImplementedException();
                 }
 
-                public Task<Result<JObject, IDType>> Operation<E>(string method, Dictionary<string, string> args, E body)
+                public Task<Result<JObject, string>> Operation<E>(string method, Dictionary<string, string> args, E body)
                 {
                     throw new NotImplementedException();
                 }
 
-                public Task<Result<JObject, IDType>> Operation(string method, Dictionary<string, string> args)
+                public Task<Result<JObject, string>> Operation(string method, Dictionary<string, string> args)
                 {
                     throw new NotImplementedException();
                 }
 
-                public Task<Result<JObject, IDType>> ItemView(IDType item, string method, Dictionary<string, string> args)
+                public Task<Result<JObject, string>> ItemView(string item, string method, Dictionary<string, string> args)
                 {
                     throw new NotImplementedException();
                 }
 
-                public Task<Result<JObject, IDType>> ItemOperation<E>(IDType item, string method, Dictionary<string, string> args, E body)
+                public Task<Result<JObject, string>> ItemOperation<E>(string item, string method, Dictionary<string, string> args, E body)
                 {
                     throw new NotImplementedException();
                 }
 
-                public Task<Result<JObject, IDType>> ItemOperation(IDType item, string method, Dictionary<string, string> args)
+                public Task<Result<JObject, string>> ItemOperation(string item, string method, Dictionary<string, string> args)
                 {
                     throw new NotImplementedException();
                 }

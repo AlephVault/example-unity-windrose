@@ -16,8 +16,8 @@ namespace AlephVault.Unity.RemoteStorage
             /// <summary>
             ///   A Standard HTTP MongoDB Storage simple resource.
             /// </summary>
-            public class SimpleResource<AuthType, ElementType, IDType> :
-                Resource, ISimpleResource<AuthType, ElementType, IDType>
+            public class SimpleResource<AuthType, ElementType> :
+                Resource, ISimpleResource<AuthType, ElementType, string>
             {
                 /// <summary>
                 ///   Creating a simple resource requires both
@@ -27,42 +27,42 @@ namespace AlephVault.Unity.RemoteStorage
                 /// <param name="authorization">The authorization header</param>
                 public SimpleResource(string name, Authorization authorization) : base(name, authorization) {}
 
-                public Task<Result<ElementType, IDType>> Create(ElementType body)
+                public Task<Result<ElementType, string>> Create(ElementType body)
                 {
                     throw new NotImplementedException();
                 }
 
-                public Task<Result<ElementType, IDType>> Read()
+                public Task<Result<ElementType, string>> Read()
                 {
                     throw new NotImplementedException();
                 }
 
-                public Task<Result<ElementType, IDType>> Update(Dictionary<string, object> changes)
+                public Task<Result<ElementType, string>> Update(Dictionary<string, object> changes)
                 {
                     throw new NotImplementedException();
                 }
 
-                public Task<Result<ElementType, IDType>> Replace(ElementType replacement)
+                public Task<Result<ElementType, string>> Replace(ElementType replacement)
                 {
                     throw new NotImplementedException();
                 }
 
-                public Task<Result<ElementType, IDType>> Delete()
+                public Task<Result<ElementType, string>> Delete()
                 {
                     throw new NotImplementedException();
                 }
 
-                public Task<Result<JObject, IDType>> View(string method, Dictionary<string, string> args)
+                public Task<Result<JObject, string>> View(string method, Dictionary<string, string> args)
                 {
                     throw new NotImplementedException();
                 }
 
-                public Task<Result<JObject, IDType>> Operation<E>(string method, Dictionary<string, string> args, E body)
+                public Task<Result<JObject, string>> Operation<E>(string method, Dictionary<string, string> args, E body)
                 {
                     throw new NotImplementedException();
                 }
 
-                public Task<Result<JObject, IDType>> Operation(string method, Dictionary<string, string> args)
+                public Task<Result<JObject, string>> Operation(string method, Dictionary<string, string> args)
                 {
                     throw new NotImplementedException();
                 }

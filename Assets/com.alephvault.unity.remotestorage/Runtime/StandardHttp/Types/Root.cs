@@ -29,6 +29,7 @@ namespace AlephVault.Unity.RemoteStorage
                 public Root(string baseEndpoint, Authorization authorization)
                 {
                     BaseEndpoint = baseEndpoint ?? throw new ArgumentNullException(nameof(baseEndpoint));
+                    BaseEndpoint = BaseEndpoint.TrimEnd('/');
                     Authorization = authorization ?? throw new ArgumentNullException(nameof(authorization));
                 }
                 

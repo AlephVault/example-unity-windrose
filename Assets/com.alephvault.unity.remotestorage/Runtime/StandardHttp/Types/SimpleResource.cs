@@ -16,27 +16,16 @@ namespace AlephVault.Unity.RemoteStorage
             /// <summary>
             ///   A Standard HTTP MongoDB Storage simple resource.
             /// </summary>
-            public class SimpleResource<AuthType, ElementType, IDType> : ISimpleResource<AuthType, ElementType, IDType>
+            public class SimpleResource<AuthType, ElementType, IDType> :
+                Resource, ISimpleResource<AuthType, ElementType, IDType>
             {
                 /// <summary>
-                ///   The resource name.
-                /// </summary>
-                public readonly string Name;
-                
-                // The authorization header.
-                private readonly Authorization Authorization;
-                
-                /// <summary>
-                ///   Creating the resource implies the name and the
-                ///   authorization header to use.
+                ///   Creating a simple resource requires both
+                ///   the name and authorization header.
                 /// </summary>
                 /// <param name="name">The resource name</param>
                 /// <param name="authorization">The authorization header</param>
-                public SimpleResource(string name, Authorization authorization)
-                {
-                    Name = name;
-                    Authorization = authorization;
-                }
+                public SimpleResource(string name, Authorization authorization) : base(name, authorization) {}
 
                 public Task<Result<ElementType, IDType>> Create(ElementType body)
                 {

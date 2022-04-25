@@ -1,3 +1,5 @@
+using Newtonsoft.Json.Linq;
+
 namespace AlephVault.Unity.RemoteStorage
 {
     namespace Types
@@ -19,7 +21,7 @@ namespace AlephVault.Unity.RemoteStorage
                 ///   The validation errors, suitable for when a Create,
                 ///   Update or Replace has validation errors.
                 /// </summary>
-                public ValidationErrors ValidationErrors;
+                public JObject ValidationErrors;
 
                 /// <summary>
                 ///   The ID of the created object, <see cref="ResultCode.Created"/>.

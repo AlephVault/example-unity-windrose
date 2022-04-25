@@ -17,27 +17,15 @@ namespace AlephVault.Unity.RemoteStorage
             ///   A Standard HTTP MongoDB Storage list resource.
             /// </summary>
             public class ListResource<AuthType, ListType, ElementType, IDType, CursorType> :
-                IListResource<AuthType, ListType, ElementType, IDType, CursorType>
+                Resource, IListResource<AuthType, ListType, ElementType, IDType, CursorType>
             {
                 /// <summary>
-                ///   The resource name.
-                /// </summary>
-                public readonly string Name;
-                
-                // The authorization header.
-                private readonly Authorization Authorization;
-                
-                /// <summary>
-                ///   Creating the resource implies the name and the
-                ///   authorization header to use.
+                ///   Creating a list resource requires both
+                ///   the name and authorization header.
                 /// </summary>
                 /// <param name="name">The resource name</param>
                 /// <param name="authorization">The authorization header</param>
-                public ListResource(string name, Authorization authorization)
-                {
-                    Name = name;
-                    Authorization = authorization;
-                }
+                public ListResource(string name, Authorization authorization) : base(name, authorization) {}
 
                 public Task<Result<ListType[], IDType>> List(CursorType cursor)
                 {

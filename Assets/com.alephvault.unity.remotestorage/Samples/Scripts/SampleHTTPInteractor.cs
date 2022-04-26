@@ -140,6 +140,31 @@ namespace AlephVault.Unity.RemoteStorage
                 // Warning: The inventory will not be retrieved due to projection.
                 string reps3 = string.Join(",", from account in resultAL3.Elements select account.ToString());
                 Debug.Log($"Accounts.List: {resultAL3.Code} {reps}");
+                
+                // Now, on the methods:
+                //   Collection: total-items.
+                //   Item (acc2.Id): total-items, total-items-for-type, add-items-for-type, subtract-items-for-type.
+
+                var resultACM1 = await accounts.View("total-items", null);
+                Debug.Log($"Accounts.[View:'total-items']: {resultACM1.Code} {resultACM1.Element}");
+                
+                var resultAIM1 = await accounts.ItemView(acc2.Id, "total-items", null);
+                Debug.Log($"Accounts.[ItemView:'total-items']: {resultAIM1.Code} {resultAIM1.Element}"); 
+                
+                var resultAIM2 = await accounts.ItemView(acc2.Id, "total-items-for-type", new Dictionary<string, string>(){{"type", "112358"}});
+                Debug.Log($"Accounts.[ItemView:'total-items-for-type']: {resultAIM2.Code} {resultAIM2.Element}");
+
+                var resultAIM3 = await accounts.ItemOperation(acc2.Id, "add-items-for-type", null, new ItemDelta() { Item = "112358", By = "10"});
+                Debug.Log($"Accounts.[ItemView:'add-items-for-type']: {resultAIM3.Code} {resultAIM3.Element}");
+                
+                var resultAIM4 = await accounts.ItemOperation(acc2.Id, "subtract-items-for-type", null, new ItemDelta() { Item = "112358", By = "7"});
+                Debug.Log($"Accounts.[ItemView:'subtract-items-for-type']: {resultAIM4.Code} {resultAIM4.Element}");
+                
+                var resultAIM5 = await accounts.ItemView(acc2.Id, "total-items", null);
+                Debug.Log($"Accounts.[ItemView:'total-items']: {resultAIM5.Code} {resultAIM5.Element}"); 
+                
+                var resultAIM6 = await accounts.ItemView(acc2.Id, "total-items-for-type", new Dictionary<string, string>(){{"type", "112358"}});
+                Debug.Log($"Accounts.[ItemView:'total-items-for-type']: {resultAIM6.Code} {resultAIM6.Element}");
             }
         }
     }

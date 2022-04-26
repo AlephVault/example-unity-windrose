@@ -80,8 +80,10 @@ namespace AlephVault.Unity.RemoteStorage.StandardHttp
                             throw new Exception(ResultCode.Unauthorized);
                         case "schema:invalid":
                             throw new Exception(ResultCode.ValidationError, badRequest.ValidationErrors);
-                        default:
+                        case "format:unexpected":
                             throw new Exception(ResultCode.FormatError);
+                        default:
+                            throw new Exception(ResultCode.BadRequest, badRequest.Code);
                     }
                 }
             }

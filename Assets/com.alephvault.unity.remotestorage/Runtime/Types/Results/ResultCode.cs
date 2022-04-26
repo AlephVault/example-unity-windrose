@@ -80,6 +80,14 @@ namespace AlephVault.Unity.RemoteStorage
                 /// </summary>
                 FormatError,
                 
+                /// <summary>
+                ///   A generic BadRequest error. Typically it means that, while the method
+                ///   was appropriate, the way it was invoked was not (e.g. missing arguments
+                ///   or something else). The RequestErrorCode is a string containing more
+                ///   details in the <see cref="Result{ElementType,ElementIDType}"/>.
+                /// </summary>
+                BadRequest,
+                
                 // Regarding other client-side (i.e. unity server) errors.
                 
                 /// <summary>

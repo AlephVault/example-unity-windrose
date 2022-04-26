@@ -63,6 +63,7 @@ namespace AlephVault.Unity.RemoteStorage
                         return new Result<E, string>
                         {
                             Code = e.Code,
+                            RequestErrorCode = e.RequestErrorCode,
                             ValidationErrors = e.ValidationErrors
                         };
                     }

@@ -27,6 +27,12 @@ namespace AlephVault.Unity.RemoteStorage.StandardHttp
                 public readonly ResultCode Code;
 
                 /// <summary>
+                ///   The result code. This only applies for custom
+                ///   400 errors.
+                /// </summary>
+                public readonly string RequestErrorCode;
+
+                /// <summary>
                 ///   The validation errors.
                 /// </summary>
                 public readonly JObject ValidationErrors;
@@ -35,6 +41,12 @@ namespace AlephVault.Unity.RemoteStorage.StandardHttp
                 {
                     Code = code;
                     ValidationErrors = errors;
+                }
+
+                public Exception(ResultCode code, string requestErrorCode) : base($"Storage access failure ({code})")
+                {
+                    Code = code;
+                    RequestErrorCode = requestErrorCode;
                 }
             }
 

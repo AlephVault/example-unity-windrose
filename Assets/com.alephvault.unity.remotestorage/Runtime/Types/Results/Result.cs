@@ -24,6 +24,12 @@ namespace AlephVault.Unity.RemoteStorage
                 public JObject ValidationErrors;
 
                 /// <summary>
+                ///   The custom error code when a BadRequest error
+                ///   occurs in <see cref="Code"/>.
+                /// </summary>
+                public string RequestErrorCode;
+
+                /// <summary>
                 ///   The ID of the created object, <see cref="ResultCode.Created"/>.
                 /// </summary>
                 public ElementIDType CreatedID;

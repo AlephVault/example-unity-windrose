@@ -9,6 +9,9 @@ namespace AlephVault.Unity.RemoteStorage
     {
         public class Account
         {
+            [JsonProperty("_id")]
+            public string Id;
+            
             [JsonProperty("name")]
             public string Name;
             

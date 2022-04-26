@@ -1,5 +1,5 @@
+using System.Linq;
 using AlephVault.Unity.RemoteStorage.Input.Samples;
-using AlephVault.Unity.RemoteStorage.StandardHttp.Types;
 using AlephVault.Unity.Support.Generic.Authoring.Types;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
@@ -9,6 +9,8 @@ namespace AlephVault.Unity.RemoteStorage
 {
     namespace Samples
     {
+        using AlephVault.Unity.RemoteStorage.StandardHttp.Types;
+
         public class SampleHTTPInteractor : MonoBehaviour
         {
             void Start()
@@ -79,6 +81,65 @@ namespace AlephVault.Unity.RemoteStorage
                 Debug.Log($"Universe.[SetMotd]: {resultUM2.Code} {resultUM2.Element}");
                 // var resultUD2 = await universe.Delete();
                 // Debug.Log($"Universe.Delete: {resultUD2.Code} {resultUD2.CreatedID}");
+
+                var resultAC1 = await accounts.Create(new Account()
+                {
+                    Address = "address",
+                    Inventory = new System.Collections.Generic.Dictionary<string, string>() {{"112357", "10000"}},
+                    Name = "My-Account"
+                });
+                Debug.Log($"Accounts.Create: {resultAC1.Code} {resultAC1.CreatedID} {resultAC1.ValidationErrors}");
+                
+                var resultAC2 = await accounts.Create(new Account()
+                {
+                    Address = "address2",
+                    Inventory = new System.Collections.Generic.Dictionary<string, string>() {{"112358", "20000"}},
+                    Name = "My-Account2"
+                });
+                Debug.Log($"Accounts.Create: {resultAC2.Code} {resultAC2.CreatedID} {resultAC1.ValidationErrors}");
+                
+                var resultAL1 = await accounts.List(new Cursor(0, 20));
+                // Warning: The inventory will not be retrieved due to projection.
+                string reps = string.Join(",", from account in resultAL1.Elements select account.ToString());
+                Debug.Log($"Accounts.List: {resultAL1.Code} {reps}");
+
+                Account acc1 = resultAL1.Elements[0];
+                Account acc2 = resultAL1.Elements[1];
+
+                JObject updates3 = new JObject();
+                updates3["$set"] = new JObject();
+                updates3["$set"]["name"] = "My New Account Name 1";
+                updates3["$set"]["address"] = "address1++";
+                var resultAU1 = await accounts.Update(acc1.Id, updates3);
+                Debug.Log($"Accounts.Update: {resultAU1.Code} {resultAU1.Element}");
+                
+                JObject updates4 = new JObject();
+                updates4["$set"] = new JObject();
+                updates4["$set"]["name"] = null;
+                updates4["$set"]["address"] = null;
+                var resultAU2 = await accounts.Update(acc2.Id, updates4);
+                Debug.Log($"Accounts.Update: {resultAU2.Code} {resultAU2.Element}");
+                
+                var resultAL2 = await accounts.List(new Cursor(0, 20));
+                // Warning: The inventory will not be retrieved due to projection.
+                string reps2 = string.Join(",", from account in resultAL2.Elements select account.ToString());
+                Debug.Log($"Accounts.List: {resultAL2.Code} {reps}");
+
+                var resultARp1 = await accounts.Replace(acc1.Id, new Account()
+                {
+                    Address = "address-replacement",
+                    Inventory = new System.Collections.Generic.Dictionary<string, string>() {{"112357", "10000"}},
+                    Name = "My-Account-replacement"
+                });
+                Debug.Log($"Accounts.Replace: {resultARp1.Code} {resultARp1.Element}");
+
+                var resultAD1 = await accounts.Delete(acc1.Id);
+                Debug.Log($"Accounts.Delete: {resultAD1.Code} {resultAD1.Element}");
+                
+                var resultAL3 = await accounts.List(new Cursor(0, 20));
+                // Warning: The inventory will not be retrieved due to projection.
+                string reps3 = string.Join(",", from account in resultAL3.Elements select account.ToString());
+                Debug.Log($"Accounts.List: {resultAL3.Code} {reps}");
             }
         }
     }

@@ -1,5 +1,5 @@
+using AlephVault.Unity.RemoteStorage.Input.Samples;
 using AlephVault.Unity.RemoteStorage.StandardHttp.Types;
-using AlephVault.Unity.RemoteStorage.Types.Interfaces;
 using AlephVault.Unity.Support.Generic.Authoring.Types;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
@@ -33,22 +33,30 @@ namespace AlephVault.Unity.RemoteStorage
                 );
                 Debug.Log($"Universe.Create: {resultUC1.Code} {resultUC1.CreatedID}");
 
-                var resultURp1 = await universe.Read();
+                var resultURd1 = await universe.Read();
                 // Warning: due to projection settings, the version will not come
                 // as a member of the universe. Only caption and motd.
-                Debug.Log($"Universe.Read: {resultURp1.Code} {resultURp1.Element}");
+                Debug.Log($"Universe.Read: {resultURd1.Code} {resultURd1.Element}");
 
-                var resultURd1 = await universe.Replace(new Universe()
+                var resultURp1 = await universe.Replace(new Universe()
                 {
                     Caption = "Sample Universe (2.1)", MOTD = "Welcome! (2)",
                     Version = new Version() {Major = 2, Minor = 1, Revision = 4}
                 });
                 Debug.Log($"Universe.Replace: {resultURp1.Code} {resultURp1.Element}");
                 
-                var resultURp2 = await universe.Read();
+                var resultURd2 = await universe.Read();
                 // Warning: due to projection settings, the version will not come
                 // as a member of the universe. Only caption and motd.
-                Debug.Log($"Universe.Read: {resultURp2.Code} {resultURp2.Element}");
+                Debug.Log($"Universe.Read: {resultURd2.Code} {resultURd2.Element}");
+
+                // This one should be an error.
+                var resultURp2 = await universe.Replace(new Universe()
+                {
+                    Caption = "Sample Universe (2.1)", MOTD = null,
+                    Version = new Version {Major = 2, Minor = 1, Revision = 0}
+                });
+                Debug.Log($"Universe.Replace: {resultURp2.Code} {resultURp2.ValidationErrors}");
 
                 JObject updates = new JObject();
                 updates["$set"] = new JObject();
@@ -64,9 +72,11 @@ namespace AlephVault.Unity.RemoteStorage
                 var resultUUp2 = await universe.Update(updates2);
                 Debug.Log($"Universe.Update: {resultUUp2.Code} {resultUUp2.ValidationErrors}");
 
-                var resultUM1 = await universe.View("version", null);
+                var resultUM1 = await universe.View("version", new Dictionary<string, string>() {{"foo", "bar"}});
                 Debug.Log($"Universe.[Version]: {resultUM1.Code} {resultUM1.Element}");
-                
+
+                var resultUM2 = await universe.Operation("set-motd", new Dictionary<string, string>() {{"foo", "bar"}}, new MOTDInput { MOTD = "New MOTD!!!!!!!"});
+                Debug.Log($"Universe.[SetMotd]: {resultUM2.Code} {resultUM2.Element}");
                 // var resultUD2 = await universe.Delete();
                 // Debug.Log($"Universe.Delete: {resultUD2.Code} {resultUD2.CreatedID}");
             }

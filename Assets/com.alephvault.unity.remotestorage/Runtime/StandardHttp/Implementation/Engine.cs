@@ -252,7 +252,7 @@ namespace AlephVault.Unity.RemoteStorage.StandardHttp
                         from arg in requestArgs
                         select $"{HttpUtility.UrlEncode(arg.Key)}={HttpUtility.UrlEncode(arg.Value.ToString())}"
                     );
-                    url += "?{args}";
+                    url += $"?{args}";
                 }
                 UnityWebRequest request = new UnityWebRequest(url);
                 request.SetRequestHeader("Authorization", $"{authorization.Scheme} {authorization.Value}");
@@ -292,7 +292,7 @@ namespace AlephVault.Unity.RemoteStorage.StandardHttp
                         from arg in requestArgs
                         select $"{HttpUtility.UrlEncode(arg.Key)}={HttpUtility.UrlEncode(arg.Value.ToString())}"
                     );
-                    url += "?{args}";
+                    url += $"?{args}";
                 }
                 UnityWebRequest request = new UnityWebRequest(url);
                 request.SetRequestHeader("Authorization", $"{authorization.Scheme} {authorization.Value}");

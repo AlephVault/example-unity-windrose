@@ -1,9 +1,11 @@
 using System;
 using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using AlephVault.Unity.RemoteStorage.Types.Results;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using UnityEngine;
 using UnityEngine.Networking;
 
 
@@ -88,10 +90,15 @@ namespace AlephVault.Unity.RemoteStorage.StandardHttp
                 try
                 {
                     MemoryStream stream = new MemoryStream();
-                    JsonSerializer.Create().Serialize(new JsonTextWriter(new StreamWriter(stream)), data);
-                    return stream.GetBuffer();
+                    using (StreamWriter streamWriter = new StreamWriter(stream))
+                    using (JsonTextWriter jsonWriter = new JsonTextWriter(streamWriter))
+                    {
+                        JsonSerializer.Create().Serialize(jsonWriter, data);
+                    }
+
+                    return stream.ToArray();
                 }
-                catch (System.Exception)
+                catch (System.Exception e)
                 {
                     throw new Exception(errorCode);
                 }
@@ -104,7 +111,7 @@ namespace AlephVault.Unity.RemoteStorage.StandardHttp
                 {
                     MemoryStream stream = new MemoryStream();
                     new StreamWriter(stream).Write(data.ToString());
-                    return stream.GetBuffer();
+                    return stream.ToArray();
                 }
                 catch (System.Exception)
                 {

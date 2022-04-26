@@ -27,7 +27,8 @@ namespace AlephVault.Unity.RemoteStorage
                 /// <param name="name">The resource name</param>
                 /// <param name="baseEndpoint">The base endpoint</param>
                 /// <param name="authorization">The authorization header</param>
-                public ListResource(string name, string baseEndpoint, Authorization authorization) : base(name, baseEndpoint, authorization) {}
+                public ListResource(string name, string baseEndpoint, Authorization authorization) :
+                    base(name, baseEndpoint, authorization) {}
 
                 public Task<Result<ListType, string>> List(Cursor cursor)
                 {
@@ -62,7 +63,7 @@ namespace AlephVault.Unity.RemoteStorage
                     return WrapException(async () =>
                     {
                         ElementType result = await Engine.One<ElementType, Authorization>(
-                            $"{BaseEndpoint}/{Name}", Authorization
+                            $"{BaseEndpoint}/{Name}/{id}", Authorization
                         );
                         return new Result<ElementType, string>
                         {
@@ -77,7 +78,7 @@ namespace AlephVault.Unity.RemoteStorage
                     return WrapException(async () =>
                     {
                         await Engine.Update(
-                            $"{BaseEndpoint}/{Name}", Authorization, changes
+                            $"{BaseEndpoint}/{Name}/{id}", Authorization, changes
                         );
                         return new Result<ElementType, string>
                         {
@@ -91,7 +92,7 @@ namespace AlephVault.Unity.RemoteStorage
                     return WrapException(async () =>
                     {
                         await Engine.Replace(
-                            $"{BaseEndpoint}/{Name}", Authorization, replacement
+                            $"{BaseEndpoint}/{Name}/{id}", Authorization, replacement
                         );
                         return new Result<ElementType, string>
                         {
@@ -104,7 +105,7 @@ namespace AlephVault.Unity.RemoteStorage
                 {
                     return WrapException(async () =>
                     {
-                        await Engine.Delete($"{BaseEndpoint}/{Name}", Authorization);
+                        await Engine.Delete($"{BaseEndpoint}/{Name}/{id}", Authorization);
                         return new Result<ElementType, string>
                         {
                             Code = ResultCode.Ok
@@ -114,32 +115,80 @@ namespace AlephVault.Unity.RemoteStorage
 
                 public Task<Result<JObject, string>> View(string method, Dictionary<string, string> args)
                 {
-                    throw new NotImplementedException();
+                    return WrapException(async () =>
+                    {
+                        JObject obj = await Engine.View($"{BaseEndpoint}/{Name}/~{method}", Authorization, args);
+                        return new Result<JObject, string>
+                        {
+                            Element = obj,
+                            Code = ResultCode.Ok
+                        };
+                    });
                 }
 
                 public Task<Result<JObject, string>> Operation<E>(string method, Dictionary<string, string> args, E body)
                 {
-                    throw new NotImplementedException();
+                    return WrapException(async () =>
+                    {
+                        JObject obj = await Engine.Operation($"{BaseEndpoint}/{Name}/~{method}", Authorization, args, body);
+                        return new Result<JObject, string>
+                        {
+                            Element = obj,
+                            Code = ResultCode.Ok
+                        };
+                    });
                 }
 
                 public Task<Result<JObject, string>> Operation(string method, Dictionary<string, string> args)
                 {
-                    throw new NotImplementedException();
+                    return WrapException(async () =>
+                    {
+                        JObject obj = await Engine.Operation($"{BaseEndpoint}/{Name}/~{method}", Authorization, args);
+                        return new Result<JObject, string>
+                        {
+                            Element = obj,
+                            Code = ResultCode.Ok
+                        };
+                    });
                 }
 
-                public Task<Result<JObject, string>> ItemView(string item, string method, Dictionary<string, string> args)
+                public Task<Result<JObject, string>> ItemView(string id, string method, Dictionary<string, string> args)
                 {
-                    throw new NotImplementedException();
+                    return WrapException(async () =>
+                    {
+                        JObject obj = await Engine.View($"{BaseEndpoint}/{Name}/{id}/~{method}", Authorization, args);
+                        return new Result<JObject, string>
+                        {
+                            Element = obj,
+                            Code = ResultCode.Ok
+                        };
+                    });
                 }
 
-                public Task<Result<JObject, string>> ItemOperation<E>(string item, string method, Dictionary<string, string> args, E body)
+                public Task<Result<JObject, string>> ItemOperation<E>(string id, string method, Dictionary<string, string> args, E body)
                 {
-                    throw new NotImplementedException();
+                    return WrapException(async () =>
+                    {
+                        JObject obj = await Engine.Operation($"{BaseEndpoint}/{Name}/{id}/~{method}", Authorization, args, body);
+                        return new Result<JObject, string>
+                        {
+                            Element = obj,
+                            Code = ResultCode.Ok
+                        };
+                    });
                 }
 
-                public Task<Result<JObject, string>> ItemOperation(string item, string method, Dictionary<string, string> args)
+                public Task<Result<JObject, string>> ItemOperation(string id, string method, Dictionary<string, string> args)
                 {
-                    throw new NotImplementedException();
+                    return WrapException(async () =>
+                    {
+                        JObject obj = await Engine.Operation($"{BaseEndpoint}/{Name}/{id}/~{method}", Authorization, args);
+                        return new Result<JObject, string>
+                        {
+                            Element = obj,
+                            Code = ResultCode.Ok
+                        };
+                    });
                 }
             }
         }

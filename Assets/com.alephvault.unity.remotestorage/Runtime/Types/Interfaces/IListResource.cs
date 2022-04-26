@@ -111,11 +111,11 @@ namespace AlephVault.Unity.RemoteStorage
                 ///   Queries a view method from the whole list
                 ///   for a particular item.
                 /// </summary>
-                /// <param name="item">The intended item in the list</param>
+                /// <param name="id">The intended item in the list</param>
                 /// <param name="method">The method to query</param>
                 /// <param name="args">The arguments to pass</param>
                 /// <returns>A result of the operation. The id type is, actually, typically ignored</returns>
-                public Task<Result<JObject, IDType>> ItemView(IDType item, string method,
+                public Task<Result<JObject, IDType>> ItemView(IDType id, string method,
                     Dictionary<string, string> args);
 
                 /// <summary>
@@ -123,23 +123,23 @@ namespace AlephVault.Unity.RemoteStorage
                 ///   for a particular item. It also provides a custom
                 ///   body.
                 /// </summary>
-                /// <param name="item">The intended item in the list</param>
+                /// <param name="id">The intended item in the list</param>
                 /// <param name="method">The method to run</param>
                 /// <param name="args">The arguments to pass</param>
                 /// <param name="body">The body to send</param>
                 /// <returns>A result of the operation. The id type is, actually, typically ignored</returns>
-                public Task<Result<JObject, IDType>> ItemOperation<E>(IDType item,
+                public Task<Result<JObject, IDType>> ItemOperation<E>(IDType id,
                     string method, Dictionary<string, string> args, E body);
 
                 /// <summary>
                 ///   Runs an operation method from the whole list
                 ///   for a particular item.
                 /// </summary>
-                /// <param name="item">The intended item in the list</param>
+                /// <param name="id">The intended item in the list</param>
                 /// <param name="method">The method to run</param>
                 /// <param name="args">The arguments to pass</param>
                 /// <returns>A result of the operation. The id type is, actually, typically ignored</returns>
-                public Task<Result<JObject, IDType>> ItemOperation(IDType item, string method,
+                public Task<Result<JObject, IDType>> ItemOperation(IDType id, string method,
                     Dictionary<string, string> args);
             }
         }

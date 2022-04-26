@@ -16,8 +16,8 @@ namespace AlephVault.Unity.RemoteStorage
             /// <summary>
             ///   A Standard HTTP MongoDB Storage simple resource.
             /// </summary>
-            public class SimpleResource<AuthType, ElementType> :
-                Resource, ISimpleResource<AuthType, ElementType, string>
+            public class SimpleResource<ElementType> :
+                Resource, ISimpleResource<Authorization, ElementType, string>
             {
                 /// <summary>
                 ///   Creating a simple resource requires both

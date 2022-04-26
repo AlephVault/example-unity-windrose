@@ -105,7 +105,11 @@ namespace AlephVault.Unity.RemoteStorage.StandardHttp
                 try
                 {
                     MemoryStream stream = new MemoryStream();
-                    new StreamWriter(stream).Write(data.ToString());
+                    using (StreamWriter streamWriter = new StreamWriter(stream))
+                    {
+                        streamWriter.Write(data.ToString());
+                    }
+
                     return stream.ToArray();
                 }
                 catch (System.Exception)

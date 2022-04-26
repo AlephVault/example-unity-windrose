@@ -242,7 +242,7 @@ namespace AlephVault.Unity.RemoteStorage.StandardHttp
                     );
                     url += "?{args}";
                 }
-                UnityWebRequest request = new UnityWebRequest();
+                UnityWebRequest request = new UnityWebRequest(url);
                 request.SetRequestHeader("Authorization", $"{authorization.Scheme} {authorization.Value}");
                 request.SetRequestHeader("Content-Type", "application/json");
                 request.method = "GET";
@@ -282,7 +282,7 @@ namespace AlephVault.Unity.RemoteStorage.StandardHttp
                     );
                     url += "?{args}";
                 }
-                UnityWebRequest request = new UnityWebRequest();
+                UnityWebRequest request = new UnityWebRequest(url);
                 request.SetRequestHeader("Authorization", $"{authorization.Scheme} {authorization.Value}");
                 request.SetRequestHeader("Content-Type", "application/json");
                 request.method = "POST";

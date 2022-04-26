@@ -47,8 +47,6 @@ namespace AlephVault.Unity.RemoteStorage.StandardHttp
                         throw new Exception(ResultCode.ServiceUnavailable);
                     case 504:
                         throw new Exception(ResultCode.Timeout);
-                    default:
-                        throw new Exception(ResultCode.ServerError);
                 }
             }
 

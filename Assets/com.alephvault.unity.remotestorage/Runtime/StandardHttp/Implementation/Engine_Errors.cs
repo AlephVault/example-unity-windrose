@@ -69,7 +69,7 @@ namespace AlephVault.Unity.RemoteStorage.StandardHttp
             // whether this is a validation error or another kind.
             private static void FailOnBadRequest(long status, DownloadHandler downloadHandler)
             {
-                if (status == 404)
+                if (status == 400)
                 {
                     BadRequest badRequest = Deserialize<BadRequest>(downloadHandler.data);
                     switch (badRequest.Code)

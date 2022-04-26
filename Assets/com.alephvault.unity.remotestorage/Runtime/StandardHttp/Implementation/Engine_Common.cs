@@ -43,14 +43,9 @@ namespace AlephVault.Unity.RemoteStorage.StandardHttp
             {
                 await request.SendWebRequest();
                 // Check whether the request was done successfully.
-                switch (request.result)
+                if (request.result == UnityWebRequest.Result.ConnectionError)
                 {
-                    case UnityWebRequest.Result.ConnectionError:
-                        throw new Exception(ResultCode.Unreachable);
-                    case UnityWebRequest.Result.ProtocolError:
-                    case UnityWebRequest.Result.DataProcessingError:
-                        throw new Exception(ResultCode.ClientError);
-                    // default: continue.
+                    throw new Exception(ResultCode.Unreachable);
                 }
             }
 

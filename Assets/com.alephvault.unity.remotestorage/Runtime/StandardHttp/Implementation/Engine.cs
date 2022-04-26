@@ -34,6 +34,7 @@ namespace AlephVault.Unity.RemoteStorage.StandardHttp
                 UnityWebRequest request = new UnityWebRequest($"{endpoint.Split('?')[0]}?{cursor.QueryString()}");
                 request.SetRequestHeader("Authorization", $"{authorization.Scheme} {authorization.Value}");
                 request.method = "GET";
+                request.downloadHandler = new DownloadHandlerBuffer();
                 // Send the request.
                 await SendRequest(request);
                 // Get the result.
@@ -68,6 +69,7 @@ namespace AlephVault.Unity.RemoteStorage.StandardHttp
                 UnityWebRequest request = new UnityWebRequest(endpoint.Split('?')[0]);
                 request.SetRequestHeader("Authorization", $"{authorization.Scheme} {authorization.Value}");
                 request.method = "GET";
+                request.downloadHandler = new DownloadHandlerBuffer();
                 // Send the request.
                 await SendRequest(request);
                 // Get the result.
@@ -101,6 +103,7 @@ namespace AlephVault.Unity.RemoteStorage.StandardHttp
                 request.SetRequestHeader("Content-Type", "application/json");
                 request.method = "POST";
                 request.uploadHandler = new UploadHandlerRaw(Serialize(data));
+                request.downloadHandler = new DownloadHandlerBuffer();
                 // Send the request.
                 await SendRequest(request);
                 // Get the result.
@@ -142,6 +145,7 @@ namespace AlephVault.Unity.RemoteStorage.StandardHttp
                 request.SetRequestHeader("Content-Type", "application/json");
                 request.method = "PATCH";
                 request.uploadHandler = new UploadHandlerRaw(SerializeArbitrary(patch));
+                request.downloadHandler = new DownloadHandlerBuffer();
                 // Send the request.
                 await SendRequest(request);
                 // Get the result.
@@ -174,6 +178,7 @@ namespace AlephVault.Unity.RemoteStorage.StandardHttp
                 request.SetRequestHeader("Content-Type", "application/json");
                 request.method = "PUT";
                 request.uploadHandler = new UploadHandlerRaw(Serialize(replacement));
+                request.downloadHandler = new DownloadHandlerBuffer();
                 // Send the request.
                 await SendRequest(request);
                 // Get the result.
@@ -203,6 +208,7 @@ namespace AlephVault.Unity.RemoteStorage.StandardHttp
                 request.SetRequestHeader("Authorization", $"{authorization.Scheme} {authorization.Value}");
                 request.SetRequestHeader("Content-Type", "application/json");
                 request.method = "DELETE";
+                request.downloadHandler = new DownloadHandlerBuffer();
                 // Send the request.
                 await SendRequest(request);
                 // Get the result.
@@ -240,6 +246,7 @@ namespace AlephVault.Unity.RemoteStorage.StandardHttp
                 request.SetRequestHeader("Authorization", $"{authorization.Scheme} {authorization.Value}");
                 request.SetRequestHeader("Content-Type", "application/json");
                 request.method = "GET";
+                request.downloadHandler = new DownloadHandlerBuffer();
                 // Send the request.
                 await SendRequest(request);
                 // Get the result.
@@ -279,6 +286,7 @@ namespace AlephVault.Unity.RemoteStorage.StandardHttp
                 request.SetRequestHeader("Authorization", $"{authorization.Scheme} {authorization.Value}");
                 request.SetRequestHeader("Content-Type", "application/json");
                 request.method = "POST";
+                request.downloadHandler = new DownloadHandlerBuffer();
                 if (body != null) request.uploadHandler = new UploadHandlerRaw(Serialize(body));
                 // Send the request.
                 await SendRequest(request);

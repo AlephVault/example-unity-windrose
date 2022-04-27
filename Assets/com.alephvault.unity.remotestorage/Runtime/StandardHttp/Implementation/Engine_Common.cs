@@ -3,6 +3,7 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using AlephVault.Unity.RemoteStorage.Types.Results;
+using AlephVault.Unity.Support.Types.Async;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using UnityEngine;

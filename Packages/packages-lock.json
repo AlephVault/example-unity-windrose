@@ -66,6 +66,15 @@
         "com.alephvault.unity.layout": "0.0.1"
       }
     },
+    "com.alephvault.unity.remotestorage": {
+      "version": "file:/home/luismasuelli/Projects/Unity/unity-remotestorage",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {
+        "com.alephvault.unity.support": "0.0.2",
+        "com.alephvault.unity.support.generic": "0.0.1"
+      }
+    },
     "com.alephvault.unity.scenes": {
       "version": "file:../../unity-scenes",
       "depth": 0,
@@ -86,7 +95,7 @@
       "depth": 0,
       "source": "local",
       "dependencies": {
-        "com.alephvault.unity.support": "0.0.1"
+        "com.alephvault.unity.support": "0.0.2"
       }
     },
     "com.alephvault.unity.support": {
@@ -146,7 +155,7 @@
       "depth": 0,
       "source": "local",
       "dependencies": {
-        "com.alephvault.unity.support": "0.0.1",
+        "com.alephvault.unity.support": "0.0.2",
         "com.alephvault.unity.layout": "0.0.1",
         "com.alephvault.unity.menuactions": "0.0.1"
       }
@@ -181,7 +190,7 @@
       "depth": 0,
       "source": "local",
       "dependencies": {
-        "com.gamemeanmachine.unity.windrose": "0.0.3"
+        "com.gamemeanmachine.unity.windrose": "0.0.4"
       }
     },
     "com.gamemeanmachine.unity.windrose.cubeworlds": {
@@ -198,7 +207,18 @@
       "depth": 0,
       "source": "local",
       "dependencies": {
-        "com.gamemeanmachine.unity.windrose": "0.0.2"
+        "com.gamemeanmachine.unity.windrose": "0.0.3"
+      }
+    },
+    "com.gamemeanmachine.unity.windrose.spriteutils": {
+      "version": "file:/home/luismasuelli/Projects/Unity/unity-windrose-spriteutils",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {
+        "com.alephvault.unity.support": "0.0.2",
+        "com.alephvault.unity.layout": "0.0.1",
+        "com.alephvault.unity.spriteutils": "0.0.2",
+        "com.gamemeanmachine.unity.windrose": "0.0.4"
       }
     },
     "com.unity.2d.sprite": {

@@ -7,7 +7,7 @@ namespace GameMeanMachine.Unity.VirtualPad.Protocols
 {
     namespace Protocols
     {
-        public class VirtualPadProtocol : ProtocolDefinition
+        public class VirtualPadProtocolDefinition : ProtocolDefinition
         {
             protected override void DefineMessages()
             {

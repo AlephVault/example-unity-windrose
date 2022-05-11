@@ -1,0 +1,31 @@
+﻿using AlephVault.Unity.EVMGames.Nethereum.ABI.FunctionEncoding.Attributes;
+using AlephVault.Unity.EVMGames.Nethereum.JsonRpc.Client;
+using AlephVault.Unity.EVMGames.Nethereum.RPC.Eth.DTOs;
+using AlephVault.Unity.EVMGames.Nethereum.RPC.Eth.Transactions;
+
+namespace AlephVault.Unity.EVMGames.Nethereum.Contracts.QueryHandlers
+{
+#if !DOTNET35
+
+    public class QueryToDTOHandler<TFunctionMessage, TFunctionOutput> :
+        QueryDecoderBaseHandler<TFunctionMessage, TFunctionOutput> where TFunctionMessage : FunctionMessage, new()
+        where TFunctionOutput: IFunctionOutputDTO, new()
+    {
+
+        public QueryToDTOHandler(IClient client, string defaultAddressFrom = null, BlockParameter defaultBlockParameter = null) : base(client, defaultAddressFrom, defaultBlockParameter)
+        {
+            QueryRawHandler = new QueryRawHandler<TFunctionMessage>(client, defaultAddressFrom, defaultBlockParameter);
+        }
+
+        public QueryToDTOHandler(IEthCall ethCall, string defaultAddressFrom = null, BlockParameter defaultBlockParameter = null) : base(ethCall, defaultAddressFrom, defaultBlockParameter)
+        {
+            QueryRawHandler = new QueryRawHandler<TFunctionMessage>(ethCall, defaultAddressFrom, defaultBlockParameter);
+        }
+
+        protected override TFunctionOutput DecodeOutput(string output)
+        {
+            return QueryRawHandler.FunctionMessageEncodingService.DecodeDTOTypeOutput<TFunctionOutput>(output);
+        }
+    }
+#endif
+}

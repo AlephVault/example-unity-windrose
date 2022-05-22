@@ -468,7 +468,7 @@ namespace AlephVault.Unity.EVMGames.WalletConnectSharp.Unity
 
         private async Task SaveOrDisconnect()
         {
-            if (!Session.Connected)
+            if (Session == null || !Session.Connected)
                 return;
             
             if (autoSaveAndResume)

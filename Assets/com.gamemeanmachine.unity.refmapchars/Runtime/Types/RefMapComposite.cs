@@ -51,7 +51,7 @@ namespace GameMeanMachine.Unity.RefMapChars
             public RefMapSource Waist { get; }
             
             /// <summary>
-            ///   The source to use as shirt's arms.
+            ///   The source to use as [long]shirt's arms.
             /// </summary>
             public RefMapSource Arms { get; }
             

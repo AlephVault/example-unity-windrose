@@ -109,26 +109,10 @@ namespace GameMeanMachine.Unity.RefMapChars
                     return tex;
                 }
 
-                /// <summary>
-                ///   Gets the sprite grid associated to a composite. It is
-                ///   recommended to use the resulting grid as quick as possible.
-                /// </summary>
-                /// <param name="composite">The composite to get the grid for</param>
-                /// <returns>The appropriate sprite grid</returns>
-                public SpriteGrid Get(IRefMapComposite composite)
+                private SpriteGrid GridFromTexture(string key, Func<Texture2D> onAbsent)
                 {
-                    string key = composite.Hash();
-                    Texture2D usedTexture = texturePool.Use(key, () =>
-                    {
-                        RenderTexture target = new RenderTexture(
-                            TextureWidth, TextureHeight, renderDepth, renderFormat
-                        );
-                        RefMapUtils.Paste(
-                            target, composite, maskD, maskLRU, maskLR, maskU
-                        );
-                        return ToTexture2D(target);
-                    }, (t) => Destroy(t));
-                    IdentifiedSpriteGrid<string> grid = spritePool.Get(key, () =>
+                    Texture2D usedTexture = texturePool.Use(key, onAbsent, (t) => Destroy(t));
+                    return spritePool.Get(key, () =>
                     {
                         return new Tuple<Texture2D, Rect?, uint, uint, float, Action, Action>(
                             usedTexture, null, FrameWidth, FrameHeight, pixelsPerUnit, () => {}, () =>
@@ -137,9 +121,48 @@ namespace GameMeanMachine.Unity.RefMapChars
                             }
                         );
                     });
-                    return grid;
                 }
 
+                /// <summary>
+                ///   Gets the sprite grid associated to a composite. It is
+                ///   recommended to use the resulting grid as quick as possible.
+                /// </summary>
+                /// <param name="composite">The composite to get the grid for</param>
+                /// <returns>The appropriate sprite grid</returns>
+                public SpriteGrid Get(IRefMapComposite composite)
+                {
+                    return GridFromTexture(composite.Hash(), () =>
+                    {
+                        RenderTexture target = new RenderTexture(
+                            TextureWidth, TextureHeight, renderDepth, renderFormat
+                        );
+                        RefMapUtils.Paste(
+                            target, composite, maskD, maskLRU, maskLR, maskU
+                        );
+                        return ToTexture2D(target);
+                    });
+                }
+
+                /// <summary>
+                ///   Gets the sprite grid associated to a simple composite. It is
+                ///   recommended to use the resulting grid as quick as possible.
+                /// </summary>
+                /// <param name="composite">The composite to get the grid for</param>
+                /// <returns>The appropriate sprite grid</returns>
+                public SpriteGrid Get(IRefMapSimpleComposite composite)
+                {
+                    return GridFromTexture(composite.Hash(), () =>
+                    {
+                        RenderTexture target = new RenderTexture(
+                            TextureWidth, TextureHeight, renderDepth, renderFormat
+                        );
+                        RefMapUtils.Paste(
+                            target, composite, maskD, maskLRU, maskLR, maskU
+                        );
+                        return ToTexture2D(target);
+                    });
+                }
+                
                 private void OnEnable()
                 {
                     texturePool = new TexturePool<string, Texture2D>(lastSecondRescueSize);

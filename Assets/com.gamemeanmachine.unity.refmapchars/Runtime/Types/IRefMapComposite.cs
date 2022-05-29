@@ -7,7 +7,7 @@ namespace GameMeanMachine.Unity.RefMapChars
         ///   textures, and a related hash of them, so the
         ///   final texture is generated or cache-returned.
         /// </summary>
-        public interface RefMapComposite
+        public interface IRefMapComposite
         {
             /// <summary>
             ///   The source to use as body.

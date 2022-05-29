@@ -115,7 +115,7 @@ namespace GameMeanMachine.Unity.RefMapChars
                 /// </summary>
                 /// <param name="composite">The composite to get the grid for</param>
                 /// <returns>The appropriate sprite grid</returns>
-                public SpriteGrid Get(RefMapComposite composite)
+                public SpriteGrid Get(IRefMapComposite composite)
                 {
                     string key = composite.Hash();
                     Texture2D usedTexture = texturePool.Use(key, () =>

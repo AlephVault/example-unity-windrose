@@ -103,7 +103,7 @@ namespace GameMeanMachine.Unity.RefMapChars
             /// <param name="maskLR">A mask that only shows side-oriented frames</param>
             /// <param name="maskU">A mask that only shows up-oriented frames</param>
             public static void Paste(
-                Texture target, RefMapComposite composite, Texture2D maskD, Texture2D maskLRU,
+                Texture target, IRefMapComposite composite, Texture2D maskD, Texture2D maskLRU,
                 Texture2D maskLR, Texture2D maskU
             ) {
                 Paste(

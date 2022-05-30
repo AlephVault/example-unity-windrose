@@ -15,7 +15,9 @@ namespace GameMeanMachine.Unity.RefMapChars
             /// <summary>
             ///   This cache builds and keeps textures of size
             ///   128x192 to be composed and used as character
-            ///   displays.
+            ///   displays. This instance is used on design (e.g.
+            ///   to assign to prefabs that should access this
+            ///   cache to get generate and then get textures).
             /// </summary>
             public class RefMapCache : ScriptableObject
             {

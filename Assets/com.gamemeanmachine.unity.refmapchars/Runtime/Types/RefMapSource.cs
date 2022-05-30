@@ -1,3 +1,4 @@
+using System;
 using AlephVault.Unity.TextureUtils.Types;
 using UnityEngine;
 
@@ -11,6 +12,7 @@ namespace GameMeanMachine.Unity.RefMapChars
         ///   inside that texture, to later apply a mask and use it
         ///   to render a composed RefMap texture.
         /// </summary>
+        [Serializable]
         public class RefMapSource
         {
             /// <summary>

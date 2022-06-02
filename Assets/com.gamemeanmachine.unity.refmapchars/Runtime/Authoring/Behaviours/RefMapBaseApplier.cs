@@ -1,3 +1,4 @@
+using GameMeanMachine.Unity.RefMapChars.Authoring.ScriptableObjects;
 using GameMeanMachine.Unity.RefMapChars.Types;
 using GameMeanMachine.Unity.RefMapChars.Types.Traits;
 using UnityEngine;
@@ -20,6 +21,13 @@ namespace GameMeanMachine.Unity.RefMapChars
                 IApplier<BodyTrait>, IApplier<HairTrait>, IApplier<HatTrait>, IApplier<NecklaceTrait>,
                 IApplier<SkilledHandItemTrait>, IApplier<DumbHandItemTrait>
             {
+                /// <summary>
+                ///   The cache to use. This value must be
+                ///   set at edit / prefab time.
+                /// </summary>
+                [SerializeField]
+                protected RefMapCache cache;
+                
                 /// <summary>
                 ///   The body image.
                 /// </summary>

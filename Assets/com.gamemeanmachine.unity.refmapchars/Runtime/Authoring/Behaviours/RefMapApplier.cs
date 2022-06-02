@@ -78,7 +78,7 @@ namespace GameMeanMachine.Unity.RefMapChars
                 protected abstract string ClothHash();
                 
                 /// <summary>
-                ///   The hash involves the 13 parts.
+                ///   The hash involves the 15 parts.
                 /// </summary>
                 public override string Hash()
                 {

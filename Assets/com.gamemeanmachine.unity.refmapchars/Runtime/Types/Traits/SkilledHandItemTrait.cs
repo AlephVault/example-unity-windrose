@@ -7,9 +7,9 @@ namespace GameMeanMachine.Unity.RefMapChars
             /// <summary>
             ///   The skilled hand tool trait (1 texture).
             /// </summary>
-            public class SkilledHandToolTrait : SimpleTrait
+            public class SkilledHandItemTrait : SimpleTrait
             {
-                public SkilledHandToolTrait(string hash, RefMapSource front) : base(hash, front) {}
+                public SkilledHandItemTrait(string hash, RefMapSource front) : base(hash, front) {}
             }
         }
     }

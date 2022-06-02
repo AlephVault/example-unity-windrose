@@ -18,42 +18,72 @@ namespace GameMeanMachine.Unity.RefMapChars
             /// </summary>
             public abstract class RefMapBaseApplier : MonoBehaviour, IRefMapBaseComposite,
                 IApplier<BodyTrait>, IApplier<HairTrait>, IApplier<HatTrait>, IApplier<NecklaceTrait>,
-                IApplier<SkilledHandToolTrait>, IApplier<DumbHandToolTrait>
+                IApplier<SkilledHandItemTrait>, IApplier<DumbHandItemTrait>
             {
+                /// <summary>
+                ///   The body image.
+                /// </summary>
+                public RefMapSource Body => bodyTrait?.Front;
+
+                /// <summary>
+                ///   The hair image. It does not include the tail.
+                /// </summary>
+                public RefMapSource Hair => hairTrait?.Front;
+
+                /// <summary>
+                ///   The hair tail image. Not all hairs have tail.
+                /// </summary>
+                public RefMapSource HairTail => hairTrait?.Back;
+
+                /// <summary>
+                ///   The necklace image.
+                /// </summary>
+                public RefMapSource Necklace => necklaceTrait?.Front;
+
+                /// <summary>
+                ///   The hat image.
+                /// </summary>
+                public RefMapSource Hat => hatTrait?.Front;
+
+                /// <summary>
+                ///   The skilled hand item (e.g. weapon) image.
+                /// </summary>
+                public RefMapSource SkilledHandItem => skilledHandItemTrait?.Front;
+
+                /// <summary>
+                ///   The dumb hand item (e.g. shield) image.
+                /// </summary>
+                public RefMapSource DumbHandItem => dumbHandItemTrait?.Front;
+
                 /// <summary>
                 ///   The body trait.
                 /// </summary>
-                public RefMapSource Body { get; private set; }
-                
-                /// <summary>
-                ///   The hair trait. It does not include the tail.
-                /// </summary>
-                public RefMapSource Hair { get; private set; }
-
-                /// <summary>
-                ///   The hair tail trait. Not all hairs have tail.
-                /// </summary>
-                public RefMapSource HairTail { get; private set; }
+                protected BodyTrait bodyTrait;
 
                 /// <summary>
                 ///   The necklace trait.
                 /// </summary>
-                public RefMapSource Necklace { get; private set; }
+                protected NecklaceTrait necklaceTrait;
+
+                /// <summary>
+                ///   The hair trait.
+                /// </summary>
+                protected HairTrait hairTrait;
 
                 /// <summary>
                 ///   The hat trait.
                 /// </summary>
-                public RefMapSource Hat { get; private set; }
+                protected HatTrait hatTrait;
 
                 /// <summary>
-                ///   The skilled hand item (e.g. weapon) trait.
+                ///   The skilled hand item trait.
                 /// </summary>
-                public RefMapSource SkilledHandItem { get; private set; }
-
+                protected SkilledHandItemTrait skilledHandItemTrait;
+                
                 /// <summary>
-                ///   The dumb hand item (e.g. shield) trait.
+                ///   The dumb hand item trait.
                 /// </summary>
-                public RefMapSource DumbHandItem { get; private set; }
+                protected DumbHandItemTrait dumbHandItemTrait;
 
                 /// <summary>
                 ///   A hash function that describes all the assigned
@@ -69,7 +99,7 @@ namespace GameMeanMachine.Unity.RefMapChars
                 /// <param name="appliance">The appliance to set</param>
                 public void Use(BodyTrait appliance)
                 {
-                    Body = appliance?.Front;
+                    bodyTrait = appliance;
                     RefreshTexture();
                 }
 
@@ -81,8 +111,7 @@ namespace GameMeanMachine.Unity.RefMapChars
                 /// <param name="appliance">The appliance to set</param>
                 public void Use(HairTrait appliance)
                 {
-                    Hair = appliance?.Front;
-                    HairTail = appliance?.Back;
+                    hairTrait = appliance;
                     RefreshTexture();
                 }
 
@@ -93,7 +122,7 @@ namespace GameMeanMachine.Unity.RefMapChars
                 /// <param name="appliance">The appliance to set</param>
                 public void Use(HatTrait appliance)
                 {
-                    Hat = appliance?.Front;
+                    hatTrait = appliance;
                     RefreshTexture();
                 }
 
@@ -104,7 +133,7 @@ namespace GameMeanMachine.Unity.RefMapChars
                 /// <param name="appliance">The appliance to set</param>
                 public void Use(NecklaceTrait appliance)
                 {
-                    Necklace = appliance?.Front;
+                    necklaceTrait = appliance;
                     RefreshTexture();
                 }
 
@@ -113,9 +142,9 @@ namespace GameMeanMachine.Unity.RefMapChars
                 ///   it clears the skilled hand tool trait.
                 /// </summary>
                 /// <param name="appliance">The appliance to set</param>
-                public void Use(SkilledHandToolTrait appliance)
+                public void Use(SkilledHandItemTrait appliance)
                 {
-                    SkilledHandItem = appliance?.Front;
+                    skilledHandItemTrait = appliance;
                     RefreshTexture();
                 }
 
@@ -124,9 +153,9 @@ namespace GameMeanMachine.Unity.RefMapChars
                 ///   it clears the dumb hand tool trait.
                 /// </summary>
                 /// <param name="appliance">The appliance to set</param>
-                public void Use(DumbHandToolTrait appliance)
+                public void Use(DumbHandItemTrait appliance)
                 {
-                    DumbHandItem = appliance?.Front;
+                    dumbHandItemTrait = appliance;
                     RefreshTexture();
                 }
 

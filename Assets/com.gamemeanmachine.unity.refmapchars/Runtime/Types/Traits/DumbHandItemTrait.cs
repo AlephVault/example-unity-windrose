@@ -7,9 +7,9 @@ namespace GameMeanMachine.Unity.RefMapChars
             /// <summary>
             ///   The dumb hand tool trait (1 texture).
             /// </summary>
-            public class DumbHandToolTrait : SimpleTrait
+            public class DumbHandItemTrait : SimpleTrait
             {
-                public DumbHandToolTrait(string hash, RefMapSource front) : base(hash, front) {}
+                public DumbHandItemTrait(string hash, RefMapSource front) : base(hash, front) {}
             }
         }
     }

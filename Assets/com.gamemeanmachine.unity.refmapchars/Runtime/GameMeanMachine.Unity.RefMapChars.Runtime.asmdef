@@ -2,6 +2,7 @@
     "name": "GameMeanMachine.Unity.RefMapChars.Runtime",
     "rootNamespace": "",
     "references": [
+        "GUID:8233aa084c7334eb18c3e9713fa443e5",
         "GUID:bb6eabf7788063212a196dda6018a5d0",
         "GUID:255de8069ce706544836a6062b00ac0d",
         "GUID:eae3afb0047ccb6859e5272b570feadc",

@@ -64,6 +64,11 @@ namespace GameMeanMachine.Unity.RefMapChars
                     private RefMapItemTypesDictionary itemTypes = new RefMapItemTypesDictionary();
 
                     /// <summary>
+                    ///   The available bodies.
+                    /// </summary>
+                    public RefMapBody Body => body;
+
+                    /// <summary>
                     ///   Gets a <see cref="RefMapItemType"/> at a given item type.
                     /// </summary>
                     /// <param name="index">The item type to retrieve the items for</param>

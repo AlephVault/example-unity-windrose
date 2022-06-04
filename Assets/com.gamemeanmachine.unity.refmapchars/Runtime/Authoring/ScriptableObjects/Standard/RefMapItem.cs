@@ -82,6 +82,47 @@ namespace GameMeanMachine.Unity.RefMapChars
                             select variation;
                     }
                 }
+                
+                /// <summary>
+                ///   Methods for the <see cref="RefMapItem.ColorCode" /> class.
+                /// </summary>
+                public static class ItemColorCodeMethods
+                {
+                    /// <summary>
+                    ///   Gives a code name for the color.
+                    /// </summary>
+                    /// <param name="code">The color code</param>
+                    /// <returns>The in-file code name</returns>
+                    /// <exception cref="ArgumentException">An invalid or unexpected color was provided</exception>
+                    public static string Name(this RefMapItem.ColorCode code)
+                    {
+                        switch (code)
+                        {
+                            case RefMapItem.ColorCode.Black:
+                                return "black";
+                            case RefMapItem.ColorCode.Blue:
+                                return "blue";
+                            case RefMapItem.ColorCode.DarkBrown:
+                                return "dbrown";
+                            case RefMapItem.ColorCode.Green:
+                                return "green";
+                            case RefMapItem.ColorCode.LightBrown:
+                                return "lbrown";
+                            case RefMapItem.ColorCode.Pink:
+                                return "pink";
+                            case RefMapItem.ColorCode.Purple:
+                                return "purple";
+                            case RefMapItem.ColorCode.Red:
+                                return "red";
+                            case RefMapItem.ColorCode.White:
+                                return "white";
+                            case RefMapItem.ColorCode.Yellow:
+                                return "yellow";
+                            default:
+                                throw new ArgumentException($"Invalid item color code: {code}");
+                        }
+                    }
+                }
             }
         }
     }    

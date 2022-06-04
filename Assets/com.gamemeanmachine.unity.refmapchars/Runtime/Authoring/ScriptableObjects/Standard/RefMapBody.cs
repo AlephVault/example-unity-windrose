@@ -74,6 +74,43 @@ namespace GameMeanMachine.Unity.RefMapChars
                                select variation;
                     }
                 }
+
+                /// <summary>
+                ///   Methods for the <see cref="RefMapBody.ColorCode" /> class.
+                /// </summary>
+                public static class BodyColorCodeMethods
+                {
+                    /// <summary>
+                    ///   Gives a code name for the color.
+                    /// </summary>
+                    /// <param name="code">The color code</param>
+                    /// <returns>The in-file code name</returns>
+                    /// <exception cref="ArgumentException">An invalid or unexpected color was provided</exception>
+                    public static string Name(this RefMapBody.ColorCode code)
+                    {
+                        switch (code)
+                        {
+                            case RefMapBody.ColorCode.Black:
+                                return "black";
+                            case RefMapBody.ColorCode.Blue:
+                                return "blue";
+                            case RefMapBody.ColorCode.Green:
+                                return "green";
+                            case RefMapBody.ColorCode.Orange:
+                                return "orange";
+                            case RefMapBody.ColorCode.Purple:
+                                return "purple";
+                            case RefMapBody.ColorCode.Red:
+                                return "red";
+                            case RefMapBody.ColorCode.White:
+                                return "white";
+                            case RefMapBody.ColorCode.Yellow:
+                                return "yellow";
+                            default:
+                                throw new ArgumentException($"Invalid body color code: {code}");
+                        }
+                    }
+                }
             }
         }
     }    

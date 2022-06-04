@@ -32,7 +32,7 @@ namespace GameMeanMachine.Unity.RefMapChars
                     ///   Each item or body trait (other than the body itself)
                     ///   has 10 possible colors.
                     /// </summary>
-                    public enum Color : byte
+                    public enum ColorCode : byte
                     {
                         Black,
                         Blue,
@@ -51,7 +51,7 @@ namespace GameMeanMachine.Unity.RefMapChars
                     ///   map source).
                     /// </summary>
                     [Serializable]
-                    public class RefMapVariationsDictionary : Dictionary<Color, RefMapSource> {}
+                    public class RefMapVariationsDictionary : Dictionary<ColorCode, RefMapSource> {}
                 
                     /// <summary>
                     ///   A dictionary of the variations to use for this
@@ -63,8 +63,8 @@ namespace GameMeanMachine.Unity.RefMapChars
                     /// <summary>
                     ///   Gets a <see cref="RefMapSource"/> at a given index.
                     /// </summary>
-                    /// <param name="index">The index to retrieve the source for</param>
-                    public RefMapSource this[Color index] => variations[index];
+                    /// <param name="colorCode">The index to retrieve the source for</param>
+                    public RefMapSource this[ColorCode colorCode] => variations[colorCode];
                     
                     /// <summary>
                     ///   The count of variations in an item.
@@ -72,10 +72,10 @@ namespace GameMeanMachine.Unity.RefMapChars
                     public int Count => variations.Count;
 
                     /// <summary>
-                    ///   Get the available variations of an item.
+                    ///   Gets the available variations of an item.
                     /// </summary>
                     /// <returns>An enumerable of pairs color/variation</returns>
-                    public IEnumerable<KeyValuePair<Color, RefMapSource>> Items()
+                    public IEnumerable<KeyValuePair<ColorCode, RefMapSource>> Items()
                     {
                         return from variation in variations
                             where variation.Value != null

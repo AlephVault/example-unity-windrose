@@ -1,5 +1,6 @@
 using System;
-using AlephVault.Unity.Support.Generic.Authoring.Types;
+using System.Collections.Generic;
+using System.Linq;
 using GameMeanMachine.Unity.RefMapChars.Types;
 using UnityEngine;
 
@@ -12,6 +13,8 @@ namespace GameMeanMachine.Unity.RefMapChars
         {
             namespace Standard
             {
+                using AlephVault.Unity.Support.Generic.Authoring.Types;
+                
                 /// <summary>
                 ///   A list of the available bodies, given an index.
                 ///   These are intended to categorize body by color.
@@ -54,6 +57,22 @@ namespace GameMeanMachine.Unity.RefMapChars
                     /// </summary>
                     /// <param name="index">The index to retrieve the source for</param>
                     public RefMapSource this[Color index] => variations[index];
+
+                    /// <summary>
+                    ///   The count of variations in the body.
+                    /// </summary>
+                    public int Count => variations.Count;
+
+                    /// <summary>
+                    ///   Get the available variations of the body.
+                    /// </summary>
+                    /// <returns>An enumerable of pairs color/variation</returns>
+                    public IEnumerable<KeyValuePair<Color, RefMapSource>> Items()
+                    {
+                        return from variation in variations
+                               where variation.Value != null
+                               select variation;
+                    }
                 }
             }
         }

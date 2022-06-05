@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using GameMeanMachine.Unity.RefMapChars.Types;
+using UnityEditor;
 using UnityEngine;
 
 
@@ -81,6 +83,34 @@ namespace GameMeanMachine.Unity.RefMapChars
                             where variation.Value != null
                             select variation;
                     }
+                    
+#if UNITY_EDITOR
+                    /// <summary>
+                    ///   Populates a body from a given path. This path is typically
+                    ///   {path}/(Male|Female)/{ItemType}.
+                    /// </summary>
+                    /// <param name="path">The path to read from</param>
+                    /// <param name="body">The body to read into</param>
+                    /// <param name="back">Whether this asset is populated from _b images</param>
+                    public static void Populate(string path, int idx, RefMapItem body, bool back = false)
+                    {
+                        string suffix = back ? "_b" : "";
+                        foreach (ColorCode code in Enum.GetValues(typeof(ColorCode)))
+                        {
+                            string file = Path.Combine(path, $"{idx}_{code.Name()}{suffix}.png");
+                            try
+                            {
+                                Texture2D tex = AssetDatabase.LoadAssetAtPath<Texture2D>(file);
+                                if (tex == null) throw new Exception();
+                                body.variations.Add(code, new RefMapSource { Texture = tex });
+                            }
+                            catch (Exception e)
+                            {
+                                Debug.Log($"Missing texture {idx}_{code}{suffix}.png - skipping");
+                            }
+                        }
+                    }
+#endif
                 }
                 
                 /// <summary>

@@ -107,9 +107,9 @@ namespace GameMeanMachine.Unity.RefMapChars
                         sex.body = body;
                         foreach (ItemTypeCode code in Enum.GetValues(typeof(ItemTypeCode)))
                         {
-                            if (code == ItemTypeCode.Hair) continue;
+                            if (code == ItemTypeCode.Hair || code == ItemTypeCode.HairTail) continue;
                             RefMapItemType itemType = CreateInstance<RefMapItemType>();
-                            RefMapItemType.Populate(Path.Combine(path, itemType.ToString()), itemType);
+                            RefMapItemType.Populate(Path.Combine(path, code.ToString()), itemType);
                             sex.itemTypes.Add(code, itemType);
                         }
                         RefMapItemType hairType = CreateInstance<RefMapItemType>();

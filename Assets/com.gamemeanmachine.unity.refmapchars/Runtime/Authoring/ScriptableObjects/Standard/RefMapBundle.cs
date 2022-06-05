@@ -80,7 +80,8 @@ namespace GameMeanMachine.Unity.RefMapChars
                         // The object is a directory if (and only if) a
                         // directory exists by this path. Otherwise, the
                         // object is something else.
-                        return Directory.Exists(path);
+                        Debug.Log($"Path is: {path} - Is valid folder? {AssetDatabase.IsValidFolder(path)}");
+                        return AssetDatabase.IsValidFolder(path);
                     }
 
                     [MenuItem("Assets/Create/RefMap Chars/Full RefMap Bundle", false, 101)]
@@ -91,7 +92,7 @@ namespace GameMeanMachine.Unity.RefMapChars
                         string refmap = Path.Combine(parent, "RefMap");
                         // Preliminary: {parent}/RefMap must NOT exist. Otherwise, this
                         // is an error to be logged and everything to be aborted.
-                        if (Directory.Exists(refmap))
+                        if (AssetDatabase.IsValidFolder(refmap))
                         {
                             Debug.LogError($"Directory {refmap} already exists. Please delete it or " +
                                            $"move it to another location and try again");
@@ -101,6 +102,7 @@ namespace GameMeanMachine.Unity.RefMapChars
                         // First: Create the bundle and populate it.
                         RefMapBundle bundle = CreateInstance<RefMapBundle>();
                         Populate(path, bundle);
+                        AssetDatabase.CreateFolder(parent, "RefMap");
                         
                         // Then: Save EACH element appropriately under the refmap
                         // directory.

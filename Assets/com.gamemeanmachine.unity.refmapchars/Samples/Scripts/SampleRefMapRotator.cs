@@ -1,3 +1,4 @@
+using System;
 using GameMeanMachine.Unity.RefMapChars.Authoring.Behaviours;
 using GameMeanMachine.Unity.RefMapChars.Authoring.ScriptableObjects.Standard;
 using GameMeanMachine.Unity.RefMapChars.Types;
@@ -77,8 +78,13 @@ public class SampleRefMapRotator : MonoBehaviour
     private void Awake()
     {
         mapObject = GetComponent<MapObject>();
-        mainVisual = GetComponent<Visual>();
+        mainVisual = mapObject.MainVisual;
         applier = mainVisual.GetComponent<RefMapStandardApplier>();
+    }
+
+    private void Start()
+    {
+        FixIndicesAndUpdate();
     }
 
     private void FixIndicesAndUpdate()

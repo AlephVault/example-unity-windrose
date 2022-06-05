@@ -102,7 +102,6 @@ namespace GameMeanMachine.Unity.RefMapChars
                     /// <param name="sex">The sex bundle to read into</param>
                     internal static void Populate(string path, RefMapSex sex)
                     {
-                        string hairPath = Path.Combine(path, "Hair");
                         RefMapBody body = CreateInstance<RefMapBody>();
                         RefMapBody.Populate(Path.Combine(path, "Base"), body);
                         sex.body = body;

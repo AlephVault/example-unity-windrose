@@ -124,6 +124,12 @@ public class SampleRefMapRotator : MonoBehaviour
         
         // Now, applying everything will take place.
         
+        // Body
+        RefMapSource bodySource = bundle[
+            sex == 0 ? RefMapBundle.SexCode.Male : RefMapBundle.SexCode.Female
+        ].Body[(RefMapBody.ColorCode) bodyColor];
+        applier.Use((new BodyTrait($"{sex}{bodyColor}", bodySource)), false);
+        
         // Boots
         if (boots == -1)
         {

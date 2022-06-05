@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using UnityEngine;
 
@@ -56,6 +57,48 @@ namespace GameMeanMachine.Unity.RefMapChars
                                where item.Value != null
                                select item;
                     }
+                    
+#if UNITY_EDITOR
+                    /// <summary>
+                    ///   Populates the whole item type from a directory.
+                    ///   This path is typically {path}/(Male|Female)/{ItemType}.
+                    ///   In this case, populating involves also creating the
+                    ///   instances of Items and adding them to the dictionary.
+                    /// </summary>
+                    /// <param name="path">The path to read from</param>
+                    /// <param name="itemType">The item type to read into</param>
+                    /// <param name="backType">The back type to read into, if a back image is present</param>
+                    public static void Populate(string path, RefMapItemType itemType, RefMapItemType backType = null)
+                    {
+                        ushort idx = 1;
+                        while (true)
+                        {
+                            // First, look for textures of name {idx}_{color}.png.
+                            string[] files = Directory.GetFiles(path, $"{idx}_*.png");
+                            if (files.Length != 0)
+                            {
+                                RefMapItem item = CreateInstance<RefMapItem>();
+                                RefMapItem.Populate(path, idx, item);
+                                itemType.items.Add(idx, item);
+                                if (backType)
+                                {
+                                    string[] backFiles = Directory.GetFiles(path, $"{idx}_*_b.png");
+                                    if (backFiles.Length != 0)
+                                    {
+                                        RefMapItem backItem = CreateInstance<RefMapItem>();
+                                        RefMapItem.Populate(path, idx, backItem, true);
+                                        backType.items.Add(idx, backItem);
+                                    }
+                                }
+                                idx += 1;
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
+                    }
+#endif
                 }
             }
         }

@@ -90,9 +90,9 @@ namespace GameMeanMachine.Unity.RefMapChars
                     ///   {path}/(Male|Female)/{ItemType}.
                     /// </summary>
                     /// <param name="path">The path to read from</param>
-                    /// <param name="body">The body to read into</param>
+                    /// <param name="item">The body to read into</param>
                     /// <param name="back">Whether this asset is populated from _b images</param>
-                    public static void Populate(string path, int idx, RefMapItem body, bool back = false)
+                    public static void Populate(string path, int idx, RefMapItem item, bool back = false)
                     {
                         string suffix = back ? "_b" : "";
                         foreach (ColorCode code in Enum.GetValues(typeof(ColorCode)))
@@ -102,7 +102,7 @@ namespace GameMeanMachine.Unity.RefMapChars
                             {
                                 Texture2D tex = AssetDatabase.LoadAssetAtPath<Texture2D>(file);
                                 if (tex == null) throw new Exception();
-                                body.variations.Add(code, new RefMapSource { Texture = tex });
+                                item.variations.Add(code, new RefMapSource { Texture = tex });
                             }
                             catch (Exception e)
                             {

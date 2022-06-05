@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using GameMeanMachine.Unity.RefMapChars.Types;
+using UnityEditor;
 using UnityEngine;
 
 
@@ -73,43 +75,32 @@ namespace GameMeanMachine.Unity.RefMapChars
                                where variation.Value != null
                                select variation;
                     }
-                }
-
-                /// <summary>
-                ///   Methods for the <see cref="RefMapBody.ColorCode" /> class.
-                /// </summary>
-                public static class BodyColorCodeMethods
-                {
+                    
+#if UNITY_EDITOR
                     /// <summary>
-                    ///   Gives a code name for the color.
+                    ///   Populates a body from a given path. This path is typically
+                    ///   {path}/(Male|Female)/Base.
                     /// </summary>
-                    /// <param name="code">The color code</param>
-                    /// <returns>The in-file code name</returns>
-                    /// <exception cref="ArgumentException">An invalid or unexpected color was provided</exception>
-                    public static string Name(this RefMapBody.ColorCode code)
+                    /// <param name="path">The path to read from</param>
+                    /// <param name="body">The body to read into</param>
+                    public static void Populate(string path, RefMapBody body)
                     {
-                        switch (code)
+                        foreach (ColorCode code in Enum.GetValues(typeof(ColorCode)))
                         {
-                            case RefMapBody.ColorCode.Black:
-                                return "black";
-                            case RefMapBody.ColorCode.Blue:
-                                return "blue";
-                            case RefMapBody.ColorCode.Green:
-                                return "green";
-                            case RefMapBody.ColorCode.Orange:
-                                return "orange";
-                            case RefMapBody.ColorCode.Purple:
-                                return "purple";
-                            case RefMapBody.ColorCode.Red:
-                                return "red";
-                            case RefMapBody.ColorCode.White:
-                                return "white";
-                            case RefMapBody.ColorCode.Yellow:
-                                return "yellow";
-                            default:
-                                throw new ArgumentException($"Invalid body color code: {code}");
+                            string file = Path.Combine(path, $"{code}_e.png");
+                            try
+                            {
+                                Texture2D tex = AssetDatabase.LoadAssetAtPath<Texture2D>(file);
+                                if (tex == null) throw new Exception();
+                                body.variations.Add(code, new RefMapSource { Texture = tex });
+                            }
+                            catch (Exception e)
+                            {
+                                Debug.Log($"Missing texture {code}_e.png - skipping");
+                            }
                         }
                     }
+#endif
                 }
             }
         }

@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using UnityEditor;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 
 namespace GameMeanMachine.Unity.RefMapChars
@@ -62,6 +65,97 @@ namespace GameMeanMachine.Unity.RefMapChars
                                where sex.Value != null
                                select sex;
                     }
+                    
+#if UNITY_EDITOR
+                    [MenuItem("Assets/Create/RefMap Chars/Full RefMap Bundle", true, 101)]
+                    private static bool CanCreateFullRefMapBundle()
+                    {
+                        Object obj = Selection.activeObject;
+                        if (obj is null)
+                        {
+                            return false;
+                        }
+
+                        string path = AssetDatabase.GetAssetPath(obj);
+                        // The object is a directory if (and only if) a
+                        // directory exists by this path. Otherwise, the
+                        // object is something else.
+                        return Directory.Exists(path);
+                    }
+
+                    [MenuItem("Assets/Create/RefMap Chars/Full RefMap Bundle", false, 101)]
+                    private static void CreateFullRefMapBundle()
+                    {
+                        string path = AssetDatabase.GetAssetPath(Selection.activeObject);
+                        string parent = Path.GetDirectoryName(path);
+                        string refmap = Path.Combine(parent, "RefMap");
+                        // Preliminary: {parent}/RefMap must NOT exist. Otherwise, this
+                        // is an error to be logged and everything to be aborted.
+                        if (Directory.Exists(refmap))
+                        {
+                            Debug.LogError($"Directory {refmap} already exists. Please delete it or " +
+                                           $"move it to another location and try again");
+                            return;
+                        }
+                        
+                        // First: Create the bundle and populate it.
+                        RefMapBundle bundle = CreateInstance<RefMapBundle>();
+                        Populate(path, bundle);
+                        
+                        // Then: Save EACH element appropriately under the refmap
+                        // directory.
+                        foreach (KeyValuePair<SexCode, RefMapSex> sexPair in bundle.sexes)
+                        {
+                            // Save a RefMapSex : Save many RefMapItemType + Save body.
+                            
+                            SexCode sexCode = sexPair.Key;
+                            RefMapSex sex = sexPair.Value;
+                            foreach (KeyValuePair<RefMapSex.ItemTypeCode, RefMapItemType> itemTypePair in sex.Items())
+                            {
+                                // Save a RefMapItemType : Save many RefMapItem.
+                                
+                                RefMapSex.ItemTypeCode typeCode = itemTypePair.Key;
+                                RefMapItemType type_ = itemTypePair.Value;
+                                foreach (KeyValuePair<ushort, RefMapItem> itemPair in type_.Items())
+                                {
+                                    // Save a RefMapItem.
+
+                                    ushort itemIdx = itemPair.Key;
+                                    RefMapItem item = itemPair.Value;
+
+                                    string itemPath = Path.Combine(refmap, $"{sexCode}_{typeCode}_{itemIdx}.asset");
+                                    AssetDatabase.CreateAsset(item, itemPath);
+                                }
+
+                                string typePath = Path.Combine(refmap, $"{sexCode}_{typeCode}.asset");
+                                AssetDatabase.CreateAsset(type_, typePath);
+                            }
+
+                            string bodyPath = Path.Combine(refmap, $"{sexCode}_Body.asset");
+                            AssetDatabase.CreateAsset(sex.Body, bodyPath);
+
+                            string sexPath = Path.Combine(refmap, $"{sexCode}.asset");
+                            AssetDatabase.CreateAsset(sex, sexPath);
+                        }
+                    }
+
+                    /// <summary>
+                    ///   Populates a main bundle from a given path. This
+                    ///   also involves creating each sex instance, and
+                    ///   populating them on their own.
+                    /// </summary>
+                    /// <param name="path">The path to read from</param>
+                    /// <param name="main">The main bundle to read into</param>
+                    internal static void Populate(string path, RefMapBundle main)
+                    {
+                        RefMapSex male = CreateInstance<RefMapSex>();
+                        RefMapSex female = CreateInstance<RefMapSex>();
+                        RefMapSex.Populate(Path.Combine(path, "Male"), male);
+                        RefMapSex.Populate(Path.Combine(path, "Female"), female);
+                        main.sexes.Add(SexCode.Male, male);
+                        main.sexes.Add(SexCode.Female, female);
+                    }
+#endif
                 }
             }
         }

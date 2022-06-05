@@ -274,7 +274,7 @@ public class SampleRefMapRotator : MonoBehaviour
         // Hair - This one is a bit different
         if (hair == -1)
         {
-            applier.Use((HairTrait)null, false);
+            applier.Use((HairTrait)null);
         }
         else
         {

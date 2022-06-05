@@ -42,7 +42,8 @@ namespace GameMeanMachine.Unity.RefMapChars
                         Waist,
                         Shoulder,
                         Hair,
-                        HairTail
+                        HairTail,
+                        Hat
                     }
                 
                     /// <summary>

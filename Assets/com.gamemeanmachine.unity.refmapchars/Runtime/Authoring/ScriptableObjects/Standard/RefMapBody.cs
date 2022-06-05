@@ -83,7 +83,7 @@ namespace GameMeanMachine.Unity.RefMapChars
                     /// </summary>
                     /// <param name="path">The path to read from</param>
                     /// <param name="body">The body to read into</param>
-                    public static void Populate(string path, RefMapBody body)
+                    internal static void Populate(string path, RefMapBody body)
                     {
                         foreach (ColorCode code in Enum.GetValues(typeof(ColorCode)))
                         {

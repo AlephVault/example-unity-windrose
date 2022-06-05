@@ -92,7 +92,7 @@ namespace GameMeanMachine.Unity.RefMapChars
                     /// <param name="path">The path to read from</param>
                     /// <param name="item">The body to read into</param>
                     /// <param name="back">Whether this asset is populated from _b images</param>
-                    public static void Populate(string path, int idx, RefMapItem item, bool back = false)
+                    internal static void Populate(string path, int idx, RefMapItem item, bool back = false)
                     {
                         string suffix = back ? "_b" : "";
                         foreach (ColorCode code in Enum.GetValues(typeof(ColorCode)))

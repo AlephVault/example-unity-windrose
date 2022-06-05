@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using UnityEngine;
 
@@ -89,6 +90,36 @@ namespace GameMeanMachine.Unity.RefMapChars
                                where itemType.Value != null
                                select itemType;
                     }
+                    
+#if UNITY_EDITOR
+                    /// <summary>
+                    ///   Populates a sex bundle from a given path. This path
+                    ///   is typically {path}/(Male|Female). This also involves
+                    ///   creating the body instance, and all the item type
+                    ///   instances and linking them into the sex bundle.
+                    /// </summary>
+                    /// <param name="path">The path to read from</param>
+                    /// <param name="sex">The sex bundle to read into</param>
+                    internal static void Populate(string path, RefMapSex sex)
+                    {
+                        string hairPath = Path.Combine(path, "Hair");
+                        RefMapBody body = CreateInstance<RefMapBody>();
+                        RefMapBody.Populate(Path.Combine(path, "Base"), body);
+                        sex.body = body;
+                        foreach (ItemTypeCode code in Enum.GetValues(typeof(ItemTypeCode)))
+                        {
+                            if (code == ItemTypeCode.Hair) continue;
+                            RefMapItemType itemType = CreateInstance<RefMapItemType>();
+                            RefMapItemType.Populate(Path.Combine(path, itemType.ToString()), itemType);
+                            sex.itemTypes.Add(code, itemType);
+                        }
+                        RefMapItemType hairType = CreateInstance<RefMapItemType>();
+                        RefMapItemType hairTailType = CreateInstance<RefMapItemType>();
+                        RefMapItemType.Populate(Path.Combine(path, "Hair"), hairType, hairTailType);
+                        sex.itemTypes.Add(ItemTypeCode.Hair, hairType);
+                        sex.itemTypes.Add(ItemTypeCode.HairTail, hairTailType);
+                    }
+#endif
                 }
             }
         }

@@ -68,7 +68,7 @@ namespace GameMeanMachine.Unity.RefMapChars
                     /// <param name="path">The path to read from</param>
                     /// <param name="itemType">The item type to read into</param>
                     /// <param name="backType">The back type to read into, if a back image is present</param>
-                    public static void Populate(string path, RefMapItemType itemType, RefMapItemType backType = null)
+                    internal static void Populate(string path, RefMapItemType itemType, RefMapItemType backType = null)
                     {
                         ushort idx = 1;
                         while (true)

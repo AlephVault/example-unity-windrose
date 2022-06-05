@@ -80,7 +80,6 @@ namespace GameMeanMachine.Unity.RefMapChars
                         // The object is a directory if (and only if) a
                         // directory exists by this path. Otherwise, the
                         // object is something else.
-                        Debug.Log($"Path is: {path} - Is valid folder? {AssetDatabase.IsValidFolder(path)}");
                         return AssetDatabase.IsValidFolder(path);
                     }
 
@@ -140,7 +139,8 @@ namespace GameMeanMachine.Unity.RefMapChars
                             AssetDatabase.CreateAsset(sex, sexPath);
                         }
                         
-                        AssetDatabase.CreateAsset(bundle, "Bundle.asset");
+                        string bundlePath = Path.Combine(refmap, "Bundle.asset");
+                        AssetDatabase.CreateAsset(bundle, bundlePath);
                     }
 
                     /// <summary>

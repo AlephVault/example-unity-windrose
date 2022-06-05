@@ -17,7 +17,7 @@ MonoBehaviour:
   renderFormat: 0
   finalFormat: 5
   renderDepth: 0
-  maskD: {fileID: 0}
-  maskLRU: {fileID: 0}
-  maskLR: {fileID: 0}
-  maskU: {fileID: 0}
+  maskD: {fileID: 2800000, guid: 62b8dfa0798978912b5c706423059a88, type: 3}
+  maskLRU: {fileID: 2800000, guid: dd62f15ce158637e882021e2514ad327, type: 3}
+  maskLR: {fileID: 2800000, guid: abe5bee60d03d8b46864fd33fc8a531f, type: 3}
+  maskU: {fileID: 2800000, guid: 14d482e4fef256d198a6fd3abaf6d5c3, type: 3}

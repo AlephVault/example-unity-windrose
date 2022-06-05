@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e25d0801fefb4cfc9541e72327a4fa07, type: 3}
+  m_Name: Male_Shoulder_5
+  m_EditorClassIdentifier: 
+  variations:
+    m_keys: 00010203040506070809
+    m_values:
+    - Texture: {fileID: 2800000, guid: 399965a64e0cc48559273eabb871e306, type: 3}
+      Offset: {x: 0, y: 0}
+    - Texture: {fileID: 2800000, guid: e108a7eb5dc3f008b978fd124ae4dc1b, type: 3}
+      Offset: {x: 0, y: 0}
+    - Texture: {fileID: 2800000, guid: 3f25ddbd9c43dc2249a85fff0a346942, type: 3}
+      Offset: {x: 0, y: 0}
+    - Texture: {fileID: 2800000, guid: b07cde51302ddce54a25f3d002b922b9, type: 3}
+      Offset: {x: 0, y: 0}
+    - Texture: {fileID: 2800000, guid: 0d2cc80e80941e0d28d8ab72e49eec8a, type: 3}
+      Offset: {x: 0, y: 0}
+    - Texture: {fileID: 2800000, guid: 5c422de2e1181a4f590d087023dcbd8d, type: 3}
+      Offset: {x: 0, y: 0}
+    - Texture: {fileID: 2800000, guid: 0ee20976d7af1cf98a190ce9f5d64789, type: 3}
+      Offset: {x: 0, y: 0}
+    - Texture: {fileID: 2800000, guid: f97b57e7e38b7fee99b3224779eb70f4, type: 3}
+      Offset: {x: 0, y: 0}
+    - Texture: {fileID: 2800000, guid: 7a13d1c925c587fc79a41eaaa5aa068d, type: 3}
+      Offset: {x: 0, y: 0}
+    - Texture: {fileID: 2800000, guid: 8f8258da6db6210a1b83700019078edd, type: 3}
+      Offset: {x: 0, y: 0}

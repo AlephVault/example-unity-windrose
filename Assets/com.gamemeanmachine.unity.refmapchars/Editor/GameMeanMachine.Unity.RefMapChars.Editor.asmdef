@@ -1,0 +1,20 @@
+{
+    "name": "GameMeanMachine.Unity.RefMapChars.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:cccffde430f2245d5a04195a4583a9bf",
+        "GUID:945c8b249a12adb898a7e967fd4e9e6f"
+    ],
+    "includePlatforms": [
+        "Editor",
+        "WebGL"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

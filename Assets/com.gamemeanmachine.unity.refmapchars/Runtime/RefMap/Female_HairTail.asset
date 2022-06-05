@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 337e6c51b8fb45f0a912f114be7d7290, type: 3}
+  m_Name: Female_HairTail
+  m_EditorClassIdentifier: 
+  items:
+    m_keys: 030007000d00
+    m_values:
+    - {fileID: 11400000, guid: 62314dd6cb715f2f3b287ffb2358f796, type: 2}
+    - {fileID: 11400000, guid: bd056cfce038c4468b2983b3f28eff74, type: 2}
+    - {fileID: 11400000, guid: ba014e34eba742b53847e5b18efc9ab1, type: 2}

@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 337e6c51b8fb45f0a912f114be7d7290, type: 3}
+  m_Name: Male_Arms
+  m_EditorClassIdentifier: 
+  items:
+    m_keys: 01000200030004000500060007000800
+    m_values:
+    - {fileID: 11400000, guid: 2b5791a7561565aa1bc4111cf4216428, type: 2}
+    - {fileID: 11400000, guid: d332e69dbaaa6cbb884fac30c0751e6e, type: 2}
+    - {fileID: 11400000, guid: 420c8597dbd62286ca258051ecf1b2de, type: 2}
+    - {fileID: 11400000, guid: 0bf77ce8ca2a0476a9d2dffcb98bdece, type: 2}
+    - {fileID: 11400000, guid: 4467280a75fe7bf1d81689b0267b84d0, type: 2}
+    - {fileID: 11400000, guid: 3c1b4f6ac11bd677e93050c68d41efd3, type: 2}
+    - {fileID: 11400000, guid: f04fa72330c1e47d28b24b2fde7a024b, type: 2}
+    - {fileID: 11400000, guid: 2430a3439eb1a8d23b6fa6f2d735ac18, type: 2}

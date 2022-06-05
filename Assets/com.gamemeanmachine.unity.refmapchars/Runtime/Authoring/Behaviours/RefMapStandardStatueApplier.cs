@@ -20,7 +20,6 @@ namespace GameMeanMachine.Unity.RefMapChars
                 /// <summary>
                 ///   The applier that will take the update.
                 /// </summary>
-                [SerializeField]
                 private RoseSpritedSelectionApplier applier;
                 
                 private void Awake()

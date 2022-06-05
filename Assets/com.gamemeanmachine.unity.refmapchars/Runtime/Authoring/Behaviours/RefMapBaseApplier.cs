@@ -105,10 +105,11 @@ namespace GameMeanMachine.Unity.RefMapChars
                 ///   the body trait.
                 /// </summary>
                 /// <param name="appliance">The appliance to set</param>
-                public void Use(BodyTrait appliance)
+                /// <param name="force">Whether to force the update or not</param>
+                public void Use(BodyTrait appliance, bool force = true)
                 {
                     bodyTrait = appliance;
-                    RefreshTexture();
+                    if (force) RefreshTexture();
                 }
 
                 /// <summary>
@@ -117,10 +118,11 @@ namespace GameMeanMachine.Unity.RefMapChars
                 ///   include clearing also the tail, if present).
                 /// </summary>
                 /// <param name="appliance">The appliance to set</param>
-                public void Use(HairTrait appliance)
+                /// <param name="force">Whether to force the update or not</param>
+                public void Use(HairTrait appliance, bool force = true)
                 {
                     hairTrait = appliance;
-                    RefreshTexture();
+                    if (force) RefreshTexture();
                 }
 
                 /// <summary>
@@ -128,10 +130,11 @@ namespace GameMeanMachine.Unity.RefMapChars
                 ///   the hat trait.
                 /// </summary>
                 /// <param name="appliance">The appliance to set</param>
-                public void Use(HatTrait appliance)
+                /// <param name="force">Whether to force the update or not</param>
+                public void Use(HatTrait appliance, bool force = true)
                 {
                     hatTrait = appliance;
-                    RefreshTexture();
+                    if (force) RefreshTexture();
                 }
 
                 /// <summary>
@@ -139,10 +142,11 @@ namespace GameMeanMachine.Unity.RefMapChars
                 ///   the necklace trait.
                 /// </summary>
                 /// <param name="appliance">The appliance to set</param>
-                public void Use(NecklaceTrait appliance)
+                /// <param name="force">Whether to force the update or not</param>
+                public void Use(NecklaceTrait appliance, bool force = true)
                 {
                     necklaceTrait = appliance;
-                    RefreshTexture();
+                    if (force) RefreshTexture();
                 }
 
                 /// <summary>
@@ -150,10 +154,11 @@ namespace GameMeanMachine.Unity.RefMapChars
                 ///   it clears the skilled hand tool trait.
                 /// </summary>
                 /// <param name="appliance">The appliance to set</param>
-                public void Use(SkilledHandItemTrait appliance)
+                /// <param name="force">Whether to force the update or not</param>
+                public void Use(SkilledHandItemTrait appliance, bool force = true)
                 {
                     skilledHandItemTrait = appliance;
-                    RefreshTexture();
+                    if (force) RefreshTexture();
                 }
 
                 /// <summary>
@@ -161,10 +166,11 @@ namespace GameMeanMachine.Unity.RefMapChars
                 ///   it clears the dumb hand tool trait.
                 /// </summary>
                 /// <param name="appliance">The appliance to set</param>
-                public void Use(DumbHandItemTrait appliance)
+                /// <param name="force">Whether to force the update or not</param>
+                public void Use(DumbHandItemTrait appliance, bool force = true)
                 {
                     dumbHandItemTrait = appliance;
-                    RefreshTexture();
+                    if (force) RefreshTexture();
                 }
 
                 protected abstract void RefreshTexture();

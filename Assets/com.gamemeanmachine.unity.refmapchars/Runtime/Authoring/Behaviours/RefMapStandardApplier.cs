@@ -150,9 +150,11 @@ namespace GameMeanMachine.Unity.RefMapChars
                 ///   the boots trait.
                 /// </summary>
                 /// <param name="appliance">The appliance to set</param>
-                public void Use(BootsTrait appliance)
+                /// <param name="force">Whether to force the update or not</param>
+                public void Use(BootsTrait appliance, bool force = true)
                 {
                     bootsTrait = appliance;
+                    if (force) RefreshTexture();
                 }
 
                 /// <summary>
@@ -160,9 +162,11 @@ namespace GameMeanMachine.Unity.RefMapChars
                 ///   the pants trait.
                 /// </summary>
                 /// <param name="appliance">The appliance to set</param>
-                public void Use(PantsTrait appliance)
+                /// <param name="force">Whether to force the update or not</param>
+                public void Use(PantsTrait appliance, bool force = true)
                 {
                     pantsTrait = appliance;
+                    if (force) RefreshTexture();
                 }
 
                 /// <summary>
@@ -170,9 +174,11 @@ namespace GameMeanMachine.Unity.RefMapChars
                 ///   the shirt trait.
                 /// </summary>
                 /// <param name="appliance">The appliance to set</param>
-                public void Use(ShirtTrait appliance)
+                /// <param name="force">Whether to force the update or not</param>
+                public void Use(ShirtTrait appliance, bool force = true)
                 {
                     shirtTrait = appliance;
+                    if (force) RefreshTexture();
                 }
 
                 /// <summary>
@@ -180,9 +186,11 @@ namespace GameMeanMachine.Unity.RefMapChars
                 ///   the chest trait.
                 /// </summary>
                 /// <param name="appliance">The appliance to set</param>
-                public void Use(ChestTrait appliance)
+                /// <param name="force">Whether to force the update or not</param>
+                public void Use(ChestTrait appliance, bool force = true)
                 {
                     chestTrait = appliance;
+                    if (force) RefreshTexture();
                 }
 
                 /// <summary>
@@ -190,9 +198,11 @@ namespace GameMeanMachine.Unity.RefMapChars
                 ///   the waist trait.
                 /// </summary>
                 /// <param name="appliance">The appliance to set</param>
-                public void Use(WaistTrait appliance)
+                /// <param name="force">Whether to force the update or not</param>
+                public void Use(WaistTrait appliance, bool force = true)
                 {
                     waistTrait = appliance;
+                    if (force) RefreshTexture();
                 }
 
                 /// <summary>
@@ -200,9 +210,11 @@ namespace GameMeanMachine.Unity.RefMapChars
                 ///   the arms trait.
                 /// </summary>
                 /// <param name="appliance">The appliance to set</param>
-                public void Use(ArmsTrait appliance)
+                /// <param name="force">Whether to force the update or not</param>
+                public void Use(ArmsTrait appliance, bool force = true)
                 {
                     armsTrait = appliance;
+                    if (force) RefreshTexture();
                 }
 
                 /// <summary>
@@ -210,9 +222,11 @@ namespace GameMeanMachine.Unity.RefMapChars
                 ///   the long shirt trait.
                 /// </summary>
                 /// <param name="appliance">The appliance to set</param>
-                public void Use(LongShirtTrait appliance)
+                /// <param name="force">Whether to force the update or not</param>
+                public void Use(LongShirtTrait appliance, bool force = true)
                 {
                     longShirtTrait = appliance;
+                    if (force) RefreshTexture();
                 }
 
                 /// <summary>
@@ -220,9 +234,11 @@ namespace GameMeanMachine.Unity.RefMapChars
                 ///   the shoulder trait.
                 /// </summary>
                 /// <param name="appliance">The appliance to set</param>
-                public void Use(ShoulderTrait appliance)
+                /// <param name="force">Whether to force the update or not</param>
+                public void Use(ShoulderTrait appliance, bool force = true)
                 {
                     shoulderTrait = appliance;
+                    if (force) RefreshTexture();
                 }
 
                 /// <summary>
@@ -230,9 +246,11 @@ namespace GameMeanMachine.Unity.RefMapChars
                 ///   the cloak trait.
                 /// </summary>
                 /// <param name="appliance">The appliance to set</param>
-                public void Use(CloakTrait appliance)
+                /// <param name="force">Whether to force the update or not</param>
+                public void Use(CloakTrait appliance, bool force = true)
                 {
                     cloakTrait = appliance;
+                    if (force) RefreshTexture();
                 }
             }
         }

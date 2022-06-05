@@ -1,5 +1,6 @@
 using AlephVault.Unity.SpriteUtils.Types;
 using GameMeanMachine.Unity.RefMapChars.Types;
+using GameMeanMachine.Unity.RefMapChars.Types.Traits;
 using GameMeanMachine.Unity.RefMapChars.Types.Traits.Simple;
 
 
@@ -14,7 +15,8 @@ namespace GameMeanMachine.Unity.RefMapChars
             ///   adds a single cloth. How is the grid used, it is not
             ///   defined in this class but in children classes.
             /// </summary>
-            public abstract class RefMapSimpleApplier : RefMapBaseApplier, IRefMapSimpleComposite
+            public abstract class RefMapSimpleApplier : RefMapBaseApplier, IRefMapSimpleComposite,
+                IApplier<ClothTrait>
             {
                 /// <summary>
                 ///   The cloth image.
@@ -51,6 +53,18 @@ namespace GameMeanMachine.Unity.RefMapChars
                 /// </summary>
                 /// <param name="grid">The grid to use</param>
                 protected abstract void UseGrid(SpriteGrid grid);
+
+                /// <summary>
+                ///   Applies a full cloth trait. When passing null,
+                ///   it clears the full cloth trait.
+                /// </summary>
+                /// <param name="appliance">The appliance to set</param>
+                /// <param name="force">Whether to force the update or not</param>
+                public void Use(ClothTrait appliance, bool force = true)
+                {
+                    clothTrait = appliance;
+                    if (force) RefreshTexture();
+                }
             }
         }
     }

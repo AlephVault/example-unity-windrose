@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e25d0801fefb4cfc9541e72327a4fa07, type: 3}
+  m_Name: Female_Hat_8
+  m_EditorClassIdentifier: 
+  variations:
+    m_keys: 00010203040506070809
+    m_values:
+    - Texture: {fileID: 2800000, guid: a85b176f19d92b7fea508cb0e41e9db1, type: 3}
+      Offset: {x: 0, y: 0}
+    - Texture: {fileID: 2800000, guid: a5adf7061dd924302a908e840224fec9, type: 3}
+      Offset: {x: 0, y: 0}
+    - Texture: {fileID: 2800000, guid: de6fcd2027f476515a3f8cd1efc40dbf, type: 3}
+      Offset: {x: 0, y: 0}
+    - Texture: {fileID: 2800000, guid: 7f6ae5e11966d61328ae66b6c6ce8a21, type: 3}
+      Offset: {x: 0, y: 0}
+    - Texture: {fileID: 2800000, guid: 0d99a29fa813923a79be14fff53bfdaa, type: 3}
+      Offset: {x: 0, y: 0}
+    - Texture: {fileID: 2800000, guid: dcb569704df99ddebaac23d19d7c02a4, type: 3}
+      Offset: {x: 0, y: 0}
+    - Texture: {fileID: 2800000, guid: 365bddff372bbded19a5135512143691, type: 3}
+      Offset: {x: 0, y: 0}
+    - Texture: {fileID: 2800000, guid: 3c9970b0afafc4800bac077d6f3f914d, type: 3}
+      Offset: {x: 0, y: 0}
+    - Texture: {fileID: 2800000, guid: 731a7e3eb9c031c83a4716dda3aacf6c, type: 3}
+      Offset: {x: 0, y: 0}
+    - Texture: {fileID: 2800000, guid: bc54cc81d95efac078849bad0548739f, type: 3}
+      Offset: {x: 0, y: 0}

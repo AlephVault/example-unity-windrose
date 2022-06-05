@@ -27,25 +27,25 @@ public class SampleRefMapRotator : MonoBehaviour
     private int sex = 0; // 0-1
     private int bodyColor = 0; // 0-7
 
-    private int boots = -1;
+    private int boots = 0;
     private int bootsColor = 0;
-    private int pants = -1;
+    private int pants = 0;
     private int pantsColor = 0;
-    private int waist = -1;
+    private int waist = 0;
     private int waistColor = 0;
-    private int shirt = -1;
+    private int shirt = 0;
     private int shirtColor = 0;
-    private int hat = -1;
+    private int hat = 0;
     private int hatColor = 0;
-    private int hair = -1;
+    private int hair = 0;
     private int hairColor = 0;
-    private int longShirt = -1;
+    private int longShirt = 0;
     private int longShirtColor = 0;
-    private int arms = -1;
+    private int arms = 0;
     private int armsColor = 0;
-    private int chest = -1;
+    private int chest = 0;
     private int chestColor = 0;
-    private int shoulder = -1;
+    private int shoulder = 0;
     private int shoulderColor = 0;
 
     private bool bootsOverPants = false;
@@ -108,25 +108,25 @@ public class SampleRefMapRotator : MonoBehaviour
         // have a cloth of that type dressed.
 
         int maxBoots = sex == 0 ? MaleBoots : FemaleBoots;
-        if (boots >= maxBoots) boots = -1;
+        if (boots > maxBoots) boots = 0;
         int maxPants = sex == 0 ? MalePants : FemalePants;
-        if (pants >= maxPants) pants = -1;
+        if (pants > maxPants) pants = 0;
         int maxWaits = sex == 0 ? MaleWaists : FemaleWaists;
-        if (waist >= maxWaits) waist = -1;
+        if (waist > maxWaits) waist = 0;
         int maxShirts = sex == 0 ? MaleShirts : FemaleShirts;
-        if (shirt >= maxShirts) shirt = -1;
+        if (shirt > maxShirts) shirt = 0;
         int maxChest = sex == 0 ? MaleChests : FemaleChests;
-        if (chest >= maxChest) chest = -1;
+        if (chest > maxChest) chest = 0;
         int maxLongShirt = sex == 0 ? MaleLongShirts : FemaleLongShirts;
-        if (longShirt >= maxLongShirt) longShirt = -1;
+        if (longShirt > maxLongShirt) longShirt = 0;
         int maxShoulder = sex == 0 ? MaleShoulders : FemaleShoulders;
-        if (shoulder >= maxShoulder) shoulder = -1;
+        if (shoulder > maxShoulder) shoulder = 0;
         int maxArms = sex == 0 ? MaleArms : FemaleArms;
-        if (arms >= maxArms) arms = -1;
+        if (arms > maxArms) arms = 0;
         int maxHat = sex == 0 ? MaleHats : FemaleHats;
-        if (hat >= maxHat) hat = -1;
+        if (hat > maxHat) hat = 0;
         int maxHair = sex == 0 ? MaleHairs : FemaleHairs;
-        if (hair >= maxHair) hair = -1;
+        if (hair > maxHair) hair = 0;
         
         // Now, applying everything will take place.
         
@@ -137,7 +137,7 @@ public class SampleRefMapRotator : MonoBehaviour
         applier.Use((new BodyTrait($"{sex}{bodyColor}", bodySource)), false);
         
         // Boots
-        if (boots == -1)
+        if (boots == 0)
         {
             applier.Use((BootsTrait)null, false);
         }
@@ -152,7 +152,7 @@ public class SampleRefMapRotator : MonoBehaviour
         }
         
         // Pants
-        if (pants == -1)
+        if (pants == 0)
         {
             applier.Use((PantsTrait)null, false);
         }
@@ -167,7 +167,7 @@ public class SampleRefMapRotator : MonoBehaviour
         }
         
         // Waist
-        if (waist == -1)
+        if (waist == 0)
         {
             applier.Use((WaistTrait)null, false);
         }
@@ -182,7 +182,7 @@ public class SampleRefMapRotator : MonoBehaviour
         }
         
         // Shirt
-        if (shirt == -1)
+        if (shirt == 0)
         {
             applier.Use((ShirtTrait)null, false);
         }
@@ -197,7 +197,7 @@ public class SampleRefMapRotator : MonoBehaviour
         }
         
         // Chest
-        if (chest == -1)
+        if (chest == 0)
         {
             applier.Use((ChestTrait)null, false);
         }
@@ -212,7 +212,7 @@ public class SampleRefMapRotator : MonoBehaviour
         }
         
         // LongShirt
-        if (longShirt == -1)
+        if (longShirt == 0)
         {
             applier.Use((LongShirtTrait)null, false);
         }
@@ -227,7 +227,7 @@ public class SampleRefMapRotator : MonoBehaviour
         }
         
         // Shoulder
-        if (shoulder == -1)
+        if (shoulder == 0)
         {
             applier.Use((ShoulderTrait)null, false);
         }
@@ -242,7 +242,7 @@ public class SampleRefMapRotator : MonoBehaviour
         }
         
         // Arms
-        if (arms == -1)
+        if (arms == 0)
         {
             applier.Use((ArmsTrait)null, false);
         }
@@ -257,7 +257,7 @@ public class SampleRefMapRotator : MonoBehaviour
         }
         
         // Hat
-        if (hat == -1)
+        if (hat == 0)
         {
             applier.Use((HatTrait)null, false);
         }
@@ -272,7 +272,7 @@ public class SampleRefMapRotator : MonoBehaviour
         }
         
         // Hair - This one is a bit different
-        if (hair == -1)
+        if (hair == 0)
         {
             applier.Use((HairTrait)null);
         }

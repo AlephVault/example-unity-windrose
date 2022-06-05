@@ -139,6 +139,8 @@ namespace GameMeanMachine.Unity.RefMapChars
                             string sexPath = Path.Combine(refmap, $"{sexCode}.asset");
                             AssetDatabase.CreateAsset(sex, sexPath);
                         }
+                        
+                        AssetDatabase.CreateAsset(bundle, "Bundle.asset");
                     }
 
                     /// <summary>

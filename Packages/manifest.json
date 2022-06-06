@@ -24,7 +24,7 @@
     "com.gamemeanmachine.unity.windrose.biomes": "file:../../unity-windrose-biomes",
     "com.gamemeanmachine.unity.windrose.cubeworlds": "file:../../unity-windrose-cubeworlds",
     "com.gamemeanmachine.unity.windrose.neighbourteleports": "file:../../unity-windrose-neighbourteleports",
-    "com.gamemeanmachine.unity.windrose.refmap": "file:/home/luismasuelli/Projects/Unity/unity-windrose-refmap",
+    "com.gamemeanmachine.unity.windrose.refmapchars": "file:/home/luismasuelli/Projects/Unity/unity-windrose-refmapchars",
     "com.gamemeanmachine.unity.windrose.spriteutils": "file:/home/luismasuelli/Projects/Unity/unity-windrose-spriteutils",
     "com.unity.2d.sprite": "1.0.0",
     "com.unity.2d.tilemap": "1.0.0",

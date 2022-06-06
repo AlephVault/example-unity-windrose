@@ -211,6 +211,15 @@
         "com.gamemeanmachine.unity.windrose": "0.0.3"
       }
     },
+    "com.gamemeanmachine.unity.windrose.refmap": {
+      "version": "file:/home/luismasuelli/Projects/Unity/unity-windrose-refmap",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {
+        "com.gamemeanmachine.unity.windrose.spriteutils": "0.0.3",
+        "com.alephvault.unity.textureutils": "0.0.1"
+      }
+    },
     "com.gamemeanmachine.unity.windrose.spriteutils": {
       "version": "file:/home/luismasuelli/Projects/Unity/unity-windrose-spriteutils",
       "depth": 0,

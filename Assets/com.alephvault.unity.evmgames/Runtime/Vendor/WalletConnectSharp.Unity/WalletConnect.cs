@@ -84,12 +84,8 @@ namespace AlephVault.Unity.EVMGames.WalletConnectSharp.Unity
         public int chainId = 1;
 
         public WalletConnectEventNoSession ConnectedEvent;
-
         public WalletConnectEventWithSessionData ConnectedEventSession;
-
         public WalletConnectEventWithSession DisconnectedEvent;
-        
-        public WalletConnectEventWithSession ConnectionFailedEvent;
         public WalletConnectEventWithSession NewSessionConnected;
         public WalletConnectEventWithSession ResumedSessionConnected;
 
@@ -220,8 +216,7 @@ namespace AlephVault.Unity.EVMGames.WalletConnectSharp.Unity
             {
                 Session = new WalletConnectUnitySession(AppData, this, customBridgeUrl, _transport, ciper, chainId);
                 
-                if (NewSessionStarted != null)
-                    NewSessionStarted(this, EventArgs.Empty);
+                NewSessionStarted?.Invoke(this, EventArgs.Empty);
             }
 
             StartCoroutine(SetupDefaultWallet());
@@ -260,33 +255,20 @@ namespace AlephVault.Unity.EVMGames.WalletConnectSharp.Unity
 
         private void SessionOnOnSessionResumed(object sender, WalletConnectSession e)
         {
-            if (this.ResumedSessionConnected != null)
-                this.ResumedSessionConnected.Invoke(e as WalletConnectUnitySession ?? Session);
+            ResumedSessionConnected?.Invoke(e as WalletConnectUnitySession ?? Session);
         }
 
         private void SessionOnOnSessionCreated(object sender, WalletConnectSession e)
         {
-            if (this.NewSessionConnected != null)
-                this.NewSessionConnected.Invoke(e as WalletConnectUnitySession ?? Session);
+            NewSessionConnected?.Invoke(e as WalletConnectUnitySession ?? Session);
         }
 
         private async Task<WCSessionData> CompleteConnect()
         {
             Debug.Log("Waiting for Wallet connection");
             
-            if (ConnectionStarted != null)
-            {
-                ConnectionStarted(this, EventArgs.Empty);
-            }
+            ConnectionStarted?.Invoke(this, EventArgs.Empty);
             
-            WalletConnectEventWithSessionData allEvents = new WalletConnectEventWithSessionData();
-                
-            allEvents.AddListener(delegate(WCSessionData arg0)
-            {
-                ConnectedEvent.Invoke();
-                ConnectedEventSession.Invoke(arg0);
-            });
-
             int tries = 0;
             while (tries < connectSessionRetryCount)
             {
@@ -294,16 +276,14 @@ namespace AlephVault.Unity.EVMGames.WalletConnectSharp.Unity
                 {
                     var session = await Session.SourceConnectSession();
 
-                    allEvents.Invoke(session);
+                    ConnectedEvent?.Invoke();
+                    ConnectedEventSession?.Invoke(session);
 
                     return session;
                 }
                 catch (IOException e)
                 {
                     tries++;
-
-                    if (tries >= connectSessionRetryCount)
-                        throw new IOException("Failed to request session connection after " + tries + " times.", e);
                 }
             }
             
@@ -312,8 +292,7 @@ namespace AlephVault.Unity.EVMGames.WalletConnectSharp.Unity
 
         private async void SessionOnOnSessionDisconnect(object sender, EventArgs e)
         {
-            if (DisconnectedEvent != null)
-                DisconnectedEvent.Invoke(ActiveSession);
+            DisconnectedEvent?.Invoke(ActiveSession);
 
             if (autoSaveAndResume && PlayerPrefs.HasKey(SessionKey))
             {

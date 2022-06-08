@@ -58,19 +58,14 @@ namespace AlephVault.Unity.EVMGames.WalletConnectSharp.Core
         
         public WalletConnectSession(SavedSession savedSession, ITransport transport = null, ICipher cipher = null, EventDelegator eventDelegator = null) : base(savedSession, transport, cipher, eventDelegator)
         {
-            this.DappMetadata = savedSession.DappMeta;
-            this.WalletMetadata = savedSession.WalletMeta;
-            this.ChainId = savedSession.ChainID;
-            
+            DappMetadata = savedSession.DappMeta;
+            WalletMetadata = savedSession.WalletMeta;
+            ChainId = savedSession.ChainID;
             clientId = savedSession.ClientID;
-            
-            this.Accounts = savedSession.Accounts;
-                        
-            this.NetworkId = savedSession.NetworkID;
-
-            this._handshakeId = savedSession.HandshakeID;
-
-            this.SessionConnected = true;
+            Accounts = savedSession.Accounts;
+            NetworkId = savedSession.NetworkID;
+            _handshakeId = savedSession.HandshakeID;
+            SessionConnected = true;
         }
 
         public WalletConnectSession(ClientMeta clientMeta, string bridgeUrl = null, ITransport transport = null, ICipher cipher = null, int chainId = 1, EventDelegator eventDelegator = null) : base(transport, cipher, eventDelegator)
@@ -112,11 +107,10 @@ namespace AlephVault.Unity.EVMGames.WalletConnectSharp.Core
             else if (bridgeUrl.StartsWith("http"))
                 bridgeUrl = bridgeUrl.Replace("http", "ws");
             
-            this.DappMetadata = clientMeta;
-            this.ChainId = chainId;
-            this._bridgeUrl = bridgeUrl;
-
-            this.SessionConnected = false;
+            DappMetadata = clientMeta;
+            ChainId = chainId;
+            _bridgeUrl = bridgeUrl;
+            SessionConnected = false;
             
             CreateNewSession();
         }
@@ -128,7 +122,7 @@ namespace AlephVault.Unity.EVMGames.WalletConnectSharp.Core
                 throw new IOException("You cannot create a new session after connecting the session. Create a new WalletConnectSession object to create a new session");
             }
 
-            this._bridgeUrl = DefaultBridge.GetBridgeUrl(this._bridgeUrl);
+            _bridgeUrl = DefaultBridge.GetBridgeUrl(_bridgeUrl);
 
             var topicGuid = Guid.NewGuid();
 
@@ -137,12 +131,7 @@ namespace AlephVault.Unity.EVMGames.WalletConnectSharp.Core
             clientId = Guid.NewGuid().ToString();
 
             GenerateKey();
-
-            if (Transport != null)
-            {
-                Transport.ClearSubscriptions();
-            }
-
+            Transport?.ClearSubscriptions();
             SessionUsed = false;
             ReadyForUserPrompt = false;
         }
@@ -163,10 +152,10 @@ namespace AlephVault.Unity.EVMGames.WalletConnectSharp.Core
             RNGCryptoServiceProvider rngCsp = new RNGCryptoServiceProvider();
             rngCsp.GetBytes(secret);
 
-            this._keyRaw = secret;
+            _keyRaw = secret;
 
             //Convert hex 
-            this._key = this._keyRaw.ToHex().ToLower();
+            _key = _keyRaw.ToHex().ToLower();
         }
 
         public virtual async Task<WCSessionData> ConnectSession()
@@ -183,18 +172,18 @@ namespace AlephVault.Unity.EVMGames.WalletConnectSharp.Core
                     //We do this now before subscribing
                     //This is in case we need to respond to a session disconnect and this is a
                     //resume session
-                    Events.ListenForResponse<WCSessionRequestResponse>(this._handshakeId, HandleSessionResponse);
+                    Events.ListenForResponse<WCSessionRequestResponse>(_handshakeId, HandleSessionResponse);
                 }
                 
-                if (!base.TransportConnected)
+                if (!TransportConnected)
                 {
-                    await base.SetupTransport();
+                    await SetupTransport();
                 }
 
                 ReadyForUserPrompt = false;
-                await SubscribeAndListenToTopic(this.clientId);
+                await SubscribeAndListenToTopic(clientId);
 
-                ListenToTopic(this._handshakeTopic);
+                ListenToTopic(_handshakeTopic);
 
                 WCSessionData result;
                 if (!SessionConnected)
@@ -204,9 +193,7 @@ namespace AlephVault.Unity.EVMGames.WalletConnectSharp.Core
                     ReadyForUserPrompt = false;
                     Connecting = false;
 
-                    if (OnSessionCreated != null)
-                        OnSessionCreated(this, this);
-
+                    OnSessionCreated?.Invoke(this, this);
                 }
                 else
                 {
@@ -221,13 +208,10 @@ namespace AlephVault.Unity.EVMGames.WalletConnectSharp.Core
                     };
                     Connecting = false;
 
-                    if (OnSessionResumed != null)
-                        OnSessionResumed(this, this);
+                    OnSessionResumed?.Invoke(this, this);
                 }
 
-
-                if (OnSessionConnect != null)
-                    OnSessionConnect(this, this);
+                OnSessionConnect?.Invoke(this, this);
 
                 return result;
             }
@@ -310,12 +294,8 @@ namespace AlephVault.Unity.EVMGames.WalletConnectSharp.Core
                 message = "0x" + hash.ToHex();
             }
 
-            Debug.Log(message);
-            
             var request = new EthSign(address, message);
-
             var response = await Send<EthSign, EthResponse>(request);
-
             return response.Result;
         }
 
@@ -341,12 +321,7 @@ namespace AlephVault.Unity.EVMGames.WalletConnectSharp.Core
             }
             
             var request = new EthPersonalSign(address, message);
-
             var response = await Send<EthPersonalSign, EthResponse>(request);
-            
-            
-            
-
             return response.Result;
         }
 
@@ -428,10 +403,7 @@ namespace AlephVault.Unity.EVMGames.WalletConnectSharp.Core
 
             await SendRequest(data);
 
-            if (OnSend != null)
-            {
-                OnSend(this, this);
-            }
+            OnSend?.Invoke(this, this);
 
             return await eventCompleted.Task;
         }
@@ -573,8 +545,7 @@ namespace AlephVault.Unity.EVMGames.WalletConnectSharp.Core
             
             Events.Clear();
 
-            if (OnSessionDisconnect != null)
-                OnSessionDisconnect(this, EventArgs.Empty);
+            OnSessionDisconnect?.Invoke(this, EventArgs.Empty);
         }
         
         

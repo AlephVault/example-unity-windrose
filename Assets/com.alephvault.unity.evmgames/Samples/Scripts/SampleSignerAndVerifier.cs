@@ -28,13 +28,6 @@ namespace AlephVault.Unity.EVMGames
             {
                 try
                 {
-                    // Bug: OnConnected triggers TWICE but, for the first
-                    // Bug: time, it seems that trying to access the session
-                    // Bug: hangs everything (i.e. one of the two routines
-                    // Bug: remains blocked forever and never ends). I have
-                    // Bug: to check whether that one is a Metamask error
-                    // Bug: or a local error in WalletConnectSharp or the
-                    // Bug: WalletConnectSharp.Unity libraries.
                     Debug.Log($"Current session is: {walletConnect.Session}");
                 
                     // 1. Generating the ISO Date for Now.

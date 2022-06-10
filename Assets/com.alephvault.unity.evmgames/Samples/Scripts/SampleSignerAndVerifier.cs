@@ -51,7 +51,7 @@ namespace AlephVault.Unity.EVMGames
                     //    address used for signature.
                     Debug.Log($"The signature result is: {result}");
                     // 5. Close the session.
-                    walletConnect.CloseSession(false);
+                    walletConnect.CloseSession(true);
                 }
                 catch (Exception e)
                 {

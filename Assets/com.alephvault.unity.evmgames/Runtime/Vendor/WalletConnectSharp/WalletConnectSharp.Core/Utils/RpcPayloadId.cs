@@ -10,8 +10,8 @@ namespace AlephVault.Unity.EVMGames.WalletConnectSharp.Core.Utils
         
         public static long Generate()
         {
-            var date = (long)((DateTime.UtcNow - UnixEpoch).TotalMilliseconds) * (10L * 10L * 10L);
-            var extra = (long)Math.Floor(rng.NextDouble() * (10.0 * 10.0 * 10.0));
+            var date = (long)(DateTime.UtcNow - UnixEpoch).TotalMilliseconds * 1000L;
+            var extra = (long)Math.Floor(rng.NextDouble() * 1000.0);
             return date + extra;
         }
     }

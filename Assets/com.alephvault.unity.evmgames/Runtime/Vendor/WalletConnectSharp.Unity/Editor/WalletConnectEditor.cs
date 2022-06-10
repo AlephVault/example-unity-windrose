@@ -15,7 +15,7 @@ namespace AlephVault.Unity.EVMGames.WalletConnectSharp.Unity
 
             if (GUILayout.Button("Clear Session"))
             {
-                saver.CLearSession();
+                saver.ClearSession();
             }
         }
     }

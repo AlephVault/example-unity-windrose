@@ -117,8 +117,8 @@ namespace AlephVault.Unity.EVMGames.WalletConnectSharp.Core.Utils
             }
             catch (FormatException ex)
             {
-                throw new FormatException(string.Format(
-                    "String '{0}' could not be converted to byte array (not hex?).", value), ex);
+                throw new FormatException(
+                    $"String '{value}' could not be converted to byte array (not hex?).", ex);
             }
         }
 
@@ -139,8 +139,8 @@ namespace AlephVault.Unity.EVMGames.WalletConnectSharp.Core.Utils
             }
             else
             {
-                throw new FormatException(string.Format(
-                    "Character '{0}' at index '{1}' is not valid alphanumeric character.", character, index));
+                throw new FormatException(
+                    $"Character '{character}' at index '{index}' is not valid alphanumeric character.");
             }
 
             return value;

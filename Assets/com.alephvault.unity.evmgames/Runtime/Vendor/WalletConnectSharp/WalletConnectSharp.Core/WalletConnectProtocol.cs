@@ -40,23 +40,11 @@ namespace AlephVault.Unity.EVMGames.WalletConnectSharp.Core
         
         public bool Disconnected { get; protected set; }
 
-        public bool Connected
-        {
-            get
-            {
-                return SessionConnected && TransportConnected;
-            }
-        }
-        
+        public bool Connected => SessionConnected && TransportConnected;
+
         public bool Connecting { get; protected set; }
 
-        public bool TransportConnected
-        {
-            get
-            {
-                return Transport != null && Transport.Connected && Transport.URL == _bridgeUrl;
-            }
-        }
+        public bool TransportConnected => Transport != null && Transport.Connected && Transport.URL == _bridgeUrl;
 
         public ITransport Transport { get; private set; }
 
@@ -66,13 +54,7 @@ namespace AlephVault.Unity.EVMGames.WalletConnectSharp.Core
         
         public ClientMeta WalletMetadata { get; set; }
 
-        public ReadOnlyCollection<string> ActiveTopics
-        {
-            get
-            {
-                return _activeTopics.AsReadOnly();
-            }
-        }
+        public ReadOnlyCollection<string> ActiveTopics => _activeTopics.AsReadOnly();
 
         public string PeerId
         {
@@ -91,106 +73,60 @@ namespace AlephVault.Unity.EVMGames.WalletConnectSharp.Core
         /// <param name="eventDelegator">The EventDelegator class to use, null will result in the default being used</param>
         /// <exception cref="ArgumentException">If a null SavedSession object was given</exception>
         public WalletConnectProtocol(SavedSession savedSession, ITransport transport = null, 
-                                    ICipher cipher = null, EventDelegator eventDelegator = null)
+                                     ICipher cipher = null, EventDelegator eventDelegator = null)
         {
             if (savedSession == null)
                 throw new ArgumentException("savedSession cannot be null");
+            _bridgeUrl = savedSession.BridgeURL;
+            _keyRaw = savedSession.KeyRaw;
+            _key = savedSession.Key;
+            PeerId = savedSession.PeerID;
             
-            if (eventDelegator == null)
-                eventDelegator = new EventDelegator();
-
-            this.Events = eventDelegator;
-
-            //TODO Do we need this for resuming?
-            //_handshakeTopic = topicGuid.ToString();
-
-            if (transport == null)
-                transport = TransportFactory.Instance.BuildDefaultTransport(eventDelegator);
-
-            this._bridgeUrl = savedSession.BridgeURL;
-            this.Transport = transport;
-
-            if (cipher == null)
-                cipher = new AESCipher();
-
-            this.Cipher = cipher;
-            
-            this._keyRaw = savedSession.KeyRaw;
-
-            //Convert hex 
-            this._key = savedSession.Key;
-            
-            this.PeerId = savedSession.PeerID;
-
-            /*Transport.Open(this._bridgeUrl).ContinueWith(delegate(Task task)
-            {
-                Transport.Subscribe(savedSession.ClientID);
-            });
-
-            this.Connected = true;*/
+            Events = eventDelegator ?? new EventDelegator();
+            Transport = transport ?? TransportFactory.Instance.BuildDefaultTransport(Events);
+            Cipher = cipher ?? new AESCipher();
         }
 
         /// <summary>
         /// Create a new WalletConnectProtocol object and create a new dApp session.
         /// </summary>
-        /// <param name="clientMeta">The metadata to send to wallets</param>
         /// <param name="transport">The transport interface to use for sending/receiving messages, null will result in the default transport being used</param>
         /// <param name="cipher">The cipher to use for encrypting and decrypting payload data, null will result in AESCipher being used</param>
         /// <param name="chainId">The chainId this dApp is using</param>
         /// <param name="bridgeUrl">The bridgeURL to use to communicate with the wallet</param>
         /// <param name="eventDelegator">The EventDelegator class to use, null will result in the default being used</param>
         /// <exception cref="ArgumentException">If an invalid ClientMeta object was given</exception>
-        public WalletConnectProtocol(ITransport transport = null,
-            ICipher cipher = null,
-            EventDelegator eventDelegator = null
-        )
+        public WalletConnectProtocol(ITransport transport = null, ICipher cipher = null,
+            EventDelegator eventDelegator = null)
         {
-            if (eventDelegator == null)
-                eventDelegator = new EventDelegator();
-
-            this.Events = eventDelegator;
-
-            if (transport == null)
-                transport = TransportFactory.Instance.BuildDefaultTransport(eventDelegator);
-            
-            this.Transport = transport;
-
-            if (cipher == null)
-                cipher = new AESCipher();
-
-            this.Cipher = cipher;
+            Events = eventDelegator ?? new EventDelegator();
+            Transport = transport ?? TransportFactory.Instance.BuildDefaultTransport(Events);
+            Cipher = cipher ?? new AESCipher();
         }
 
         protected async Task SetupTransport()
         {
             Transport.MessageReceived += TransportOnMessageReceived;
-            
-            await Transport.Open(this._bridgeUrl);
-            
-            //Debug.Log("[WalletConnect] Transport Opened");
-            
+            await Transport.Open(_bridgeUrl);
             TriggerOnTransportConnect();
         }
 
         protected async Task DisconnectTransport()
         {
             await Transport.Close();
-            
             Transport.MessageReceived -= TransportOnMessageReceived;
-
-            if (OnTransportDisconnect != null)
-                OnTransportDisconnect(this, this);
+            OnTransportDisconnect?.Invoke(this, this);
         }
 
         protected virtual void TriggerOnTransportConnect()
         {
-            if (OnTransportConnect != null)
-                OnTransportConnect(this, this);
+            OnTransportConnect?.Invoke(this, this);
         }
         
-        public virtual async Task Connect()
+        public virtual async Task<WCSessionData> Connect()
         {
             await SetupTransport();
+            return null;
         }
         
         public async Task SubscribeAndListenToTopic(string topic)
@@ -254,8 +190,7 @@ namespace AlephVault.Unity.EVMGames.WalletConnectSharp.Core
 
             var encrypted = await Cipher.EncryptWithKey(_keyRaw, json);
 
-            if (sendingTopic == null)
-                sendingTopic = PeerId;
+            sendingTopic ??= PeerId;
 
             var message = new NetworkMessage()
             {
@@ -265,7 +200,7 @@ namespace AlephVault.Unity.EVMGames.WalletConnectSharp.Core
                 Type = "pub"
             };
 
-            await this.Transport.SendMessage(message);
+            await Transport.SendMessage(message);
         }
         
         public void Dispose()

@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using UnityEngine;
@@ -77,7 +76,6 @@ namespace AlephVault.Unity.EVMGames.WalletConnectSharp.Unity
         public bool autoSaveAndResume = true;
         public bool connectOnAwake = false;
         public bool connectOnStart = true;
-        public bool createNewSessionOnSessionDisconnect = true;
         public int connectSessionRetryCount = 3;
         public string customBridgeUrl;
         
@@ -274,7 +272,7 @@ namespace AlephVault.Unity.EVMGames.WalletConnectSharp.Unity
             {
                 try
                 {
-                    var session = await Session.SourceConnectSession();
+                    var session = await Session.Connect();
 
                     ConnectedEvent?.Invoke();
                     ConnectedEventSession?.Invoke(session);
@@ -290,7 +288,7 @@ namespace AlephVault.Unity.EVMGames.WalletConnectSharp.Unity
             throw new IOException("Failed to request session connection after " + tries + " times.");
         }
 
-        private async void SessionOnOnSessionDisconnect(object sender, EventArgs e)
+        private void SessionOnOnSessionDisconnect(object sender, EventArgs e)
         {
             DisconnectedEvent?.Invoke(ActiveSession);
 
@@ -300,11 +298,6 @@ namespace AlephVault.Unity.EVMGames.WalletConnectSharp.Unity
             }
             
             TeardownEvents();
-            
-            if (createNewSessionOnSessionDisconnect)
-            {
-                await Connect();
-            }
         }
 
         private string FormatWalletName(string name)
@@ -557,20 +550,15 @@ namespace AlephVault.Unity.EVMGames.WalletConnectSharp.Unity
 #endif
         }
 
-        public void CLearSession()
+        public void ClearSession()
         {
             PlayerPrefs.DeleteKey(SessionKey);
         }
         
         public async void CloseSession(bool waitForNewSession = true)
         {
-            if (ActiveSession == null)
-                return;
-            
-            await ActiveSession.Disconnect();
-        
-            if (waitForNewSession)
-                await ActiveSession.Connect();
+            await (Session?.Disconnect() ?? Task.CompletedTask);
+            if (waitForNewSession) await Connect();
         }
     }
 }

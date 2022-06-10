@@ -63,5 +63,10 @@ namespace AlephVault.Unity.EVMGames.Nethereum.Signer
         {
             return EcRecover(Encoding.UTF8.GetBytes(message), signature);
         }
+        
+        public Tuple<string, byte[]> EncodeUTF8AndEcFullRecover(string message, string signature)
+        {
+            return EcFullRecover(Encoding.UTF8.GetBytes(message), signature);
+        }
     }
 }

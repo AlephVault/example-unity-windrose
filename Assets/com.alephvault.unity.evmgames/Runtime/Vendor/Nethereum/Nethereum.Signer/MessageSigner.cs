@@ -1,3 +1,4 @@
+using System;
 using System.Text;
 using AlephVault.Unity.EVMGames.Nethereum.Hex.HexConvertors.Extensions;
 using AlephVault.Unity.EVMGames.Nethereum.Util;
@@ -15,6 +16,19 @@ namespace AlephVault.Unity.EVMGames.Nethereum.Signer
         public virtual string EcRecover(byte[] hashMessage, EthECDSASignature signature)
         {
             return EthECKey.RecoverFromSignature(signature, hashMessage).GetPublicAddress();
+        }
+
+        public virtual Tuple<string, byte[]> EcFullRecover(byte[] hashMessage, string signature)
+        {
+            var ecdaSignature = ExtractEcdsaSignature(signature);
+            EthECKey key = EthECKey.RecoverFromSignature(ecdaSignature, hashMessage);
+            return new Tuple<string, byte[]>(key.GetPublicAddress(), key.GetPubKey());
+        }
+
+        public virtual Tuple<string, byte[]> EcFullRecover(byte[] hashMessage, EthECDSASignature signature)
+        {
+            EthECKey key = EthECKey.RecoverFromSignature(signature, hashMessage);
+            return new Tuple<string, byte[]>(key.GetPublicAddress(), key.GetPubKey());
         }
 
         public byte[] Hash(byte[] plainMessage)

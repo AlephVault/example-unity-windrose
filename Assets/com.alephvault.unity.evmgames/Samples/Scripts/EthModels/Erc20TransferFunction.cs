@@ -1,6 +1,6 @@
+using System.Numerics;
 using AlephVault.Unity.EVMGames.Nethereum.ABI.FunctionEncoding.Attributes;
 using AlephVault.Unity.EVMGames.Nethereum.Contracts;
-using Org.BouncyCastle.Math;
 
 
 namespace AlephVault.Unity.EVMGames

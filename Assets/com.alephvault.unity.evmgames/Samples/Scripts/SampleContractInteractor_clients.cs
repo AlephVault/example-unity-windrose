@@ -42,7 +42,7 @@ namespace AlephVault.Unity.EVMGames
                 web3IndirectClient = null;
             }
 
-            private void InitWeb3Clients()
+            private void StartWeb3Clients()
             {
                 // This function requires the walletConnect instance
                 // to appropriately exist.

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using AlephVault.Unity.EVMGames.Nethereum.Contracts;
 using AlephVault.Unity.EVMGames.Nethereum.Hex.HexTypes;
@@ -41,9 +42,6 @@ namespace AlephVault.Unity.EVMGames
             // Now, per-pane variables go here.
             
             // Events pane.
-
-            private Button eventsClearButton;
-            private InputField eventsBox;
             
             private void TogglePanel(Transform tf, bool show)
             {
@@ -58,40 +56,6 @@ namespace AlephVault.Unity.EVMGames
             //////////////////////////////////
             // Event initializers
             //////////////////////////////////
-
-            private async void CreateEventFiltering()
-            {
-                Event<Erc20TransferEvent> transferEvent = web3DirectClient.Eth.GetEvent<Erc20TransferEvent>(ContractAddress);
-                NewFilterInput filterInput = transferEvent.CreateFilterInput();
-                HexBigInteger filterId = await transferEvent.CreateFilterAsync(filterInput);
-                while (gameObject)
-                {
-                    List<EventLog<Erc20TransferEvent>> events = await transferEvent.GetFilterChangesAsync(filterId);
-                    foreach (EventLog<Erc20TransferEvent> @event in events)
-                    {
-                        if (@event.Log.Type == "mined")
-                        {
-                            string eventLine = $"\n{@event.Log.BlockNumber} - " +
-                                               $"{@event.Event.From}->{@event.Event.To} : {@event.Event.Value}";
-                            if (string.IsNullOrEmpty(eventsBox.text))
-                            {
-                                eventsBox.text = eventLine;
-                            }
-                            else
-                            {
-                                eventsBox.text += $"\n{eventLine}";
-                            }
-                        }
-                    }
-
-                    float time = 0;
-                    while (time < 5f)
-                    {
-                        await Tasks.Blink();
-                        time += Time.deltaTime;
-                    }
-                }
-            }
             
             private void Awake()
             {
@@ -129,6 +93,8 @@ namespace AlephVault.Unity.EVMGames
                 
                 
                 
+                
+                
                 // Core variables initialization goes here.
 
                 // This one is the server client. Will also be used for events.
@@ -136,21 +102,15 @@ namespace AlephVault.Unity.EVMGames
                 
                 // Now, per-pane settings go here.
 
-                // 1. Events pane.
-
-                eventsBox = transform.Find("eventsPanel/eventsBox").GetComponent<InputField>();
-                eventsClearButton = transform.Find("eventsPanel/eventsClearButton").GetComponent<Button>();
-                Debug.Log(eventsBox);
-                Debug.Log(eventsClearButton);
-                eventsClearButton.onClick.AddListener(() =>
-                {
-                    eventsBox.text = "";
-                });
-                CreateEventFiltering();
-                
                 // 2. Server pane.
                 // 3. Client pane.
                 
+            }
+
+            private void Start()
+            {
+                StartWeb3Clients();
+                StartEventsPanel();
             }
         }
     }

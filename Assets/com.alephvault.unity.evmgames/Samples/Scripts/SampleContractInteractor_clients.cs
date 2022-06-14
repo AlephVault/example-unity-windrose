@@ -10,7 +10,7 @@ namespace AlephVault.Unity.EVMGames
 {
     namespace Samples
     {
-        public partial class SampleContractInteractor : MonoBehaviour
+        public partial class SampleContractInteractor
         {
             private Web3 web3DirectClient;
             private Web3 web3IndirectClient;

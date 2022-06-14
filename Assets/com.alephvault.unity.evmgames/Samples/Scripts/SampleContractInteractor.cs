@@ -32,6 +32,8 @@ namespace AlephVault.Unity.EVMGames
             {
                 AwakeTabs();
                 AwakeEventsPanel();
+                AwakeDirectWallet();
+                AwakeIndirectWallet();
             }
 
             private void Start()
@@ -39,6 +41,14 @@ namespace AlephVault.Unity.EVMGames
                 StartWeb3Clients();
                 StartTabs();
                 StartEventsPanel();
+                StartDirectWallet();
+                StartIndirectWallet();
+            }
+
+            private void Update()
+            {
+                UpdateDirectWallet();
+                UpdateIndirectWallet();
             }
         }
     }

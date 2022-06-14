@@ -35,11 +35,6 @@ namespace AlephVault.Unity.EVMGames
                 StartDirectWallet();
                 StartIndirectWallet();
             }
-
-            private void Update()
-            {
-                UpdateIndirectWallet();
-            }
         }
     }
 }

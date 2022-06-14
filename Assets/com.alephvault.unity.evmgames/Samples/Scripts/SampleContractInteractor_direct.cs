@@ -1,10 +1,3 @@
-using System.Collections.Generic;
-using AlephVault.Unity.EVMGames.Nethereum.Contracts;
-using AlephVault.Unity.EVMGames.Nethereum.Hex.HexTypes;
-using AlephVault.Unity.EVMGames.Nethereum.RPC.Eth.DTOs;
-using AlephVault.Unity.EVMGames.Samples.EthModels;
-using AlephVault.Unity.Support.Utils;
-using UnityEngine;
 using UnityEngine.UI;
 
 
@@ -17,40 +10,41 @@ namespace AlephVault.Unity.EVMGames
             private Text currentPrivateKey;
             private InputField directAddressesBox;
 
-            private Button balanceOfButton;
-            private InputField balanceOfInput;
-            private Text balanceOfResult;
+            private Button directBalanceOfButton;
+            private InputField directBalanceOfInput;
+            private Text directBalanceOfResult;
 
-            private InputField sendTokensToInput;
-            private InputField sendTokensAmountInput;
-            private Button sendTokensButton;
-            private Text sendTokensResult;
+            private InputField directSendTokensToInput;
+            private InputField directSendTokensAmountInput;
+            private Button directSendTokensButton;
+            private Text directSendTokensResult;
             
             private void AwakeDirectWallet()
             {
                 currentPrivateKey = transform.Find("pkWalletPanel/currentPrivateKey").GetComponent<Text>();
                 directAddressesBox = transform.Find("pkWalletPanel/addressesBox").GetComponent<InputField>();
 
-                balanceOfButton = transform.Find("pkWalletPanel/balanceOfButton").GetComponent<Button>();
-                balanceOfInput = transform.Find("pkWalletPanel/balanceOfInput").GetComponent<InputField>();
-                balanceOfResult = transform.Find("pkWalletPanel/balanceOfResult").GetComponent<Text>();
+                directBalanceOfButton = transform.Find("pkWalletPanel/balanceOfButton").GetComponent<Button>();
+                directBalanceOfInput = transform.Find("pkWalletPanel/balanceOfInput").GetComponent<InputField>();
+                directBalanceOfResult = transform.Find("pkWalletPanel/balanceOfResult").GetComponent<Text>();
                 
-                sendTokensToInput = transform.Find("pkWalletPanel/sendTokensToInput").GetComponent<InputField>();
-                sendTokensToInput = transform.Find("pkWalletPanel/sendTokensAmountInput").GetComponent<InputField>();
-                sendTokensButton = transform.Find("pkWalletPanel/sendTokensButton").GetComponent<Button>();
-                sendTokensResult = transform.Find("pkWalletPanel/sendTokensResult").GetComponent<Text>();
+                directSendTokensToInput = transform.Find("pkWalletPanel/sendTokensToInput").GetComponent<InputField>();
+                directSendTokensAmountInput = transform.Find("pkWalletPanel/sendTokensAmountInput").GetComponent<InputField>();
+                directSendTokensButton = transform.Find("pkWalletPanel/sendTokensButton").GetComponent<Button>();
+                directSendTokensResult = transform.Find("pkWalletPanel/sendTokensResult").GetComponent<Text>();
             }
             
             private async void StartDirectWallet()
             {
                 directAddressesBox.text = string.Join("\n", await web3DirectClient.Eth.Accounts.SendRequestAsync());
-                balanceOfButton.onClick.AddListener( () =>
+                currentPrivateKey.text = privateKey;
+                directBalanceOfButton.onClick.AddListener( () =>
                 {
-                    DoBalanceOf(web3DirectClient, balanceOfInput, balanceOfResult);
+                    DoBalanceOf(web3DirectClient, directBalanceOfInput, directBalanceOfResult);
                 });
-                sendTokensButton.onClick.AddListener(() =>
+                directSendTokensButton.onClick.AddListener(() =>
                 {
-                    DoTransfer(web3DirectClient, sendTokensToInput, sendTokensAmountInput, sendTokensResult);
+                    DoTransfer(web3DirectClient, directSendTokensToInput, directSendTokensAmountInput, directSendTokensResult);
                 });
             }
         }

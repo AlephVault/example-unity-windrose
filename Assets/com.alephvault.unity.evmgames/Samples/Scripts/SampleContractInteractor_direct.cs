@@ -14,19 +14,44 @@ namespace AlephVault.Unity.EVMGames
     {
         public partial class SampleContractInteractor
         {
+            private Text currentPrivateKey;
+            private InputField directAddressesBox;
+
+            private Button balanceOfButton;
+            private InputField balanceOfInput;
+            private Text balanceOfResult;
+
+            private InputField sendTokensToInput;
+            private InputField sendTokensAmountInput;
+            private Button sendTokensButton;
+            private Text sendTokensResult;
+            
             private void AwakeDirectWallet()
             {
+                currentPrivateKey = transform.Find("pkWalletPanel/currentPrivateKey").GetComponent<Text>();
+                directAddressesBox = transform.Find("pkWalletPanel/addressesBox").GetComponent<InputField>();
+
+                balanceOfButton = transform.Find("pkWalletPanel/balanceOfButton").GetComponent<Button>();
+                balanceOfInput = transform.Find("pkWalletPanel/balanceOfInput").GetComponent<InputField>();
+                balanceOfResult = transform.Find("pkWalletPanel/balanceOfResult").GetComponent<Text>();
                 
+                sendTokensToInput = transform.Find("pkWalletPanel/sendTokensToInput").GetComponent<InputField>();
+                sendTokensToInput = transform.Find("pkWalletPanel/sendTokensAmountInput").GetComponent<InputField>();
+                sendTokensButton = transform.Find("pkWalletPanel/sendTokensButton").GetComponent<Button>();
+                sendTokensResult = transform.Find("pkWalletPanel/sendTokensResult").GetComponent<Text>();
             }
             
-            private void StartDirectWallet()
+            private async void StartDirectWallet()
             {
-                
-            }
-
-            private void UpdateDirectWallet()
-            {
-                
+                directAddressesBox.text = string.Join("\n", await web3DirectClient.Eth.Accounts.SendRequestAsync());
+                balanceOfButton.onClick.AddListener( () =>
+                {
+                    DoBalanceOf(web3DirectClient, balanceOfInput, balanceOfResult);
+                });
+                sendTokensButton.onClick.AddListener(() =>
+                {
+                    DoTransfer(web3DirectClient, sendTokensToInput, sendTokensAmountInput, sendTokensResult);
+                });
             }
         }
     }

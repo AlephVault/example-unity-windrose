@@ -1,4 +1,5 @@
 using System;
+using AlephVault.Unity.EVMGames.Nethereum.Signer;
 using AlephVault.Unity.EVMGames.WalletConnectSharp.Unity;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,7 +16,7 @@ namespace AlephVault.Unity.EVMGames
             private bool connected = false;
             
             private Text indirectConnectionStatusLabel;
-            private InputField indirectAddressesBox;
+            private InputField indirectChosenAddressesInput;
 
             private Button indirectBalanceOfButton;
             private InputField indirectBalanceOfInput;
@@ -33,7 +34,7 @@ namespace AlephVault.Unity.EVMGames
             {
                 indirectQRImage = transform.Find("connectedWalletPanel/balanceOfButton").GetComponent<Image>();
                 indirectConnectionStatusLabel = transform.Find("connectedWalletPanel/statusLabel").GetComponent<Text>();
-                indirectAddressesBox = transform.Find("connectedWalletPanel/addressesBox").GetComponent<InputField>();
+                indirectChosenAddressesInput = transform.Find("connectedWalletPanel/chosenAddressInput").GetComponent<InputField>();
 
                 indirectBalanceOfButton = transform.Find("connectedWalletPanel/balanceOfButton").GetComponent<Button>();
                 indirectBalanceOfInput = transform.Find("connectedWalletPanel/balanceOfInput").GetComponent<InputField>();
@@ -56,7 +57,8 @@ namespace AlephVault.Unity.EVMGames
                 });
                 indirectSendTokensButton.onClick.AddListener(() =>
                 {
-                    DoTransfer(web3IndirectClient, indirectSendTokensToInput, indirectSendTokensAmountInput, indirectSendTokensResult);
+                    DoTransfer(web3IndirectClient, indirectChosenAddressesInput, indirectSendTokensToInput,
+                        indirectSendTokensAmountInput, indirectSendTokensResult);
                 });
                 indirectConnectButton.onClick.AddListener(async () =>
                 {
@@ -88,14 +90,27 @@ namespace AlephVault.Unity.EVMGames
                 };
                 WalletConnect.Instance.ConnectedEvent.AddListener(async () =>
                 {
-                    connecting = false;
-                    connected = true;
-                    indirectConnectionStatusLabel.text = "Connected";
-                    indirectAddressesBox.text = string.Join("\n", await web3IndirectClient.Eth.Accounts.SendRequestAsync());
+                    try
+                    {
+                        connecting = false;
+                        connected = true;
+                        indirectConnectionStatusLabel.text = "Connected";
+                        Debug.Log("Accounts: " + string.Join(", ", WalletConnect.Instance.Session.Accounts));
+                        string signed = await WalletConnect.Instance.Session.EthSign(
+                            WalletConnect.Instance.Session.Accounts[0], "Hello :)"
+                        );
+                        string address = new EthereumMessageSigner().EncodeUTF8AndEcRecover("Hello :)", signed);
+                        indirectChosenAddressesInput.text = address;
+                        indirectDisconnectButton.interactable = true;
+                        indirectBalanceOfButton.interactable = true;
+                        indirectSendTokensButton.interactable = true;
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogException(e);
+                        Debug.LogError("Disconnecting now");
+                    }
                     indirectQRImage.sprite = null;
-                    indirectDisconnectButton.interactable = true;
-                    indirectBalanceOfButton.interactable = true;
-                    indirectSendTokensButton.interactable = true;
                 });
                 WalletConnect.Instance.DisconnectedEvent.AddListener((_) =>
                 {

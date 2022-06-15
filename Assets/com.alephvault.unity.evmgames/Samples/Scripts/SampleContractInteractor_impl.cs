@@ -60,7 +60,7 @@ namespace AlephVault.Unity.EVMGames
                 });
             }
 
-            private async void DoTransfer(Web3 client, InputField to, InputField amount, Text result)
+            private async void DoTransfer(Web3 client, InputField from, InputField to, InputField amount, Text result)
             {
                 // Performs a transfer from a given address (which will
                 // use the 1st one from the current account) to another
@@ -69,8 +69,7 @@ namespace AlephVault.Unity.EVMGames
                 try
                 {
                     BigInteger value = BigInteger.Parse(amount.text.Trim());
-                    string[] accounts = await client.Eth.Accounts.SendRequestAsync();
-                    string txId = (await Transfer(client, accounts[0], to.text.Trim(), value)).TransactionHash;
+                    string txId = (await Transfer(client, from.text, to.text.Trim(), value)).TransactionHash;
                     result.text = $"tx: {txId}";
                 }
                 catch (Exception e)

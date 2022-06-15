@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using AlephVault.Unity.EVMGames.Nethereum.Contracts;
 using AlephVault.Unity.EVMGames.Nethereum.Hex.HexTypes;
@@ -19,17 +20,21 @@ namespace AlephVault.Unity.EVMGames
 
             private async void LaunchEventRetrievalLoop()
             {
-                Event<Erc20TransferEvent> transferEvent = web3DirectClient.Eth.GetEvent<Erc20TransferEvent>(ContractAddress);
-                NewFilterInput filterInput = transferEvent.CreateFilterInput();
-                HexBigInteger filterId = await transferEvent.CreateFilterAsync(filterInput);
-                while (gameObject)
+                try
                 {
-                    List<EventLog<Erc20TransferEvent>> events = await transferEvent.GetFilterChangesAsync(filterId);
-                    foreach (EventLog<Erc20TransferEvent> @event in events)
+                    Debug.Log("Creating event filter");
+                    Event<Erc20TransferEvent> transferEvent = web3DirectClient.Eth.GetEvent<Erc20TransferEvent>(ContractAddress);
+                    NewFilterInput filterInput = transferEvent.CreateFilterInput();
+                    HexBigInteger filterId = await transferEvent.CreateFilterAsync(filterInput);
+                    Debug.Log("Starting event lifecycle");
+                    while (gameObject)
                     {
-                        if (@event.Log.Type == "mined")
+                        Debug.Log("Testing log");
+                        List<EventLog<Erc20TransferEvent>> events = await transferEvent.GetFilterChangesAsync(filterId);
+                        Debug.Log($"Iterating log ({events.Count})");
+                        foreach (EventLog<Erc20TransferEvent> @event in events)
                         {
-                            string eventLine = $"\n{@event.Log.BlockNumber} - " +
+                            string eventLine = $"\n{@event.Log.BlockNumber} {@event.Log.Type} - " +
                                                $"{@event.Event.From}->{@event.Event.To} : {@event.Event.Value}";
                             if (string.IsNullOrEmpty(eventsBox.text))
                             {
@@ -40,14 +45,19 @@ namespace AlephVault.Unity.EVMGames
                                 eventsBox.text += $"\n{eventLine}";
                             }
                         }
-                    }
 
-                    float time = 0;
-                    while (time < 5f)
-                    {
-                        await Tasks.Blink();
-                        time += Time.deltaTime;
+                        float time = 0;
+                        while (time < 5f)
+                        {
+                            await Tasks.Blink();
+                            time += Time.deltaTime;
+                        }
                     }
+                    Debug.Log("Destroying everything");
+                }
+                catch (Exception e)
+                {
+                    Debug.LogException(e);
                 }
             }
 

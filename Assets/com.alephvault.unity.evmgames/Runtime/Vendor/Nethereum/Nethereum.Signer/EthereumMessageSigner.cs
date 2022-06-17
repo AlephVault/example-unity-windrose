@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Text;
 using AlephVault.Unity.EVMGames.Nethereum.Hex.HexConvertors.Extensions;
@@ -10,21 +9,6 @@ namespace AlephVault.Unity.EVMGames.Nethereum.Signer
         public override string EcRecover(byte[] message, string signature)
         {
             return base.EcRecover(HashPrefixedMessage(message), signature);
-        }
-        
-        public override string EcRecover(byte[] message, EthECDSASignature signature)
-        {
-            return base.EcRecover(HashPrefixedMessage(message), signature);
-        }
-
-        public virtual Tuple<string, byte[]> EcFullRecover(byte[] message, string signature)
-        {
-            return base.EcFullRecover(HashPrefixedMessage(message), signature);
-        }
-
-        public virtual Tuple<string, byte[]> EcFullRecover(byte[] message, EthECDSASignature signature)
-        {
-            return base.EcFullRecover(HashPrefixedMessage(message), signature);
         }
 
         public byte[] HashAndHashPrefixedMessage(byte[] message)
@@ -62,11 +46,6 @@ namespace AlephVault.Unity.EVMGames.Nethereum.Signer
         public string EncodeUTF8AndEcRecover(string message, string signature)
         {
             return EcRecover(Encoding.UTF8.GetBytes(message), signature);
-        }
-        
-        public Tuple<string, byte[]> EncodeUTF8AndEcFullRecover(string message, string signature)
-        {
-            return EcFullRecover(Encoding.UTF8.GetBytes(message), signature);
         }
     }
 }

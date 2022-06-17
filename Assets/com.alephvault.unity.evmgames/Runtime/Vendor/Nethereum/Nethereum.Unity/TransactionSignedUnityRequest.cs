@@ -116,7 +116,7 @@ namespace AlephVault.Unity.EVMGames.Nethereum.JsonRpc.UnityClient
                     if (transactionInput.MaxFeePerGas == null)
                     {
                         yield return Fee1559SuggestionStrategy.SuggestFee(transactionInput.MaxPriorityFeePerGas.Value);
-                        if (Fee1559SuggestionStrategy.Exception != null)
+                        if (Fee1559SuggestionStrategy.Exception == null)
                         {
                             transactionInput.MaxFeePerGas = new HexBigInteger(Fee1559SuggestionStrategy.Result.MaxFeePerGas.Value);
                         }
@@ -131,7 +131,7 @@ namespace AlephVault.Unity.EVMGames.Nethereum.JsonRpc.UnityClient
                 {
 
                     yield return Fee1559SuggestionStrategy.SuggestFee();
-                    if (Fee1559SuggestionStrategy.Exception != null)
+                    if (Fee1559SuggestionStrategy.Exception == null)
                     {
                         if (transactionInput.MaxFeePerGas == null)
                         {
@@ -185,7 +185,7 @@ namespace AlephVault.Unity.EVMGames.Nethereum.JsonRpc.UnityClient
 
             if (nonce == null)
             {
-                yield return _transactionCountRequest.SendRequest(_account, AlephVault.Unity.EVMGames.Nethereum.RPC.Eth.DTOs.BlockParameter.CreateLatest());
+                yield return _transactionCountRequest.SendRequest(_account, Nethereum.RPC.Eth.DTOs.BlockParameter.CreateLatest());
 
                 if (_transactionCountRequest.Exception == null)
                 {

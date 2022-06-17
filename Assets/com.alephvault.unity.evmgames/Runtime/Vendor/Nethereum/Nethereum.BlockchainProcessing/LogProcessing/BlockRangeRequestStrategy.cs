@@ -51,7 +51,7 @@ namespace AlephVault.Unity.EVMGames.Nethereum.BlockchainProcessing.LogProcessing
 
         protected virtual int GetMaxNumberOfBlocksToRequestToRetryAttempt(int retryRequestNumber, int numberOfBlocksPerRequest)
         {
-            return numberOfBlocksPerRequest / (retryRequestNumber + 1) + (_retryWeight * retryRequestNumber);
+            return numberOfBlocksPerRequest / ((retryRequestNumber + 1) + (_retryWeight * retryRequestNumber));
         }
     }
 }

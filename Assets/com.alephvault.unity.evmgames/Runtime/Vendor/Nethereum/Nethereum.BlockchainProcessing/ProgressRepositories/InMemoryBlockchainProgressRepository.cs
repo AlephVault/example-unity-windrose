@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System.Diagnostics;
+using System.Numerics;
 using System.Threading.Tasks;
 
 namespace AlephVault.Unity.EVMGames.Nethereum.BlockchainProcessing.ProgressRepositories
@@ -22,6 +23,7 @@ namespace AlephVault.Unity.EVMGames.Nethereum.BlockchainProcessing.ProgressRepos
         public virtual Task UpsertProgressAsync(BigInteger blockNumber)
         {
             LastBlockProcessed = blockNumber;
+            //Debug.WriteLine(blockNumber.ToString());
             return Task.FromResult(0);
         }
     }

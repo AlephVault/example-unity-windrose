@@ -1,13 +1,13 @@
 using AlephVault.Unity.EVMGames.Nethereum.Hex.HexConvertors.Extensions;
 using AlephVault.Unity.EVMGames.Nethereum.Hex.HexTypes;
 using System.Runtime.Serialization;
-
+using Newtonsoft.Json;
 namespace AlephVault.Unity.EVMGames.Nethereum.RPC.Eth.DTOs
 {
     /// <summary>
     ///     Object - The transaction call object
     /// </summary>
-    [DataContract]
+
     public class CallInput
     {
         private string _from;
@@ -71,7 +71,7 @@ namespace AlephVault.Unity.EVMGames.Nethereum.RPC.Eth.DTOs
         /// <summary>
         ///     DATA, 20 Bytes - The address the transaction is send from.
         /// </summary>
-        [DataMember(Name = "from")]
+        [JsonProperty(PropertyName = "from")]
         public string From
         {
             get { return _from.EnsureHexPrefix(); }
@@ -81,7 +81,7 @@ namespace AlephVault.Unity.EVMGames.Nethereum.RPC.Eth.DTOs
         /// <summary>
         ///     DATA, 20 Bytes - (optional when creating new contract) The address the transaction is directed to.
         /// </summary>
-        [DataMember(Name = "to")]
+        [JsonProperty(PropertyName = "to")]
         public string To
         {
             get { return _to.EnsureHexPrefix(); }
@@ -92,25 +92,25 @@ namespace AlephVault.Unity.EVMGames.Nethereum.RPC.Eth.DTOs
         ///     QUANTITY - (optional, default: 90000) Integer of the gas provided for the transaction execution.It will return
         ///     unused gas.
         /// </summary>
-        [DataMember(Name = "gas")]
+        [JsonProperty(PropertyName = "gas")]
         public HexBigInteger Gas { get; set; }
 
         /// <summary>
         ///     gasPrice: QUANTITY - (optional, default: To-Be-Determined) Integer of the gasPrice used for each paid gas
         /// </summary>
-        [DataMember(Name = "gasPrice")]
+        [JsonProperty(PropertyName = "gasPrice")]
         public HexBigInteger GasPrice { get; set; }
 
         /// <summary>
         ///     value: QUANTITY - (optional) Integer of the value send with this transaction
         /// </summary>
-        [DataMember(Name = "value")]
+        [JsonProperty(PropertyName = "value")]
         public HexBigInteger Value { get; set; }
 
         /// <summary>
-        ///     data: DATA - (optional) The compiled code of a contract
+        ///     data: DATA - (optional) The compiled code of a contract (note this should be "input" now but changed for backwards compatibility in many forks)
         /// </summary>
-        [DataMember(Name = "data")]
+        [JsonProperty(PropertyName = "data")]
         public string Data
         {
             get { return _data.EnsureHexPrefix(); }
@@ -120,20 +120,26 @@ namespace AlephVault.Unity.EVMGames.Nethereum.RPC.Eth.DTOs
         /// <summary>
         ///   QUANTITY - Max Fee Per Gas provided by the sender in Wei.
         /// </summary>
-       [DataMember(Name = "maxFeePerGas")]
+       [JsonProperty(PropertyName = "maxFeePerGas")]
         public HexBigInteger MaxFeePerGas { get; set; }
 
         /// <summary>
         ///   QUANTITY - Max Priority Fee Per Gas provided by the sender in Wei.
         /// </summary>
-        [DataMember(Name = "maxPriorityFeePerGas")]
+        [JsonProperty(PropertyName = "maxPriorityFeePerGas")]
         public HexBigInteger MaxPriorityFeePerGas { get; set; }
 
         /// <summary>
         ///    QUANTITY - The transaction type.
         /// </summary>
-        [DataMember(Name = "type")]
+        [JsonProperty(PropertyName = "type")]
         public HexBigInteger Type { get; set; }
+
+        /// <summary>
+        /// chainId :Chain ID that this transaction is valid on.
+        /// </summary>
+        [JsonProperty(PropertyName = "chainId")]
+        public HexBigInteger ChainId { get; set; }
 
     }
 }

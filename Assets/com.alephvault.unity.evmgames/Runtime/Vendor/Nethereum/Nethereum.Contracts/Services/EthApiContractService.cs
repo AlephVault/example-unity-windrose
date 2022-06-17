@@ -1,8 +1,15 @@
 using System;
 using AlephVault.Unity.EVMGames.Nethereum.ABI.FunctionEncoding.Attributes;
+using AlephVault.Unity.EVMGames.Nethereum.Contracts.Constants;
 using AlephVault.Unity.EVMGames.Nethereum.Contracts.ContractHandlers;
 using AlephVault.Unity.EVMGames.Nethereum.Contracts.CQS;
 using AlephVault.Unity.EVMGames.Nethereum.Contracts.QueryHandlers.MultiCall;
+using AlephVault.Unity.EVMGames.Nethereum.Contracts.Standards.ENS;
+using AlephVault.Unity.EVMGames.Nethereum.Contracts.Standards.ERC1155;
+using AlephVault.Unity.EVMGames.Nethereum.Contracts.Standards.ERC1271;
+using AlephVault.Unity.EVMGames.Nethereum.Contracts.Standards.ERC20;
+using AlephVault.Unity.EVMGames.Nethereum.Contracts.Standards.ERC721;
+using AlephVault.Unity.EVMGames.Nethereum.Contracts.Standards.ProofOfHumanity;
 using AlephVault.Unity.EVMGames.Nethereum.JsonRpc.Client;
 using AlephVault.Unity.EVMGames.Nethereum.RPC;
 using AlephVault.Unity.EVMGames.Nethereum.RPC.Eth.Transactions;
@@ -16,7 +23,13 @@ namespace AlephVault.Unity.EVMGames.Nethereum.Contracts.Services
         {
 #if !DOTNET35
             GetContractTransactionErrorReason = new EthGetContractTransactionErrorReason(Transactions);
-#endif            
+            ERC721 = new ERC721Service(this);
+            ERC20 = new ERC20Service(this);
+            ERC1155 = new ERC1155Service(this);
+            ERC1271 = new ERC1271Service(this);
+            ProofOfHumanity = new ProofOfHumanityService(this);
+
+#endif
         }
 
         public EthApiContractService(IClient client, ITransactionManager transactionManager) : base(client,
@@ -81,10 +94,50 @@ namespace AlephVault.Unity.EVMGames.Nethereum.Contracts.Services
         /// </summary>
         /// <param name="multiContractAdress">The contracts address of the deployed contract</param>
         /// <returns></returns>
-        public MultiQueryHandler GetMultiQueryHandler(string multiContractAdress = "0xeefBa1e63905eF1D7ACbA5a8513c70307C1cE441")
+        public MultiQueryHandler GetMultiQueryHandler(string multiContractAdress = CommonAddresses.MULTICALL_ADDRESS)
         {
             return new MultiQueryHandler(Client, multiContractAdress, TransactionManager?.Account?.Address,
                 DefaultBlock);
+        }
+
+        /// <summary>
+        /// ERC20 Standard Token Service to interact with smart contracts compliant with the standard interface
+        /// https://ethereum.org/en/developers/docs/standards/tokens/erc-20/
+        /// </summary>
+        public ERC20Service ERC20 { get; private set; }
+
+        /// <summary>
+        /// ERC721 NFT - Non Fungible Token Standard Service to interact with smart contracts compliant with the standard interface
+        /// https://ethereum.org/en/developers/docs/standards/tokens/erc-721
+        /// </summary>
+        public ERC721Service ERC721 { get; private set; }
+
+        /// <summary>
+        /// ERC1155 Multi token standard Service to interact with smart contracts compliant with the standard interface
+        /// https://ethereum.org/en/developers/docs/standards/tokens/erc-1155/
+        /// </summary>
+        public ERC1155Service ERC1155 { get; private set; }
+
+        /// <summary>
+        /// ERC1271: Standard Signature Validation Method for Contracts, Service to interact with smart contracts compliant with the standard interface
+        /// This enables to validate if a signature is valid for a smart contract
+        /// https://eips.ethereum.org/EIPS/eip-1271
+        /// </summary>
+        public ERC1271Service ERC1271 { get; private set; }
+
+        /// <summary>
+        /// Service to interact with the Proof of Humanity registry smart contract
+        /// </summary>
+        public ProofOfHumanityService ProofOfHumanity { get; private set; }
+
+        public ENSService GetEnsService(string ensRegistryAddress = CommonAddresses.ENS_REGISTRY_ADDRESS)
+        {
+            return new ENSService(this, ensRegistryAddress);
+        }
+
+        public EthTLSService GetEnsEthTlsService(string ensRegistryAddress = CommonAddresses.ENS_REGISTRY_ADDRESS)
+        {
+            return new EthTLSService(this, ensRegistryAddress);
         }
 
         public IEthGetContractTransactionErrorReason GetContractTransactionErrorReason { get; }

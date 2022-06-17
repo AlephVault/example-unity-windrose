@@ -21,6 +21,8 @@ namespace AlephVault.Unity.EVMGames.Nethereum.RPC.TransactionManagers
         public abstract BigInteger DefaultGas { get; set; }
         public IAccount Account { get; protected set; }
         public bool UseLegacyAsDefault { get; set; } = false;
+        public bool CalculateOrSetDefaultGasPriceFeesIfNotSet { get; set; } = true;
+        public bool EstimateOrSetDefaultGasIfNotSet { get; set; } = true;
 
         public bool IsTransactionToBeSendAsEIP1559(TransactionInput transaction)
         {
@@ -36,7 +38,7 @@ namespace AlephVault.Unity.EVMGames.Nethereum.RPC.TransactionManagers
             get
             {
                 if (_fee1559SuggestionStrategy == null)
-                    _fee1559SuggestionStrategy = new SimpleFeeSuggestionStrategy(Client);
+                    _fee1559SuggestionStrategy = new TimePreferenceFeeSuggestionStrategy(Client);
                 return _fee1559SuggestionStrategy;
             }
             set => _fee1559SuggestionStrategy = value;
@@ -46,47 +48,52 @@ namespace AlephVault.Unity.EVMGames.Nethereum.RPC.TransactionManagers
 
         protected async Task SetTransactionFeesOrPricingAsync(TransactionInput transaction)
         {
-            if (IsTransactionToBeSendAsEIP1559(transaction))
+            if (CalculateOrSetDefaultGasPriceFeesIfNotSet)
             {
-                transaction.Type = new HexBigInteger(TransactionType.EIP1559.AsByte());
-                if (transaction.MaxPriorityFeePerGas != null)
+                if (IsTransactionToBeSendAsEIP1559(transaction))
                 {
-                    if (transaction.MaxFeePerGas == null)
+                    transaction.Type = new HexBigInteger(TransactionType.EIP1559.AsByte());
+                    if (transaction.MaxPriorityFeePerGas != null)
                     {
-                        var fee1559 = await CalculateFee1559Async(transaction.MaxPriorityFeePerGas.Value).ConfigureAwait(false);
-                        transaction.MaxFeePerGas = new HexBigInteger(fee1559.MaxFeePerGas.Value);
+                        if (transaction.MaxFeePerGas == null)
+                        {
+                            var fee1559 = await CalculateFee1559Async(transaction.MaxPriorityFeePerGas.Value)
+                                .ConfigureAwait(false);
+                            transaction.MaxFeePerGas = new HexBigInteger(fee1559.MaxFeePerGas.Value);
+                        }
+                    }
+                    else
+                    {
+                        var fee1559 = await CalculateFee1559Async().ConfigureAwait(false);
+                        if (transaction.MaxFeePerGas == null)
+                        {
+                            transaction.MaxFeePerGas =
+                                new HexBigInteger(fee1559.MaxFeePerGas.Value);
+
+                            transaction.MaxPriorityFeePerGas =
+                                new HexBigInteger(fee1559.MaxPriorityFeePerGas.Value);
+                        }
+                        else
+                        {
+                            if (transaction.MaxFeePerGas < fee1559.MaxPriorityFeePerGas)
+                            {
+                                transaction.MaxPriorityFeePerGas = transaction.MaxFeePerGas;
+                            }
+                            else
+                            {
+                                transaction.MaxPriorityFeePerGas =
+                                    new HexBigInteger(fee1559.MaxPriorityFeePerGas.Value);
+                            }
+                        }
                     }
                 }
                 else
                 {
-                    var fee1559 = await CalculateFee1559Async().ConfigureAwait(false);
-                    if (transaction.MaxFeePerGas == null)
+                    if (transaction.GasPrice == null)
                     {
-                        transaction.MaxFeePerGas =
-                            new HexBigInteger(fee1559.MaxFeePerGas.Value);
-
-                        transaction.MaxPriorityFeePerGas =
-                            new HexBigInteger(fee1559.MaxPriorityFeePerGas.Value);
+                        var gasPrice = await GetGasPriceAsync(transaction).ConfigureAwait(false);
+                        transaction.GasPrice = gasPrice;
                     }
-                    else
-                    {
-                        if (transaction.MaxFeePerGas < fee1559.MaxPriorityFeePerGas)
-                        {
-                            transaction.MaxPriorityFeePerGas = transaction.MaxFeePerGas;
-                        }
-                        else
-                        {
-                            transaction.MaxPriorityFeePerGas = new HexBigInteger(fee1559.MaxPriorityFeePerGas.Value);
-                        }
-                    }
-                }
-            }
-            else
-            {
-                if (transaction.GasPrice == null)
-                {
-                    var gasPrice = await GetGasPriceAsync(transaction).ConfigureAwait(false);
-                    transaction.GasPrice = gasPrice;
                 }
             }
         }
@@ -150,12 +157,16 @@ namespace AlephVault.Unity.EVMGames.Nethereum.RPC.TransactionManagers
 
         protected void SetDefaultGasPriceAndCostIfNotSet(TransactionInput transactionInput)
         {
-            if (DefaultGasPrice != -1)
+            if (CalculateOrSetDefaultGasPriceFeesIfNotSet)
             {
-                if (transactionInput.GasPrice == null) transactionInput.GasPrice = new HexBigInteger(DefaultGasPrice);
+                if (DefaultGasPrice != -1)
+                {
+                    if (transactionInput.GasPrice == null)
+                        transactionInput.GasPrice = new HexBigInteger(DefaultGasPrice);
+                }
             }
 
-            if (DefaultGas != null)
+            if (DefaultGas != null && EstimateOrSetDefaultGasIfNotSet)
             {
                 if (transactionInput.Gas == null) transactionInput.Gas = new HexBigInteger(DefaultGas);
             }
@@ -163,7 +174,7 @@ namespace AlephVault.Unity.EVMGames.Nethereum.RPC.TransactionManagers
 
         protected void SetDefaultGasIfNotSet(TransactionInput transactionInput)
         {
-            if (DefaultGas != null)
+            if (DefaultGas != null && EstimateOrSetDefaultGasIfNotSet)
             {
                 if (transactionInput.Gas == null) transactionInput.Gas = new HexBigInteger(DefaultGas);
             }

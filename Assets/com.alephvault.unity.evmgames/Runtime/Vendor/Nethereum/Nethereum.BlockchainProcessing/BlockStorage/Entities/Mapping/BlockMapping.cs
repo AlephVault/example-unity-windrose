@@ -4,24 +4,24 @@ namespace AlephVault.Unity.EVMGames.Nethereum.BlockchainProcessing.BlockStorage.
 {
     public static class BlockMapping
     {
-        public static Block MapToStorageEntityForUpsert(this AlephVault.Unity.EVMGames.Nethereum.RPC.Eth.DTOs.Block source)
+        public static Block MapToStorageEntityForUpsert(this Nethereum.RPC.Eth.DTOs.Block source)
         {
             return new Block().MapToStorageEntityForUpsert(source);
         }
 
-        public static TEntity MapToStorageEntityForUpsert<TEntity>(this AlephVault.Unity.EVMGames.Nethereum.RPC.Eth.DTOs.Block source) where TEntity : Block, new()
+        public static TEntity MapToStorageEntityForUpsert<TEntity>(this Nethereum.RPC.Eth.DTOs.Block source) where TEntity : Block, new()
         {
             return new TEntity().MapToStorageEntityForUpsert(source);
         }
 
-        public static TEntity MapToStorageEntityForUpsert<TEntity>(this TEntity block, AlephVault.Unity.EVMGames.Nethereum.RPC.Eth.DTOs.Block source) where TEntity : Block
+        public static TEntity MapToStorageEntityForUpsert<TEntity>(this TEntity block, Nethereum.RPC.Eth.DTOs.Block source) where TEntity : Block
         {
             block.Map(source);
             block.UpdateRowDates();
             return block;
         }
 
-        public static void Map(this Block block, AlephVault.Unity.EVMGames.Nethereum.RPC.Eth.DTOs.Block source)
+        public static void Map(this Block block, Nethereum.RPC.Eth.DTOs.Block source)
         {
             block.BlockNumber = source.Number.Value.ToString();
             block.Difficulty = source.Difficulty?.Value.ToString();

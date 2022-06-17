@@ -16,7 +16,7 @@ namespace AlephVault.Unity.EVMGames.Nethereum.RPC
             return new SimpleFeeSuggestionStrategy(Client);
         }
 
-        public TimePreferenceFeeSuggestionStrategy GeTimePreferenceFeeSuggestionStrategy()
+        public TimePreferenceFeeSuggestionStrategy GetTimePreferenceFeeSuggestionStrategy()
         {
             return new TimePreferenceFeeSuggestionStrategy(Client);
         }

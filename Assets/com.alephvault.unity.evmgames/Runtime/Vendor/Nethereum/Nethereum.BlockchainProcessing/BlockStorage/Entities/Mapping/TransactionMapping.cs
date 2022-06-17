@@ -12,7 +12,7 @@ namespace AlephVault.Unity.EVMGames.Nethereum.BlockchainProcessing.BlockStorage.
             to.HasLog = @from.Logs?.Count > 0;
         }
 
-        public static void Map(this TransactionBase to, AlephVault.Unity.EVMGames.Nethereum.RPC.Eth.DTOs.Transaction @from)
+        public static void Map(this TransactionBase to, Nethereum.RPC.Eth.DTOs.Transaction @from)
         {
             to.BlockHash = @from.BlockHash;
             to.Hash = @from.TransactionHash;

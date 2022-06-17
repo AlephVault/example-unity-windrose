@@ -77,6 +77,7 @@ namespace AlephVault.Unity.EVMGames.Nethereum.Web3
         {
 
             return EthECKey.GetPublicAddress(privateKey);
+            
 
         }
 #endif

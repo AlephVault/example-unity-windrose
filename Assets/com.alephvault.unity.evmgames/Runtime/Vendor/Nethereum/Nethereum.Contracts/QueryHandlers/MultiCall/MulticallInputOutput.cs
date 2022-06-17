@@ -1,4 +1,5 @@
-﻿using AlephVault.Unity.EVMGames.Nethereum.ABI.FunctionEncoding.Attributes;
+﻿using System.Numerics;
+using AlephVault.Unity.EVMGames.Nethereum.ABI.FunctionEncoding.Attributes;
 using AlephVault.Unity.EVMGames.Nethereum.Hex.HexConvertors.Extensions;
 
 namespace AlephVault.Unity.EVMGames.Nethereum.Contracts.QueryHandlers.MultiCall
@@ -12,7 +13,9 @@ namespace AlephVault.Unity.EVMGames.Nethereum.Contracts.QueryHandlers.MultiCall
             this.Target = contractAddressTarget;
             this.Input = functionMessage;
         }
-
+        public bool Success { get; set; }
+        public bool AllowFailure { get; set; } = false;
+        public BigInteger Value { get; set; } = 0;
         public string Target { get; set; }
         public TFunctionMessage Input { get; set; }
         public TFunctionOutput Output { get; private set; }

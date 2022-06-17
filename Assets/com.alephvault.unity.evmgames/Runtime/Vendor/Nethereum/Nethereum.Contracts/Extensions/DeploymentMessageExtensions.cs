@@ -6,7 +6,7 @@ using AlephVault.Unity.EVMGames.Nethereum.RPC.Eth.DTOs;
 namespace AlephVault.Unity.EVMGames.Nethereum.Contracts.Extensions
 {
     /// <summary>
-    /// Please use AlephVault.Unity.EVMGames.Nethereum.Contracts.DeploymentMessageExtensions instead (keeping this class as a small workaround to move extensions to contracts namespaces)
+    /// Please use Nethereum.Contracts.DeploymentMessageExtensions instead (keeping this class as a small workaround to move extensions to contracts namespaces)
     /// </summary>
     public static class DeploymentMessageExtensions
     {

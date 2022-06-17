@@ -20,7 +20,7 @@ namespace AlephVault.Unity.EVMGames.Nethereum.Util
                     .ConvertToEthereumChecksumAddress();
         }
 
-        public static string CalcualteCreate2AddressMinimalProxy(string address, string saltHex,
+        public static string CalculateCreate2AddressMinimalProxy(string address, string saltHex,
             string deploymentAddress)
         {
             if (string.IsNullOrEmpty(deploymentAddress))

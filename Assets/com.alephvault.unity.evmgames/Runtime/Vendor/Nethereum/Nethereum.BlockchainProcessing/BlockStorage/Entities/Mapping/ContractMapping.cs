@@ -23,7 +23,7 @@ namespace AlephVault.Unity.EVMGames.Nethereum.BlockchainProcessing.BlockStorage.
             return contract;
         }
 
-        public static void Map(this Contract contract, string contractAddress, string code, AlephVault.Unity.EVMGames.Nethereum.RPC.Eth.DTOs.Transaction transaction)
+        public static void Map(this Contract contract, string contractAddress, string code, Nethereum.RPC.Eth.DTOs.Transaction transaction)
         {
             contract.Address = contractAddress;
             contract.Code = code;

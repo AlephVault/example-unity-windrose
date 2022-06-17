@@ -1,6 +1,6 @@
 The MIT License (MIT)
 
-Copyright (c) 2016 AlephVault.Unity.EVMGames.Nethereum.com (Juan Blanco) , Logo by Cass (https://github.com/cassiopaia)
+Copyright (c) 2016 Nethereum.com (Juan Blanco) , Logo by Cass (https://github.com/cassiopaia)
 Copyright (c) 2014 Metaco SA (ECKey is based on NBitcoin implementation)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of

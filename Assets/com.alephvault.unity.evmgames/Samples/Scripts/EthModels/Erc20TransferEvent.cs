@@ -11,13 +11,13 @@ namespace AlephVault.Unity.EVMGames
             [Event("Transfer")]
             public class Erc20TransferEvent : IEventDTO
             {
-                [Parameter("address", "_from", 1)]
+                [Parameter("address", "from", 1, true)]
                 public string From { get; set; }
         
-                [Parameter("address", "_to", 2)]        
+                [Parameter("address", "to", 2, true)]
                 public string To { get; set; }
         
-                [Parameter("uint256", "_value", 3)]        
+                [Parameter("uint256", "value", 3)]
                 public BigInteger Value { get; set; }
             }
         }

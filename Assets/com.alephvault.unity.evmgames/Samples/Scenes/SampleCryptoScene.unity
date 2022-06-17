@@ -6655,7 +6655,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   privateKey: 0x91544b8a6c498a51a8aba1f025c130486173b294edafdba9a10c1da87315002e
-  endpoint: https://nd-850-291-708.p2pify.com/921df2ec0555c282d2f8b78bd120c2c7
+  endpoint: http://127.0.0.1:8545
 --- !u!1 &2008722482
 GameObject:
   m_ObjectHideFlags: 0

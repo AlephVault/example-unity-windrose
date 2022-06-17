@@ -24,13 +24,13 @@ namespace AlephVault.Unity.EVMGames
                 {
                     Debug.Log("Creating event filter");
                     Event<Erc20TransferEvent> transferEvent = web3DirectClient.Eth.GetEvent<Erc20TransferEvent>(ContractAddress);
-                    NewFilterInput filterInput = transferEvent.CreateFilterInput();
-                    HexBigInteger filterId = await transferEvent.CreateFilterAsync(filterInput);
+                    BlockParameter fromBlock = null;
                     Debug.Log("Starting event lifecycle");
                     while (gameObject)
                     {
+                        NewFilterInput filterInput = transferEvent.CreateFilterInput(fromBlock, null);
                         Debug.Log("Testing log");
-                        List<EventLog<Erc20TransferEvent>> events = await transferEvent.GetFilterChangesAsync(filterId);
+                        List<EventLog<Erc20TransferEvent>> events = await transferEvent.GetAllChangesAsync(filterInput);
                         Debug.Log($"Iterating log ({events.Count})");
                         foreach (EventLog<Erc20TransferEvent> @event in events)
                         {
@@ -44,6 +44,8 @@ namespace AlephVault.Unity.EVMGames
                             {
                                 eventsBox.text += $"\n{eventLine}";
                             }
+
+                            fromBlock = new BlockParameter(new HexBigInteger(@event.Log.BlockNumber.Value + 1));
                         }
 
                         float time = 0;

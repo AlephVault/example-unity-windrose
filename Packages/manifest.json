@@ -2,6 +2,7 @@
   "dependencies": {
     "com.alephvault.unity.binary": "file:../../unity-binary",
     "com.alephvault.unity.camjam": "file:../../unity-camjam",
+    "com.alephvault.unity.evmgames": "file:/home/luismasuelli/Projects/Unity/unity-evmgames",
     "com.alephvault.unity.ipfs": "file:/home/luismasuelli/Projects/Unity/unity-ipfs",
     "com.alephvault.unity.layout": "file:../../unity-layout",
     "com.alephvault.unity.meetgard": "file:../../unity-meetgard",

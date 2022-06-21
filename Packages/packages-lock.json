@@ -14,6 +14,14 @@
       "source": "local",
       "dependencies": {}
     },
+    "com.alephvault.unity.evmgames": {
+      "version": "file:/home/luismasuelli/Projects/Unity/unity-evmgames",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {
+        "com.alephvault.unity.support": "0.0.1"
+      }
+    },
     "com.alephvault.unity.ipfs": {
       "version": "file:/home/luismasuelli/Projects/Unity/unity-ipfs",
       "depth": 0,

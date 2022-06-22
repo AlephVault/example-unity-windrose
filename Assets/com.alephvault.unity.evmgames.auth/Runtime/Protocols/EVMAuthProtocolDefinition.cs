@@ -7,8 +7,9 @@ namespace AlephVault.Unity.EVMGames.Auth
 {
     namespace Protocols
     {
-        public class EVMAuthProtocolDefinition<LoginOK, LoginFailed, Kicked>
-            : SimpleAuthProtocolDefinition<LoginOK, LoginFailed, Kicked>
+        public class EVMAuthProtocolDefinition<LoginOK, LoginFailed, Kicked> : SimpleAuthProtocolDefinition<
+            LoginOK, LoginFailed, Kicked
+        >
             where LoginOK : ISerializable, new()
             where LoginFailed : IEVMLoginFailed<LoginFailed>, new()
             where Kicked : IKickMessage<Kicked>, new()

@@ -1,3 +1,5 @@
+using System.Threading.Tasks;
+
 namespace AlephVault.Unity.EVMGames.Auth
 {
     namespace Protocols
@@ -6,7 +8,9 @@ namespace AlephVault.Unity.EVMGames.Auth
         ///   This interface defines some fields that have
         ///   to be populated when doing a crypto/EVM auth
         ///   attempt (only the signature and the timestamp
-        ///   according to the challenge are needed).
+        ///   according to the challenge are needed). Also,
+        ///   the Logout method (already present in base
+        ///   auth protocols) is matched in this interface.
         /// </summary>
         public interface IEVMAuthProtocolClientSide
         {
@@ -25,6 +29,11 @@ namespace AlephVault.Unity.EVMGames.Auth
             ///   of [server's now() +/- 120 secs]).
             /// </summary>
             public uint Timestamp { get; set; }
+
+            /// <summary>
+            ///   Sends a logout message and immediately closes.
+            /// </summary>
+            public Task Logout();
         }
     }
 }

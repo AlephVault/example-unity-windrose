@@ -45,6 +45,9 @@ namespace AlephVault.Unity.EVMGames.Auth
             // This pointer will be used to perform the callback.
             private Func<EVMLoginMessage, Task> SendEVMLogin;
             
+            /// <summary>
+            ///   It only defines the Login:EVM message.
+            /// </summary>
             protected override void MakeLoginRequestSenders()
             {
                 SendEVMLogin = MakeLoginRequestSender<EVMLoginMessage>("Login:EVM");

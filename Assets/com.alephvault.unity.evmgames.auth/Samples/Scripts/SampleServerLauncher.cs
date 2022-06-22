@@ -10,15 +10,17 @@ namespace AlephVault.Unity.EVMGames.Auth
         public class SampleServerLauncher : MonoBehaviour
         {
             public ushort Port;
+            private bool started;
 
             private void Start()
             {
                 GetComponent<NetworkServer>().StartServer(Port);
+                started = true;
             }
 
             private void OnDestroy()
             {
-                GetComponent<NetworkServer>().StopServer();
+                if (started) GetComponent<NetworkServer>().StopServer();
             }
         }
     }

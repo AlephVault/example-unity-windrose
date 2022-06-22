@@ -1,6 +1,5 @@
 using AlephVault.Unity.Binary;
 
-
 namespace AlephVault.Unity.EVMGames.Auth
 {
     namespace Types

@@ -1,6 +1,7 @@
 using System;
 using AlephVault.Unity.Binary;
 using AlephVault.Unity.EVMGames.Auth.Types;
+using UnityEngine;
 
 namespace AlephVault.Unity.EVMGames.Auth
 {
@@ -9,6 +10,7 @@ namespace AlephVault.Unity.EVMGames.Auth
         [Serializable]
         public class SampleAccountDataType : IEVMRecordWithPreview<string, SampleAccountPreviewDataType>
         {
+            [SerializeField]
             private SampleAccountPreviewDataType preview = new SampleAccountPreviewDataType();
             private uint lastLoginTimestamp = 0;
         

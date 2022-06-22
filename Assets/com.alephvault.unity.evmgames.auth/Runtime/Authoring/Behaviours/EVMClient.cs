@@ -21,18 +21,14 @@ namespace AlephVault.Unity.EVMGames.Auth
             ///   instance which will guide the whole lifecycle of
             ///   a Wallet Connect session and the game itself.
             /// </summary>
+            [RequireComponent(typeof(NetworkClient))]
             [RequireComponent(typeof(WalletConnect))]
             public class EVMClient : MonoBehaviour
             {
                 // The instance for this client.
                 private WalletConnect walletConnect;
 
-                /// <summary>
-                ///   The network client that will be handled
-                ///   in the lifecycle of the Wallet Connect
-                ///   sessions (being established / removed).
-                /// </summary>
-                [SerializeField]
+                // The related network client.
                 private NetworkClient networkClient;
 
                 /// <summary>
@@ -76,6 +72,7 @@ namespace AlephVault.Unity.EVMGames.Auth
                 private void Awake()
                 {
                     walletConnect = GetComponent<WalletConnect>();
+                    networkClient = GetComponent<NetworkClient>();
                 }
 
                 private void Start()
@@ -94,15 +91,8 @@ namespace AlephVault.Unity.EVMGames.Auth
                 {
                     // 1. Clear the current web3 client.
                     CurrentWeb3Client = null;
-
-                    // 2. Check whether we have a network client or not.
-                    if (!networkClient)
-                    {
-                        Debug.LogError("No network client is configured to disconnect");
-                        return;
-                    }
                     
-                    // 3. Close the current connection, if
+                    // 2. Close the current connection, if
                     //    told to.
                     if (managesClientConnection && networkClient.IsRunning)
                     {
@@ -117,14 +107,7 @@ namespace AlephVault.Unity.EVMGames.Auth
                         new Uri(EVMGatewayURL)
                     ));
                     
-                    // 2. Check whether we have a network client or not.
-                    if (!networkClient)
-                    {
-                        Debug.LogError("No network client is configured to connect");
-                        return;
-                    }
-                    
-                    // 3. Attempts a login, if it is told to
+                    // 2. Attempts a login, if it is told to
                     //    automatically connect the network
                     //    client and do EVM login.
                     // 3. Close the current connection, if
@@ -158,10 +141,10 @@ namespace AlephVault.Unity.EVMGames.Auth
                     // It is an error to try this unless there is
                     // a network client and that network client is
                     // not already connected.
-                    if (!networkClient || networkClient.IsRunning)
+                    if (networkClient.IsRunning)
                     {
                         throw new InvalidOperationException("Cannot do a Wallet Login when there is " +
-                                                            "no configured network client, or there is one " +
+                                                            "an already established collectiono configured network client, or there is one " +
                                                             "but is already running");
                     }
 

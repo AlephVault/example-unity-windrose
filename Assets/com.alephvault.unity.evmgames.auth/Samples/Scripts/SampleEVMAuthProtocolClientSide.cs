@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using AlephVault.Unity.EVMGames.Auth.Protocols;
 using AlephVault.Unity.EVMGames.Auth.Types;
 using AlephVault.Unity.Meetgard.Auth.Samples;
+using AlephVault.Unity.Meetgard.Types;
 using UnityEngine;
 
 namespace AlephVault.Unity.EVMGames.Auth
@@ -13,19 +14,19 @@ namespace AlephVault.Unity.EVMGames.Auth
             protected override void Setup()
             {
                 base.Setup();
-                OnWelcome += SampleEVMAuthProtocolClientSide_OnWelcome;
+                OnLoginOK += SampleEVMAuthProtocolClientSide_OnLoginOK;
                 OnLoggedOut += SampleEVMAuthProtocolClientSide_OnLoggedOut;
                 OnLoginFailed += SampleEVMAuthProtocolClientSide_OnLoginFailed;
             }
             
             protected void OnDestroy()
             {
-                OnWelcome -= SampleEVMAuthProtocolClientSide_OnWelcome;
+                OnLoginOK -= SampleEVMAuthProtocolClientSide_OnLoginOK;
                 OnLoggedOut -= SampleEVMAuthProtocolClientSide_OnLoggedOut;
                 OnLoginFailed -= SampleEVMAuthProtocolClientSide_OnLoginFailed;
             }
 
-            private async Task SampleEVMAuthProtocolClientSide_OnWelcome()
+            private async Task SampleEVMAuthProtocolClientSide_OnLoginOK(Nothing arg)
             {
                 Debug.Log("Sample EVM Client::Logged in");
             }

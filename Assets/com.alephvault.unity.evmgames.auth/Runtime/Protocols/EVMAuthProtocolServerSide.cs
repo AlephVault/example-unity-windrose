@@ -63,13 +63,14 @@ namespace AlephVault.Unity.EVMGames.Auth
                 {
                     string signature = msg.Signature;
                     uint timestamp = msg.Timestamp;
+                    string message = ChallengeUtils.TimestampChallengeMessage(timestamp);
                     
                     // 1. Validate signature. Get its address.
                     EthereumMessageSigner signer = new EthereumMessageSigner();
                     string address = "";
                     try
                     {
-                        address = signer.EncodeUTF8AndEcRecover(timestamp.ToString(), signature);
+                        address = signer.EncodeUTF8AndEcRecover(message, signature);
                     }
                     catch (System.Exception e)
                     {

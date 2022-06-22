@@ -22,7 +22,7 @@ namespace AlephVault.Unity.EVMGames.Auth
         /// <typeparam name="Kicked">A custom message for when a user is kicked</typeparam>
         public class EVMAuthProtocolClientSide<LoginFailed, Kicked> : SimpleAuthProtocolClientSide<
             EVMAuthProtocolDefinition<Nothing, LoginFailed, Kicked>, Nothing, LoginFailed, Kicked
-        >
+        >, IEVMAuthProtocolClientSide
             where LoginFailed : IEVMLoginFailed<LoginFailed>, new()
             where Kicked : IKickMessage<Kicked>, new()
         {
@@ -31,7 +31,7 @@ namespace AlephVault.Unity.EVMGames.Auth
             ///   signature is not empty, and related to
             ///   the given <see cref="Timestamp"/>.
             /// </summary>
-            public string Signature;
+            public string Signature { get; set; }
 
             /// <summary>
             ///   The timestamp the signature stands for.
@@ -40,7 +40,7 @@ namespace AlephVault.Unity.EVMGames.Auth
             ///   "recent" timestamp, typically in a range
             ///   of [server's now() +/- 120 secs]).
             /// </summary>
-            public uint Timestamp;
+            public uint Timestamp { get; set; }
             
             // This pointer will be used to perform the callback.
             private Func<EVMLoginMessage, Task> SendEVMLogin;

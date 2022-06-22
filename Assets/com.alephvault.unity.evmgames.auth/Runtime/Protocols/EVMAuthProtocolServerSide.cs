@@ -59,7 +59,7 @@ namespace AlephVault.Unity.EVMGames.Auth
             /// </summary>
             protected override void SetLoginMessageHandlers()
             {
-                AddLoginMessageHandler<EVMLoginMessage>("Login:EVM", async (msg) =>
+                AddLoginMessageHandler<EVMLoginMessage>("EVM", async (msg) =>
                 {
                     string signature = msg.Signature;
                     uint timestamp = msg.Timestamp;

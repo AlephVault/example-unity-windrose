@@ -65,7 +65,7 @@ namespace AlephVault.Unity.EVMGames.Auth
             /// </summary>
             protected override void MakeLoginRequestSenders()
             {
-                SendEVMLogin = MakeLoginRequestSender<EVMLoginMessage>("Login:EVM");
+                SendEVMLogin = MakeLoginRequestSender<EVMLoginMessage>("EVM");
             }
 
             protected new void Awake()

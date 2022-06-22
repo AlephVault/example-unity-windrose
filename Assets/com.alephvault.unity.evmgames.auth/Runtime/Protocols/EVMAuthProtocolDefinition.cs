@@ -16,7 +16,7 @@ namespace AlephVault.Unity.EVMGames.Auth
         {
             protected override void DefineLoginMessages()
             {
-                DefineClientMessage<EVMLoginMessage>("Login:EVM");
+                DefineLoginMessage<EVMLoginMessage>("EVM");
             }
         }
     }

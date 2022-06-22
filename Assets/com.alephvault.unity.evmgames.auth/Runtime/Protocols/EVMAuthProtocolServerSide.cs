@@ -77,8 +77,7 @@ namespace AlephVault.Unity.EVMGames.Auth
                     }
                     // 2. Validate timestamp to be +/- the
                     //    tolerance value.
-                    double delta = Math.Abs(UnixUTCCurrentTimestamp() - timestamp);
-                    if (delta > timestampTolerance)
+                    if (!ChallengeUtils.IsCloseToNow(timestamp, timestampTolerance))
                     {
                         return RejectLogin(new LoginFailed().WithTimestampOutOfRange());
                     }
@@ -147,11 +146,6 @@ namespace AlephVault.Unity.EVMGames.Auth
             /// </summary>
             /// <param name="account">The account to notify about</param>
             protected virtual async Task NotifySuccessfulLogin(AccountDataType account) {}
-
-            private double UnixUTCCurrentTimestamp()
-            {
-                return DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
-            }
         }
     }
 }

@@ -161,7 +161,7 @@ MonoBehaviour:
   timestampTolerance: 120
   accounts:
   - preview:
-      address: 0xaf950274754d7408b7baa9358f5cb92d162c5c09
+      address: 0xAF950274754d7408B7bAA9358F5CB92D162C5c09
   - preview:
       address: 0x895579EafA616BBe80f0ecf8b21B97E1a758054D
 --- !u!114 &9902967

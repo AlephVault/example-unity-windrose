@@ -88,16 +88,27 @@ namespace AlephVault.Unity.EVMGames.Auth
                     {
                         return RejectLogin(new LoginFailed().WithAccountNotFoundReason());
                     }
-                    // 4. Validate the account's last login
+                    // 4. Check whether there is any other reason
+                    //    to reject a login attempt.
+                    LoginFailed rejection = await CheckLoginAttempt(account);
+                    if (!EqualityComparer<LoginFailed>.Default.Equals(rejection, default))
+                    {
+                        return RejectLogin(rejection);
+                    }
+                    // 5. Validate the account's last login
                     //    stamp to be LOWER than the current
                     //    timestamp provided in the message.
+                    //    May warn about a possible replay
+                    //    attack on this account.
                     if (account.LastLoginTimestamp() >= timestamp)
                     {
+                        await NotifyPossibleReplyAttack(account);
                         return RejectLogin(new LoginFailed().WithTimestampNotGreater());
                     }
-                    // 5. Everything is OK, but ensure the
+                    // 6. Everything is OK, but ensure the
                     //    new stamp is stored.
                     await SetLastLoginTime(address, timestamp);
+                    await NotifySuccessfulLogin(account);
 
                     // Return OK.
                     return AcceptLogin(Nothing.Instance, address);
@@ -110,6 +121,32 @@ namespace AlephVault.Unity.EVMGames.Auth
             /// <param name="address">The address of the account being updated</param>
             /// <param name="timestamp">The timestamp to set as last login time for them</param>
             protected abstract Task SetLastLoginTime(string address, uint timestamp);
+
+            /// <summary>
+            ///   Checks the account for any reason to not allow
+            ///   it to be logged in (e.g. a ban, or account block
+            ///   due to many recent attempts).
+            /// </summary>
+            /// <param name="account">The account to check</param>
+            /// <returns><code>null</code> if there is no reason to reject, or a custom value otherwise</returns>
+            protected virtual async Task<LoginFailed> CheckLoginAttempt(AccountDataType account)
+            {
+                return default;
+            }
+
+            /// <summary>
+            ///   Warns the account (or somehow the engine) about
+            ///   a possible reply attack attempt on this account.
+            ///   By default, nothing is done.
+            /// </summary>
+            /// <param name="account">The account to warn about</param>
+            protected virtual async Task NotifyPossibleReplyAttack(AccountDataType account) {}
+
+            /// <summary>
+            ///   Tells the account was successful on login.
+            /// </summary>
+            /// <param name="account">The account to notify about</param>
+            protected virtual async Task NotifySuccessfulLogin(AccountDataType account) {}
 
             private double UnixUTCCurrentTimestamp()
             {

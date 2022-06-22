@@ -152,12 +152,13 @@ namespace AlephVault.Unity.EVMGames.Auth
                     // expressed in seconds. Its string representation
                     // will be signed later.
                     uint timestamp = ChallengeUtils.CurrentTimestamp();
+                    string challenge = ChallengeUtils.TimestampChallengeMessage(timestamp);
                     
                     // The next thing is to obtain a signature. An IO
                     // Error should be captured, since it means that
                     // the signature process failed or was rejected.
                     string signature = await walletConnect.Session.EthSign(
-                        walletConnect.Session.Accounts[0], timestamp.ToString()
+                        walletConnect.Session.Accounts[0], challenge
                     );
                     
                     // Now, both things are taken and the login is attempted.

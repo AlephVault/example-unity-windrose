@@ -1,5 +1,6 @@
 using System;
 using AlephVault.Unity.Binary;
+using UnityEngine;
 
 namespace AlephVault.Unity.EVMGames.Auth
 {
@@ -22,6 +23,19 @@ namespace AlephVault.Unity.EVMGames.Auth
             }
 
             /// <summary>
+            ///   Creates a challenge message from a given
+            ///   timestamp. This challenge message will be
+            ///   generated in both sides given the timestamp
+            ///   (once to sign, once to verify).
+            /// </summary>
+            /// <param name="timestamp">The timestamp from which the challenge message will be generated</param>
+            /// <returns>The challenge message</returns>
+            public static string TimestampChallengeMessage(uint timestamp)
+            {
+                return $"AlephVault.Unity.EVMGames.Auth:Challenge:{timestamp}";
+            }
+
+            /// <summary>
             ///   Checks whether the given timestamp is close
             ///   to the current timestamp, given a tolerance.
             /// </summary>
@@ -32,7 +46,9 @@ namespace AlephVault.Unity.EVMGames.Auth
             /// </returns>
             public static bool IsCloseToNow(uint timestamp, uint tolerance)
             {
-                return Math.Abs(timestamp - CurrentTimestamp()) < tolerance;
+                uint now = CurrentTimestamp();
+                uint diff = timestamp > now ? timestamp - now : now - timestamp;
+                return diff < tolerance;
             }
         }
     }

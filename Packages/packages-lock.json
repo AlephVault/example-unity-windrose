@@ -22,6 +22,17 @@
         "com.alephvault.unity.support": "0.0.2"
       }
     },
+    "com.alephvault.unity.evmgames.auth": {
+      "version": "file:/home/luismasuelli/Projects/Unity/unity-evmgames-auth",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {
+        "com.alephvault.unity.binary": "0.0.1",
+        "com.alephvault.unity.meetgard": "0.0.2",
+        "com.alephvault.unity.meetgard.auth": "0.0.2",
+        "com.alephvault.unity.evmgames": "0.0.1"
+      }
+    },
     "com.alephvault.unity.ipfs": {
       "version": "file:/home/luismasuelli/Projects/Unity/unity-ipfs",
       "depth": 0,

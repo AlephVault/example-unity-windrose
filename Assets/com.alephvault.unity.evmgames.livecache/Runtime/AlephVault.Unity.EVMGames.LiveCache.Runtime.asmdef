@@ -1,0 +1,17 @@
+{
+    "name": "AlephVault.Unity.EVMGames.LiveCache.Runtime",
+    "rootNamespace": "",
+    "references": [
+        "GUID:4889a13a1d87258b9b109357666552b6",
+        "GUID:f3e508bb81e3448249582d03b9396c93"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

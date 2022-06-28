@@ -27,8 +27,6 @@
       "depth": 0,
       "source": "local",
       "dependencies": {
-        "com.alephvault.unity.binary": "0.0.1",
-        "com.alephvault.unity.meetgard": "0.0.2",
         "com.alephvault.unity.meetgard.auth": "0.0.2",
         "com.alephvault.unity.evmgames": "0.0.1"
       }

@@ -125,17 +125,26 @@ namespace AlephVault.Unity.EVMGames.LiveCache
 
                     try
                     {
+                        Debug.Log("Performing grab iteration");
                         if (!Running) return false;
-                        Root root = new Root(CacheURL, new Authorization("Bearer", ApiKey));
-                        StateCacheHandler stateHandler = new StateCacheHandler(root, StateResourceKey);
-                        Result<JObject[], string> result = await stateHandler.Grab();
-                        foreach (JObject entry in result.Element)
+                        while (true)
                         {
-                            await ProcessResponseItem(entry);
-                        }
-                        if (result.Code != ResultCode.Ok)
-                        {
-                            throw new Exception(500, "grab");
+                            Root root = new Root(CacheURL, new Authorization("Bearer", ApiKey));
+                            StateCacheHandler stateHandler = new StateCacheHandler(root, StateResourceKey);
+                            Result<JObject[], string> result = await stateHandler.Grab();
+                            bool found = false;
+                            foreach (JObject entry in result.Element)
+                            {
+                                await ProcessResponseItem(entry);
+                                found = true;
+                            }
+                            if (result.Code != ResultCode.Ok)
+                            {
+                                throw new Exception(500, "grab");
+                            }
+                            // If no events were found, break. Otherwise,
+                            // remain for a next iteration.
+                            if (!found) break;
                         }
                         if (!Running) return false;
                         return true;

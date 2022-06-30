@@ -93,7 +93,7 @@ namespace AlephVault.Unity.EVMGames.LiveCache
                     string contractKey, int offset, int limit
                 ) {
                     Result<CollectionsResultEntry[], string> result = await ERC721OwnershipResource.ViewTo<CollectionsResultEntry[]>(
-                        "balances", new Dictionary<string, string>
+                        "collections", new Dictionary<string, string>
                         {
                             { "contract-key", contractKey },
                             { "offset", offset.ToString() },
@@ -138,7 +138,7 @@ namespace AlephVault.Unity.EVMGames.LiveCache
                             { "contract-key", contractKey },
                             { "owner", owner },
                             { "offset", offset.ToString() },
-                            { "owner", limit.ToString() },
+                            { "limit", limit.ToString() },
                         }
                     );
 

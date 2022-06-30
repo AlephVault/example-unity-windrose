@@ -1,9 +1,8 @@
-using System;
 using System.Threading.Tasks;
 using AlephVault.Unity.EVMGames.LiveCache.Types.Cache;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
-using Exception = AlephVault.Unity.EVMGames.LiveCache.Types.Exception;
+using AlephVault.Unity.EVMGames.LiveCache.Types;
 
 
 namespace AlephVault.Unity.EVMGames.LiveCache

@@ -188,11 +188,9 @@ namespace AlephVault.Unity.EVMGames.LiveCache
                 /// <param name="contractKey">The contract key</param>
                 /// <param name="owner">The address of the owner</param>
                 /// <param name="token">The token to query about</param>
-                /// <param name="offset">The offset for the query</param>
-                /// <param name="limit">The limit for the query</param>
                 /// <returns>the list of ownerships</returns>
                 public async Task<Result<BigInteger, string>> BalanceOf(
-                    string contractKey, string owner, HexBigInteger token, uint offset, uint limit
+                    string contractKey, string owner, HexBigInteger token
                 ) {
                     Result<BalanceOfResultEntry, string> result = 
                         await ERC1155OwnershipResource.ViewTo<BalanceOfResultEntry>(
@@ -200,9 +198,7 @@ namespace AlephVault.Unity.EVMGames.LiveCache
                         {
                             { "contract-key", contractKey },
                             { "owner", owner },
-                            { "token", token.ToString() },
-                            { "offset", offset.ToString() },
-                            { "owner", limit.ToString() },
+                            { "token", token.HexValue }
                         }
                     );
 

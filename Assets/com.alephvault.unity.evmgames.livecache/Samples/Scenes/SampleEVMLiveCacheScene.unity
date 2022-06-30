@@ -133,6 +133,7 @@ GameObject:
   m_Component:
   - component: {fileID: 132406429}
   - component: {fileID: 132406430}
+  - component: {fileID: 132406431}
   m_Layer: 0
   m_Name: CacheClient
   m_TagString: Untagged
@@ -170,6 +171,18 @@ MonoBehaviour:
   ApiKey: abcdef
   CacheURL: http://localhost:6666
   StateResourceKey: evm-state
+--- !u!114 &132406431
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 132406428}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c08ad45f5fe4c0397b4fd2f8eaef698, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1438358883
 GameObject:
   m_ObjectHideFlags: 0

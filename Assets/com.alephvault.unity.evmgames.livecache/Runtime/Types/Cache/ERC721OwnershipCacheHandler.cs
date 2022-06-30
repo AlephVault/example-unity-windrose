@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AlephVault.Unity.EVMGames.Nethereum.Hex.HexTypes;
 using AlephVault.Unity.RemoteStorage.StandardHttp.Types;
 using AlephVault.Unity.RemoteStorage.Types.Results;
 using Newtonsoft.Json;
@@ -68,6 +69,19 @@ namespace AlephVault.Unity.EVMGames.LiveCache
                     );
                 }
                 
+                // Parses a token.
+                private HexBigInteger Parse(string value)
+                {
+                    try
+                    {
+                        return new HexBigInteger(value);
+                    }
+                    catch
+                    {
+                        return null;
+                    }
+                }
+
                 /// <summary>
                 ///   Queries the ownerships inside a contract.
                 /// </summary>
@@ -75,7 +89,7 @@ namespace AlephVault.Unity.EVMGames.LiveCache
                 /// <param name="offset">The offset for the query</param>
                 /// <param name="limit">The limit for the query</param>
                 /// <returns>the balance</returns>
-                public async Task<Result<Tuple<string, string>[], string>> Collections(
+                public async Task<Result<Tuple<string, HexBigInteger>[], string>> Collections(
                     string contractKey, int offset, int limit
                 ) {
                     Result<CollectionsResultEntry[], string> result = await ERC721OwnershipResource.ViewTo<CollectionsResultEntry[]>(
@@ -89,15 +103,17 @@ namespace AlephVault.Unity.EVMGames.LiveCache
 
                     if (result.Code == ResultCode.Ok)
                     {
-                        return new Result<Tuple<string, string>[], string>
+                        return new Result<Tuple<string, HexBigInteger>[], string>
                         {
                             Element = (from element in result.Element
-                                       select new Tuple<string, string>(element.Owner, element.Token)).ToArray(),
+                                       select new Tuple<string, HexBigInteger>(
+                                           element.Owner, Parse(element.Token)
+                                       )).ToArray(),
                             Code = result.Code
                         };
                     }
                     
-                    return new Result<Tuple<string, string>[], string>
+                    return new Result<Tuple<string, HexBigInteger>[], string>
                     {
                         Element = null,
                         Code = result.Code
@@ -112,7 +128,7 @@ namespace AlephVault.Unity.EVMGames.LiveCache
                 /// <param name="offset">The offset for the query</param>
                 /// <param name="limit">The limit for the query</param>
                 /// <returns>the list of ownerships</returns>
-                public async Task<Result<string[], string>> CollectionOf(
+                public async Task<Result<HexBigInteger[], string>> CollectionOf(
                     string contractKey, string owner, uint offset, uint limit
                 ) {
                     Result<CollectionOfResultEntry[], string> result = 
@@ -128,14 +144,15 @@ namespace AlephVault.Unity.EVMGames.LiveCache
 
                     if (result.Code == ResultCode.Ok)
                     {
-                        return new Result<string[], string>
+                        return new Result<HexBigInteger[], string>
                         {
-                            Element = (from element in result.Element select element.Token).ToArray(),
+                            Element = (from element in result.Element
+                                       select Parse(element.Token)).ToArray(),
                             Code = result.Code
                         };
                     }
 
-                    return new Result<string[], string>
+                    return new Result<HexBigInteger[], string>
                     {
                         Element = null,
                         Code = result.Code

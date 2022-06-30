@@ -6,10 +6,11 @@ namespace AlephVault.Unity.EVMGames.LiveCache
     namespace Types
     {
         /// <summary>
-        ///   A balance entry for a given contract, an address
-        ///   and the token this balance is about.
+        ///   A balance entry for a given contract,
+        ///   an address and the token this balance
+        ///   is about.
         /// </summary>
-        public class ERC1155Balance
+        public class ERC1155Ownership
         {
             /// <summary>
             ///   The contract key.

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
 using AlephVault.Unity.RemoteStorage.StandardHttp.Types;
@@ -66,6 +67,14 @@ namespace AlephVault.Unity.EVMGames.LiveCache
                     );
                 }
 
+                // Parses an amount.
+                private BigInteger Parse(string value)
+                {
+                    BigInteger result;
+                    BigInteger.TryParse(value, out result);
+                    return result;
+                }
+
                 /// <summary>
                 ///   Queries all the balances inside a contract.
                 /// </summary>
@@ -97,7 +106,10 @@ namespace AlephVault.Unity.EVMGames.LiveCache
                         }
                         return new Result<Tuple<string, BigInteger>[], string>
                         {
-                            Element = values,
+                            Element = (from entry in result.Element
+                                       select new Tuple<string, BigInteger>(
+                                           entry.Owner, Parse(entry.Amount)
+                                       )).ToArray(),
                             Code = result.Code
                         };
                     }
@@ -125,11 +137,18 @@ namespace AlephVault.Unity.EVMGames.LiveCache
                         }
                     );
 
-                    BigInteger value = default;
-                    if (result.Code == ResultCode.Ok) BigInteger.TryParse(result.Element.Amount, out value);
+                    if (result.Code == ResultCode.Ok)
+                    {
+                        return new Result<BigInteger, string>
+                        {
+                            Element = Parse(result.Element.Amount),
+                            Code = result.Code
+                        };
+                    }
+
                     return new Result<BigInteger, string>
                     {
-                        Element = value,
+                        Element = default,
                         Code = result.Code
                     };
                 }

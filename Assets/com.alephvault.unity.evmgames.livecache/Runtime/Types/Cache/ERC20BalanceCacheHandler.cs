@@ -72,7 +72,7 @@ namespace AlephVault.Unity.EVMGames.LiveCache
                 /// <param name="contractKey">The contract key</param>
                 /// <param name="offset">The offset for the query</param>
                 /// <param name="limit">The limit for the query</param>
-                /// <returns>the balance</returns>
+                /// <returns>the balances</returns>
                 public async Task<Result<Tuple<string, BigInteger>[], string>> Balances(
                     string contractKey, uint offset, uint limit
                 ) {
@@ -114,7 +114,7 @@ namespace AlephVault.Unity.EVMGames.LiveCache
                 /// </summary>
                 /// <param name="contractKey">The contract key</param>
                 /// <param name="owner">The address of the owner</param>
-                /// <returns>the balance</returns>
+                /// <returns>the balance for the address</returns>
                 public async Task<Result<BigInteger, string>> BalanceOf(string contractKey, string owner)
                 {
                     Result<BalanceOfResult, string> result = await ERC20BalanceResource.ViewTo<BalanceOfResult>(

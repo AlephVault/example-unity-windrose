@@ -88,7 +88,7 @@ namespace AlephVault.Unity.EVMGames.LiveCache
                 /// <param name="contractKey">The contract key</param>
                 /// <param name="offset">The offset for the query</param>
                 /// <param name="limit">The limit for the query</param>
-                /// <returns>the balance</returns>
+                /// <returns>all the ownerships</returns>
                 public async Task<Result<Tuple<string, HexBigInteger>[], string>> Collections(
                     string contractKey, int offset, int limit
                 ) {
@@ -127,7 +127,7 @@ namespace AlephVault.Unity.EVMGames.LiveCache
                 /// <param name="owner">The address of the owner</param>
                 /// <param name="offset">The offset for the query</param>
                 /// <param name="limit">The limit for the query</param>
-                /// <returns>the list of ownerships</returns>
+                /// <returns>the list of ownerships for the address</returns>
                 public async Task<Result<HexBigInteger[], string>> CollectionOf(
                     string contractKey, string owner, uint offset, uint limit
                 ) {

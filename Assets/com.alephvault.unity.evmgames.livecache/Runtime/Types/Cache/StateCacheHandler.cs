@@ -17,7 +17,9 @@ namespace AlephVault.Unity.EVMGames.LiveCache
             /// </summary>
             public class StateCacheHandler
             {
-                // The "EVM State" resource.
+                /// <summary>
+                ///   The related resource.
+                /// </summary>
                 public readonly SimpleResource<State> StateResource;
                 
                 /// <summary>

@@ -86,7 +86,9 @@ namespace AlephVault.Unity.EVMGames.LiveCache
                 {
                     if (Running) return;
                     Running = true;
-                    while (await GrabOperation(realTime)) {}
+                    Root root = new Root(CacheURL, new Authorization("Bearer", ApiKey));
+                    StateCacheHandler stateHandler = new StateCacheHandler(root, StateResourceKey);
+                    while (await GrabOperation(realTime, stateHandler)) {}
                     Running = false;
                 }
 
@@ -103,7 +105,7 @@ namespace AlephVault.Unity.EVMGames.LiveCache
                 // This is the grab operation. It waits for a certain
                 // interval and then creates a grabber instance and
                 // runs it.
-                private async Task<bool> GrabOperation(bool realTime)
+                private async Task<bool> GrabOperation(bool realTime, StateCacheHandler stateHandler)
                 {
                     float current = 0;
                     if (realTime)
@@ -129,8 +131,6 @@ namespace AlephVault.Unity.EVMGames.LiveCache
                         if (!Running) return false;
                         while (true)
                         {
-                            Root root = new Root(CacheURL, new Authorization("Bearer", ApiKey));
-                            StateCacheHandler stateHandler = new StateCacheHandler(root, StateResourceKey);
                             Result<JObject[], string> result = await stateHandler.Grab();
                             bool found = false;
                             foreach (JObject entry in result.Element)

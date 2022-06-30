@@ -9,7 +9,7 @@ namespace AlephVault.Unity.EVMGames.LiveCache
         ///   The ownership of a token in a given
         ///   contract.
         /// </summary>
-        public class ERC721Balance
+        public class ERC721Ownership
         {
             /// <summary>
             ///   The contract key.

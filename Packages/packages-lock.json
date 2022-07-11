@@ -31,6 +31,15 @@
         "com.alephvault.unity.evmgames": "0.0.1"
       }
     },
+    "com.alephvault.unity.evmgames.livecache": {
+      "version": "file:/home/luismasuelli/Projects/Unity/unity-evmgames-livecache",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {
+        "com.alephvault.unity.evmgames": "0.0.1",
+        "com.alephvault.unity.remotestorage": "0.0.2"
+      }
+    },
     "com.alephvault.unity.ipfs": {
       "version": "file:/home/luismasuelli/Projects/Unity/unity-ipfs",
       "depth": 0,

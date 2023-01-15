@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "com.alephvault.unity.binary": "file:../../unity-binary",
+    "com.alephvault.unity.boilerplates": "file:/home/luismasuelli/Projects/Unity/unity-boilerplates",
     "com.alephvault.unity.camjam": "file:../../unity-camjam",
     "com.alephvault.unity.evmgames": "file:/home/luismasuelli/Projects/Unity/unity-evmgames",
     "com.alephvault.unity.evmgames.auth": "file:/home/luismasuelli/Projects/Unity/unity-evmgames-auth",

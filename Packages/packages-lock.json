@@ -8,6 +8,12 @@
         "com.alephvault.unity.support": "0.0.1"
       }
     },
+    "com.alephvault.unity.boilerplates": {
+      "version": "file:/home/luismasuelli/Projects/Unity/unity-boilerplates",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {}
+    },
     "com.alephvault.unity.camjam": {
       "version": "file:../../unity-camjam",
       "depth": 0,

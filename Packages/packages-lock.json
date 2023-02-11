@@ -238,6 +238,14 @@
         "com.gamemeanmachine.unity.windrose.neighbourteleports": "0.0.2"
       }
     },
+    "com.gamemeanmachine.unity.windrose.lpcbiomes": {
+      "version": "file:/home/luismasuelli/Projects/Unity/unity-windrose-lpcbiomes",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {
+        "com.gamemeanmachine.unity.windrose": "0.0.3"
+      }
+    },
     "com.gamemeanmachine.unity.windrose.neighbourteleports": {
       "version": "file:../../unity-windrose-neighbourteleports",
       "depth": 0,
@@ -251,7 +259,7 @@
       "depth": 0,
       "source": "local",
       "dependencies": {
-        "com.gamemeanmachine.unity.windrose.spriteutils": "0.0.3",
+        "com.gamemeanmachine.unity.windrose.spriteutils": "0.0.4",
         "com.alephvault.unity.textureutils": "0.0.1"
       }
     },
@@ -262,11 +270,11 @@
       "dependencies": {
         "com.alephvault.unity.support": "0.0.2",
         "com.alephvault.unity.layout": "0.0.1",
-        "com.alephvault.unity.spriteutils": "0.0.3",
+        "com.alephvault.unity.spriteutils": "0.0.4",
         "com.gamemeanmachine.unity.windrose": "0.0.4"
       }
     },
-    "com.gamemeanmchine.unity.netrose.refmapchars": {
+    "com.gamemeanmachine.unity.netrose.refmapchars": {
       "version": "file:/home/luismasuelli/Projects/Unity/unity-netrose-refmapchars",
       "depth": 0,
       "source": "local",
@@ -276,7 +284,7 @@
         "com.alephvault.unity.binary": "0.0.2"
       }
     },
-    "com.gamemeanmchine.unity.netrose.storage": {
+    "com.gamemeanmachine.unity.netrose.storage": {
       "version": "file:/home/luismasuelli/Projects/Unity/unity-netrose-storage",
       "depth": 0,
       "source": "local",

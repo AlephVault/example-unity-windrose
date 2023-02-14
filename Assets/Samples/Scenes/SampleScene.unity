@@ -2013,6 +2013,7 @@ GameObject:
   - component: {fileID: 361721852}
   - component: {fileID: 361721853}
   - component: {fileID: 361721859}
+  - component: {fileID: 361721851}
   m_Layer: 0
   m_Name: GameMap1
   m_TagString: Untagged
@@ -2020,6 +2021,18 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &361721851
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 361721850}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32b7e991042d4d34ea58f27e8013a886, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &361721852
 Transform:
   m_ObjectHideFlags: 0
@@ -2710,6 +2723,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   width: 2
   height: 2
+  zHeight: 0
   speed: 2
   orientation: 0
   mainVisual: {fileID: 0}
@@ -3331,6 +3345,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   width: 16
   height: 12
+  zHeight: 0
   speed: 2
   orientation: 0
   mainVisual: {fileID: 0}
@@ -6898,6 +6913,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   width: 1
   height: 1
+  zHeight: 0
   speed: 4
   orientation: 0
   mainVisual: {fileID: 0}
@@ -9488,6 +9504,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   width: 1
   height: 1
+  zHeight: 0
   speed: 2
   orientation: 0
   mainVisual: {fileID: 0}
@@ -9701,6 +9718,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   width: 1
   height: 1
+  zHeight: 0
   speed: 4
   orientation: 0
   mainVisual: {fileID: 1532055732}
@@ -10276,6 +10294,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   width: 1
   height: 1
+  zHeight: 0
   speed: 2
   orientation: 0
   mainVisual: {fileID: 0}
@@ -12580,6 +12599,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15cce6a64d4586149b9f36eece7cfcc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  usesSpatialIndexing: 0
   strategy: {fileID: 1063698779}
   Bypass: 0
 --- !u!114 &1063698782
@@ -13804,6 +13824,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   width: 1
   height: 1
+  zHeight: 0
   speed: 2
   orientation: 0
   mainVisual: {fileID: 0}
@@ -17380,6 +17401,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   width: 1
   height: 1
+  zHeight: 0
   speed: 2
   orientation: 3
   mainVisual: {fileID: 0}
@@ -18413,6 +18435,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   width: 2
   height: 2
+  zHeight: 0
   speed: 2
   orientation: 0
   mainVisual: {fileID: 0}
@@ -19062,6 +19085,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   width: 1
   height: 1
+  zHeight: 0
   speed: 2
   orientation: 1
   mainVisual: {fileID: 0}
@@ -21183,6 +21207,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   width: 1
   height: 1
+  zHeight: 0
   speed: 2
   orientation: 0
   mainVisual: {fileID: 0}
@@ -21704,6 +21729,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15cce6a64d4586149b9f36eece7cfcc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  usesSpatialIndexing: 1
   strategy: {fileID: 1764234098}
   Bypass: 0
 --- !u!1 &1764890180
@@ -24391,6 +24417,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   width: 1
   height: 1
+  zHeight: 0
   speed: 2
   orientation: 0
   mainVisual: {fileID: 0}
@@ -24673,6 +24700,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   width: 1
   height: 1
+  zHeight: 0
   speed: 2
   orientation: 2
   mainVisual: {fileID: 0}

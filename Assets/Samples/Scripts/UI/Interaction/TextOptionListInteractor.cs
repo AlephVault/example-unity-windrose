@@ -1,6 +1,6 @@
 ﻿using System;
-using GameMeanMachine.Unity.GabTab.Authoring.Behaviours;
-using GameMeanMachine.Unity.GabTab.Authoring.Behaviours.Interactors;
+using AlephVault.Unity.GabTab.Authoring.Behaviours;
+using AlephVault.Unity.GabTab.Authoring.Behaviours.Interactors;
 using UnityEngine;
 using UnityEngine.UI;
 

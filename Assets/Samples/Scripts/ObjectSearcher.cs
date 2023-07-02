@@ -1,5 +1,5 @@
-using GameMeanMachine.Unity.WindRose.Authoring.Behaviours.World;
-using GameMeanMachine.Unity.WindRose.Authoring.Behaviours.World.Layers.Objects;
+using AlephVault.Unity.WindRose.Authoring.Behaviours.World;
+using AlephVault.Unity.WindRose.Authoring.Behaviours.World.Layers.Objects;
 using UnityEngine;
 
 public class ObjectSearcher : MonoBehaviour

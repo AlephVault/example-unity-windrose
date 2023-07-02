@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using GameMeanMachine.Unity.GabTab.Authoring.Behaviours;
+using AlephVault.Unity.GabTab.Authoring.Behaviours;
 
 [RequireComponent(typeof(InteractiveInterface))]
 public class SpacebarAccelerator : MonoBehaviour {

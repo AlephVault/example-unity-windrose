@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
-using GameMeanMachine.Unity.WindRose.Authoring.Behaviours.Entities.Objects;
-using GameMeanMachine.Unity.WindRose.GabTab.Authoring.Behaviours.UI;
-using GameMeanMachine.Unity.GabTab.Authoring.Behaviours;
-using GameMeanMachine.Unity.GabTab.Authoring.Behaviours.Interactors;
+using AlephVault.Unity.WindRose.Authoring.Behaviours.Entities.Objects;
+using AlephVault.Unity.WindRose.GabTab.Authoring.Behaviours.UI;
+using AlephVault.Unity.GabTab.Authoring.Behaviours;
+using AlephVault.Unity.GabTab.Authoring.Behaviours.Interactors;
 using System.Threading.Tasks;
 
 [RequireComponent(typeof(HUDLinker))]

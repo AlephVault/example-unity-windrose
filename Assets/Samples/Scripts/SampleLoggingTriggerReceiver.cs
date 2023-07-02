@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using GameMeanMachine.Unity.WindRose.Authoring.Behaviours.Entities.Objects;
+using AlephVault.Unity.WindRose.Authoring.Behaviours.Entities.Objects;
 
 [RequireComponent(typeof(TriggerPlatform))]
 public class SampleLoggingTriggerReceiver : MonoBehaviour

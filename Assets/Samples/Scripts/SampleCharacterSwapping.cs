@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-[RequireComponent(typeof(GameMeanMachine.Unity.WindRose.GabTab.Authoring.Behaviours.UI.HUD))]
+[RequireComponent(typeof(AlephVault.Unity.WindRose.GabTab.Authoring.Behaviours.UI.HUD))]
 public class SampleCharacterSwapping : MonoBehaviour
 {
     /**
@@ -13,15 +13,15 @@ public class SampleCharacterSwapping : MonoBehaviour
      * Index of objects to rotate among.
      */
     [SerializeField]
-    private GameMeanMachine.Unity.WindRose.Authoring.Behaviours.Entities.Objects.MapObject[] targets;
+    private AlephVault.Unity.WindRose.Authoring.Behaviours.Entities.Objects.MapObject[] targets;
 
-    private GameMeanMachine.Unity.WindRose.GabTab.Authoring.Behaviours.UI.HUD hud;
+    private AlephVault.Unity.WindRose.GabTab.Authoring.Behaviours.UI.HUD hud;
 
     private int currentTarget = 0;
 
     private void Start()
     {
-        hud = GetComponent<GameMeanMachine.Unity.WindRose.GabTab.Authoring.Behaviours.UI.HUD>();
+        hud = GetComponent<AlephVault.Unity.WindRose.GabTab.Authoring.Behaviours.UI.HUD>();
         TrackTarget();
     }
 

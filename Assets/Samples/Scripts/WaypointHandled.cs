@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections;
 using UnityEngine;
-using GameMeanMachine.Unity.WindRose.Authoring.Behaviours.World;
-using GameMeanMachine.Unity.WindRose.Authoring.Behaviours.Entities.Objects;
-using GameMeanMachine.Unity.WindRose.Types;
+using AlephVault.Unity.WindRose.Authoring.Behaviours.World;
+using AlephVault.Unity.WindRose.Authoring.Behaviours.Entities.Objects;
+using AlephVault.Unity.WindRose.Types;
 using System.Threading.Tasks;
 using AlephVault.Unity.Support.Utils;
 

@@ -198,7 +198,7 @@ TextureImporter:
       213: 2850672566979165411
     second: poker-big_64
   externalObjects: {}
-  serializedVersion: 11
+  serializedVersion: 12
   mipmaps:
     mipMapMode: 0
     enableMipMap: 0
@@ -219,6 +219,7 @@ TextureImporter:
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
+  ignoreMasterTextureLimit: 0
   grayScaleToAlpha: 0
   generateCubemap: 6
   cubemapConvolution: 0
@@ -257,6 +258,7 @@ TextureImporter:
   textureFormatSet: 0
   ignorePngGamma: 0
   applyGammaDecoding: 0
+  cookieLightType: 1
   platformSettings:
   - serializedVersion: 3
     buildTarget: DefaultTexturePlatform
@@ -284,6 +286,18 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
     buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Server
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
@@ -1441,6 +1455,61 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
+    nameFileIdTable:
+      poker-big_0: 4082274546232369340
+      poker-big_1: 2417093139890659229
+      poker-big_10: -7558011594612753337
+      poker-big_11: -5419589971345617086
+      poker-big_12: -2902253911353494460
+      poker-big_13: -259101074476378083
+      poker-big_14: -4257175423309917740
+      poker-big_15: -5313250565899279292
+      poker-big_16: -3408224720426808335
+      poker-big_17: 681376347193977856
+      poker-big_18: -5281840543024146093
+      poker-big_19: -3151591950395452367
+      poker-big_2: -6842071371962141622
+      poker-big_20: 7467736652122437306
+      poker-big_21: -2083577142733957542
+      poker-big_22: -6825132194007684690
+      poker-big_23: -3386500884089412431
+      poker-big_24: -1213612160301853471
+      poker-big_25: 5015383618986707315
+      poker-big_26: -5233010653994298726
+      poker-big_27: 3277467928793145528
+      poker-big_28: 5767575525311453506
+      poker-big_29: -5117909466094632793
+      poker-big_3: -6714514928492441949
+      poker-big_30: 225378860762825859
+      poker-big_31: 6606552033830091453
+      poker-big_32: 2217069379933504434
+      poker-big_33: 2133261341676015807
+      poker-big_34: 2548613026330238634
+      poker-big_35: 1050025975990023608
+      poker-big_36: 3488260967884107717
+      poker-big_37: -6676235070778196106
+      poker-big_38: -8217650464188583915
+      poker-big_39: 8074896015354579086
+      poker-big_4: 6287345051164970384
+      poker-big_40: 2586441698877459444
+      poker-big_41: 4828956224816810506
+      poker-big_42: 44761088313702232
+      poker-big_43: -6010099407849721449
+      poker-big_44: 1901283131862236167
+      poker-big_45: 8845619660350768407
+      poker-big_46: -6377685890599324338
+      poker-big_47: 204123861845711378
+      poker-big_48: -6366510103875737039
+      poker-big_49: 5217542102170981469
+      poker-big_5: -1289140787988886572
+      poker-big_50: 6277028351142962602
+      poker-big_51: 1407606097392518775
+      poker-big_52: 1053960818096149878
+      poker-big_53: 8275070592558386167
+      poker-big_6: 4425431305058792341
+      poker-big_7: 1039588438336464123
+      poker-big_8: 3268256188932355358
+      poker-big_9: 7869481469362114225
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

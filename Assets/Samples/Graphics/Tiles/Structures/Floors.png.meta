@@ -195,7 +195,7 @@ TextureImporter:
       213: 21300126
     second: Floors_63
   externalObjects: {}
-  serializedVersion: 11
+  serializedVersion: 12
   mipmaps:
     mipMapMode: 0
     enableMipMap: 0
@@ -215,6 +215,8 @@ TextureImporter:
   isReadable: 0
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMasterTextureLimit: 0
   grayScaleToAlpha: 0
   generateCubemap: 6
   cubemapConvolution: 0
@@ -246,10 +248,14 @@ TextureImporter:
   textureType: 8
   textureShape: 1
   singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
   maxTextureSizeSet: 0
   compressionQualitySet: 0
   textureFormatSet: 0
+  ignorePngGamma: 0
   applyGammaDecoding: 1
+  cookieLightType: 1
   platformSettings:
   - serializedVersion: 3
     buildTarget: DefaultTexturePlatform
@@ -289,6 +295,18 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 1
   - serializedVersion: 3
     buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 1
+  - serializedVersion: 3
+    buildTarget: Server
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
@@ -1656,6 +1674,71 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
+    nameFileIdTable:
+      Floors_0: 21300000
+      Floors_1: 21300002
+      Floors_10: 21300020
+      Floors_11: 21300022
+      Floors_12: 21300024
+      Floors_13: 21300026
+      Floors_14: 21300028
+      Floors_15: 21300030
+      Floors_16: 21300032
+      Floors_17: 21300034
+      Floors_18: 21300036
+      Floors_19: 21300038
+      Floors_2: 21300004
+      Floors_20: 21300040
+      Floors_21: 21300042
+      Floors_22: 21300044
+      Floors_23: 21300046
+      Floors_24: 21300048
+      Floors_25: 21300050
+      Floors_26: 21300052
+      Floors_27: 21300054
+      Floors_28: 21300056
+      Floors_29: 21300058
+      Floors_3: 21300006
+      Floors_30: 21300060
+      Floors_31: 21300062
+      Floors_32: 21300064
+      Floors_33: 21300066
+      Floors_34: 21300068
+      Floors_35: 21300070
+      Floors_36: 21300072
+      Floors_37: 21300074
+      Floors_38: 21300076
+      Floors_39: 21300078
+      Floors_4: 21300008
+      Floors_40: 21300080
+      Floors_41: 21300082
+      Floors_42: 21300084
+      Floors_43: 21300086
+      Floors_44: 21300088
+      Floors_45: 21300090
+      Floors_46: 21300092
+      Floors_47: 21300094
+      Floors_48: 21300096
+      Floors_49: 21300098
+      Floors_5: 21300010
+      Floors_50: 21300100
+      Floors_51: 21300102
+      Floors_52: 21300104
+      Floors_53: 21300106
+      Floors_54: 21300108
+      Floors_55: 21300110
+      Floors_56: 21300112
+      Floors_57: 21300114
+      Floors_58: 21300116
+      Floors_59: 21300118
+      Floors_6: 21300012
+      Floors_60: 21300120
+      Floors_61: 21300122
+      Floors_62: 21300124
+      Floors_63: 21300126
+      Floors_7: 21300014
+      Floors_8: 21300016
+      Floors_9: 21300018
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

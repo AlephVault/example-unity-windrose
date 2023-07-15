@@ -6,6 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Packages/com.gamemeanmachine.unity.netrose/Samples/Scenes/SampleNetRoseScene.unity
+    path: Packages/com.alephvault.unity.netrose/Samples/Scenes/SampleNetRoseScene.unity
     guid: 7a25f22480f491c4eb8be7d371e60614
   m_configObjects: {}

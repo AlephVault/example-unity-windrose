@@ -7,7 +7,7 @@ namespace AlephVault.Unity.Cards
 {
     namespace Authoring
     {
-        namespace Behaviours
+        namespace ScriptableObjects
         {
             /// <summary>
             ///   <para>

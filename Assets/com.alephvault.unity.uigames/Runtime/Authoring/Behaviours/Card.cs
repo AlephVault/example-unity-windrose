@@ -35,7 +35,7 @@ namespace AlephVault.Unity.UIGames
                 /// <summary>
                 ///   See <see cref="deck" />.
                 /// </summary>
-                public Deck Deck;
+                public Deck Deck => deck;
 
                 /// <summary>
                 ///   The background. It must be a non-negative index in the

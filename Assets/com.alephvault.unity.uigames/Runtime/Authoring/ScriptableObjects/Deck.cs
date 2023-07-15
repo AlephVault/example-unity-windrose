@@ -21,6 +21,7 @@ namespace AlephVault.Unity.UIGames
             ///     or dynamically created.
             ///   </para>
             /// </summary>
+            [CreateAssetMenu(fileName = "NewDeck", menuName = "UI Games/Cards/New Deck", order = 110)]
             public class Deck : ScriptableObject
             {
                 private void OnEnable()

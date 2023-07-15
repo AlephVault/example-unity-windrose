@@ -112,7 +112,7 @@ namespace AlephVault.Unity.UIGames
                 {
                     if (FacingUp) return;
                     FacingUp = true;
-                    int action = currentFlipAction;
+                    int action = currentFlipAction++;
                     if (currentFlipAction == 65536) currentFlipAction = 0;
                     float semiFlipTime = SemiFlipTime;
                     if (!animated || semiFlipTime <= 0)
@@ -136,7 +136,7 @@ namespace AlephVault.Unity.UIGames
                 {
                     if (!FacingUp) return;
                     FacingUp = false;
-                    int action = currentFlipAction;
+                    int action = currentFlipAction++;
                     if (currentFlipAction == 65536) currentFlipAction = 0;
                     float semiFlipTime = SemiFlipTime;
                     if (!animated || semiFlipTime <= 0)
@@ -154,12 +154,15 @@ namespace AlephVault.Unity.UIGames
                 private async Task FlipStart(int index, float semiFlipTime)
                 {
                     float time = 0;
-                    while (time < semiFlipTime && index == currentFlipAction)
+                    Debug.Log($"Index is: {index}, and next is: {(currentFlipAction + 65535) % 65536}");
+                    while (time < semiFlipTime && index == (currentFlipAction + 65535) % 65536)
                     {
+                        Debug.Log("Step Start");
                         time = Values.Min(semiFlipTime, time + Time.deltaTime);
                         transform.localScale = new Vector3(
                             1 - time / semiFlipTime, 1, 1
                         );
+                        await Task.Yield();
                     }
                     transform.localScale = new Vector3(0, 1, 1);
                 }
@@ -167,14 +170,18 @@ namespace AlephVault.Unity.UIGames
                 private async Task FlipEnd(int index, float semiFlipTime)
                 {
                     float time = 0;
-                    while (time < semiFlipTime && index == currentFlipAction)
+                    Debug.Log($"Index is: {index}, and next is: {(currentFlipAction + 65535) % 65536}");
+                    while (time < semiFlipTime && index == (currentFlipAction + 65535) % 65536)
                     {
+                        Debug.Log("Step End");
                         time = Values.Min(semiFlipTime, time + Time.deltaTime);
                         transform.localScale = new Vector3(
                             time / semiFlipTime, 1, 1
                         );
+                        await Task.Yield();
                     }
                     transform.localScale = new Vector3(1, 1, 1);
+                    if (currentFlipAction == 65536) currentFlipAction = 0;
                 }
             }
         }

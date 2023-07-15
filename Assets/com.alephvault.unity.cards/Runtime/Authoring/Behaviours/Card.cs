@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using AlephVault.Unity.Cards.Authoring.ScriptableObjects;
 using AlephVault.Unity.Support.Utils;
 using UnityEngine;
@@ -88,39 +89,92 @@ namespace AlephVault.Unity.Cards
                 /// </summary>
                 public bool FacingUp { get; private set; }
 
+                /// <summary>
+                ///   This is the animation time of a semi-flip.
+                /// </summary>
+                public float SemiFlipTime = 0.25f;
+
+                // This is the current flip action. Tracked for when a new
+                // action is triggered.
+                private int currentFlipAction = 0;
+
                 private void Awake()
                 {
                     image = GetComponent<Image>();
                     image.sprite = deck.Backgrounds.Count > 0 ? deck.Backgrounds[0] : null;
                 }
 
+                /// <summary>
+                ///   Flips the card up, if it was flipped down.
+                /// </summary>
+                /// <param name="animated">Whether to make it instant or use an animation</param>
                 public async void FaceUp(bool animated = false)
                 {
                     if (FacingUp) return;
                     FacingUp = true;
-                    if (!animated)
+                    int action = currentFlipAction;
+                    if (currentFlipAction == 65536) currentFlipAction = 0;
+                    float semiFlipTime = SemiFlipTime;
+                    if (!animated || semiFlipTime <= 0)
                     {
                         image.sprite = deck.Cards.Count > 0 ? deck.Cards[face] : null;
                     }
                     else
                     {
-                        // TODO implement loop.
+                        await FlipStart(action, semiFlipTime);
+                        image.sprite = deck.Cards.Count > 0 ? deck.Cards[face] : null;
+                        await FlipEnd(action, semiFlipTime);
                     }
 
                 }
 
+                /// <summary>
+                ///   Flips the card down, if it was flipped up.
+                /// </summary>
+                /// <param name="animated">Whether to make it instant or use an animation</param>
                 public async void FaceDown(bool animated = false)
                 {
                     if (!FacingUp) return;
                     FacingUp = true;
-                    if (!animated)
+                    int action = currentFlipAction;
+                    if (currentFlipAction == 65536) currentFlipAction = 0;
+                    float semiFlipTime = SemiFlipTime;
+                    if (!animated || semiFlipTime <= 0)
                     {
                         image.sprite = deck.Backgrounds.Count > 0 ? deck.Backgrounds[background] : null;
                     }
                     else
                     {
-                        // TODO implement loop.
+                        await FlipStart(action, semiFlipTime);
+                        image.sprite = deck.Backgrounds.Count > 0 ? deck.Backgrounds[background] : null;
+                        await FlipEnd(action, semiFlipTime);
                     }
+                }
+
+                private async Task FlipStart(int index, float semiFlipTime)
+                {
+                    float time = 0;
+                    while (time < semiFlipTime && index == currentFlipAction)
+                    {
+                        time = Values.Min(semiFlipTime, time + Time.deltaTime);
+                        transform.localScale = new Vector3(
+                            1 - time / semiFlipTime, 1, 1
+                        );
+                    }
+                    transform.localScale = new Vector3(0, 1, 1);
+                }
+
+                private async Task FlipEnd(int index, float semiFlipTime)
+                {
+                    float time = 0;
+                    while (time < semiFlipTime && index == currentFlipAction)
+                    {
+                        time = Values.Min(semiFlipTime, time + Time.deltaTime);
+                        transform.localScale = new Vector3(
+                            time / semiFlipTime, 1, 1
+                        );
+                    }
+                    transform.localScale = new Vector3(1, 1, 1);
                 }
             }
         }

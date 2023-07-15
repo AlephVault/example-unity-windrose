@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace AlephVault.Unity.Cards
+namespace AlephVault.Unity.UIGames
 {
     namespace Authoring
     {

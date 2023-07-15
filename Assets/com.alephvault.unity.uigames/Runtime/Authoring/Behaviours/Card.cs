@@ -1,10 +1,10 @@
 using System.Threading.Tasks;
-using AlephVault.Unity.Cards.Authoring.ScriptableObjects;
+using AlephVault.Unity.UIGames.Authoring.ScriptableObjects;
 using AlephVault.Unity.Support.Utils;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace AlephVault.Unity.Cards
+namespace AlephVault.Unity.UIGames
 {
     namespace Authoring
     {

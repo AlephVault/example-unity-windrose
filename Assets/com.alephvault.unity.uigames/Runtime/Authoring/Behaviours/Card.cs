@@ -76,7 +76,7 @@ namespace AlephVault.Unity.UIGames
                     set
                     {
                         int old = face;
-                        face = Values.Clamp(0, face, Deck.Cards.Count - 1);
+                        face = Values.Clamp(0, value, Deck.Cards.Count - 1);
                         if (old != face && FacingUp)
                         {
                             image.sprite = deck.Cards.Count > 0 ? deck.Cards[face] : null;
@@ -135,7 +135,7 @@ namespace AlephVault.Unity.UIGames
                 public async void FaceDown(bool animated = false)
                 {
                     if (!FacingUp) return;
-                    FacingUp = true;
+                    FacingUp = false;
                     int action = currentFlipAction;
                     if (currentFlipAction == 65536) currentFlipAction = 0;
                     float semiFlipTime = SemiFlipTime;

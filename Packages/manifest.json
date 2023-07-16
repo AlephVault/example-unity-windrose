@@ -23,6 +23,7 @@
     "com.alephvault.unity.support": "file:../../unity-support",
     "com.alephvault.unity.support.generic": "file:../../unity-support-generic",
     "com.alephvault.unity.textureutils": "file:/home/luismasuelli/Projects/Unity/unity-textureutils",
+    "com.alephvault.unity.uigames": "file:/home/luismasuelli/Projects/Unity/unity-uigames",
     "com.alephvault.unity.windrose": "file:../../unity-windrose",
     "com.alephvault.unity.windrose-backpack": "file:../../unity-windrose-backpack-plugin",
     "com.alephvault.unity.windrose-gabtab": "file:../../unity-windrose-gabtab-plugin",

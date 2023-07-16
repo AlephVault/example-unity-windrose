@@ -199,6 +199,14 @@
         "com.alephvault.unity.support.generic": "0.0.1"
       }
     },
+    "com.alephvault.unity.uigames": {
+      "version": "file:/home/luismasuelli/Projects/Unity/unity-uigames",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {
+        "com.alephvault.unity.support": "0.0.1"
+      }
+    },
     "com.alephvault.unity.windrose": {
       "version": "file:../../unity-windrose",
       "depth": 0,

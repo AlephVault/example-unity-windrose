@@ -64,6 +64,90 @@ namespace AlephVault.Unity.CardGames
                                (card4 % 16) << 4 |
                                (card5 % 16);
                     }
+
+                    /// <summary>
+                    ///   Matches two of a kind. This one will be executed after
+                    ///   other (more powerful & strict) matches failed.
+                    /// </summary>
+                    /// <param name="hand">The hand to evaluate</param>
+                    /// <returns>A packed Pair rank, or null</returns>
+                    protected int? MatchPair(int[] hand)
+                    {
+                        if (hand[0] == hand[1])
+                            return Pack(
+                                Pair, hand[0], hand[2], hand[3], hand[4], 0
+                            );
+                        if (hand[1] == hand[2])
+                            return Pack(
+                                Pair, hand[1], hand[0], hand[3], hand[4], 0
+                            );
+                        if (hand[2] == hand[3])
+                            return Pack(
+                                Pair, hand[2], hand[0], hand[1], hand[4], 0
+                            );
+                        if (hand[3] == hand[4])
+                            return Pack(
+                                Pair, hand[3], hand[0], hand[1], hand[2], 0
+                            );
+                        return null;
+                    }
+
+                    /// <summary>
+                    ///   Matches two pairs. This one will be executed after other
+                    ///   (more powerful & strict) matches failed.
+                    /// </summary>
+                    /// <param name="hand">The hand to evaluate</param>
+                    /// <returns>A packed Double Pair rank, or null</returns>
+                    protected int? MatchDoublePair(int[] hand)
+                    {
+                        if (hand[0] == hand[1])
+                        {
+                            if (hand[2] == hand[3])
+                            {
+                                return Pack(
+                                    DoublePair, hand[0], hand[2], hand[4], 0, 0
+                                );
+                            }
+                            if (hand[3] == hand[4])
+                            {
+                                return Pack(
+                                    DoublePair, hand[0], hand[4], hand[2], 0, 0
+                                );
+                            }
+                        }
+                        else if (hand[1] == hand[2] && hand[3] == hand[4])
+                        {
+                            return Pack(
+                                DoublePair, hand[2], hand[4], hand[0], 0, 0
+                            );
+                        }
+
+                        return null;
+                    }
+
+                    /// <summary>
+                    ///   Matches 3 of a kind. This one will be executed after
+                    ///   other (more powerful & strict) matches failed.
+                    /// </summary>
+                    /// <param name="hand">The hand to evaluate</param>
+                    /// <returns>A packed Three of a Kind rank, or null</returns>
+                    public int? Match3OfAKind(int[] hand)
+                    {
+                        if (hand[0] == hand[1] && hand[0] == hand[2])
+                        {
+                            return Pack(ThreeOfAKind, hand[0], hand[3], hand[4], 0, 0);
+                        }
+                        if (hand[1] == hand[2] && hand[1] == hand[3])
+                        {
+                            return Pack(ThreeOfAKind, hand[1], hand[0], hand[4], 0, 0);
+                        }
+                        if (hand[2] == hand[3] && hand[3] == hand[4])
+                        {
+                            return Pack(ThreeOfAKind, hand[2], hand[0], hand[1], 0, 0);
+                        }
+
+                        return null;
+                    }
                     
                     /// <summary>
                     ///   Evaluates the hand power.

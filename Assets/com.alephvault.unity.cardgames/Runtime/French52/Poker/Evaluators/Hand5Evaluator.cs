@@ -15,33 +15,33 @@ namespace AlephVault.Unity.CardGames
                     /// <summary>
                     ///   Unmatched cards.
                     /// </summary>
-                    protected static int Bust = 0;
+                    public const int Bust = 0;
                     
                     /// <summary>
                     ///   A single pair.
                     /// </summary>
-                    protected static int Pair = 1;
+                    public const int Pair = 1;
                     
                     /// <summary>
                     ///   A double pair.
                     /// </summary>
-                    protected static int DoublePair = 2;
+                    public const int DoublePair = 2;
                     
                     /// <summary>
                     ///   Three of a kind (and two kickers).
                     /// </summary>
-                    protected static int ThreeOfAKind = 3;
+                    public const int ThreeOfAKind = 3;
                     
                     /// <summary>
                     ///   Full house.
                     /// </summary>
                     /// <remarks>Notice how full house has less odds than flush only on 52-cards decks</remarks>
-                    protected static int FullHouse = 6;
+                    public const int FullHouse = 6;
                     
                     /// <summary>
                     ///   Four of a kind (and a kicker).
                     /// </summary>
-                    protected static int FourOfAKind = 7;
+                    public const int FourOfAKind = 7;
 
                     /// <summary>
                     ///   Packs a sparse hand power. It doesn't serve the purpose for absolute power
@@ -177,11 +177,11 @@ namespace AlephVault.Unity.CardGames
                     {
                         if (hand[0] == hand[1] && hand[0] == hand[2] && hand[0] == hand[3])
                         {
-                            return Pack(FullHouse, hand[0], hand[4], 0, 0, 0);
+                            return Pack(FourOfAKind, hand[0], hand[4], 0, 0, 0);
                         }
                         if (hand[1] == hand[2] && hand[1] == hand[3] && hand[1] == hand[4])
                         {
-                            return Pack(FullHouse, hand[1], hand[0], 0, 0, 0);
+                            return Pack(FourOfAKind, hand[1], hand[0], 0, 0, 0);
                         }
 
                         return null;
@@ -190,8 +190,9 @@ namespace AlephVault.Unity.CardGames
                     /// <summary>
                     ///   Evaluates the hand power.
                     /// </summary>
+                    /// <param nam="hand">The hand to evaluate</param>
                     /// <returns>The evaluation score</returns>
-                    public abstract int Evaluate();
+                    public abstract int Evaluate(int[] hand);
                 }
             }
         }

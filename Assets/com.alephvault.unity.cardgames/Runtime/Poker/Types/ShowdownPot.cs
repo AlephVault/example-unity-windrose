@@ -25,14 +25,14 @@ namespace AlephVault.Unity.CardGames
                 /// <summary>
                 ///   The agents.
                 /// </summary>
-                public readonly IReadOnlyList<IAgent> Agents;
+                public readonly IReadOnlyCollection<IAgent> Agents;
 
                 /// <summary>
                 ///   Builds the sidepot with the amount and the players.
                 /// </summary>
                 /// <param name="eachPot">The size of each pot</param>
                 /// <param name="agents">The involved agents</param>
-                public ShowdownPot(int eachPot, IReadOnlyList<IAgent> agents)
+                public ShowdownPot(int eachPot, IReadOnlyCollection<IAgent> agents)
                 {
                     EachPot = eachPot;
                     TotalPot = eachPot * agents.Count;

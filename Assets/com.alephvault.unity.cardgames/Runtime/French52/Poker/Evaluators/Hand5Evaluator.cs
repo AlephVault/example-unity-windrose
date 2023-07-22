@@ -148,7 +148,45 @@ namespace AlephVault.Unity.CardGames
 
                         return null;
                     }
-                    
+
+                    /// <summary>
+                    ///   Matches full house.
+                    /// </summary>
+                    /// <param name="hand">The hand to evaluate</param>
+                    /// <returns>A packed Full House rank, or null</returns>
+                    public int? MatchFullHouse(int[] hand)
+                    {
+                        if (hand[0] == hand[1] && hand[0] == hand[2] && hand[3] == hand[4])
+                        {
+                            return Pack(FullHouse, hand[0], hand[3], 0, 0, 0);
+                        }
+                        if (hand[0] == hand[1] && hand[2] == hand[3] && hand[2] == hand[4])
+                        {
+                            return Pack(FullHouse, hand[2], hand[0], 0, 0, 0);
+                        }
+
+                        return null;
+                    }
+
+                    /// <summary>
+                    ///   Matches four of a kind.
+                    /// </summary>
+                    /// <param name="hand">The hand to evaluate</param>
+                    /// <returns>A packed Four of a Kind, or null</returns>
+                    public int? MatchFourOfAKind(int[] hand)
+                    {
+                        if (hand[0] == hand[1] && hand[0] == hand[2] && hand[0] == hand[3])
+                        {
+                            return Pack(FullHouse, hand[0], hand[4], 0, 0, 0);
+                        }
+                        if (hand[1] == hand[2] && hand[1] == hand[3] && hand[1] == hand[4])
+                        {
+                            return Pack(FullHouse, hand[1], hand[0], 0, 0, 0);
+                        }
+
+                        return null;
+                    }
+
                     /// <summary>
                     ///   Evaluates the hand power.
                     /// </summary>

@@ -10,7 +10,7 @@ namespace AlephVault.Unity.CardGames
                 ///   An evaluator for a Poker game of 5-cards hands
                 ///   (out of 52 standard cards).
                 /// </summary>
-                public abstract class Hand5Evaluator : IHandEvaluator
+                public abstract class Hand5Evaluator
                 {
                     /// <summary>
                     ///   Unmatched cards.

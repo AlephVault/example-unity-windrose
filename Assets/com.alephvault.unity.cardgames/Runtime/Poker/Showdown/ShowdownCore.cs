@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using AlephVault.Unity.CardGames.Poker.Matchers;
 using AlephVault.Unity.CardGames.Poker.Types;
@@ -32,7 +31,7 @@ namespace AlephVault.Unity.CardGames
                 public readonly bool Lowball;
 
                 // Computes the ranks for the active hands.
-                private Dictionary<IAgent, IMatchedHand> ComputeRanks(ShowdownPot[] showdownPots)
+                private Dictionary<IAgent, IMatchedHand> ComputeRanks(List<ShowdownPot> showdownPots)
                 {
                     Dictionary<IAgent, IMatchedHand> ranks = new Dictionary<IAgent, IMatchedHand>();
                     foreach (ShowdownPot showdownPot in showdownPots)
@@ -48,13 +47,29 @@ namespace AlephVault.Unity.CardGames
 
                     return ranks;
                 }
+
+                // Distributes a single pot among perhaps many players.
+                private List<ShowdownPotDistribution> Distribute(
+                    ShowdownPot pot, Dictionary<IAgent, IMatchedHand> ranks, SortedSet<IAgent> agents
+                )
+                {
+                    List<ShowdownPotDistribution> distributions = new List<ShowdownPotDistribution>();
+                    int rank = 0;
+                    // TODO implement.
+                    // 1. Iterate over the agents until one of them participates in this pot. Keep it.
+                    // 2. Keep iterating and keeping all the agents that participate in the pot and have same rank.
+                    // 3. All those N agents are winners: assign pot.Total / N to each. Remainders will be given
+                    //    for the first pot.Total % N players.
+                    // 4. At least 1 element will be the result of this distribution.
+                    return distributions;
+                }
                 
                 /// <summary>
                 ///   Computes the showdown for the agents.
                 /// </summary>
                 /// <param name="showdownPots">The showdown pots. The 0-indexed one is the main one</param>
                 /// <returns>The pots distribution</returns>
-                public Tuple<IAgent, int, int>[] ComputeShowdown(ShowdownPot[] showdownPots)
+                public List<ShowdownPotDistribution> ComputeShowdown(List<ShowdownPot> showdownPots)
                 {
                     // Prepare the ranks, first.
                     Dictionary<IAgent, IMatchedHand> ranks = ComputeRanks(showdownPots);
@@ -65,9 +80,17 @@ namespace AlephVault.Unity.CardGames
                             (ag1, ag2) => ranks[ag1].Rank() < ranks[ag2].Rank() ? 1 : -1 :
                             (ag1, ag2) => ranks[ag1].Rank() < ranks[ag2].Rank() ? -1 : 1
                     ));
+
+                    // For each pot, distribute it using the sorted agents.
+                    // Accumulate them in a single history.
+                    List<ShowdownPotDistribution> distributions = new List<ShowdownPotDistribution>();
+                    foreach (ShowdownPot showdownPot in showdownPots)
+                    {
+                        distributions.AddRange(Distribute(showdownPot, ranks, sortedAgents));
+                    }
                     
-                    // TODO IMPLEMENT LATER.
-                    return null;
+                    // Return the cumulative history.
+                    return distributions;
                 }
             }   
         }

@@ -42,12 +42,12 @@ namespace AlephVault.Unity.CardGames
                 /// <summary>
                 ///   Adds a certain amount (from each player) to this pot.
                 /// </summary>
-                /// <param name="eachPot">The per-player amount to add</param>
-                public void AddAmount(int eachPot)
+                /// <param name="amount">The per-player amount to add</param>
+                public void AddAmountFromPlayers(int amount)
                 {
-                    if (eachPot <= 0) return;
-                    EachPot += eachPot;
-                    TotalPot += eachPot * Agents.Count;
+                    if (amount <= 0) return;
+                    EachPot += amount;
+                    TotalPot += amount * Agents.Count;
                 }
 
                 /// <summary>

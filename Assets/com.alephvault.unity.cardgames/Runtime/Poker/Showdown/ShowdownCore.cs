@@ -55,7 +55,7 @@ namespace AlephVault.Unity.CardGames
                 }
 
                 // Distributes a single pot among perhaps many players.
-                private List<CentralPotDistribution> Distribute(
+                private List<ShowdownDistribution> Distribute(
                     CentralPot pot, int potIndex, Dictionary<IShowdownAgent, IMatchedHand> ranks,
                     SortedSet<IShowdownAgent> agents
                 )
@@ -65,7 +65,7 @@ namespace AlephVault.Unity.CardGames
                     // all the agents described here are active. Either all-in or
                     // not (they may be even sit-out which, for tournaments, only
                     // means auto-check-fold, thus having a chance to be active).
-                    List<CentralPotDistribution> distributions = new List<CentralPotDistribution>();
+                    List<ShowdownDistribution> distributions = new List<ShowdownDistribution>();
 
                     // The first thing is to match the winners. The first pot-agent
                     // in the list of agents (which is sorted by best -> worst rank)
@@ -105,7 +105,7 @@ namespace AlephVault.Unity.CardGames
                     int index = 0;
                     foreach (IShowdownAgent winner in winners)
                     {
-                        distributions.Add(new CentralPotDistribution(
+                        distributions.Add(new ShowdownDistribution(
                             winner, potIndex, quantity + (index < remainder ? 1 : 0))
                         );
                         index++;
@@ -119,7 +119,7 @@ namespace AlephVault.Unity.CardGames
                 /// </summary>
                 /// <param name="showdownPots">The showdown pots. The 0-indexed one is the main one</param>
                 /// <returns>The pots distributions and the matched hands</returns>
-                public Tuple<List<CentralPotDistribution>, Dictionary<IShowdownAgent, IMatchedHand>> ComputeShowdown(
+                public Tuple<List<ShowdownDistribution>, Dictionary<IShowdownAgent, IMatchedHand>> ComputeShowdown(
                     IReadOnlyCollection<CentralPot> showdownPots
                 )
                 {
@@ -134,7 +134,7 @@ namespace AlephVault.Unity.CardGames
 
                     // For each pot, distribute it using the sorted agents.
                     // Accumulate them in a single history.
-                    List<CentralPotDistribution> distributions = new List<CentralPotDistribution>();
+                    List<ShowdownDistribution> distributions = new List<ShowdownDistribution>();
                     int index = 0;
                     foreach (CentralPot showdownPot in showdownPots)
                     {
@@ -143,7 +143,7 @@ namespace AlephVault.Unity.CardGames
                     }
                     
                     // Return the pots distributions and the active players' hands.
-                    return new Tuple<List<CentralPotDistribution>, Dictionary<IShowdownAgent, IMatchedHand>>(
+                    return new Tuple<List<ShowdownDistribution>, Dictionary<IShowdownAgent, IMatchedHand>>(
                         distributions, ranks
                     );
                 }

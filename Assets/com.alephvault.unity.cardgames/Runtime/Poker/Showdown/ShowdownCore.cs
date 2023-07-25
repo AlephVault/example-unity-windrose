@@ -35,7 +35,9 @@ namespace AlephVault.Unity.CardGames
                 public readonly bool Lowball;
 
                 // Computes the ranks for the active hands.
-                private Dictionary<IShowdownAgent, IMatchedHand> ComputeRanks(IReadOnlyList<CentralPot> showdownPots)
+                private Dictionary<IShowdownAgent, IMatchedHand> ComputeRanks(
+                    IReadOnlyCollection<CentralPot> showdownPots
+                )
                 {
                     Dictionary<IShowdownAgent, IMatchedHand> ranks = new Dictionary<IShowdownAgent, IMatchedHand>();
                     foreach (CentralPot showdownPot in showdownPots)
@@ -118,7 +120,7 @@ namespace AlephVault.Unity.CardGames
                 /// <param name="showdownPots">The showdown pots. The 0-indexed one is the main one</param>
                 /// <returns>The pots distributions and the matched hands</returns>
                 public Tuple<List<CentralPotDistribution>, Dictionary<IShowdownAgent, IMatchedHand>> ComputeShowdown(
-                    IReadOnlyList<CentralPot> showdownPots
+                    IReadOnlyCollection<CentralPot> showdownPots
                 )
                 {
                     // Prepare the ranks, first.

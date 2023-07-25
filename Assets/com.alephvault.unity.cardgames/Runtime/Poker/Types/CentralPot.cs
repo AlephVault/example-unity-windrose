@@ -15,28 +15,39 @@ namespace AlephVault.Unity.CardGames
                 /// <summary>
                 ///   The amount of each pot.
                 /// </summary>
-                public readonly int EachPot;
+                public int EachPot { get; private set; }
 
                 /// <summary>
                 ///   The amount of the total pot.
                 /// </summary>
-                public readonly int TotalPot;
+                public int TotalPot { get; private set; }
 
                 /// <summary>
                 ///   The agents.
                 /// </summary>
-                public readonly IReadOnlyCollection<IShowdownAgent> Agents;
+                public IReadOnlyCollection<IShowdownAgent> Agents { get; }
 
                 /// <summary>
-                ///   Builds the sidepot with the amount and the players.
+                ///   Builds the side pot with the amount and the players.
                 /// </summary>
                 /// <param name="eachPot">The size of each pot</param>
                 /// <param name="agents">The involved agents</param>
-                public CentralPot(int eachPot, IReadOnlyCollection<IShowdownAgent> agents)
+                public CentralPot(IReadOnlyCollection<IShowdownAgent> agents)
                 {
-                    EachPot = eachPot;
-                    TotalPot = eachPot * agents.Count;
+                    EachPot = 0;
+                    TotalPot = 0 * agents.Count;
                     Agents = agents;
+                }
+
+                /// <summary>
+                ///   Adds a certain amount (from each player) to this pot.
+                /// </summary>
+                /// <param name="eachPot">The per-player amount to add</param>
+                public void AddAmount(int eachPot)
+                {
+                    if (eachPot <= 0) return;
+                    EachPot += eachPot;
+                    TotalPot += eachPot * Agents.Count;
                 }
             }
         }

@@ -15,7 +15,7 @@ namespace AlephVault.Unity.CardGames
                 /// <summary>
                 ///   The agent (perhaps one of many).
                 /// </summary>
-                public readonly IAgent Agent;
+                public readonly IShowdownAgent ShowdownAgent;
 
                 /// <summary>
                 ///   The pot index.
@@ -27,9 +27,9 @@ namespace AlephVault.Unity.CardGames
                 /// </summary>
                 public readonly int Amount;
 
-                public ShowdownPotDistribution(IAgent agent, int potIndex, int amount)
+                public ShowdownPotDistribution(IShowdownAgent showdownAgent, int potIndex, int amount)
                 {
-                    Agent = agent;
+                    ShowdownAgent = showdownAgent;
                     PotIndex = potIndex;
                     Amount = amount;
                 }

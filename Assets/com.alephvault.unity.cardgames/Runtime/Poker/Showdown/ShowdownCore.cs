@@ -35,12 +35,12 @@ namespace AlephVault.Unity.CardGames
                 public readonly bool Lowball;
 
                 // Computes the ranks for the active hands.
-                private Dictionary<IAgent, IMatchedHand> ComputeRanks(List<ShowdownPot> showdownPots)
+                private Dictionary<IShowdownAgent, IMatchedHand> ComputeRanks(List<ShowdownPot> showdownPots)
                 {
-                    Dictionary<IAgent, IMatchedHand> ranks = new Dictionary<IAgent, IMatchedHand>();
+                    Dictionary<IShowdownAgent, IMatchedHand> ranks = new Dictionary<IShowdownAgent, IMatchedHand>();
                     foreach (ShowdownPot showdownPot in showdownPots)
                     {
-                        foreach (IAgent agent in showdownPot.Agents)
+                        foreach (IShowdownAgent agent in showdownPot.Agents)
                         {
                             if (agent.Active() && !ranks.ContainsKey(agent))
                             {
@@ -54,7 +54,7 @@ namespace AlephVault.Unity.CardGames
 
                 // Distributes a single pot among perhaps many players.
                 private List<ShowdownPotDistribution> Distribute(
-                    ShowdownPot pot, int potIndex, Dictionary<IAgent, IMatchedHand> ranks, SortedSet<IAgent> agents
+                    ShowdownPot pot, int potIndex, Dictionary<IShowdownAgent, IMatchedHand> ranks, SortedSet<IShowdownAgent> agents
                 )
                 {
                     // For each pot, at least ONE active player is there. Always.
@@ -69,8 +69,8 @@ namespace AlephVault.Unity.CardGames
                     // also that rank determines the one to tie (split pot). Then,
                     // the winners are collected using this logic.
                     int rank = 0;
-                    List<IAgent> winners = new List<IAgent>();
-                    foreach (IAgent agent in agents)
+                    List<IShowdownAgent> winners = new List<IShowdownAgent>();
+                    foreach (IShowdownAgent agent in agents)
                     {
                         if (pot.Agents.Contains(agent))
                         {
@@ -98,7 +98,7 @@ namespace AlephVault.Unity.CardGames
                     int remainder = pot.TotalPot % winners.Count;
                     int quantity = pot.TotalPot / winners.Count;
                     int index = 0;
-                    foreach (IAgent winner in winners)
+                    foreach (IShowdownAgent winner in winners)
                     {
                         distributions.Add(new ShowdownPotDistribution(
                             winner, potIndex, quantity + (index < remainder ? 1 : 0))
@@ -114,13 +114,13 @@ namespace AlephVault.Unity.CardGames
                 /// </summary>
                 /// <param name="showdownPots">The showdown pots. The 0-indexed one is the main one</param>
                 /// <returns>The pots distributions and the matched hands</returns>
-                public Tuple<List<ShowdownPotDistribution>, Dictionary<IAgent, IMatchedHand>> ComputeShowdown(List<ShowdownPot> showdownPots)
+                public Tuple<List<ShowdownPotDistribution>, Dictionary<IShowdownAgent, IMatchedHand>> ComputeShowdown(List<ShowdownPot> showdownPots)
                 {
                     // Prepare the ranks, first.
-                    Dictionary<IAgent, IMatchedHand> ranks = ComputeRanks(showdownPots);
+                    Dictionary<IShowdownAgent, IMatchedHand> ranks = ComputeRanks(showdownPots);
                     
                     // Make it a sorted set.
-                    SortedSet<IAgent> sortedAgents = new SortedSet<IAgent>(ranks.Keys, Comparer<IAgent>.Create(
+                    SortedSet<IShowdownAgent> sortedAgents = new SortedSet<IShowdownAgent>(ranks.Keys, Comparer<IShowdownAgent>.Create(
                         Lowball ?
                             (ag1, ag2) => ranks[ag1].Rank() < ranks[ag2].Rank() ? 1 : -1 :
                             (ag1, ag2) => ranks[ag1].Rank() < ranks[ag2].Rank() ? -1 : 1
@@ -137,7 +137,7 @@ namespace AlephVault.Unity.CardGames
                     }
                     
                     // Return the pots distributions and the active players' hands.
-                    return new Tuple<List<ShowdownPotDistribution>, Dictionary<IAgent, IMatchedHand>>(distributions, ranks);
+                    return new Tuple<List<ShowdownPotDistribution>, Dictionary<IShowdownAgent, IMatchedHand>>(distributions, ranks);
                 }
             }   
         }

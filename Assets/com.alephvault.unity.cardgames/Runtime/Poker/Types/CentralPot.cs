@@ -10,7 +10,7 @@ namespace AlephVault.Unity.CardGames
             ///   A showdown pot is either the main one (1) or a side pot.
             ///   Knows its total amount and the involved players (agents).
             /// </summary>
-            public class ShowdownPot
+            public class CentralPot
             {
                 /// <summary>
                 ///   The amount of each pot.
@@ -32,7 +32,7 @@ namespace AlephVault.Unity.CardGames
                 /// </summary>
                 /// <param name="eachPot">The size of each pot</param>
                 /// <param name="agents">The involved agents</param>
-                public ShowdownPot(int eachPot, IReadOnlyCollection<IShowdownAgent> agents)
+                public CentralPot(int eachPot, IReadOnlyCollection<IShowdownAgent> agents)
                 {
                     EachPot = eachPot;
                     TotalPot = eachPot * agents.Count;

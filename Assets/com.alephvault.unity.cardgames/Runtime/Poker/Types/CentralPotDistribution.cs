@@ -10,7 +10,7 @@ namespace AlephVault.Unity.CardGames
             ///   - Which pot index.
             ///   - How much they won (perhaps splitting the pot).
             /// </summary>
-            public class ShowdownPotDistribution
+            public class CentralPotDistribution
             {
                 /// <summary>
                 ///   The agent (perhaps one of many).
@@ -27,7 +27,7 @@ namespace AlephVault.Unity.CardGames
                 /// </summary>
                 public readonly int Amount;
 
-                public ShowdownPotDistribution(IShowdownAgent showdownAgent, int potIndex, int amount)
+                public CentralPotDistribution(IShowdownAgent showdownAgent, int potIndex, int amount)
                 {
                     ShowdownAgent = showdownAgent;
                     PotIndex = potIndex;

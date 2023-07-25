@@ -14,7 +14,7 @@ namespace AlephVault.Unity.CardGames
                 ///   Whether the agent is playing this turn (otherwise,
                 ///   it folded or is sit-out).
                 /// </summary>
-                public bool Active();
+                public bool PlaysShowdown();
 
                 /// <summary>
                 ///   The cards.

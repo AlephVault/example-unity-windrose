@@ -42,7 +42,7 @@ namespace AlephVault.Unity.CardGames
                     {
                         foreach (IShowdownAgent agent in showdownPot.Agents)
                         {
-                            if (agent.Active() && !ranks.ContainsKey(agent))
+                            if (agent.PlaysShowdown() && !ranks.ContainsKey(agent))
                             {
                                 ranks[agent] = HandMatcher.MatchHand(agent.Cards());
                             }

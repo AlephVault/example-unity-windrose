@@ -15,8 +15,15 @@ namespace AlephVault.Unity.CardGames
                 // Players that are not all-in. A player can go all-in by having
                 // zero (0) remaining chips in funds, or receiving a special
                 // pseudo-all-in condition as disconnection protection.
-                private HashSet<IPlayerAgent> nonLockedPlayers = new HashSet<IPlayerAgent>();
-                
+                private HashSet<IPlayerAgent> playersThatCanAfford = new HashSet<IPlayerAgent>();
+
+                /// <summary>
+                ///   The still-affording players (i.e. players that were not
+                ///   deemed as non-affording this hand by delta-collecting
+                ///   of it being all-in, folded, or something similar).
+                /// </summary>
+                public IReadOnlyCollection<IPlayerAgent> PlayersThatCanAfford => playersThatCanAfford;
+
                 // The current pots.
                 private List<CentralPot> pots = new List<CentralPot>();
 
@@ -24,6 +31,12 @@ namespace AlephVault.Unity.CardGames
                 ///   The active pots.
                 /// </summary>
                 public IReadOnlyList<CentralPot> Pots => pots;
+
+                /// <summary>
+                ///   The last pot index.
+                /// </summary>
+                /// <remarks>Always >= 0 since at least one element will always exist</remarks>
+                public int LastPotIndex => pots.Count - 1;
 
                 /// <summary>
                 ///   Creates, from scratch, the whole pots of the game.
@@ -39,10 +52,10 @@ namespace AlephVault.Unity.CardGames
                     // Null positions are NOT considered here.
                     foreach (IPlayerAgent player in players)
                     {
-                        nonLockedPlayers.Add(player);
+                        playersThatCanAfford.Add(player);
                     }
                     // Then, initialize the first pot.
-                    pots.Add(new CentralPot(new List<IPlayerAgent>(nonLockedPlayers)));
+                    pots.Add(new CentralPot(new List<IPlayerAgent>(playersThatCanAfford)));
                 }
 
                 /// <summary>
@@ -70,17 +83,17 @@ namespace AlephVault.Unity.CardGames
                 /// </summary>
                 /// <param name="players">The players that went all-in</param>
                 /// <returns>Whether a new pot was created or not (it typically will)</returns>
-                public bool LockPlayer(IEnumerable<IPlayerAgent> players)
+                public bool LockPlayers(IEnumerable<IPlayerAgent> players)
                 {
                     bool removed = false;
                     foreach (IPlayerAgent player in players)
                     {
-                        removed |= nonLockedPlayers.Remove(player);
+                        removed |= playersThatCanAfford.Remove(player);
                     }
 
                     if (removed)
                     {
-                        pots.Add(new CentralPot(new List<IPlayerAgent>(nonLockedPlayers)));
+                        pots.Add(new CentralPot(new List<IPlayerAgent>(playersThatCanAfford)));
                     }
 
                     return removed;

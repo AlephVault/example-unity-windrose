@@ -7,7 +7,7 @@ namespace AlephVault.Unity.CardGames
         namespace Types
         {
             /// <summary>
-            ///   A showdown pot is either the main one (1) or a side pot.
+            ///   A central pot is either the main one (1) or a side pot.
             ///   Knows its total amount and the involved players (agents).
             /// </summary>
             public class CentralPot
@@ -48,6 +48,17 @@ namespace AlephVault.Unity.CardGames
                     if (eachPot <= 0) return;
                     EachPot += eachPot;
                     TotalPot += eachPot * Agents.Count;
+                }
+
+                /// <summary>
+                ///   Adds a "dead bet" amount. This one is not added by all
+                ///   the players, but just by one of them.
+                /// </summary>
+                /// <param name="amount">The amount to add as dead</param>
+                public void AddDeadAmount(int amount)
+                {
+                    EachPot += amount;
+                    TotalPot += amount;
                 }
             }
         }

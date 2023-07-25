@@ -40,7 +40,7 @@ namespace AlephVault.Unity.CardGames
                     Dictionary<IShowdownAgent, IMatchedHand> ranks = new Dictionary<IShowdownAgent, IMatchedHand>();
                     foreach (CentralPot showdownPot in showdownPots)
                     {
-                        foreach (IShowdownAgent agent in showdownPot.Agents)
+                        foreach (IPlayerAgent agent in showdownPot.Agents)
                         {
                             if (agent.PlaysShowdown() && !ranks.ContainsKey(agent))
                             {

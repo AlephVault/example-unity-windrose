@@ -23,7 +23,9 @@ namespace AlephVault.Unity.CardGames
             public class ShowdownCore
             {
                 /// <summary>
-                ///   The hand matcher to use in this showdown.
+                ///   The hand matcher to use in this showdown. It will also be the
+                ///   component that knows the current table settings (e.g. common
+                ///   cards and extra things).
                 /// </summary>
                 public readonly IHandMatcher HandMatcher;
 

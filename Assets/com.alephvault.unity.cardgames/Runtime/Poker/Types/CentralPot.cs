@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using AlephVault.Unity.Support.Utils;
 
 namespace AlephVault.Unity.CardGames
 {
@@ -41,13 +42,18 @@ namespace AlephVault.Unity.CardGames
 
                 /// <summary>
                 ///   Adds a certain amount (from each player) to this pot.
+                ///   If the player did not afford that amount in the local
+                ///   pot, then the entire local pot is added.
                 /// </summary>
                 /// <param name="amount">The per-player amount to add</param>
                 public void AddAmountFromPlayers(int amount)
                 {
                     if (amount <= 0) return;
                     EachPot += amount;
-                    TotalPot += amount * Agents.Count;
+                    foreach (var agent in Agents)
+                    {
+                        TotalPot += Values.Min(amount, agent.LocalPot());
+                    }
                 }
 
                 /// <summary>

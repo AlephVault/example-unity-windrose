@@ -7,7 +7,7 @@ namespace AlephVault.Unity.CardGames
 {
     namespace Poker
     {
-        namespace CentralPotsManagement
+        namespace BettingManagement
         {
             /// <summary>
             ///   This is a collector of the pots. Collectors can be used many

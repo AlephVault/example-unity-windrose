@@ -10,20 +10,19 @@ namespace AlephVault.Unity.CardGames
         namespace BettingManagement
         {
             /// <summary>
-            ///   This is a collector of the pots. Collectors can be used many
-            ///   times (they don't use a state to track).
+            ///   This is a collector of the pots.
             /// </summary>
-            public class CentralPotsCollector
+            public static class LocalPotsCollector
             {
                 // Tells whether a player in the list is playing the current hand.
-                private bool AtLeastOneIsPlaying(IEnumerable<IPlayerAgent> agents)
+                private static bool AtLeastOneIsPlaying(IEnumerable<IPlayerAgent> agents)
                 {
                     return agents.Any(agent => agent.IsPlayingThisHand());
                 }
 
                 // Adds the payments properly from each user in the current level
                 // (the current level is the one terminating).
-                private void AddTheAffordedAmounts(
+                private static void AddTheAffordedAmounts(
                     CentralPots centralPots, int currentAmountLevel, int previousAmountLevel,
                     int initialCentralPot, List<CentralPotPayment> payments
                 )
@@ -65,14 +64,15 @@ namespace AlephVault.Unity.CardGames
                 /// <param name="centralPots">The central pots to populate</param>
                 /// <param name="players">The players</param>
                 /// <returns>The payments, so the pots can be assembled in front-end</returns>
-                public List<CentralPotPayment> CollectPots(CentralPots centralPots, IReadOnlyCollection<IPlayerAgent> players)
+                public static List<CentralPotPayment> CollectPots(CentralPots centralPots, IReadOnlyCollection<IPlayerAgent> players)
                 {
                     // First, we keep a sorted (ascending) list of nonzero local pots.
                     Comparer<IPlayerAgent> cmp = Comparer<IPlayerAgent>.Create(
                         (ag1, ag2) => ag1.LocalPot() < ag2.LocalPot() ? 1 : -1
                     );
                     List<IPlayerAgent> sortedPlayers = new SortedSet<IPlayerAgent>(
-                        players.Where((p) => p.LocalPot() > 0)
+                        // This filtering also filters out the null values.
+                        players.Where((p) => (p?.LocalPot() ?? 0) > 0), cmp
                     ).ToList();
 
                     // These variables help us to drop the players (and create new
@@ -151,6 +151,18 @@ namespace AlephVault.Unity.CardGames
 
                     // Also return the payments.
                     return payments;
+                }
+
+                /// <summary>
+                ///   Clears the local pots of all the players.
+                /// </summary>
+                /// <param name="players">The players to clear their pots</param>
+                public static void ClearLocalPots(IReadOnlyCollection<IPlayerAgent> players)
+                {
+                    foreach (IPlayerAgent player in players)
+                    {
+                        player?.ClearLocalPot();
+                    }
                 }
             }
         }

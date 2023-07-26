@@ -14,6 +14,11 @@ namespace AlephVault.Unity.CardGames
                 ///   Tells the current local pot.
                 /// </summary>
                 public int LocalPot();
+
+                /// <summary>
+                ///   Clears the local pot.
+                /// </summary>
+                public void ClearLocalPot();
             }
         }
     }

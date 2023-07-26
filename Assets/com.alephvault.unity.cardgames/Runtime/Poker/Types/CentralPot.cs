@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using AlephVault.Unity.Support.Utils;
 
@@ -46,14 +47,21 @@ namespace AlephVault.Unity.CardGames
                 ///   pot, then the entire local pot is added.
                 /// </summary>
                 /// <param name="amount">The per-player amount to add</param>
-                public void AddAmountFromPlayers(int amount)
+                /// <returns>The effective added amounts</returns>
+                public List<Tuple<IPlayerAgent, int>> AddAmountFromPlayers(int amount)
                 {
-                    if (amount <= 0) return;
-                    EachPot += amount;
-                    foreach (var agent in Agents)
+                    List<Tuple<IPlayerAgent, int>> result = new List<Tuple<IPlayerAgent, int>>();
+                    if (amount > 0)
                     {
-                        TotalPot += Values.Min(amount, agent.LocalPot());
+                        EachPot += amount;
+                        foreach (var agent in Agents)
+                        {
+                            int finalAmount = Values.Min(amount, agent.LocalPot());
+                            result.Add(new Tuple<IPlayerAgent, int>(agent, finalAmount));
+                            TotalPot += finalAmount;
+                        }
                     }
+                    return result;
                 }
 
                 /// <summary>

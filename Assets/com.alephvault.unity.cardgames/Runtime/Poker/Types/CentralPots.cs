@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -62,9 +63,9 @@ namespace AlephVault.Unity.CardGames
                 ///   Adds a certain amount (from each player) to the last pot.
                 /// </summary>
                 /// <param name="amount">The per-player amount to add</param>
-                public void AddAmountFromPlayers(int amount)
+                public List<Tuple<IPlayerAgent, int>> AddAmountFromPlayers(int amount)
                 {
-                    pots.Last().AddAmountFromPlayers(amount);
+                    return pots.Last().AddAmountFromPlayers(amount);
                 }
 
                 /// <summary>

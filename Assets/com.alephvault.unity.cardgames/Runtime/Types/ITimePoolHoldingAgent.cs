@@ -17,7 +17,7 @@ namespace AlephVault.Unity.CardGames
             ///   Sets the new time pool. Negative values are
             ///   zero-maxed.
             /// </summary>
-            public int SetTimePool();
+            public int SetTimePool(int time);
         }
     }
 }

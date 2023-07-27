@@ -31,6 +31,18 @@ namespace AlephVault.Unity.CardGames
                 Arg1 = arg1;
                 Arg2 = arg2;
             }
+
+            /// <summary>
+            ///   Tells whether this prompt considers valid an answer
+            ///   or not (i.e. expects it or not - also checking the
+            ///   parameters, if needed).
+            /// </summary>
+            /// <param name="answer">The answer to validate</param>
+            /// <returns></returns>
+            public virtual bool Accepts(AgentTurnAnswer answer)
+            {
+                return Code == answer.Code;
+            }
         }
     }        
 }

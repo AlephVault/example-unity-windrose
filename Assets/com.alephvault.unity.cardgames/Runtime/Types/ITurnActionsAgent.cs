@@ -34,6 +34,11 @@ namespace AlephVault.Unity.CardGames
             ///   Tell the agent the received prompt was invalid.
             /// </summary>
             public void ACKInvalidPrompt();
+
+            /// <summary>
+            ///   Tell the agent that it timed out.
+            /// </summary>
+            public void TimedOut();
         }
     }
 }

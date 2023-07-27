@@ -5,9 +5,7 @@ namespace AlephVault.Unity.CardGames
     namespace Types
     {
         /// <summary>
-        ///   Agents can attend turns. See <see cref="AgentTurnRunner" />
-        ///   for more details on how a turn goes, but it is essentially
-        ///   made of prompts and (valid) answers.
+        ///   Agents can attend turns' prompts and answer them.
         /// </summary>
         public interface ITurnActionsAgent
         {

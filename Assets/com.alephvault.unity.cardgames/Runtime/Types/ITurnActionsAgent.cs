@@ -1,18 +1,15 @@
+using AlephVault.Unity.CardGames.Utils.AgentTurns;
+
 namespace AlephVault.Unity.CardGames
 {
     namespace Types
     {
         /// <summary>
-        ///   Agents can attend turns. Attending a turn means only:
-        ///   1. Launching a timer which ends after some time, or
-        ///      when it is killed "for good".
-        ///   2. Sending the prompt to the agent.
-        ///   3. Loop:
-        ///      - Wait for an answer from the agent.
-        ///      - If it is valid, break the loop.
-        ///   4. Process the (valid) answer.
+        ///   Agents can attend turns. See <see cref="AgentTurnRunner" />
+        ///   for more details on how a turn goes, but it is essentially
+        ///   made of prompts and (valid) answers.
         /// </summary>
-        public interface ITurnAttendingAgent
+        public interface ITurnActionsAgent
         {
             /// <summary>
             ///   Sends the prompt.

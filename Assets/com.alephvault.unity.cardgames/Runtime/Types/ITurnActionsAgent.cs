@@ -24,6 +24,16 @@ namespace AlephVault.Unity.CardGames
             ///   did not answer yet.
             /// </summary>
             public AgentTurnAnswer GetAnswer();
+
+            /// <summary>
+            ///   Tell the agent the received prompt was valid.
+            /// </summary>
+            public void ACKValidPrompt();
+
+            /// <summary>
+            ///   Tell the agent the received prompt was invalid.
+            /// </summary>
+            public void ACKInvalidPrompt();
         }
     }
 }

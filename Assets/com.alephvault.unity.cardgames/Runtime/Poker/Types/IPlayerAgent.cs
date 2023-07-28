@@ -1,3 +1,5 @@
+using AlephVault.Unity.CardGames.Types;
+
 namespace AlephVault.Unity.CardGames
 {
     namespace Poker
@@ -7,7 +9,7 @@ namespace AlephVault.Unity.CardGames
             /// <summary>
             ///   A player agent.
             /// </summary>
-            public interface IPlayerAgent : IShowdownAgent, ILocalPotAgent, IStatusHoldingAgent
+            public interface IPlayerAgent : ITurnAttendingAgent, IStatusHoldingAgent, ILocalPotAgent, IShowdownAgent 
             {
             }
         }

@@ -17,7 +17,7 @@ namespace AlephVault.Unity.CardGames
                 /// </summary>
                 public class Raise : AgentTurnPromptOption
                 {
-                    public Raise(int arg1, int arg2) : base("BET", arg1, arg2) {}
+                    public Raise(int arg1, int arg2) : base("RAISE", arg1, arg2) {}
 
                     public override bool Accepts(AgentTurnAnswer answer)
                     {

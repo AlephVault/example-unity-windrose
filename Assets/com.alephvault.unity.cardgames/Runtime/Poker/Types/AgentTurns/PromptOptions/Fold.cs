@@ -9,9 +9,9 @@ namespace AlephVault.Unity.CardGames
                 /// <summary>
                 ///   A "Fold" option. Available when "Call" is available.
                 /// </summary>
-                public class Call : AgentTurnPromptOption
+                public class Fold : AgentTurnPromptOption
                 {
-                    public Call() : base("BET", 0, 0) {}
+                    public Fold() : base("FOLD", 0, 0) {}
                 }
             }
         }

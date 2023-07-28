@@ -7,12 +7,12 @@ namespace AlephVault.Unity.CardGames
             namespace PromptOptions
             {
                 /// <summary>
-                ///   A "Check" option. Available when "Bet" is available, but
-                ///   as the only alternative (i.e. betting nothing).
+                ///   A "Call" option. Available when there's a previous unmatched
+                ///   bet from previous players this round.
                 /// </summary>
-                public class Check : AgentTurnPromptOption
+                public class Call : AgentTurnPromptOption
                 {
-                    public Check() : base("CHECK", 0, 0) {}
+                    public Call() : base("CALL", 0, 0) {}
                 }
             }
         }

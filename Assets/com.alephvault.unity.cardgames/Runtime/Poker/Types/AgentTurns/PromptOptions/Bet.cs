@@ -9,8 +9,7 @@ namespace AlephVault.Unity.CardGames
                 /// <summary>
                 ///   A "Bet" prompt. The "Bet" prompt can be send in two flavors:
                 ///   - Bet(amount > 0, 0): Fixed Limit (amount) or All-In (any limit) if the user doesn't have the min.
-                ///   - Bet(min > 0, max > min): Pot limit (min, potSize).
-                ///   - Bet(min > 0, _ &lt; 0): No limit (min).
+                ///   - Bet(min > 0, max > min): Pot limit (min, potSize) or No Limit (min, userChips).
                 ///   A "Bet" option is specially crafted for the agent, according to the min/fixed bet.
                 ///   Not available if bets were already done this round.
                 /// </summary>
@@ -26,14 +25,12 @@ namespace AlephVault.Unity.CardGames
                         {
                             return answer.Arg1 == Arg1;
                         }
-                        else if (Arg2 < 0)
-                        {
-                            return answer.Arg1 >= Arg1;
-                        }
-                        else
+                        if (Arg2 > 0)
                         {
                             return answer.Arg1 >= Arg1 && answer.Arg1 <= Arg2;
                         }
+
+                        return false;
                     }
                 }
             }

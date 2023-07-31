@@ -9,7 +9,8 @@ namespace AlephVault.Unity.CardGames
             /// <summary>
             ///   A player agent.
             /// </summary>
-            public interface IPlayerAgent : ITurnAttendingAgent, IStatusHoldingAgent, ILocalPotAgent, IShowdownAgent 
+            public interface IPlayerAgent : ITurnAttendingAgent, IDealerHoldingAgent, IStatusHoldingAgent,
+                ILocalPotAgent, IShowdownAgent 
             {
             }
         }

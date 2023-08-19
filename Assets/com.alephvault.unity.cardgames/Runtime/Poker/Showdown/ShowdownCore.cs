@@ -127,9 +127,13 @@ namespace AlephVault.Unity.CardGames
                     Dictionary<IShowdownAgent, IMatchedHand> ranks = ComputeRanks(showdownPots);
                     
                     // Make it a sorted set.
-                    Comparer<IShowdownAgent> cmp = Comparer<IShowdownAgent>.Create(Lowball
-                        ? (ag1, ag2) => ranks[ag1].Rank() < ranks[ag2].Rank() ? 1 : -1
-                        : (ag1, ag2) => ranks[ag1].Rank() < ranks[ag2].Rank() ? -1 : 1);
+                    Comparison<IShowdownAgent> lowballComparer =
+                        (ag1, ag2) => ranks[ag1].Rank() < ranks[ag2].Rank() ? 1 : -1;
+                    Comparison<IShowdownAgent> standardComparer =
+                        (ag1, ag2) => ranks[ag1].Rank() < ranks[ag2].Rank() ? -1 : 1;
+                    Comparer<IShowdownAgent> cmp = Comparer<IShowdownAgent>.Create(
+                        Lowball ? lowballComparer : standardComparer
+                    );
                     SortedSet<IShowdownAgent> sortedAgents = new SortedSet<IShowdownAgent>(ranks.Keys, cmp);
 
                     // For each pot, distribute it using the sorted agents.

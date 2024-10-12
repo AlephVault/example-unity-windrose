@@ -3,8 +3,9 @@
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
@@ -13,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   registry: {fileID: 0}
   key: 0
-  quantifyingStrategy: {fileID: 11400000, guid: 24752914236655848b6fb1b469ad7dce,
-    type: 2}
+  maxStackQuantity: 100
+  amountPerUnit: 1
   spatialStrategies:
   - {fileID: 11400000, guid: 75f39304aecd7a24ba9250810d0e6c15, type: 2}
   usageStrategies:

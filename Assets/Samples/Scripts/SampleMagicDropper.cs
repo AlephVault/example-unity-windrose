@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using AlephVault.Unity.WindRose.BackPack.Authoring.Behaviours.World.Layers.Drop;
 using AlephVault.Unity.BackPack.Authoring.ScriptableObjects.Inventory.Items;
-using AlephVault.Unity.BackPack.Authoring.ScriptableObjects.Inventory.Items.QuantifyingStrategies;
 
 [RequireComponent(typeof(DropLayer))]
 [RequireComponent(typeof(Throttler))]
@@ -42,7 +41,7 @@ public class SampleMagicDropper : MonoBehaviour {
     void Update () {
         if (Input.GetKey(key))
         {
-            DropARandomObject(dropLayer);
+            DropARandomObject();
         }
     }
 
@@ -51,20 +50,19 @@ public class SampleMagicDropper : MonoBehaviour {
         int index = random.Next(0, chances.Count);
         Item item = chances[index];
         AlephVault.Unity.BackPack.Types.Inventory.Stacks.Stack stack;
-        if (item.QuantifyingStrategy is ItemUnstackedQuantifyingStrategy)
-        {
-            stack = item.Create(true, null);
-        }
-        else
+        if (item.MaxStackQuantity == 100)
         {
             stack = item.Create(25, null);
         }
+        else
+        {
+            stack = item.Create(1, null);
+        }
         Vector2Int containerPosition = new Vector2Int(random.Next(minX, maxX), random.Next(minY, maxY));
-        object finalStackPosition;
-        dropLayer.Push(containerPosition, stack, out finalStackPosition);
+        dropLayer.Push(containerPosition, stack, out object _);
     }
 
-    void DropARandomObject(DropLayer dropLayer)
+    void DropARandomObject()
     {
         throttler.Throttled(delegate() {
             for(int i = 0; i < 16; i++)
